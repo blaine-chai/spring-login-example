@@ -25,6 +25,9 @@
     <session-config>
         <session-timeout>15</session-timeout>
     </session-config>
+    <listener>
+        <listener-class>com.blainechai.listener.HttpSessionCheckingListener</listener-class>
+    </listener>
 
     <!--<security-constraint>-->
         <!--<web-resource-collection>-->

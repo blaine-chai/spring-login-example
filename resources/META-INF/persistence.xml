@@ -6,8 +6,9 @@
              version="2.0">
 
     <persistence-unit name="jpa.unit">
-        <class>com.blainechai.model.AdminAccount</class>
-        <class>com.blainechai.model.UserAccount</class>
+        <class>com.blainechai.domain.AdminAccount</class>
+        <class>com.blainechai.domain.UserAccount</class>
+        <class>com.blainechai.domain.Session</class>
         <exclude-unlisted-classes>true</exclude-unlisted-classes>
     </persistence-unit>
 </persistence>

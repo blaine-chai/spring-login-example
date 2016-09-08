@@ -26,6 +26,12 @@
                     <form method="post" action="/admin/join">
                         <div class="login-form">
                             <div class="control-group">
+                                <input type="text" class="login-field" value="" placeholder="userId"
+                                       name="userId">
+                                <label class="login-field-icon fui-user"></label>
+                            </div>
+
+                            <div class="control-group">
                                 <input type="text" class="login-field" value="" placeholder="username"
                                        name="username">
                                 <label class="login-field-icon fui-user"></label>
@@ -47,8 +53,8 @@
                     <form method="post" action="/admin/login">
                         <div class="login-form">
                             <div class="control-group">
-                                <input type="text" class="login-field" value="" placeholder="username"
-                                       name="username">
+                                <input type="text" class="login-field" value="" placeholder="userId"
+                                       name="userId">
                                 <label class="login-field-icon fui-user"></label>
                             </div>
 

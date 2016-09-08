@@ -80,6 +80,28 @@
             <version>1.7.12</version>
         </dependency>
 
+        <!--<dependency>-->
+            <!--<groupId>ch.qos.logback</groupId>-->
+            <!--<artifactId>logback-core</artifactId>-->
+            <!--<version>1.1.2</version>-->
+        <!--</dependency>-->
+        <!--<dependency>-->
+            <!--<groupId>ch.qos.logback</groupId>-->
+            <!--<artifactId>logback-classic</artifactId>-->
+            <!--<version>1.1.2</version>-->
+        <!--</dependency>-->
+        <!--<dependency>-->
+            <!--<groupId>org.slf4j</groupId>-->
+            <!--<artifactId>slf4j-api</artifactId>-->
+            <!--<version>1.7.10</version>-->
+        <!--</dependency>-->
+        <!--&lt;!&ndash; 조건부 설정을 사용하려면 아래의 디펜던시를 추가해 주어야 한다. &ndash;&gt;-->
+        <!--<dependency>-->
+            <!--<groupId>org.codehaus.janino</groupId>-->
+            <!--<artifactId>janino</artifactId>-->
+            <!--<version>3.0.1</version>-->
+        <!--</dependency>-->
+
         <!--&lt;!&ndash; Test Dependencies &ndash;&gt;-->
         <!--<dependency>-->
         <!--<groupId>com.google.appengine</groupId>-->
@@ -93,6 +115,12 @@
         <!--<version>${appengine.target.version}</version>-->
         <!--<scope>test</scope>-->
         <!--</dependency>-->
+
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.12</version>
+        </dependency>
     </dependencies>
 
     <build>
