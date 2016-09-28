@@ -33,7 +33,7 @@ public class Session implements Serializable {
         this.type = type;
     }
 
-    public String getjSessionId() {
+    public String getJSessionId() {
         return jSessionId;
     }
 
@@ -44,4 +44,5 @@ public class Session implements Serializable {
     public String getType() {
         return type;
     }
+
 }

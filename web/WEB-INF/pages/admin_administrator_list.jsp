@@ -25,7 +25,7 @@
 </head>
 <body>
 <div class="container">
-    <h2>User List</h2>
+    <h2>Admin User List</h2>
     <!-- Search Bar -->
     <div class="panel panel-info">
         <div class="panel-heading">Search</div>
@@ -40,7 +40,7 @@
                     <select name="searchFilter" class="form-control">
                         <option value="userId">관리자 계정</option>
                         <option value="username">관리자 이름</option>
-                        <option value="password">비밀번호</option>
+                        <%--<option value="password">비밀번호</option>--%>
                         <option value="date">생성일</option>
                     </select>
                     <input class="form-control" name="searchInput" type="text">
@@ -54,6 +54,9 @@
     </div>
 
     <div class="table-responsive">
+        <form action="/admin/admin-account/register" method="post" style="width: 100%; position:relative;">
+            <button class="btn btn-primary" name="userId" value="${admin.userId}" style="position: absolute; right: 50px;">생성</button>
+        </form>
         <table class="table  table-condensed table-hover" id="cssTable">
             <thead>
             <tr>

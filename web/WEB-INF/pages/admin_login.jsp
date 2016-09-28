@@ -1,10 +1,3 @@
-<%--
-  Created by IntelliJ IDEA.
-  User: LeeKyuHyuk
-  Date: 2015. 6. 28.
-  Time: 오후 2:38
-  To change this template use File | Settings | File Templates.
---%>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 
@@ -22,7 +15,6 @@
             <c:choose>
                 <c:when test="${adminAccountSize <= 0 }">
                     <h1>Admin Account Registration</h1>
-
                     <form method="post" action="/admin/join">
                         <div class="login-form">
                             <div class="control-group">

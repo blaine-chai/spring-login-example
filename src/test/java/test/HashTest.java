@@ -11,4 +11,9 @@ public class HashTest {
     public void test1() {
         EncryptUtil.getSHA256("sm");
     }
+
+    @Test
+    public void getNames(){
+
+    }
 }

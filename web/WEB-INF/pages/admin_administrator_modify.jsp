@@ -10,7 +10,7 @@
 </head>
 <body>
 <div class="container">
-    <form action="/admin/user/update" method="post" class="form" role="form">
+    <form action="/admin/admin-account/update" method="post" class="form" role="form">
         <label>사용자 아이디</label>
         <input class="form-control" value="${adminInfo.userId}" placeholder="사용자 이름"
                name="userId" type="email" readOnly="true"/><br>

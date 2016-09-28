@@ -1,12 +1,12 @@
 package com.blainechai.controller;
 
-import com.blainechai.constant.Constant;
 import com.blainechai.constant.Type;
 import com.blainechai.domain.Session;
 import com.blainechai.domain.UserAccount;
 import com.blainechai.repository.AdminAccountRepository;
 import com.blainechai.domain.AdminAccount;
 import com.blainechai.repository.SessionRepository;
+import com.blainechai.repository.UserAccountRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -25,6 +25,9 @@ public class AdminController {
     private AdminAccountRepository adminAccountRepository;
 
     @Autowired
+    private UserAccountRepository userAccountRepository;
+
+    @Autowired
     private SessionRepository sessionRepository;
 //
 //    @Autowired
@@ -41,8 +44,10 @@ public class AdminController {
 
     @RequestMapping(value = {""})
     public String adminLogin(ModelMap model, HttpServletRequest request) {
-        if (request.getSession().getAttribute("JSESSIONID") != null)
+//        System.out.println(sessionRepository.findByJSessionId(request.getSession().getId()).size());
+        if (sessionRepository.findByJSessionId(request.getSession().getId()).size() > 0) {
             return "redirect:" + "/admin/main";
+        }
         model.addAttribute("adminAccountSize", adminAccountRepository.findAll().size());
         return "admin_login";
     }
@@ -91,23 +96,27 @@ public class AdminController {
     @RequestMapping(value = "/admin-account")
     public ModelAndView list() {
         List<AdminAccount> adminList = adminAccountRepository.findAll();
-        ModelAndView modelAndView = new ModelAndView("admin_administator_list");
+        ModelAndView modelAndView = new ModelAndView("admin_administrator_list");
         modelAndView.addObject("adminList", adminList);
         return modelAndView;
     }
 
     @RequestMapping(value = "/admin-account/modify", method = RequestMethod.POST)
-    public ModelAndView modify() {
-        List<AdminAccount> adminList = adminAccountRepository.findAll();
-        ModelAndView modelAndView = new ModelAndView("admin_administator_list");
-        modelAndView.addObject("adminList", adminList);
+    public ModelAndView modify(HttpServletRequest request) {
+        System.out.println(request.getParameter("userId"));
+        ModelAndView modelAndView = new ModelAndView("admin_administrator_modify");
+        try {
+            modelAndView.addObject("adminInfo", adminAccountRepository.findByUserId(request.getParameter("userId")).get(0));
+        } catch (ArrayIndexOutOfBoundsException e) {
+            modelAndView = new ModelAndView("redirect:" + "/admin/admin-account");
+        }
         return modelAndView;
     }
 
     @RequestMapping(value = "/admin-account/delete", method = RequestMethod.POST)
     public ModelAndView delete(HttpServletRequest request) {
-        adminAccountRepository.deleteByUserId(request.getAttribute("userId").toString());
-        ModelAndView modelAndView = new ModelAndView("admin_administator_list");
+        adminAccountRepository.deleteByUserId(request.getParameter("userId"));
+        ModelAndView modelAndView = new ModelAndView("admin_administrator_list");
         List<AdminAccount> adminList = adminAccountRepository.findAll();
         modelAndView.addObject("adminList", adminList);
         return modelAndView;
@@ -116,9 +125,104 @@ public class AdminController {
 
     @RequestMapping(value = "/admin-account/search")
     public ModelAndView search(HttpServletRequest request) {
-        List<AdminAccount> adminList = adminAccountRepository.findByUserId(request.getAttribute("userId").toString());
-        ModelAndView modelAndView = new ModelAndView("admin_administator_list");
+        List<AdminAccount> adminList = adminAccountRepository.findByUserId(request.getParameter("userId"));
+        ModelAndView modelAndView = new ModelAndView("admin_administrator_list");
         modelAndView.addObject("adminList", adminList);
         return modelAndView;
+    }
+
+    @RequestMapping(value = "/admin-account/update", method = RequestMethod.POST)
+    public String updateUser(HttpServletRequest request) {
+        String userId = request.getParameter("userId");
+        String username = request.getParameter("username");
+        AdminAccount adminAccount = adminAccountRepository.findByUserId(userId).get(0);
+        adminAccount.setUserId(userId);
+        adminAccount.setUsername(username);
+        adminAccountRepository.save(adminAccount);
+        return "redirect:" + "/admin/admin-account"; // 중복된 번호라고 언급해야함.
+    }
+
+    @RequestMapping(value = "/admin-account/register")
+    public String adminRegisterPage(HttpServletRequest request) {
+        return "admin_administrator_join";
+    }
+
+    @RequestMapping(value = "/admin-account/join", method = RequestMethod.POST)
+    public String adminAccountJoin(HttpServletRequest request) {
+        String userId = request.getParameter("userId");
+        String username = request.getParameter("username");
+        String password = request.getParameter("password");
+        adminAccountRepository.save(new AdminAccount(userId, username, password));
+        return "redirect:" + "/admin/admin-account";
+    }
+
+
+    @RequestMapping(value = "/user")
+    public ModelAndView userList() {
+        List<UserAccount> adminList = userAccountRepository.findAll();
+        ModelAndView modelAndView = new ModelAndView("admin_user_list");
+        modelAndView.addObject("adminList", adminList);
+        return modelAndView;
+    }
+
+    @RequestMapping(value = "/user/modify", method = RequestMethod.POST)
+    public ModelAndView userModify(HttpServletRequest request) {
+        System.out.println(request.getParameter("userId"));
+        ModelAndView modelAndView = new ModelAndView("admin_user_modify");
+        try {
+            modelAndView.addObject("adminInfo", userAccountRepository.findByUserId(request.getParameter("userId")).get(0));
+        } catch (ArrayIndexOutOfBoundsException e) {
+            modelAndView = new ModelAndView("redirect:" + "/admin/user");
+        }
+        return modelAndView;
+    }
+
+    @RequestMapping(value = "/user/delete", method = RequestMethod.POST)
+    public ModelAndView userDelete(HttpServletRequest request) {
+        userAccountRepository.deleteByUserId(request.getParameter("userId"));
+        ModelAndView modelAndView = new ModelAndView("admin_user_list");
+        List<UserAccount> adminList = userAccountRepository.findAll();
+        modelAndView.addObject("adminList", adminList);
+        return modelAndView;
+    }
+
+
+    @RequestMapping(value = "/user/search")
+    public ModelAndView userSearch(HttpServletRequest request) {
+        List<UserAccount> adminList = userAccountRepository.findByUserId(request.getParameter("userId"));
+        ModelAndView modelAndView = new ModelAndView("admin_user_list");
+        modelAndView.addObject("adminList", adminList);
+        return modelAndView;
+    }
+
+    @RequestMapping(value = "/user/update", method = RequestMethod.POST)
+    public String userUpdate(HttpServletRequest request) {
+        String userId = request.getParameter("userId");
+        String username = request.getParameter("username");
+        UserAccount userAccount = userAccountRepository.findByUserId(userId).get(0);
+        userAccount.setUserId(userId);
+        userAccount.setUsername(username);
+        userAccountRepository.save(userAccount);
+        return "redirect:" + "/admin/user";
+    }
+
+    @RequestMapping(value = "/user/register")
+    public String registerPage(HttpServletRequest request) {
+        return "admin_user_join";
+    }
+
+    @RequestMapping(value = "/user/join", method = RequestMethod.POST)
+    public String userJoin(HttpServletRequest request) {
+        String userId = request.getParameter("userId");
+        String username = request.getParameter("username");
+        String password = request.getParameter("password");
+        String phone = request.getParameter("phone");
+        try {
+            userAccountRepository.save(new UserAccount(userId, username, password, phone));
+        } catch (Exception e) {
+            return "redirect:" + "/error";
+        }
+//            saveDefaultValue();
+        return "redirect:" + "/admin/user";
     }
 }
