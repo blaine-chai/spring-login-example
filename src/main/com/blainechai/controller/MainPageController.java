@@ -53,6 +53,7 @@ public class MainPageController {
 //        return "admin_login";
 //    }
 
+
     @RequestMapping(value = {""})
     public String login() {
         return "user_login";
@@ -76,6 +77,10 @@ public class MainPageController {
     @RequestMapping(value = {"/main/search"})
     public String searchPage() {
         return "main_search";
+    }
+    @RequestMapping(value = {"/main/search1"})
+    public String searchPage1() {
+        return "main_search_1";
     }
 
     @RequestMapping(value = {"/main/status"})
@@ -188,4 +193,8 @@ public class MainPageController {
         return "error";
     }
 
+    @RequestMapping(value = "/test")
+    public String testPage(){
+        return "test";
+    }
 }

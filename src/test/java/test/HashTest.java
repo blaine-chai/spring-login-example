@@ -14,6 +14,5 @@ public class HashTest {
 
     @Test
     public void getNames(){
-
     }
 }

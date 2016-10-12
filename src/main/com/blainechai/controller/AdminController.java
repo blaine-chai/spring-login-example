@@ -45,7 +45,7 @@ public class AdminController {
     @RequestMapping(value = {""})
     public String adminLogin(ModelMap model, HttpServletRequest request) {
 //        System.out.println(sessionRepository.findByJSessionId(request.getSession().getId()).size());
-        if (sessionRepository.findByJSessionId(request.getSession().getId()).size() > 0) {
+        if (sessionRepository.findByJSessionId(request.getSession().getId()).get(0).getType().equals(Type.ADMIN)) {
             return "redirect:" + "/admin/main";
         }
         model.addAttribute("adminAccountSize", adminAccountRepository.findAll().size());
