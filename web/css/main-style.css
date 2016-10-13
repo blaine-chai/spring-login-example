@@ -131,9 +131,9 @@
 #result-table-wrapper{
     position:relative;
 }
-#result-table-wrapper table td:nth-child(8),
-#result-table-wrapper table td:nth-child(9),
-#result-table-wrapper table td:nth-child(10){
+#result-table-wrapper table td:nth-child(10),
+#result-table-wrapper table td:nth-child(11),
+#result-table-wrapper table td:nth-child(12){
     text-align: left;
 }
 /*#book-table-header{*/
@@ -147,3 +147,5 @@
 .dropdown-menu {
     font-size: 11px;
 }
+
+body {  min-width:1100px; }

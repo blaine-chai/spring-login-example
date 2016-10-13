@@ -42,7 +42,6 @@
 
 </head>
 <body>
-<!-- Split button -->
 <div id="header-wrapper"
      style="align-content: center; text-align: center"><h1
         style="margin: 0 auto; padding: 20px 0 20px 0">Real-Time
@@ -81,7 +80,7 @@
     </a></div>
 </div>
 
-<div id="content">
+<div id="content" style="">
     <div id="content-wrapper">
         <div id="search" class="col-xs-4"
              style="width: 333px;min-width:333px; max-width:333px; background: rgba(239, 239, 239, 1); overflow: scroll;">
@@ -97,11 +96,14 @@
                 <div id="search-input-wrapper" class="">
                     <div class="input-group input-group-sm">
                         <div class="dropdown input-group-btn">
-                            <div class="btn-group"style="">
+                            <div class="btn-group" style="">
                                 <button type="button" class="btn btn-default btn-sm dropdown-toggle"
                                         data-toggle="dropdown" aria-haspopup="true"
-                                        aria-expanded="false" style="width: 72px"><span>저자</span><div style="display: inline-block"><span class="caret"></span><span
-                                            class="sr-only"></span></div>
+                                        aria-expanded="false" style="width: 72px">
+                                    <span>저자</span>
+                                    <div style="display: inline-block"><span class="caret"></span><span
+                                            class="sr-only"></span>
+                                    </div>
                                 </button>
                                 <ul class="dropdown-menu search-content-selector" role="menu"
                                     aria-labelledby="dropdownMenu1">
@@ -129,11 +131,13 @@
                                                                onclick="handleOperatorSelect(this);return false;">AND</a>
                                     </li>
                                     <li role="presentation"><a role="menuitem" tabindex="3" href="#"
-                                                               onclick="handleOperatorSelect(this);return false;">O R</a>
+                                                               onclick="handleOperatorSelect(this);return false;">O
+                                        R</a>
                                     </li>
                                 </ul>
                             </div>
-                            <label class="btn btn-default btn-sm close-search-option-btn" style="visibility: hidden">-</label>
+                            <label class="btn btn-default btn-sm close-search-option-btn"
+                                   style="visibility: hidden">-</label>
                         </div>
                     </div>
                 </div>
@@ -217,34 +221,6 @@
                         </tr>
                         </thead>
                         <tbody>
-                        <tr>
-                            <td>1</td>
-                            <td></td>
-                            <td></td>
-                            <td>file/path/file1.txt</td>
-                            <td>1990-02-17</td>
-                            <td>1990-02-17</td>
-                            <td>1990-02-17</td>
-                            <td><span class="glyphicon glyphicon-ok"></span></td>
-                            <td><span class="glyphicon glyphicon-ok"></span></td>
-                            <td>비고</td>
-                            <td>비고</td>
-                            <td>
-                                file/path/file1.txtfile/path/file1.txtfile/path/file1.txtfile/path/file1.txtfile/path/file1.txtfile/path/file1.txtfile/path/file1.txtfile/path/file1.txtfile/path/file1.txtfile/path/file1.txtfile/path/file1.txtfile/path/file1.txtfile/path/file1.txtfile/path/file1.txtfile/path/file1.txtfile/path/file1.txtfile/path/file1.txtfile/path/file1.txtfile/path/file1.txtfile/path/file1.txtfile/path/file1.txtfile/path/file1.txtfile/path/file1.txtfile/path/file1.txtfile/path/file1.txtfile/path/file1.txtfile/path/file1.txtfile/path/file1.txtfile/path/file1.txtfile/path/file1.txtfile/path/file1.txtfile/path/file1.txtfile/path/file1.txtfile/path/file1.txtfile/path/file1.txtfile/path/file1.txtfile/path/file1.txtfile/path/file1.txtfile/path/file1.txtfile/path/file1.txtfile/path/file1.txt
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>1</td>
-                            <td>file/path/file1.txt</td>
-                            <td>1990-02-17</td>
-                            <td>1990-02-17</td>
-                            <td>1990-02-17</td>
-                            <td>비고</td>
-                            <td>비고</td>
-                            <td>비고</td>
-                            <td>비고</td>
-                            <td>비고</td>
-                        </tr>
                         </tbody>
                     </table>
                 </div>
@@ -269,10 +245,10 @@
 </div>
 
 <script type="text/javascript">
-    for (i = 0; i < 55; i++) {
-        $('#book-table tbody').append('<tr><td>' + i + '</td><td>file/path/file' + i + '.txt</td><td>1990-02-17</td><td>1990-02-17</td><td>1990-02-17</td><td>비고</td><td>비고</td><td>비고</td><td>비고</td><td>비고</td></tr>'
-        )
-    }
+    //    for (i = 0; i < 55; i++) {
+    //        $('#book-table tbody').append('<tr><td>' + i + '</td><td>file/path/file' + i + '.txt</td><td>1990-02-17</td><td>1990-02-17</td><td>1990-02-17</td><td>비고</td><td>비고</td><td><span class="glyphicon glyphicon-ok"></span></td><td><span class="glyphicon glyphicon-ok"></span></td><td>비고</td><td>비고</td><td>비고</td></tr>'
+    //        )
+    //    }
     function newRelativeTable(el) {
 
     }

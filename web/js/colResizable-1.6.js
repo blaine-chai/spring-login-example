@@ -19,7 +19,7 @@
 (function ($) {
 
     var initTableWidth = 500;
-    var initC = [50, 100, 100, 100, 100, 50, 50, 600, 50, 50];
+    var initC = [50, 50, 50, 100, 100, 100, 100, 50, 50, 600, 50, 50];
 
 
     var d = $(document); 		//window object
