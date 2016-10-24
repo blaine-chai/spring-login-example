@@ -1,6 +1,6 @@
 package com.blainechai.interceptor;
 
-import com.blainechai.constant.Type;
+import com.blainechai.constant.UserType;
 import com.blainechai.domain.Session;
 import com.blainechai.repository.SessionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,7 +21,7 @@ public class LoginInterceptor extends HandlerInterceptorAdapter {
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
         try {
             List<Session> list = sessionRepository.findByJSessionId(request.getSession().getId());
-            if (list.size() > 0 && (list.get(0).getType().equals(Type.USER)||list.get(0).getType().equals(Type.ADMIN))) {
+            if (list.size() > 0 && (list.get(0).getType().equals(UserType.USER)||list.get(0).getType().equals(UserType.ADMIN))) {
                 return true;
             }
             response.sendRedirect("/");

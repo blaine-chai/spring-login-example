@@ -1,6 +1,6 @@
 package com.blainechai.controller;
 
-import com.blainechai.constant.Type;
+import com.blainechai.constant.UserType;
 import com.blainechai.domain.Session;
 import com.blainechai.domain.UserAccount;
 import com.blainechai.repository.AdminAccountRepository;
@@ -45,7 +45,7 @@ public class AdminController {
     @RequestMapping(value = {""})
     public String adminLogin(ModelMap model, HttpServletRequest request) {
 //        System.out.println(sessionRepository.findByJSessionId(request.getSession().getId()).size());
-        if (sessionRepository.findByJSessionId(request.getSession().getId()).get(0).getType().equals(Type.ADMIN)) {
+        if (sessionRepository.findByJSessionId(request.getSession().getId()).size() > 0 && sessionRepository.findByJSessionId(request.getSession().getId()).get(0).getType().equals(UserType.ADMIN)) {
             return "redirect:" + "/admin/main";
         }
         model.addAttribute("adminAccountSize", adminAccountRepository.findAll().size());
@@ -73,7 +73,7 @@ public class AdminController {
             AdminAccount adminAccount = adminAccountList.get(i);
             if (adminAccount.getUserId().equals(userId) && adminAccount.getPassword().equals(password)) {
                 request.getSession().setAttribute("userId", userId);
-                sessionRepository.save(new Session(request.getSession().getId(), userId, Type.ADMIN));
+                sessionRepository.save(new Session(request.getSession().getId(), userId, UserType.ADMIN));
                 return "redirect:" + "/admin/main";
             }
         }

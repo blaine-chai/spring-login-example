@@ -11,7 +11,7 @@ import java.sql.Date;
  */
 
 @Entity
-@Table(name = "Session")
+@Table(name = "common_session")
 public class Session implements Serializable {
     private static final long serialVersionUID = 1L;
 
@@ -29,6 +29,7 @@ public class Session implements Serializable {
 
     public Session(String jSessionId, String userId, String type) {
         this.jSessionId = jSessionId;
+        this.userId = userId;
         this.createDate = new Date(new java.util.Date().getTime());
         this.type = type;
     }
@@ -45,4 +46,7 @@ public class Session implements Serializable {
         return type;
     }
 
+    public String getUserId() {
+        return userId;
+    }
 }

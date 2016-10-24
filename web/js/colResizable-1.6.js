@@ -432,6 +432,12 @@
             if (!t.f) applyBounds(t);	//if not fixed mode, then apply bounds to obtain real width values
             console.error("hi1");
             syncGrips(t);				//the grips are updated
+
+            var colWidth = [];
+            $.each(t.c, function (i, c) {
+                colWidth.push(c.w);
+            });
+            setTableOption(colWidth);
             if (cb) {
                 e.currentTarget = t[0];
                 cb(e);
@@ -468,6 +474,19 @@
         // } 	//if the colum is locked (after browser resize), then c.w must be updated
         return false; 	//prevent text selection
     };
+
+    function setTableOption(c){
+        $.ajax({
+            url: "/table-option/update",
+            type: "post",
+            data: {"colSize": JSON.stringify(c)},
+            success: function (responseData) {
+//                var html = (this).find('td').eq(7);
+//                html.text('<span class="glyphicon glyphicon-ok"></span>');
+                console.log(responseData);
+            }
+        });
+    }
 
 
     /**
@@ -559,6 +578,8 @@
                 partialRefresh: false,			//can be used in combination with postbackSafe when the table is inside of an updatePanel,
                 disabledColumns: [],            //column indexes to be excluded
 
+                initC: [],
+
                 //events:
                 onDrag: null, 					//callback function to be fired during the column resizing process if liveDrag is enabled
                 onResize: null					//callback function fired when the dragging process is over
@@ -577,6 +598,10 @@
                     options.fixed = false;
                     options.overflow = true;
                     break;
+            }
+            if (options.initC.length > 0) {
+                initC = options.initC;
+                console.error(initC)
             }
 
             return this.each(function () {

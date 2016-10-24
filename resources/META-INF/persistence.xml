@@ -9,6 +9,10 @@
         <class>com.blainechai.domain.AdminAccount</class>
         <class>com.blainechai.domain.UserAccount</class>
         <class>com.blainechai.domain.Session</class>
+        <class>com.blainechai.domain.BookInfo</class>
+        <class>com.blainechai.domain.UserTableOption</class>
+        <class>com.blainechai.domain.UserHistory</class>
+        <class>com.blainechai.domain.BookHistory</class>
         <exclude-unlisted-classes>true</exclude-unlisted-classes>
     </persistence-unit>
 </persistence>

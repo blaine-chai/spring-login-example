@@ -7,7 +7,7 @@ import java.io.Serializable;
 import java.sql.Date;
 
 @Entity
-@Table(name = "UserAccount")
+@Table(name = "user_account")
 public class UserAccount implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -16,12 +16,23 @@ public class UserAccount implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-
     private String userId;
     private String username;
     private String hash;
     private String phone;
     private Date createDate;
+//    private int col1;
+//    private int col2;
+//    private int col3;
+//    private int col4;
+//    private int col5;
+//    private int col6;
+//    private int col7;
+//    private int col8;
+//    private int col9;
+//    private int col10;
+//    private int col11;
+//    private int col12;
 
     protected UserAccount() {
     }
@@ -34,10 +45,10 @@ public class UserAccount implements Serializable {
         this.createDate = new Date(new java.util.Date().getTime());
     }
 
-    public Long getId() {
-        return id;
-    }
-
+//    public Long getId() {
+//        return id;
+//    }
+//
     public String getUserId() {
         return userId;
     }
