@@ -95,7 +95,7 @@
                                                                   autocomplete="off">문자</label>
                 </div>
                 <div id="search-input-wrapper" class="">
-                    <div class="input-group input-group-sm">
+                    <div class="input-group input-group-sm search-input-group">
                         <div class="dropdown input-group-btn">
                             <div class="btn-group" style="">
                                 <button type="button" class="btn btn-default btn-sm dropdown-toggle"
@@ -201,8 +201,16 @@
         <div id="menu" class="col-xs-8" style="width: calc(100% - 333px)">
             <div id="relative-table-container" style="position: absolute; z-index: 10;"></div>
             <div id="menu-wrapper" style="background: rgba(224, 234, 244, 1);">
-                <div class="alert alert-success">총 1000건의 검색 결과가 있습니다</div>
-                <div></div>
+                <div class="alert alert-info">
+                    <div id="search-result-number" style="display: block; width:30%; float:left;">총 1000건의 검색 결과가 있습니다
+                    </div>
+                    <div id="search-progress" class="progress" style="width:70%;  margin-bottom: 0;">
+                        <div class="progress-bar progress-bar-striped active" role="progressbar" aria-valuenow="45"
+                             aria-valuemin="0" aria-valuemax="100" style="width: 45%;">
+                            45%
+                        </div>
+                    </div>
+                </div>
                 <div id="result-table-wrapper" class="panel panel-default"
                      style="margin: 15px; overflow: scroll; height: calc(100% - 200px); font-size: 11px">
                     <div style="background: #ffffff;">
@@ -271,6 +279,7 @@
 </div>
 
 <script type="text/javascript" charset="UTF-8">
+    var userHistory=[]
 
     function newRelativeTable(el) {
     }
@@ -278,7 +287,7 @@
     function handleOperatorSelect(element) {
         var list = $(element).parent().parent().parent().parent().parent();
         if ($('#search-input-wrapper>div').length - 1 == $('#search-input-wrapper>div').index(list) && $(element).text() != "SEL") {
-            $('#search-input-wrapper').append('<div class="input-group input-group-sm"><div class="dropdown input-group-btn"><div class="btn-group"><button type="button" class="btn btn-default btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="width: 72px"><span class="search-category-option">저자</span>\n<div style="display: inline-block"><span class="caret"></span><span class="sr-only"></span></div></button><ul class="dropdown-menu search-category-selector" role="menu" aria-labelledby="dropdownMenu1"><li role="presentation"><a role="menuitem" tabindex="-1" href="#">저자</a></li><li role="presentation"><a role="menuitem" tabindex="-1" href="#">내용</a></li><li role="presentation"><a role="menuitem" tabindex="-1" href="#">참조</a></li></ul></div></div><input type="text" class="form-control col-xs-4 search-input" placeholder="검색어를 입력해주세요."><div class="dropdown input-group-btn"><div class="btn-group"><button type="button" class="btn btn-default btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="width: 55px"><span class="search-operator-option">SEL</span>\n<div style="display: inline-block"><span class="caret"></span><span class="sr-only"></span></div></button><ul id="operator-selector" class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu1"><li role="presentation"><a role="menuitem" tabindex="1" href="#">SEL</a></li><li role="presentation"><a role="menuitem" tabindex="2" href="#" onclick="handleOperatorSelect(this);return false;">AND</a></li><li role="presentation"><a role="menuitem" tabindex="3" href="#" onclick="handleOperatorSelect(this);return false;">O R</a></li></ul></div><label class="btn btn-default btn-sm close-search-option-btn">-</label></div></div>');
+            $('#search-input-wrapper').append('<div class="input-group input-group-sm search-input-group"><div class="dropdown input-group-btn"><div class="btn-group"><button type="button" class="btn btn-default btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="width: 72px"><span class="search-category-option">저자</span>\n<div style="display: inline-block"><span class="caret"></span><span class="sr-only"></span></div></button><ul class="dropdown-menu search-category-selector" role="menu" aria-labelledby="dropdownMenu1"><li role="presentation"><a role="menuitem" tabindex="-1" href="#">저자</a></li><li role="presentation"><a role="menuitem" tabindex="-1" href="#">내용</a></li><li role="presentation"><a role="menuitem" tabindex="-1" href="#">참조</a></li></ul></div></div><input type="text" class="form-control col-xs-4 search-input" placeholder="검색어를 입력해주세요."><div class="dropdown input-group-btn"><div class="btn-group"><button type="button" class="btn btn-default btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="width: 55px"><span class="search-operator-option">SEL</span>\n<div style="display: inline-block"><span class="caret"></span><span class="sr-only"></span></div></button><ul id="operator-selector" class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu1"><li role="presentation"><a role="menuitem" tabindex="1" href="#">SEL</a></li><li role="presentation"><a role="menuitem" tabindex="2" href="#" onclick="handleOperatorSelect(this);return false;">AND</a></li><li role="presentation"><a role="menuitem" tabindex="3" href="#" onclick="handleOperatorSelect(this);return false;">O R</a></li></ul></div><label class="btn btn-default btn-sm close-search-option-btn">-</label></div></div>');
             $('.close-search-option-btn').click(function (e) {
                 this.parentElement.parentElement.remove();
                 $('#search-input-wrapper>div').eq($('#search-input-wrapper>div').length - 1).find('.search-operator-option').text('SEL');
@@ -417,8 +426,8 @@
 
         $('.search-btn').click(function () {
             $.ajax({
-                url: "/search",
-                type: "post",
+                url: '/search',
+                type: 'post',
 //                data: {"data": getSearchInfo()},
                 data: {"data": getSearchInfo()},
                 contentType: "application/x-www-form-urlencoded; charset=UTF-8",
@@ -489,9 +498,9 @@
         data.bookId = bookId;
         data.priority = priority.val();
         $.ajax({
-            url: "/priority/update",
-            type: "post",
-                data: {"data": JSON.stringify(data)},
+            url: '/priority/update',
+            type: 'post',
+            data: {'data': JSON.stringify(data)},
 //            data: {"data": getSearchInfo()},
             contentType: "application/x-www-form-urlencoded; charset=UTF-8",
             success: function (responseData) {
@@ -508,11 +517,14 @@
 //            data: {"data": getSearchInfo()},
             contentType: "application/x-www-form-urlencoded; charset=UTF-8",
             success: function (responseData) {
-                data = JSON.parse(responseData);
+                data = userHistory = JSON.parse(responseData);
                 $('#user-history>table>tbody>tr').remove();
                 $.each(data, function (i) {
-                    $('#user-history>table>tbody').prepend("<tr><td>" + data[i] + "</td></tr>");
+                    $('#user-history>table>tbody').prepend('<tr><td><input type="checkbox"></td><td>' + data[i].word + '</td><td><label class="btn btn-default btn-sm close-search-option-btn">-</label></td></tr>');
                 });
+                $('#user-history>table>tbody>tr').click(function (e) {
+                    setSearchInfo(JSON.parse($(this).find('td').eq(1).text()));
+                })
             }
         });
     }
@@ -522,7 +534,7 @@
         $.ajax({
             url: "/relative-word",
             type: "post",
-                data: {"data": getSearchInfo()},
+            data: {"data": getSearchInfo()},
 //            data: {"data": getSearchInfo()},
             contentType: "application/x-www-form-urlencoded; charset=UTF-8",
             success: function (responseData) {
@@ -530,7 +542,7 @@
                 data = JSON.parse(responseData);
                 $('#relative-word>table>tbody>tr').remove();
                 $.each(data, function (i) {
-                    $('#relative-word>table>tbody').append("<tr><td>" + data[i] + "</td></tr>");
+                    $('#relative-word>table>tbody').append('<tr><td><input type="checkbox"></td><td>' + data[i] + '</td></tr>');
                 });
             }
         });
@@ -567,46 +579,71 @@
         return JSON.stringify(data);
     }
 
-    function callAjaxLoop()
-    {
+    function setSearchInfo(a) {
+        $('.search-input-group').remove();
+        $.each(a.data, function (i) {
+            var newDiv = $('<div class="input-group input-group-sm search-input-group"><div class="dropdown input-group-btn"><div class="btn-group"><button type="button" class="btn btn-default btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="width: 72px"><span class="search-category-option">저자</span>\n<div style="display: inline-block"><span class="caret"></span><span class="sr-only"></span></div></button><ul class="dropdown-menu search-category-selector" role="menu" aria-labelledby="dropdownMenu1"><li role="presentation"><a role="menuitem" tabindex="-1" href="#">저자</a></li><li role="presentation"><a role="menuitem" tabindex="-1" href="#">내용</a></li><li role="presentation"><a role="menuitem" tabindex="-1" href="#">참조</a></li></ul></div></div><input type="text" class="form-control col-xs-4 search-input" placeholder="검색어를 입력해주세요."><div class="dropdown input-group-btn"><div class="btn-group"><button type="button" class="btn btn-default btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="width: 55px"><span class="search-operator-option">SEL</span>\n<div style="display: inline-block"><span class="caret"></span><span class="sr-only"></span></div></button><ul id="operator-selector" class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu1"><li role="presentation"><a role="menuitem" tabindex="1" href="#">SEL</a></li><li role="presentation"><a role="menuitem" tabindex="2" href="#" onclick="handleOperatorSelect(this);return false;">AND</a></li><li role="presentation"><a role="menuitem" tabindex="3" href="#" onclick="handleOperatorSelect(this);return false;">O R</a></li></ul></div><label class="btn btn-default btn-sm close-search-option-btn">-</label></div></div>');
+            if (i == 0) {
+                newDiv.find('.close-search-option-btn').css('visibility', 'hidden');
+            }
+            console.error(i)
+            newDiv.find('.search-category-option').text(a.data[i].category);
+            console.error(a.data[i].operator)
+            newDiv.find('.search-input').val(a.data[i].input);
+            newDiv.find('.search-operator-option').text(a.data[i].operator);
+            $('#search-input-wrapper').append(newDiv);
+            $('.close-search-option-btn').click(function (e) {
+                this.parentElement.parentElement.remove();
+                $('#search-input-wrapper>div').eq($('#search-input-wrapper>div').length - 1).find('.search-operator-option').text('SEL');
+            });
+
+            $('.search-category-selector li a').click(function (e) {
+                $($(this).parent().parent().parent()).find('button span').eq(0).text($(this).text());
+            });
+        });
+
+//        $('#search-input-wrapper').append('<div class="input-group input-group-sm search-input-group"><div class="dropdown input-group-btn"><div class="btn-group"><button type="button" class="btn btn-default btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="width: 72px"><span class="search-category-option">저자</span>\n<div style="display: inline-block"><span class="caret"></span><span class="sr-only"></span></div></button><ul class="dropdown-menu search-category-selector" role="menu" aria-labelledby="dropdownMenu1"><li role="presentation"><a role="menuitem" tabindex="-1" href="#">저자</a></li><li role="presentation"><a role="menuitem" tabindex="-1" href="#">내용</a></li><li role="presentation"><a role="menuitem" tabindex="-1" href="#">참조</a></li></ul></div></div><input type="text" class="form-control col-xs-4 search-input" placeholder="검색어를 입력해주세요."><div class="dropdown input-group-btn"><div class="btn-group"><button type="button" class="btn btn-default btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="width: 55px"><span class="search-operator-option">SEL</span>\n<div style="display: inline-block"><span class="caret"></span><span class="sr-only"></span></div></button><ul id="operator-selector" class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu1"><li role="presentation"><a role="menuitem" tabindex="1" href="#">SEL</a></li><li role="presentation"><a role="menuitem" tabindex="2" href="#" onclick="handleOperatorSelect(this);return false;">AND</a></li><li role="presentation"><a role="menuitem" tabindex="3" href="#" onclick="handleOperatorSelect(this);return false;">O R</a></li></ul></div><label class="btn btn-default btn-sm close-search-option-btn">-</label></div></div>');
+    }
+
+    function callAjaxLoop() {
         jobRun = true;
-        console.log(jobRun + " : id=" + userID + " : job=" + job + " jOBOrder=" + jOBOrder + " repeatCnt=" + repeatCnt+ " :: " + order[job][2*jOBOrder] + " : " + order[job][2*jOBOrder+1]);
-        if (order[job][2*jOBOrder] == 0) {
+        console.log(jobRun + " : id=" + userID + " : job=" + job + " jOBOrder=" + jOBOrder + " repeatCnt=" + repeatCnt + " :: " + order[job][2 * jOBOrder] + " : " + order[job][2 * jOBOrder + 1]);
+        if (order[job][2 * jOBOrder] == 0) {
             console.log("id=" + userID + "  : job=" + job + " jOBOrder=" + jOBOrder + " repeatCnt=" + repeatCnt);
             if (setTime != 0) clearTimeout(setTime);
         }
         else  stop = true;
-        callAjax(userID, order[job][2*jOBOrder], order[job][2*jOBOrder+1]);
+        callAjax(userID, order[job][2 * jOBOrder], order[job][2 * jOBOrder + 1]);
         repeatCnt++;
     }
 
-    function callAjax(id, sel, page){
+    function callAjax(id, sel, page) {
         $.ajax({
             type: "post",
-            url : "./Socket.jsp",
+            url: "./Socket.jsp",
             data: {
-                id : id,
-                sel : sel,
-                page : page
+                id: id,
+                sel: sel,
+                page: page
             },
             success: whenSuccess,
             error: whenError
         });
     }
 
-    function whenSuccess(resdata1){
+    function whenSuccess(resdata1) {
         clearTimeout(ep);
         var r = resdata1.split("\n");		//stringSplit
         //alert(r[12]);
         //alert(r[13]);
-        if(r[12] == "0") $("#query").html("QUERY : " + r[13]);
-        else if(r[12] == "3") $("#relation").html(r[13]);
-        else if(r[12] == "2") $("#table").html(r[13]);
-        else if(r[12] == "4") $("#count").html("COUNT : " + r[13]);
+        if (r[12] == "0") $("#query").html("QUERY : " + r[13]);
+        else if (r[12] == "3") $("#relation").html(r[13]);
+        else if (r[12] == "2") $("#table").html(r[13]);
+        else if (r[12] == "4") $("#count").html("COUNT : " + r[13]);
         console.log(resdata1);
     }
 
-    function whenError(){
+    function whenError() {
         clearTimeout(ep);
         alert("Error");
     }
@@ -649,6 +686,9 @@
         });
     }
 
+    function clearSearchItem() {
+        $('.search-input-group').remove()
+    }
 
 
 </script>

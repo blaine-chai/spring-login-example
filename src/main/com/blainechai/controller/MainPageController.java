@@ -273,7 +273,7 @@ public class MainPageController {
     public ModelAndView userHistoryGet(HttpServletRequest request) {
         String sessionId = request.getSession().getId();
         String userId;
-        List<UserHistory> userHistories;
+        List<UserHistory> userHistories = new ArrayList<UserHistory>();
         Gson gson = new Gson();
         ArrayList<String> rtnArray = new ArrayList<String>();
         if (sessionRepository.findByJSessionId(sessionId).size() > 0) {
@@ -307,7 +307,8 @@ public class MainPageController {
             }
         }
         ModelAndView modelAndView = new ModelAndView("api");
-        modelAndView.addObject("json", gson.toJson(rtnArray));
+//        modelAndView.addObject("json", gson.toJson(rtnArray));
+        modelAndView.addObject("json", gson.toJson(userHistories));
 
 
         return modelAndView;
@@ -417,8 +418,10 @@ public class MainPageController {
                     String[][] r = soComm.getR();
                     System.out.println();
                     System.out.println("번호  우선순위  그룹\t발행일자\t\t저장일자\t저자\t참조저자\tR   E\t\t\t\t내용\t\t\t\t비고1\t비고2");
+                        bookInfoList.clear();
                     for (int i = 0; i < r.length; i++) {
                         bookInfoList.add(new BookInfo(r[i]));
+                        System.out.println(r[i]);
                     }
                 } else if (sel == 3)    // 연관문자 가져오기
                 {
