@@ -41,6 +41,8 @@
     <script src="/js/bootstrap-datetimepicker.js"></script>
     <%--<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>--%>
     <script src="/js/jquery-ui.js"></script>
+    <script src="/js/FileSaver.js"></script>
+    <script src="/js/Blob.js"></script>
 
 </head>
 <body>
@@ -285,6 +287,7 @@
 <script type="text/javascript" charset="UTF-8">
     var userHistory = []
     var tableData;
+    var lastQuery;
 
     function newRelativeTable(el) {
     }
@@ -453,9 +456,8 @@
                         html += '<td>' + tdata.groupName + '</td>';
                         html += '<td>' + tdata.publishedDate + '</td>';
                         html += '<td>' + tdata.savedDate + '</td>';
-                        html += '<td class="author' + i + '" title="' +
-                                tdata.author +
-                                '" href="#">' + tdata.author + '</td>';
+                        html += '<td class="author' + i + '" title="' + tdata.author + '" href="#">' + tdata.author +
+                                '<span>' + (tdata.nickname != undefined ? '(' + tdata.nickname + ')' : '') + '</span>' + '</td>';
                         html += '<td>' + tdata.referencedAuthor + '</td>';
                         if (tdata.r == 't') {
                             tdata.r = '<span class="glyphicon glyphicon-ok"></span>';
@@ -589,6 +591,7 @@
         data.typeInfo = typeInfo;
         data.fromDate = $('#datepicker1').val();
         data.toDate = $('#datepicker2').val();
+        lastQuery = data;
         return JSON.stringify(data);
     }
 
@@ -670,12 +673,12 @@
     function addCheckRBtnListener(i) {
         $('.check-r' + i).click(function () {
             var tmpEl = $('<div class="alert bg-white alert-dismissible fade in border-gray" style="position: absolute; z-index: 10; width: 700px; left:100px; top: 100px;" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span></button>' +
-                    '<div style="padding: 15px;border: 1px solid #cfcfcf; border-radius: 4px;">' + tableData[i].author + ' - '+ tableData[i].referencedAuthor + '</div>' +
-                    '<div style="font-size: 10px;margin-top: 10px;margin-bottom: 10px;position: relative;left: 550px;">' +
-                    '<span class="relative-author-from-date">2014-02</span><span>~</span><span class="relative-author-to-date">2014-07</span>' +
+                    '<div style="padding: 15px;border: 1px solid #cfcfcf; border-radius: 4px;">' + tableData[i].author + ' - ' + tableData[i].referencedAuthor + '</div>' +
+                    '<div style="font-size: 10px;margin-top: 10px;margin-bottom: 10px;position: relative;left: 450px;">' +
+                    '<span class="relative-author-from-date">' + lastQuery.fromDate + '</span>' + (lastQuery.fromDate == '' && lastQuery.toDate == '' ? '' : '</span><span> ~ </span><span class="relative-author-to-date">' + lastQuery.toDate + '</span>') +
                     '</div>' +
                     '<div><div style="overflow: scroll;height: 300px;">' +
-                    '<table class="table table-hover table-fixed table-bordered table-striped table-condensed" style="font-size: 11px; height: 300px;">' +
+                    '<table class="table table-hover table-fixed table-bordered table-striped table-condensed" style="font-size: 11px; height: 300px; margin-bottom: 0;">' +
                     '<thead><tr><th>저장시간</th><th>저자</th><th>참조저자</th><th>내용</th></tr></thead>' +
                     '<tbody></tbody></table></div><div><nav aria-label="..." style="text-align: center; margin-top:10px;">' +
                     '<ul class="pagination pagination-sm" style="margin: 0 auto;">' +
@@ -685,7 +688,8 @@
                     '<li><a href="#">3</a></li>' +
                     '<li><a href="#">4</a></li>' +
                     '<li><a href="#">5</a></li>' +
-                    '<li><a href="#" aria-label="Next"><span aria-hidden="true">»</span></a></li></ul></nav></div></div>');
+                    '<li><a href="#" aria-label="Next"><span aria-hidden="true">»</span></a></li></ul></nav></div>' +
+                    '<label class="btn btn-primary btn-export" style="position: absolute;right: 38px;bottom: 15px;font-size: 11px;">export</label></div>');
 
             for (j = 0; j < 20; j++) {
                 tmpEl.find('tbody').append('<tr><td>' +
@@ -698,44 +702,31 @@
 
             $('body').append(tmpEl);
             tmpEl.draggable();
+            tmpEl.find('.btn-export').click(function (e) {
+                exportCsv(tmpEl.find('table'));
+            });
 
-//            $('.check-r' + i).popover({
-//                html: true,
-//                content: function () {
-//                    return tmpEl.html();
-//                }
-//                , container: '#book-table'
-//                , placement: 'auto'
-//            }).on('show.bs.popover', function () {
-////            console.error("!!!@@@@@@")
-//                $('.popover').remove();
-//            }).on('shown.bs.popover', function () {
-////                $('.btn-popover-close').click(function (e) {
-////                    $('.popover').remove();
-////                });
-////                $(this).find().click(function (e) {
-////                    $('.popover').remove();
-////                });
-//                $('.popover').width(400);
-//                $('.popover').css('max-width','500px');
-//                console.error($('.popover'));
-//            });
+            var tarEl = $(this);
+            $.ajax({
+                url: "/r-check",
+                type: "post",
+                data: {"bookId": tarEl.parent().find('td').eq(0).text()},
+                success: function (responseData) {
+//                                var data = JSON.parse(responseData);
 
-//            var tarEl = $(this);
-//            $.ajax({
-//                url: "/r-check",
-//                type: "post",
-//                data: {"bookId": tarEl.parent().find('td').eq(0).text()},
-//                success: function (responseData) {
-////                                var data = JSON.parse(responseData);
-//
 //                    console.error(tarEl);
-//                    tarEl.find('span').remove();
-//                    tarEl.append('<span class="glyphicon glyphicon-ok"></span>');
-////                    console.log(html);
-//                }
-//            });
+                    tarEl.find('span').remove();
+                    tarEl.append('<span class="glyphicon glyphicon-ok"></span>');
+//                    console.log(html);
+                }
+            });
         });
+    }
+
+    function exportCsv(table) {
+        var rows = table.find('tbody>tr');
+        table.tableToCSV();
+
     }
 
 
@@ -930,6 +921,7 @@
             } else {
                 download_link.download = caption + "-" + ts + ".csv";
             }
+//            $(download_link).attr('download', ts+".csv");
             document.body.appendChild(download_link);
             download_link.click();
             document.body.removeChild(download_link);

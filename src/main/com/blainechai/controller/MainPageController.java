@@ -51,29 +51,6 @@ public class MainPageController {
     public static List<BookInfo> bookInfoList = new ArrayList<BookInfo>();
     public static ArrayList<String> keySet = new ArrayList<String>();
 
-//
-//    @Autowired
-//    private ContractRepository contractRepository;
-//
-//    @Autowired
-//    private RecycleItemRepository recycleItemRepository;
-//
-//    @Autowired
-//    private ErrandCategoryRepository errandCategoryRepository;
-//
-//    @Autowired
-//    private ErrandItemRepository errandItemRepository;
-
-//    @RequestMapping(value = {""})
-//    public String adminLogin(ModelMap model, HttpServletRequest request) {
-////        System.out.println(sessionRepository.findByJSessionId(request.getSession().getId()).size());
-//        if (sessionRepository.findByJSessionId(request.getSession().getId()).size() > 0) {
-//            return "redirect:" + "/admin/main";
-//        }
-//        model.addAttribute("adminAccountSize", userAccountRepository.findAll().size());
-//        return "admin_login";
-//    }
-
 
     @RequestMapping(value = {""})
     public String login() {
@@ -126,7 +103,6 @@ public class MainPageController {
         } catch (Exception e) {
             return "redirect:" + "/error";
         }
-//            saveDefaultValue();
         return "redirect:" + "/";
     }
 
@@ -141,25 +117,17 @@ public class MainPageController {
         String password = request.getParameter("password");
         List<UserAccount> userAccountList = userAccountRepository.findByUserId(userId);
 
-        System.out.println(EncryptUtil.getSHA256(EncryptUtil.FIRST_KEY + userId + password + EncryptUtil.SECOND_KEY));
+//        System.out.println(EncryptUtil.getSHA256(EncryptUtil.FIRST_KEY + userId + password + EncryptUtil.SECOND_KEY));
         if (userAccountList.size() > 0 && userAccountList.get(0).getUserId().equals(userId) && userAccountList.get(0).getHash().equals(EncryptUtil.getSHA256(EncryptUtil.FIRST_KEY + userId + password + EncryptUtil.SECOND_KEY))) {
             request.getSession().setAttribute("userId", userId);
             sessionRepository.save(new Session(request.getSession().getId(), userId, UserType.USER));
             return "redirect:" + "/main";
         }
-//                for (int i = 0; i < userAccountList.size(); i++) {
-//            UserAccount userAccount = userAccountList.get(i);
-//            if (userAccount.getUserId().equals(userId) && userAccount.getHash().equals(EncryptUtil.getSHA256(password))) {
-//                request.getSession().setAttribute("userId", userId);
-//                sessionRepository.save(new Session(request.getSession().getId(), userId, Type.USER));
-//                return "redirect:" + "/main";
-//            }
         return "redirect:" + "/";
     }
 
     @RequestMapping(value = "/logout")
     public String userLogout(HttpServletRequest request) {
-//        sessionRepository.deleteByJSessionId(request.getSession().getId());
         request.getSession().invalidate();
         return "redirect:" + "/";
     }
@@ -168,15 +136,16 @@ public class MainPageController {
     public ModelAndView searchItems(HttpServletRequest request) {
         Gson gson = new Gson();
         Object o = request.getParameter("data");
-        System.out.println(request.getParameter("data"));
+//        System.out.println(request.getParameter("data"));
         ObjectMapper om = new ObjectMapper();
         try {
             Map myMap = om.readValue(request.getParameter("data").toString(), new TypeReference<Map<String, Object>>() {
             });
-            System.out.println(myMap.get("typeInfo"));
-            System.out.println(((Map) ((ArrayList) myMap.get("data")).get(0)).get("category"));
+//            System.out.println(myMap.get("typeInfo"));
+//            System.out.println(((Map) ((ArrayList) myMap.get("data")).get(0)).get("category"));
 
         } catch (Exception e) {
+
         }
 
         BasicCom bc = new BasicCom(0, 0);
@@ -189,8 +158,12 @@ public class MainPageController {
         int progress = 75;
         ModelAndView modelAndView = new ModelAndView("api");
 
-        for (BookInfo bookInfo:bookInfoList){
-
+        for (BookInfo bookInfo : bookInfoList) {
+            List<NicknameOption> nicknames = nicknameRepository.findByAuthor(bookInfo.getAuthor());
+            //find in nickname table and if nickname exist, add to BookInfo
+            if (nicknames.size() > 0) {
+                bookInfo.setNickname(nicknames.get(0).getNickname());
+            }
         }
         modelAndView.addObject("json", gson.toJson(bookInfoList));
 
@@ -321,30 +294,18 @@ public class MainPageController {
 
         return modelAndView;
     }
-//
-//    @RequestMapping(value = "/table-option/get")
-//    public ModelAndView userTableGet(HttpServletRequest request) {
-//
-//
-//        ModelAndView modelAndView = new ModelAndView("api");
-//
-//        return modelAndView;
-//    }
 
     @RequestMapping(value = "/table-option/update")
     public ModelAndView userTableUpdate(HttpServletRequest request) {
 
-        System.out.println(request.getParameter("colSize"));
+//        System.out.println(request.getParameter("colSize"));
         ObjectMapper om = new ObjectMapper();
         try {
             String userId = sessionRepository.findByJSessionId(request.getSession().getId()).get(0).getUserId();
             UserTableOption tableOption = tableOptionRepository.findByUserAccount_UserId(userId).get(0);
 
-            System.out.println(tableOption.getCol1());
 //            Map a= om.readValue(request.getParameter("colSize"), new TypeReference<Map<String, Object>>() {
 //            });
-            System.out.println(om.readValue(request.getParameter("colSize"), new TypeReference<List>() {
-            }));
             tableOption.setColSizes((ArrayList) om.readValue(request.getParameter("colSize"), new TypeReference<List>() {
             }));
             tableOptionRepository.save(tableOption);
@@ -393,7 +354,6 @@ public class MainPageController {
             modelAndView.addObject("json", false);
         } else {
             modelAndView.addObject("json", gson.toJson(nicknameOptions.get(0)));
-            System.out.println("!!!!!!!!!!!!");
         }
         return modelAndView;
     }
