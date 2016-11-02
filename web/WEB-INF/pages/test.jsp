@@ -26,6 +26,11 @@
         .table-row {
             display: table-row;
         }
+
+        .pvw-title {
+            display: none;
+            content: 'whatever it is you want to add';
+        }
     </style>
 
     <link href="/css/main-style.css" rel="stylesheet" type="text/css">
@@ -35,6 +40,8 @@
     <script src="/js/bootstrap-datepicker.js"></script>
 </head>
 <body>
+<div class="pvw-title"><span>Facts</span></div>
+
 <div class="popover_table_content_wrapper" style="display:none">
     <div>
         <span class="relative-author-from-date"></span>

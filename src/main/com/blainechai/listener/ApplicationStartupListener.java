@@ -4,10 +4,6 @@ package com.blainechai.listener;
  * Created by blainechai on 2016. 9. 18..
  */
 
-import com.blainechai.controller.MainPageController;
-import com.blainechai.domain.BookInfo;
-import com.blainechai.domain.UserTableOption;
-import com.blainechai.repository.BookInfoRepository;
 import com.blainechai.repository.SessionRepository;
 import com.blainechai.repository.UserTableOptionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,16 +11,11 @@ import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.stereotype.Component;
 
-import java.sql.Date;
-
 @Component
 public class ApplicationStartupListener implements ApplicationListener<ContextRefreshedEvent> {
 
     @Autowired
     SessionRepository sessionRepository;
-
-    @Autowired
-    BookInfoRepository bookInfoRepository;
 
     @Autowired
     UserTableOptionRepository userTableOption;

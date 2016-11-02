@@ -3,6 +3,7 @@ package com.blainechai.controller;
 import com.blainechai.constant.UserType;
 import com.blainechai.controller.api.SocketComm;
 import com.blainechai.domain.*;
+import com.blainechai.model.BookInfo;
 import com.blainechai.repository.*;
 import com.blainechai.util.EncryptUtil;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -43,6 +44,9 @@ public class MainPageController {
 
     @Autowired
     private BookHistoryRepository bookHistoryRepository;
+
+    @Autowired
+    private NicknameRepository nicknameRepository;
 
     public static List<BookInfo> bookInfoList = new ArrayList<BookInfo>();
     public static ArrayList<String> keySet = new ArrayList<String>();
@@ -184,6 +188,10 @@ public class MainPageController {
         }
         int progress = 75;
         ModelAndView modelAndView = new ModelAndView("api");
+
+        for (BookInfo bookInfo:bookInfoList){
+
+        }
         modelAndView.addObject("json", gson.toJson(bookInfoList));
 
         String sessionId = request.getSession().getId();
@@ -237,7 +245,7 @@ public class MainPageController {
                 bookHistoryRepository.save(bookHistory);
             }
 
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
         ModelAndView modelAndView = new ModelAndView("api");
@@ -351,19 +359,57 @@ public class MainPageController {
     }
 
     @RequestMapping(value = "/nickname/update")
-    public ModelAndView updateNickname(HttpServletRequest request){
-
-
-
+    public ModelAndView updateNickname(HttpServletRequest request) {
+        String nickname = request.getParameter("nickname");
+        String author = request.getParameter("author");
+//        String nickname = request.getParameter("nickname");
+        String priority = request.getParameter("priority");
+        String note = request.getParameter("note");
+        List<NicknameOption> nicknameOptions = nicknameRepository.findByAuthor(author);
         ModelAndView modelAndView = new ModelAndView("api");
+        if (nicknameOptions.size() <= 0) {
+            NicknameOption nicknameOption = new NicknameOption(author, nickname, priority, note);
+            nicknameRepository.save(nicknameOption);
+        } else {
+            NicknameOption nicknameOption = nicknameOptions.get(0);
+            nicknameOption.setNickname(nickname);
+            nicknameOption.setPriority(priority);
+            nicknameOption.setNote(note);
+            nicknameOption.setLastModifiedDate();
+            nicknameRepository.save(nicknameOption);
+        }
+        modelAndView.addObject("json", true);
+
         return modelAndView;
     }
 
     @RequestMapping(value = "/nickname/get")
-    public ModelAndView getNickname(HttpServletRequest request){
-
-
+    public ModelAndView getNickname(HttpServletRequest request) {
+        String author = request.getParameter("author");
+        List<NicknameOption> nicknameOptions = nicknameRepository.findByAuthor(author);
+        Gson gson = new Gson();
         ModelAndView modelAndView = new ModelAndView("api");
+        if (nicknameOptions.size() <= 0) {
+            modelAndView.addObject("json", false);
+        } else {
+            modelAndView.addObject("json", gson.toJson(nicknameOptions.get(0)));
+            System.out.println("!!!!!!!!!!!!");
+        }
+        return modelAndView;
+    }
+
+    @RequestMapping(value = "/nickname/check")
+    public ModelAndView checkNickname(HttpServletRequest request) {
+        String nickname = request.getParameter("nickname");
+        boolean result;
+        if (nicknameRepository.findByNickname(nickname).size() <= 0) {
+            result = true;
+        } else {
+            result = false;
+        }
+//        Gson gson = new Gson();
+        ModelAndView modelAndView = new ModelAndView("api");
+        modelAndView.addObject("json", result);
         return modelAndView;
     }
 
@@ -435,7 +481,7 @@ public class MainPageController {
                     String[][] r = soComm.getR();
                     System.out.println();
                     System.out.println("번호  우선순위  그룹\t발행일자\t\t저장일자\t저자\t참조저자\tR   E\t\t\t\t내용\t\t\t\t비고1\t비고2");
-                        bookInfoList.clear();
+                    bookInfoList.clear();
                     for (int i = 0; i < r.length; i++) {
                         bookInfoList.add(new BookInfo(r[i]));
                         System.out.println(r[i]);

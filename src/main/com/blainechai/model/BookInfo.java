@@ -1,4 +1,4 @@
-package com.blainechai.domain;
+package com.blainechai.model;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -8,15 +8,7 @@ import java.sql.Date;
  * Created by blainechai on 2016. 10. 14..
  */
 
-@Entity
-@Table(name = "BookInfo")
-public class BookInfo implements Serializable {
-
-    private static final long serialVersionUID = 1L;
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+public class BookInfo{
 
     private String number;
     private String priority;
@@ -30,25 +22,12 @@ public class BookInfo implements Serializable {
     private String contents;
     private String note1;
     private String note2;
+    private String nickname;
 
 
     protected BookInfo() {
     }
 
-    public BookInfo(Long id, String priority, String groupName, String publishedDate, String savedDate, String author, String referencedAuthor, String r, String e, String contents, String note1, String note2) {
-        this.id = id;
-        this.priority = priority;
-        this.groupName = groupName;
-        this.publishedDate = publishedDate;
-        this.savedDate = savedDate;
-        this.author = author;
-        this.referencedAuthor = referencedAuthor;
-        this.r = r;
-        this.e = e;
-        this.contents = contents;
-        this.note1 = note1;
-        this.note2 = note2;
-    }
 
     public BookInfo(String priority, String groupName, String publishedDate, String savedDate, String author, String referencedAuthor, String r, String e, String contents, String note1, String note2) {
         this.priority = priority;
@@ -77,14 +56,6 @@ public class BookInfo implements Serializable {
         this.contents = str[9];
         this.note1 = str[10];
         this.note2 = str[11];
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
     }
 
     public String getPriority() {
@@ -173,5 +144,13 @@ public class BookInfo implements Serializable {
 
     public void setNote2(String note2) {
         this.note2 = note2;
+    }
+
+    public String getNickname() {
+        return nickname;
+    }
+
+    public void setNickname(String nickname) {
+        this.nickname = nickname;
     }
 }

@@ -27,7 +27,7 @@
 <div id="nav-wrapper">
     <div id="nav">
         <a href="/main">
-            <div class="header-button btn active">
+            <div class="header-button btn">
                 <div class="glyphicon glyphicon-bell"
                      style="text-align: center; font-size: 27px; padding-top: 10px;"></div>
                 <div>알림</div>
@@ -41,7 +41,7 @@
             </div>
         </a>
         <a href="#">
-            <div class="header-button btn">
+            <div class="header-button btn active">
                 <div class="glyphicon glyphicon-list-alt"
                      style="text-align: center; font-size: 27px; padding-top: 10px;"></div>
                 <div>프로파일링</div>

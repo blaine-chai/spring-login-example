@@ -1,10 +1,8 @@
 package test;
 
 //import com.blainechai.repository.UserTableOptionRepository;
-import com.blainechai.domain.BookInfo;
 import com.blainechai.util.EncryptUtil;
 import org.junit.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * Created by blainechai on 2016. 9. 7..

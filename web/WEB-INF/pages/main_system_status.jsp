@@ -34,7 +34,7 @@
             </div>
         </a>
         <a href="#">
-            <div class="header-button btn">
+            <div class="header-button btn active">
                 <div class="glyphicon glyphicon-off"
                      style="text-align: center; font-size: 27px; padding-top: 10px;"></div>
                 <div>시스템 상태</div>

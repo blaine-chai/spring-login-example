@@ -3,6 +3,8 @@ package com.blainechai.domain;
 import javax.persistence.*;
 import java.io.Serializable;
 import java.sql.Date;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 
 @Entity
 @Table(name = "common_nickname")
@@ -16,19 +18,28 @@ public class NicknameOption implements Serializable {
 
     private String author;
     private String nickname;
-    private Long lastModifiedDate;
+    private String lastModifiedDate;
     private String priority;
     private String note;
 
     public NicknameOption() {
     }
 
-    public NicknameOption(String author, String nickname, Long lastModifiedDate, String priority, String note) {
+    public NicknameOption(String author, String nickname, String priority, String note) {
         this.author = author;
         this.nickname = nickname;
-        this.lastModifiedDate = lastModifiedDate;
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        this.lastModifiedDate = sdf.format(new java.util.Date());
         this.priority = priority;
         this.note = note;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public String getAuthor() {
@@ -47,12 +58,13 @@ public class NicknameOption implements Serializable {
         this.nickname = nickname;
     }
 
-    public Long getLastModifiedDate() {
+    public String getLastModifiedDate() {
         return lastModifiedDate;
     }
 
     public void setLastModifiedDate() {
-        this.lastModifiedDate = new java.util.Date().getTime();
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        this.lastModifiedDate = sdf.format(new java.util.Date());
     }
 
     public String getPriority() {

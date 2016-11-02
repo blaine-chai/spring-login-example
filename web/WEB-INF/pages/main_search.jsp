@@ -50,7 +50,7 @@
     Monitoring System(REMOS)</h1></div>
 <div id="nav-wrapper">
     <div id="nav"><a href="/main">
-        <div class="header-button btn active">
+        <div class="header-button btn">
             <div class="glyphicon glyphicon-bell"
                  style="text-align: center; font-size: 27px; padding-top: 10px;"></div>
             <div>알림</div>
@@ -74,7 +74,7 @@
             <div>통계</div>
         </div>
     </a> <a href="#">
-        <div class="header-button btn">
+        <div class="header-button btn active">
             <div class="glyphicon glyphicon-search"
                  style="text-align: center; font-size: 27px; padding-top: 10px;"></div>
             <div>검색</div>
@@ -142,16 +142,17 @@
                         </div>
                     </div>
                 </div>
-                <div style="margin-top: 5px">
-                    <div class="col-xs-2"><span class="glyphicon glyphicon-calendar" style="top:5px;"></span></div>
-                    <div class="col-xs-4" style="padding: 0;"><input id="datepicker1" data-provide="datepicker"
-                                                                     style="width: 100%"></div>
-                    <div class="col-xs-2">~</div>
-                    <div class="col-xs-4" style="padding:0;"><input id="datepicker2" data-provide="datepicker"
-                                                                    style="width: 100%"></div>
+                <div style="margin-top: 10px">
+                    <div style="float:left; margin:0 auto;"><span class="glyphicon glyphicon-calendar"
+                                                                  style="left:2px; top:5px; width:20px;"></span></div>
+                    <div class="" style="padding: 0;  margin:0 auto;"><input id="datepicker1" data-provide="datepicker"
+                                                                             style="width: 130px; float:left;"></div>
+                    <div class="" style="float:left; width: 23px; text-align: center; margin:0 auto;">~</div>
+                    <div class="" style="padding:0;  margin:0 auto;"><input id="datepicker2" data-provide="datepicker"
+                                                                            style="width: 130px; float:left;"></div>
                 </div>
 
-                <div class="btn-group btn-group-justified" style="padding-top: 5px">
+                <div class="btn-group btn-group-justified" style="padding-top: 10px">
                     <label class="btn btn-default btn-sm btn-primary search-btn">검색</label>
                 </div>
 
@@ -236,28 +237,30 @@
                             </thead>
                         </table>
                     </div>
-                    <table id="book-table"
-                           class="table table-hover table-fixed table-bordered table-striped table-condensed"
-                           style="height: 100%;">
-                        <thead>
-                        <tr style="">
-                            <th>번호</th>
-                            <th>우선순위</th>
-                            <th>그룹</th>
-                            <th>발행일자</th>
-                            <th>저장일자</th>
-                            <th>저자</th>
-                            <th>참조저자</th>
-                            <th>R</th>
-                            <th>E</th>
-                            <th>내용</th>
-                            <th>비고1</th>
-                            <th>비고2</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        </tbody>
-                    </table>
+                    <div>
+                        <table id="book-table"
+                               class="table table-hover table-fixed table-bordered table-striped table-condensed"
+                               style="height: 100%;">
+                            <thead>
+                            <tr style="">
+                                <th>번호</th>
+                                <th>우선순위</th>
+                                <th>그룹</th>
+                                <th>발행일자</th>
+                                <th>저장일자</th>
+                                <th>저자</th>
+                                <th>참조저자</th>
+                                <th>R</th>
+                                <th>E</th>
+                                <th>내용</th>
+                                <th>비고1</th>
+                                <th>비고2</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
                 <div id="page-counter-wrapper">
                     <nav aria-label="..." style="text-align: center;">
@@ -281,6 +284,7 @@
 
 <script type="text/javascript" charset="UTF-8">
     var userHistory = []
+    var tableData;
 
     function newRelativeTable(el) {
     }
@@ -435,6 +439,7 @@
                 contentType: "application/x-www-form-urlencoded; charset=UTF-8",
                 success: function (responseData) {
                     var data = JSON.parse(responseData);
+                    tableData = data;
                     if (!data) {
                         alert("존재하지 않는 ID입니다");
                         return false;
@@ -463,7 +468,7 @@
                             tdata.e = '';
                         }
                         html += '<td class="check-r' + i + '" title="' +
-                                tdata.author +' - 참조저자'+
+                                tdata.author + ' - 참조저자' +
                                 '" href="#">' + tdata.r + '</td>';
                         html += '<td class="check-e">' + tdata.e + '</td>';
                         html += '<td>' + tdata.contents + '</td>';
@@ -479,7 +484,7 @@
                         $.each(data, function (i, tdata) {
                             $('#book-table select').eq(i).val(tdata.priority);
                             $('#book-table select').eq(i).change(function () {
-                                console.error($(this).val());
+//                                console.error($(this).val());
                                 setPriority($(this));
                             })
                         });
@@ -487,7 +492,7 @@
                             addCheckEBtnListener();
 
                             $.each(data, function (i, tdata) {
-                                addAuthorClickListener(i)
+                                addAuthorClickListener(i, tdata);
                                 addCheckRBtnListener(i);
                             });
                         });
@@ -594,9 +599,9 @@
             if (i == 0) {
                 newDiv.find('.close-search-option-btn').css('visibility', 'hidden');
             }
-            console.error(i)
+//            console.error(i)
             newDiv.find('.search-category-option').text(a.data[i].category);
-            console.error(a.data[i].operator)
+//            console.error(a.data[i].operator)
             newDiv.find('.search-input').val(a.data[i].input);
             newDiv.find('.search-operator-option').text(a.data[i].operator);
             $('#search-input-wrapper').append(newDiv);
@@ -663,13 +668,14 @@
 
 
     function addCheckRBtnListener(i) {
-        $('.check-r'+i).click(function () {
-            var tmpEl = $('<div class="popover_table_content_wrapper" style="display:none">' +
-                    '<div style="font-size: 10px; margin-bottom: 10px">' +
+        $('.check-r' + i).click(function () {
+            var tmpEl = $('<div class="alert bg-white alert-dismissible fade in border-gray" style="position: absolute; z-index: 10; width: 700px; left:100px; top: 100px;" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span></button>' +
+                    '<div style="padding: 15px;border: 1px solid #cfcfcf; border-radius: 4px;">' + tableData[i].author + ' - '+ tableData[i].referencedAuthor + '</div>' +
+                    '<div style="font-size: 10px;margin-top: 10px;margin-bottom: 10px;position: relative;left: 550px;">' +
                     '<span class="relative-author-from-date">2014-02</span><span>~</span><span class="relative-author-to-date">2014-07</span>' +
                     '</div>' +
-                    '<div><div>' +
-                    '<table class="table table-hover table-fixed table-bordered table-striped table-condensed" style="font-size: 11px;">' +
+                    '<div><div style="overflow: scroll;height: 300px;">' +
+                    '<table class="table table-hover table-fixed table-bordered table-striped table-condensed" style="font-size: 11px; height: 300px;">' +
                     '<thead><tr><th>저장시간</th><th>저자</th><th>참조저자</th><th>내용</th></tr></thead>' +
                     '<tbody></tbody></table></div><div><nav aria-label="..." style="text-align: center; margin-top:10px;">' +
                     '<ul class="pagination pagination-sm" style="margin: 0 auto;">' +
@@ -679,38 +685,41 @@
                     '<li><a href="#">3</a></li>' +
                     '<li><a href="#">4</a></li>' +
                     '<li><a href="#">5</a></li>' +
-                    '<li><a href="#" aria-label="Next"><span aria-hidden="true">»</span></a></li></ul></nav></div></div></div>');
+                    '<li><a href="#" aria-label="Next"><span aria-hidden="true">»</span></a></li></ul></nav></div></div>');
 
-            for(j=0;j<20;j++){
-                tmpEl.find('tbody').append('<tr><td>'+
-                '2014-05-'+j+'</td>'+
-                '<td>저자'+j+'</td>'+
-                '<td>참조저자'+j+'</td>'+
-                '<td>always work (for bootstrap'+j+'</td></tr>'
+            for (j = 0; j < 20; j++) {
+                tmpEl.find('tbody').append('<tr><td>' +
+                        '2014-05-' + j + '</td>' +
+                        '<td>저자' + j + '</td>' +
+                        '<td>참조저자' + j + '</td>' +
+                        '<td>always work (for bootstrap' + j + '</td></tr>'
                 );
             }
 
-            $('.check-r' + i).popover({
-                html: true,
-                content: function () {
-                    return tmpEl.html();
-                }
-                , container: '#book-table'
-                , placement: 'auto'
-            }).on('show.bs.popover', function () {
-//            console.error("!!!@@@@@@")
-                $('.popover').remove();
-            }).on('shown.bs.popover', function () {
-//                $('.btn-popover-close').click(function (e) {
-//                    $('.popover').remove();
-//                });
-//                $(this).find().click(function (e) {
-//                    $('.popover').remove();
-//                });
-                $('.popover').width(400);
-                $('.popover').css('max-width','500px');
-                console.error($('.popover'));
-            });
+            $('body').append(tmpEl);
+            tmpEl.draggable();
+
+//            $('.check-r' + i).popover({
+//                html: true,
+//                content: function () {
+//                    return tmpEl.html();
+//                }
+//                , container: '#book-table'
+//                , placement: 'auto'
+//            }).on('show.bs.popover', function () {
+////            console.error("!!!@@@@@@")
+//                $('.popover').remove();
+//            }).on('shown.bs.popover', function () {
+////                $('.btn-popover-close').click(function (e) {
+////                    $('.popover').remove();
+////                });
+////                $(this).find().click(function (e) {
+////                    $('.popover').remove();
+////                });
+//                $('.popover').width(400);
+//                $('.popover').css('max-width','500px');
+//                console.error($('.popover'));
+//            });
 
 //            var tarEl = $(this);
 //            $.ajax({
@@ -740,7 +749,8 @@
                 success: function (responseData) {
                     var data = JSON.parse(responseData);
 
-                    console.error(tarEl);
+//                    console.error(tarEl);
+
                     tarEl.find('span').remove();
                     tarEl.append('<span class="glyphicon glyphicon-ok"></span>');
                     console.log(html);
@@ -750,38 +760,37 @@
 
         });
     }
-
+    var test;
     function addAuthorClickListener(i, tdata) {
 
-        var content = $('<div class="popover_content_wrapper' + i + '" style="display: none;">' +
-                '<form>' +
+        var content = $('<div class="popover-content-wrapper' + i + '" style="display: none;">' +
                 '<div class="input-group input-group-sm" style=" width:100%">' +
-                '<span class="input-group-addon" style="width: 70px" disabled>저자</span>' +
-                '<input type="text" class="form-control" name="author">' +
+                '<span class="input-group-addon" style="width: 70px">저자</span>' +
+                '<input type="text" class="form-control popover-input-author" disabled>' +
                 '</div>' +
                 '<div class="input-group input-group-sm" style="width:100%">' +
                 '<span class="input-group-addon" style="width: 70px" >별명</span>' +
-                '<input type="text" class="form-control" name="author">' +
+                '<input type="text" class="form-control popover-input popover-input-nickname">' +
                 '<span class="input-group-btn">' +
-                '<label class="btn btn-default btn-sm btn-identity-check" style="width:70px;">중복 확인</label></span>' +
+                '<label class="btn btn-default btn-sm btn-identity-check popover-input" style="width:70px;">중복 확인</label></span>' +
                 '</div>' +
                 '<div class="input-group input-group-sm" style="width:100%">' +
                 '<span class="input-group-addon" style="width: 70px;" disabled >수정시간</span>' +
-                '<input type="text" class="form-control" name="author">' +
+                '<input type="text" class="form-control popover-input-modified-time" disabled>' +
                 '</div>' +
                 '<div class="input-group input-group-sm" style=" width:100%">' +
                 '<span class="input-group-addon" style="width: 70px" >우선순위</span>' +
-                '<span class="input-group-addon" style="width:calc(100% - 70px);" ><select><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option><option>6</option><option>7</option><option>8</option><option>9</option></select></span>' +
+                '<span class="input-group-addon" style="width:calc(100% - 70px);" ><select class="popover-input popover-input-priority"><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option><option>6</option><option>7</option><option>8</option><option>9</option></select></span>' +
                 '</div>' +
                 '<div class="input-group input-group-sm" style="width:100%; height: 60px;">' +
                 '<span class="input-group-addon" style="width: 70px" >메모</span>' +
-                '<textarea class="form-control" name="author" style="height: 60px;resize: none;"></textarea>' +
+                '<textarea class="form-control popover-input popover-input-note" style="height: 60px;resize: none;"></textarea>' +
                 '</div>' +
                 '<div style="padding-top: 15px; position:relative">' +
-                '<label class="btn btn-default btn-sm btn-primary btn-modify-nickname"  style="width:70px;">편집</label>' +
+                '<label class="btn btn-default btn-sm btn-modify-nickname"  style="width:70px;">편집</label>' +
                 '<label class="btn btn-default btn-sm btn-popover-close" style="width:70px;position: absolute;right: 0; ">취소</label>' +
-                '</div>' +
-                '</form></div>');
+                '</div></div>');
+
 
         $('.author' + i).popover({
             html: true,
@@ -791,15 +800,90 @@
             , container: '#book-table'
             , placement: 'auto'
         }).on('show.bs.popover', function () {
-//            console.error("!!!@@@@@@")
+            //remove popover when other popover appeared
             $('.popover').remove();
         }).on('shown.bs.popover', function () {
+            //handle after popover shown
+
+            $('.popover-input-author').val(tdata.author);
             $('.btn-popover-close').click(function (e) {
                 $('.popover').remove();
             });
-            $(this).find().click(function (e) {
-                $('.popover').remove();
+            $('.popover-input').attr('disabled', '');
+
+            //update nickname
+            $('.popover .btn-modify-nickname').click(function (e) {
+                if ($(this).text() == '편집') {
+                    $('.popover-input').removeAttr('disabled');
+                    $(this).toggleClass('btn-primary').text('완료');
+                } else {
+                    if ($('.btn-identity-check').attr('disabled') != undefined) {
+                        $.ajax({
+                            url: "/nickname/update",
+                            type: "post",
+                            data: {
+                                "nickname": $('.popover-input-nickname').val(),
+                                "author": $('.popover-input-author').val(),
+//                                "lastModifiedDate": $('.popover-input-modified-time').val(),
+                                "priority": $('.popover-input-priority').val(),
+                                "note": $('.popover-input-note').val()
+                            },
+                            success: function (responseData) {
+                                if (responseData == 'true') {
+                                    $('.popover .btn-identity-check').attr('disabled', '');
+                                    $('.popover .btn-modify-nickname').toggleClass('btn-primary').text('편집');
+                                    $('.popover').remove();
+                                    $('.popover-input').attr('disabled', '');
+                                } else {
+                                    //when nickname not checked
+                                    alert('send error');
+                                }
+                            }
+                        });
+                    } else {
+                        alert('중복 확인을 해 주세요.');
+                    }
+                }
             });
+
+            //when popover opened get nickname info from server
+            $.ajax({
+                url: "/nickname/get",
+                type: "post",
+                data: {
+                    "author": $('.popover-input-author').val()
+                },
+                success: function (responseData) {
+                    var result = JSON.parse(responseData);
+//                    console.error(responseData);
+                    $('.popover-input-nickname').val(result.nickname);
+                    $('.popover-input-modified-time').val(result.lastModifiedDate);
+                    $('.popover-input-priority').val(result.priority);
+                    $('.popover-input-note').val(result.note);
+                }
+            });
+
+            $('.popover .btn-identity-check').click(function (e) {
+                $.ajax({
+                    url: "/nickname/check",
+                    type: "post",
+                    data: {"nickname": $('.popover-input-nickname').val()},
+                    success: function (responseData) {
+//                        console.error(responseData);
+                        test = responseData;
+                        if (responseData == 'true') {
+                            $('.popover .btn-identity-check').attr('disabled', '');
+                            $('.popover .btn-identity-check').append('<span class="glyphicon glyphicon-ok" style="color:#3ce63d;"></span>');
+                            $('.popover .popover-input-nickname').on('input', function () {
+                                $('.popover .btn-identity-check span').remove();
+                                $('.popover .btn-identity-check').removeAttr('disabled');
+                            });
+                        } else {
+                            alert('이미 같은 별명이 존재합니다.');
+                        }
+                    }
+                });
+            })
         });
     }
 
@@ -807,26 +891,26 @@
         $('.search-input-group').remove();
     }
 
-    jQuery.fn.tableToCSV = function() {
+    jQuery.fn.tableToCSV = function () {
 
-        var clean_text = function(text){
+        var clean_text = function (text) {
             text = text.replace(/"/g, '""');
-            return '"'+text+'"';
+            return '"' + text + '"';
         };
 
-        $(this).each(function(){
+        $(this).each(function () {
             var table = $(this);
             var caption = $(this).find('caption').text();
             var title = [];
             var rows = [];
 
-            $(this).find('tr').each(function(){
+            $(this).find('tr').each(function () {
                 var data = [];
-                $(this).find('th').each(function(){
+                $(this).find('th').each(function () {
                     var text = clean_text($(this).text());
                     title.push(text);
                 });
-                $(this).find('td').each(function(){
+                $(this).find('td').each(function () {
                     var text = clean_text($(this).text());
                     data.push(text);
                 });
@@ -841,10 +925,10 @@
             var download_link = document.createElement('a');
             download_link.href = uri;
             var ts = new Date().getTime();
-            if(caption==""){
-                download_link.download = ts+".csv";
+            if (caption == "") {
+                download_link.download = ts + ".csv";
             } else {
-                download_link.download = caption+"-"+ts+".csv";
+                download_link.download = caption + "-" + ts + ".csv";
             }
             document.body.appendChild(download_link);
             download_link.click();
