@@ -350,6 +350,23 @@ public class MainPageController {
         return modelAndView;
     }
 
+    @RequestMapping(value = "/nickname/update")
+    public ModelAndView updateNickname(HttpServletRequest request){
+
+
+
+        ModelAndView modelAndView = new ModelAndView("api");
+        return modelAndView;
+    }
+
+    @RequestMapping(value = "/nickname/get")
+    public ModelAndView getNickname(HttpServletRequest request){
+
+
+        ModelAndView modelAndView = new ModelAndView("api");
+        return modelAndView;
+    }
+
     @RequestMapping(value = "/error")
     public String errorPage() {
         return "error";

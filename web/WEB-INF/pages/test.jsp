@@ -6,51 +6,70 @@
 <head>
     <meta charset="utf-8">
     <title>REMOS</title>
-    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
-    <link rel="stylesheet" href="/css/bootstrap.css">
+    <script src="/js/jquery.min.js"></script>
     <!-- 합쳐지고 최소화된 최신 CSS -->
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css">
+    <link rel="stylesheet"
+          href="/css/bootstrap.min.css">
     <!-- 부가적인 테마 -->
-    <%--<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap-theme.min.css">--%>
 
     <!-- 합쳐지고 최소화된 최신 자바스크립트 -->
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/js/bootstrap.min.js"></script>
+    <script src="/js/bootstrap.min.js"></script>
     <style type="text/css">
         /*@import url(http://fonts.googleapis.com/earlyaccess/notosanskr.css);*/
-    </style>
-    <link href="/css/main-style.css" rel="stylesheet" type="text/css">
 
+        .table-column {
+            box-sizing: border-box;
+            float: left;
+            display: table-column;
+        }
+
+        .table-row {
+            display: table-row;
+        }
+    </style>
+
+    <link href="/css/main-style.css" rel="stylesheet" type="text/css">
+    <link href="/css/datepicker.css" rel="stylesheet" type="text/css">
     <script src="/js/colResizable-1.6.js"></script>
+    <script src="/js/moment.js"></script>
+    <script src="/js/bootstrap-datepicker.js"></script>
 </head>
 <body>
-<style>
-    table { table-layout: fixed;
-    width: 100px;
-        overflow: scroll;
-    }
-    table th, table td { overflow: hidden;
-    white-space: nowrap}
-</style>
-
-<table class="">
-    <thead>
-    <tr>
-        <th style="width: 50px">Col 1</th>
-        <th style="width: 5px">Col 2</th>
-        <th style="width: 5px">Col 3</th>
-        <th style="width: 5px">Col 4</th>
-        <th style="width: 5px">Col 5</th>
-    </tr>
-    </thead>
-    <tbody>
-    <tr>
-        <td>Val 1111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111</th>
-        <td>Val 2</th>
-        <td>Val 3</th>
-        <td>Val 4</th>
-        <td>Val 5</th>
-    </tr>
-    </tbody>
-</table>
+<div class="popover_table_content_wrapper" style="display:none">
+    <div>
+        <span class="relative-author-from-date"></span>
+        <span>~</span>
+        <span class="relative-author-to-date"></span>
+    </div>
+    <div>
+        <div>
+            <table class="table table-hover table-fixed table-bordered table-striped table-condensed">
+                <thead>
+                <tr>
+                    <th>저장시간</th>
+                    <th>저자</th>
+                    <th>참조저자</th>
+                    <th>내용</th>
+                </tr>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
+        </div>
+        <div>
+            <nav aria-label="..." style="text-align: center; margin-top:10px;">
+                <ul class="pagination pagination-sm" style="margin: 0 auto;">
+                    <li><a href="#" aria-label="Previous" class="disabled"><span aria-hidden="true">«</span></a></li>
+                    <li><a href="#" class="active">1</a></li>
+                    <li><a href="#">2</a></li>
+                    <li><a href="#">3</a></li>
+                    <li><a href="#">4</a></li>
+                    <li><a href="#">5</a></li>
+                    <li><a href="#" aria-label="Next"><span aria-hidden="true">»</span></a></li>
+                </ul>
+            </nav>
+        </div>
+    </div>
+</div>
 </body>
 </html>

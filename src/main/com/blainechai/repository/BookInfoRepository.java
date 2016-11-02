@@ -11,5 +11,5 @@ import java.util.List;
 public interface BookInfoRepository extends JpaRepository<BookInfo, Long> {
 
     List<BookInfo> findAll();
-    List<BookInfo> findByPriority(int priotiy);
+    List<BookInfo> findByPriority(int priority);
 }

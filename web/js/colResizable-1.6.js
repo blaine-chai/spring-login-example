@@ -69,7 +69,7 @@
         t.g = [];
         t.c = [];
         t.head = $('#header');
-        console.error(t.head);
+        // console.error(t.head);
         t.head.th = [];
         // t.w = t.width();
         t.w = initTableWidth;
@@ -109,7 +109,7 @@
         t.cg = t.find("col"); 						//a table can also contain a colgroup with col elements
         t.ln = th.length;							//table length is stored
         // if (t.p && S && S[t.id])memento(t, th);		//if 'postbackSafe' is enabled and there is data for the current table, its coloumn layout is restored
-        console.error(th);
+        // console.error(th);
         th.each(function (i) {						//iterate through the table column headers
             var c = $(this); 						//jquery wrap for the current column
             var dc = t.dc.indexOf(i) != -1;           //is this a disabled column?
@@ -140,7 +140,7 @@
             c.width(c.w).removeAttr("width");				//the width of the column is converted into pixel-based measurements
             g.data(SIGNATURE, {i: i, t: t.attr(ID), last: i == t.ln - 1});	 //grip index and its table name are stored in the HTML
         });
-        console.error(t.head.th);
+        // console.error(t.head.th);
         t.head.removeAttr('width');
 
 
@@ -169,7 +169,7 @@
         t.cg = t.find("col"); 						//a table can also contain a colgroup with col elements
         t.ln = th.length;							//table length is stored
         // if (t.p && S && S[t.id])memento(t, th);		//if 'postbackSafe' is enabled and there is data for the current table, its coloumn layout is restored
-        console.error(th);
+        // console.error(th);
         th.each(function (i) {						//iterate through the table column headers
             var c = $(this); 						//jquery wrap for the current column
             var dc = t.dc.indexOf(i) != -1;           //is this a disabled column?
@@ -200,7 +200,7 @@
             c.width(c.w).removeAttr("width");				//the width of the column is converted into pixel-based measurements
             g.data(SIGNATURE, {i: i, t: t.attr(ID), last: i == t.ln - 1});	 //grip index and its table name are stored in the HTML
         });
-        console.error(t.head.th);
+        // console.error(t.head.th);
         t.head.removeAttr('width');
 
 
@@ -337,20 +337,13 @@
         // }
         x += (t.c.length - 1) * I(t.c[0].css("border-right-width")) * 2;
         t.width(t.w = x).removeClass(FLEX);	//prevent table width changes
-        console.error(x);
-        console.error(t.width());
         t.head.width(t.width());
         $('#book-table-header').width(t.width());
-        console.error("header width", t.head.width());
-        console.error("table width", t.width());
-        // t.width(t.w).removeClass(FLEX);	//prevent table width changes
         $.each(t.c, function (i, c) {
-            // c.width(w[i]).w = w[i];				//set column widths applying bounds (table's max-width)
-            // c.width(c.w);
             t.head.th[i].width(c.w);
             c.width(c.w);
-            console.error("thead", t.head.th[i].width());
-            console.error("head", c.width());
+            // console.error("thead", t.head.th[i].width());
+            // console.error("head", c.width());
         });
         t.addClass(FLEX);						//allow table width changes
     };
@@ -428,9 +421,9 @@
             } else {
                 syncCols(t, i, true);	//the columns are updated
             }
-            console.error("hi");
+            // console.error("hi");
             if (!t.f) applyBounds(t);	//if not fixed mode, then apply bounds to obtain real width values
-            console.error("hi1");
+            // console.error("hi1");
             syncGrips(t);				//the grips are updated
 
             var colWidth = [];
@@ -601,7 +594,7 @@
             }
             if (options.initC.length > 0) {
                 initC = options.initC;
-                console.error(initC)
+                // console.error(initC)
             }
 
             return this.each(function () {

@@ -25,7 +25,7 @@
     <%--href="//cdnjs.cloudflare.com/ajax/libs/bootstrap-table/1.11.0/bootstrap-table.min.css">--%>
 
     <link href="/css/main-style.css" rel="stylesheet" type="text/css">
-    <link href="/css/datepicker.css" rel="stylesheet" type="text/css">
+    <link href="/css/bootstrap-datetimepicker.min.css" rel="stylesheet" type="text/css">
     <%--<link href="/css/bootstrap-select.css" rel="stylesheet" type="text/css">--%>
 
 
@@ -38,8 +38,9 @@
     <script src="/js/colResizable-1.6.js"></script>
     <script src="/js/moment.js"></script>
     <%--<script src="/js/transition.js"></script>--%>
-    <script src="/js/bootstrap-datepicker.js"></script>
+    <script src="/js/bootstrap-datetimepicker.js"></script>
     <%--<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>--%>
+    <script src="/js/jquery-ui.js"></script>
 
 </head>
 <body>
@@ -279,7 +280,7 @@
 </div>
 
 <script type="text/javascript" charset="UTF-8">
-    var userHistory=[]
+    var userHistory = []
 
     function newRelativeTable(el) {
     }
@@ -301,6 +302,7 @@
     }
 
     $(document).ready(function () {
+
         $(window).resize(
                 function () {
                     //            $('#content').height($(window).height());
@@ -332,8 +334,8 @@
                     252 - $('#book-table').offset().top);
         });
 
-        $('#datepicker1').datepicker({});
-        $('#datepicker2').datepicker({});
+        $('#datepicker1').datetimepicker({});
+        $('#datepicker2').datetimepicker({});
 
 
         $('.expand-btn').click(function (e, i) {
@@ -428,8 +430,8 @@
             $.ajax({
                 url: '/search',
                 type: 'post',
-//                data: {"data": getSearchInfo()},
-                data: {"data": getSearchInfo()},
+//                data: {"data": jsonSearchInfo()},
+                data: {"data": jsonSearchInfo()},
                 contentType: "application/x-www-form-urlencoded; charset=UTF-8",
                 success: function (responseData) {
                     var data = JSON.parse(responseData);
@@ -442,14 +444,14 @@
                         html += '<tr><td>' + tdata.number + '</td>';
                         var priorityEl = $('')
                         priorityEl.find('select').val(tdata.priority);
-//                        html += '<td>' + tdata.priority + '</td>';
                         html += '<td>' + '<select><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option><option>6</option><option>7</option><option>8</option><option>9</option></select>' + '</td>';
                         html += '<td>' + tdata.groupName + '</td>';
                         html += '<td>' + tdata.publishedDate + '</td>';
                         html += '<td>' + tdata.savedDate + '</td>';
-                        html += '<td>' + tdata.author + '</td>';
+                        html += '<td class="author' + i + '" title="' +
+                                tdata.author +
+                                '" href="#">' + tdata.author + '</td>';
                         html += '<td>' + tdata.referencedAuthor + '</td>';
-
                         if (tdata.r == 't') {
                             tdata.r = '<span class="glyphicon glyphicon-ok"></span>';
                         } else {
@@ -460,7 +462,9 @@
                         } else {
                             tdata.e = '';
                         }
-                        html += '<td class="check-r">' + tdata.r + '</td>';
+                        html += '<td class="check-r' + i + '" title="' +
+                                tdata.author +' - 참조저자'+
+                                '" href="#">' + tdata.r + '</td>';
                         html += '<td class="check-e">' + tdata.e + '</td>';
                         html += '<td>' + tdata.contents + '</td>';
                         html += '<td>' + tdata.note1 + '</td>';
@@ -480,8 +484,12 @@
                             })
                         });
                         html.show(300, function () {
-                            addCheckEBtnListener()
-                            addCheckRBtnListener()
+                            addCheckEBtnListener();
+
+                            $.each(data, function (i, tdata) {
+                                addAuthorClickListener(i)
+                                addCheckRBtnListener(i);
+                            });
                         });
                     });
                     getSearchHistory();
@@ -501,7 +509,7 @@
             url: '/priority/update',
             type: 'post',
             data: {'data': JSON.stringify(data)},
-//            data: {"data": getSearchInfo()},
+//            data: {"data": jsonSearchInfo()},
             contentType: "application/x-www-form-urlencoded; charset=UTF-8",
             success: function (responseData) {
             }
@@ -513,8 +521,8 @@
         $.ajax({
             url: "/user-history/get",
             type: "post",
-//                data: {"data": getSearchInfo()},
-//            data: {"data": getSearchInfo()},
+//                data: {"data": jsonSearchInfo()},
+//            data: {"data": jsonSearchInfo()},
             contentType: "application/x-www-form-urlencoded; charset=UTF-8",
             success: function (responseData) {
                 data = userHistory = JSON.parse(responseData);
@@ -523,7 +531,7 @@
                     $('#user-history>table>tbody').prepend('<tr><td><input type="checkbox"></td><td>' + data[i].word + '</td><td><label class="btn btn-default btn-sm close-search-option-btn">-</label></td></tr>');
                 });
                 $('#user-history>table>tbody>tr').click(function (e) {
-                    setSearchInfo(JSON.parse($(this).find('td').eq(1).text()));
+                    addSearchInfo(JSON.parse($(this).find('td').eq(1).text()));
                 })
             }
         });
@@ -534,8 +542,8 @@
         $.ajax({
             url: "/relative-word",
             type: "post",
-            data: {"data": getSearchInfo()},
-//            data: {"data": getSearchInfo()},
+            data: {"data": jsonSearchInfo()},
+//            data: {"data": jsonSearchInfo()},
             contentType: "application/x-www-form-urlencoded; charset=UTF-8",
             success: function (responseData) {
 //                console.error(responseData);
@@ -557,7 +565,7 @@
         });
     }
 
-    function getSearchInfo() {
+    function jsonSearchInfo() {
         var typeInfo = $('#search-option-radio-wrapper>.active').text();
         var categoryEls = $('.search-category-option');
         var inputEls = $('.search-input');
@@ -579,7 +587,7 @@
         return JSON.stringify(data);
     }
 
-    function setSearchInfo(a) {
+    function addSearchInfo(a) {
         $('.search-input-group').remove();
         $.each(a.data, function (i) {
             var newDiv = $('<div class="input-group input-group-sm search-input-group"><div class="dropdown input-group-btn"><div class="btn-group"><button type="button" class="btn btn-default btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="width: 72px"><span class="search-category-option">저자</span>\n<div style="display: inline-block"><span class="caret"></span><span class="sr-only"></span></div></button><ul class="dropdown-menu search-category-selector" role="menu" aria-labelledby="dropdownMenu1"><li role="presentation"><a role="menuitem" tabindex="-1" href="#">저자</a></li><li role="presentation"><a role="menuitem" tabindex="-1" href="#">내용</a></li><li role="presentation"><a role="menuitem" tabindex="-1" href="#">참조</a></li></ul></div></div><input type="text" class="form-control col-xs-4 search-input" placeholder="검색어를 입력해주세요."><div class="dropdown input-group-btn"><div class="btn-group"><button type="button" class="btn btn-default btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="width: 55px"><span class="search-operator-option">SEL</span>\n<div style="display: inline-block"><span class="caret"></span><span class="sr-only"></span></div></button><ul id="operator-selector" class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu1"><li role="presentation"><a role="menuitem" tabindex="1" href="#">SEL</a></li><li role="presentation"><a role="menuitem" tabindex="2" href="#" onclick="handleOperatorSelect(this);return false;">AND</a></li><li role="presentation"><a role="menuitem" tabindex="3" href="#" onclick="handleOperatorSelect(this);return false;">O R</a></li></ul></div><label class="btn btn-default btn-sm close-search-option-btn">-</label></div></div>');
@@ -604,6 +612,11 @@
 
 //        $('#search-input-wrapper').append('<div class="input-group input-group-sm search-input-group"><div class="dropdown input-group-btn"><div class="btn-group"><button type="button" class="btn btn-default btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="width: 72px"><span class="search-category-option">저자</span>\n<div style="display: inline-block"><span class="caret"></span><span class="sr-only"></span></div></button><ul class="dropdown-menu search-category-selector" role="menu" aria-labelledby="dropdownMenu1"><li role="presentation"><a role="menuitem" tabindex="-1" href="#">저자</a></li><li role="presentation"><a role="menuitem" tabindex="-1" href="#">내용</a></li><li role="presentation"><a role="menuitem" tabindex="-1" href="#">참조</a></li></ul></div></div><input type="text" class="form-control col-xs-4 search-input" placeholder="검색어를 입력해주세요."><div class="dropdown input-group-btn"><div class="btn-group"><button type="button" class="btn btn-default btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="width: 55px"><span class="search-operator-option">SEL</span>\n<div style="display: inline-block"><span class="caret"></span><span class="sr-only"></span></div></button><ul id="operator-selector" class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu1"><li role="presentation"><a role="menuitem" tabindex="1" href="#">SEL</a></li><li role="presentation"><a role="menuitem" tabindex="2" href="#" onclick="handleOperatorSelect(this);return false;">AND</a></li><li role="presentation"><a role="menuitem" tabindex="3" href="#" onclick="handleOperatorSelect(this);return false;">O R</a></li></ul></div><label class="btn btn-default btn-sm close-search-option-btn">-</label></div></div>');
     }
+
+    function setNickname() {
+
+    }
+
 
     function callAjaxLoop() {
         jobRun = true;
@@ -649,24 +662,74 @@
     }
 
 
-    function addCheckRBtnListener() {
-        $('.check-r').click(function () {
-            var tarEl = $(this);
-            $.ajax({
-                url: "/r-check",
-                type: "post",
-                data: {"bookId": tarEl.parent().find('td').eq(0).text()},
-                success: function (responseData) {
-//                                var data = JSON.parse(responseData);
+    function addCheckRBtnListener(i) {
+        $('.check-r'+i).click(function () {
+            var tmpEl = $('<div class="popover_table_content_wrapper" style="display:none">' +
+                    '<div style="font-size: 10px; margin-bottom: 10px">' +
+                    '<span class="relative-author-from-date">2014-02</span><span>~</span><span class="relative-author-to-date">2014-07</span>' +
+                    '</div>' +
+                    '<div><div>' +
+                    '<table class="table table-hover table-fixed table-bordered table-striped table-condensed" style="font-size: 11px;">' +
+                    '<thead><tr><th>저장시간</th><th>저자</th><th>참조저자</th><th>내용</th></tr></thead>' +
+                    '<tbody></tbody></table></div><div><nav aria-label="..." style="text-align: center; margin-top:10px;">' +
+                    '<ul class="pagination pagination-sm" style="margin: 0 auto;">' +
+                    '<li><a href="#" aria-label="Previous" class="disabled"><span aria-hidden="true">«</span></a></li>' +
+                    '<li><a href="#" class="active">1</a></li>' +
+                    '<li><a href="#">2</a></li>' +
+                    '<li><a href="#">3</a></li>' +
+                    '<li><a href="#">4</a></li>' +
+                    '<li><a href="#">5</a></li>' +
+                    '<li><a href="#" aria-label="Next"><span aria-hidden="true">»</span></a></li></ul></nav></div></div></div>');
 
-                    console.error(tarEl);
-                    tarEl.find('span').remove();
-                    tarEl.append('<span class="glyphicon glyphicon-ok"></span>');
-//                    console.log(html);
+            for(j=0;j<20;j++){
+                tmpEl.find('tbody').append('<tr><td>'+
+                '2014-05-'+j+'</td>'+
+                '<td>저자'+j+'</td>'+
+                '<td>참조저자'+j+'</td>'+
+                '<td>always work (for bootstrap'+j+'</td></tr>'
+                );
+            }
+
+            $('.check-r' + i).popover({
+                html: true,
+                content: function () {
+                    return tmpEl.html();
                 }
+                , container: '#book-table'
+                , placement: 'auto'
+            }).on('show.bs.popover', function () {
+//            console.error("!!!@@@@@@")
+                $('.popover').remove();
+            }).on('shown.bs.popover', function () {
+//                $('.btn-popover-close').click(function (e) {
+//                    $('.popover').remove();
+//                });
+//                $(this).find().click(function (e) {
+//                    $('.popover').remove();
+//                });
+                $('.popover').width(400);
+                $('.popover').css('max-width','500px');
+                console.error($('.popover'));
             });
+
+//            var tarEl = $(this);
+//            $.ajax({
+//                url: "/r-check",
+//                type: "post",
+//                data: {"bookId": tarEl.parent().find('td').eq(0).text()},
+//                success: function (responseData) {
+////                                var data = JSON.parse(responseData);
+//
+//                    console.error(tarEl);
+//                    tarEl.find('span').remove();
+//                    tarEl.append('<span class="glyphicon glyphicon-ok"></span>');
+////                    console.log(html);
+//                }
+//            });
         });
     }
+
+
     function addCheckEBtnListener() {
         $('.check-e').click(function () {
             var tarEl = $(this);
@@ -675,20 +738,120 @@
                 type: "post",
                 data: {"bookId": tarEl.parent().find('td').eq(0).text()},
                 success: function (responseData) {
-//                                var data = JSON.parse(responseData);
+                    var data = JSON.parse(responseData);
 
                     console.error(tarEl);
                     tarEl.find('span').remove();
                     tarEl.append('<span class="glyphicon glyphicon-ok"></span>');
-//                    console.log(html);
+                    console.log(html);
                 }
+            });
+
+
+        });
+    }
+
+    function addAuthorClickListener(i, tdata) {
+
+        var content = $('<div class="popover_content_wrapper' + i + '" style="display: none;">' +
+                '<form>' +
+                '<div class="input-group input-group-sm" style=" width:100%">' +
+                '<span class="input-group-addon" style="width: 70px" disabled>저자</span>' +
+                '<input type="text" class="form-control" name="author">' +
+                '</div>' +
+                '<div class="input-group input-group-sm" style="width:100%">' +
+                '<span class="input-group-addon" style="width: 70px" >별명</span>' +
+                '<input type="text" class="form-control" name="author">' +
+                '<span class="input-group-btn">' +
+                '<label class="btn btn-default btn-sm btn-identity-check" style="width:70px;">중복 확인</label></span>' +
+                '</div>' +
+                '<div class="input-group input-group-sm" style="width:100%">' +
+                '<span class="input-group-addon" style="width: 70px;" disabled >수정시간</span>' +
+                '<input type="text" class="form-control" name="author">' +
+                '</div>' +
+                '<div class="input-group input-group-sm" style=" width:100%">' +
+                '<span class="input-group-addon" style="width: 70px" >우선순위</span>' +
+                '<span class="input-group-addon" style="width:calc(100% - 70px);" ><select><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option><option>6</option><option>7</option><option>8</option><option>9</option></select></span>' +
+                '</div>' +
+                '<div class="input-group input-group-sm" style="width:100%; height: 60px;">' +
+                '<span class="input-group-addon" style="width: 70px" >메모</span>' +
+                '<textarea class="form-control" name="author" style="height: 60px;resize: none;"></textarea>' +
+                '</div>' +
+                '<div style="padding-top: 15px; position:relative">' +
+                '<label class="btn btn-default btn-sm btn-primary btn-modify-nickname"  style="width:70px;">편집</label>' +
+                '<label class="btn btn-default btn-sm btn-popover-close" style="width:70px;position: absolute;right: 0; ">취소</label>' +
+                '</div>' +
+                '</form></div>');
+
+        $('.author' + i).popover({
+            html: true,
+            content: function () {
+                return content.html();
+            }
+            , container: '#book-table'
+            , placement: 'auto'
+        }).on('show.bs.popover', function () {
+//            console.error("!!!@@@@@@")
+            $('.popover').remove();
+        }).on('shown.bs.popover', function () {
+            $('.btn-popover-close').click(function (e) {
+                $('.popover').remove();
+            });
+            $(this).find().click(function (e) {
+                $('.popover').remove();
             });
         });
     }
 
     function clearSearchItem() {
-        $('.search-input-group').remove()
+        $('.search-input-group').remove();
     }
+
+    jQuery.fn.tableToCSV = function() {
+
+        var clean_text = function(text){
+            text = text.replace(/"/g, '""');
+            return '"'+text+'"';
+        };
+
+        $(this).each(function(){
+            var table = $(this);
+            var caption = $(this).find('caption').text();
+            var title = [];
+            var rows = [];
+
+            $(this).find('tr').each(function(){
+                var data = [];
+                $(this).find('th').each(function(){
+                    var text = clean_text($(this).text());
+                    title.push(text);
+                });
+                $(this).find('td').each(function(){
+                    var text = clean_text($(this).text());
+                    data.push(text);
+                });
+                data = data.join(",");
+                rows.push(data);
+            });
+            title = title.join(",");
+            rows = rows.join("\n");
+
+            var csv = title + rows;
+            var uri = 'data:text/csv;charset=utf-8,' + encodeURIComponent(csv);
+            var download_link = document.createElement('a');
+            download_link.href = uri;
+            var ts = new Date().getTime();
+            if(caption==""){
+                download_link.download = ts+".csv";
+            } else {
+                download_link.download = caption+"-"+ts+".csv";
+            }
+            document.body.appendChild(download_link);
+            download_link.click();
+            document.body.removeChild(download_link);
+        });
+
+    };
 
 
 </script>

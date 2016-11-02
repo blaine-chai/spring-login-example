@@ -149,3 +149,8 @@
 }
 
 body {  min-width:1100px; }
+.popover {
+    width:280px;
+    max-width:280px;
+
+}
