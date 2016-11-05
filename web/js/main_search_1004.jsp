@@ -47,7 +47,7 @@
 </head>
 <body>
 <div id="header-wrapper">
-    <h1>Real-TimeMonitoring System(REMOS)</h1>
+	<h1>Real-TimeMonitoring System(REMOS)</h1>
 </div>
 <div id="nav-wrapper">
     <div id="nav"><a href="/main">
@@ -146,30 +146,28 @@
                     <div style="float:left; margin:0 auto;"><span class="glyphicon glyphicon-calendar"
                                                                   style="left:2px; top:5px; width:20px;"></span></div>
                     <div class="" style="padding: 0;  margin:0 auto;"><input id="datepicker1" data-provide="datepicker"
-                                                                             style="width: 123px; text-align:center; font-size:12px; float:left;">
-                    </div>
-                    <div class="" style="float:left; width: 20px; fontsize:11px;text-align: center; padding:0;">~</div>
+                                                                             style="width: 130px; float:left;"></div>
+                    <div class="" style="float:left; width: 23px; text-align: center; margin:0 auto;">~</div>
                     <div class="" style="padding:0;  margin:0 auto;"><input id="datepicker2" data-provide="datepicker"
-                                                                            style="width: 123px; text-align:center; font-size:12px; float:left;">
-                    </div>
+                                                                            style="width: 130px; float:left;"></div>
                 </div>
 
                 <div class="btn-group btn-group-justified" style="padding-top: 10px">
                     <label class="btn btn-default btn-sm btn-primary search-btn">검색</label>
                 </div>
 
-                <%--<div class="btn-group" style="padding-top: 20px; width: 100%; margin:0;">--%>
-                <%--<label class="btn btn-default btn-sm expand-btn btn-primary"--%>
-                <%--style="width: 29px; margin:0;">+</label>--%>
-                <%--<label class="btn btn-default btn-sm" style="width:calc(100% - 29px); margin:0;">연관 문자</label>--%>
-                <%--<div id="relative-word" class="panel history"--%>
-                <%--style="display:block;overflow: scroll; max-height:300px; margin-left: 2px; margin-right: 2px; display: none;">--%>
-                <%--<table style="font-size:11px;max-height: 300px; overflow: scroll"--%>
-                <%--class="table table-fixed table-bordered table-striped table-condensed">--%>
-                <%--<tbody></tbody>--%>
-                <%--</table>--%>
-                <%--</div>--%>
-                <%--</div>--%>
+                <div class="btn-group" style="padding-top: 20px; width: 100%; margin:0;">
+                    <label class="btn btn-default btn-sm expand-btn btn-primary"
+                           style="width: 29px; margin:0;">+</label>
+                    <label class="btn btn-default btn-sm" style="width:calc(100% - 29px); margin:0;">연관 문자</label>
+                    <div id="relative-word" class="panel history"
+                         style="display:block;overflow: scroll; max-height:300px; margin-left: 2px; margin-right: 2px; display: none;">
+                        <table style="font-size:11px;max-height: 300px; overflow: scroll"
+                               class="table table-fixed table-bordered table-striped table-condensed">
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </div>
 
                 <div class="btn-group" style="padding-top: 5px; width: 100%; margin:0;">
                     <label class="btn btn-default btn-sm expand-btn btn-primary"
@@ -267,9 +265,9 @@
                 <div id="page-counter-wrapper">
                     <nav aria-label="..." style="text-align: center;">
                         <ul class="pagination pagination-sm" style="margin: 0 auto;">
-                            <li class="disabled"><a href="#" aria-label="Previous"><span
+                            <li><a href="#" aria-label="Previous" class="disabled"><span
                                     aria-hidden="true">«</span></a></li>
-                            <li class="active"><a href="#">1</a></li>
+                            <li><a href="#" class="active">1</a></li>
                             <li><a href="#">2</a></li>
                             <li><a href="#">3</a></li>
                             <li><a href="#">4</a></li>
@@ -278,7 +276,6 @@
                                     aria-hidden="true">»</span></a></li>
                         </ul>
                     </nav>
-                    <div>하이라이팅<input id="highlight-checkbox" type="checkbox"></div>
                 </div>
             </div>
         </div>
@@ -286,7 +283,7 @@
 </div>
 
 <script type="text/javascript" charset="UTF-8">
-    var userHistory = [];
+    var userHistory = []
     var tableData;
     var lastQuery;
     var relStartPos = new Object();
@@ -298,12 +295,16 @@
     relStartPos.maxTop = 300;
     relStartPos.count = 0;
 
+
+    function newRelativeTable(el) {
+    }
+
     function handleOperatorSelect(element) {
         var list = $(element).parent().parent().parent().parent().parent();
         if ($('#search-input-wrapper>div').length - 1 == $('#search-input-wrapper>div').index(list) && $(element).text() != "SEL") {
             $('#search-input-wrapper').append('<div class="input-group input-group-sm search-input-group"><div class="dropdown input-group-btn"><div class="btn-group"><button type="button" class="btn btn-default btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="width: 72px"><span class="search-category-option">저자</span>\n<div style="display: inline-block"><span class="caret"></span><span class="sr-only"></span></div></button><ul class="dropdown-menu search-category-selector" role="menu" aria-labelledby="dropdownMenu1"><li role="presentation"><a role="menuitem" tabindex="-1" href="#">저자</a></li><li role="presentation"><a role="menuitem" tabindex="-1" href="#">내용</a></li><li role="presentation"><a role="menuitem" tabindex="-1" href="#">참조</a></li></ul></div></div><input type="text" class="form-control col-xs-4 search-input" placeholder="검색어를 입력해주세요."><div class="dropdown input-group-btn"><div class="btn-group"><button type="button" class="btn btn-default btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="width: 55px"><span class="search-operator-option">SEL</span>\n<div style="display: inline-block"><span class="caret"></span><span class="sr-only"></span></div></button><ul id="operator-selector" class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu1"><li role="presentation"><a role="menuitem" tabindex="1" href="#">SEL</a></li><li role="presentation"><a role="menuitem" tabindex="2" href="#" onclick="handleOperatorSelect(this);return false;">AND</a></li><li role="presentation"><a role="menuitem" tabindex="3" href="#" onclick="handleOperatorSelect(this);return false;">O R</a></li></ul></div><label class="btn btn-default btn-sm close-search-option-btn">-</label></div></div>');
             $('.close-search-option-btn').click(function (e) {
-                $(this).parent().parent().remove();
+                this.parentElement.parentElement.remove();
                 $('#search-input-wrapper>div').eq($('#search-input-wrapper>div').length - 1).find('.search-operator-option').text('SEL');
             });
 
@@ -347,12 +348,8 @@
                     252 - $('#book-table').offset().top);
         });
 
-        $('#datepicker1').datetimepicker({
-            format: 'YYYY/MM/DD HH:mm'
-        });
-        $('#datepicker2').datetimepicker({
-            format: 'YYYY/MM/DD HH:mm'
-        });
+        $('#datepicker1').datetimepicker({});
+        $('#datepicker2').datetimepicker({});
 
 
         $('.expand-btn').click(function (e, i) {
@@ -380,12 +377,75 @@
             $($(this).parent().parent().parent()).find('button span').eq(0).text($(this).text());
         });
 
+//        $('#book-table tr').click(function (e) {
+//            var newDiv = '<div class="related-table-wrapper panel panel-default"><div>' + $(this).find('td').eq(0).text() + $(this).find('td').eq(1).text() + ' ' + $(this).find('td').eq(4).text() + '-' + $(this).find('td').eq(5).text() + '<label class="btn btn-default close" aria-label="Close"><span aria-hidden="true">&times;</span></label></div>' +
+//                    '<div style="overflow: scroll; width:500px;max-height:500px;">' +
+//                    '<table class="table table-bordered table-striped table-condensed" style="font-size:10px;">' +
+//                    '<thead><tr><th>번호</th><th>발행일자</th><th>R</th><th>E</th></tr></thead>' +
+//                    '<tbody>' +
+//                    '<tr><td>1</td><td>2014-04-07</td><td>check</td><td></td></tr>' +
+//                    '<tr><td>1</td><td>2014-04-07</td><td>check</td><td></td></tr>' +
+//                    '<tr><td>1</td><td>2014-04-07</td><td>check</td><td></td></tr>' +
+//                    '<tr><td>1</td><td>2014-04-07</td><td>check</td><td></td></tr>' +
+//                    '<tr><td>1</td><td>2014-04-07</td><td>check</td><td></td></tr>' +
+//                    '<tr><td>1</td><td>2014-04-07</td><td>check</td><td></td></tr>' +
+//                    '<tr><td>1</td><td>2014-04-07</td><td>check</td><td></td></tr>' +
+//                    '<tr><td>1</td><td>2014-04-07</td><td>check</td><td></td></tr>' +
+//                    '<tr><td>1</td><td>2014-04-07</td><td>check</td><td></td></tr>' +
+//                    '<tr><td>1</td><td>2014-04-07</td><td>check</td><td></td></tr>' +
+//                    '<tr><td>1</td><td>2014-04-07</td><td>check</td><td></td></tr>' +
+//                    '<tr><td>1</td><td>2014-04-07</td><td>check</td><td></td></tr>' +
+//                    '<tr><td>1</td><td>2014-04-07</td><td>check</td><td></td></tr>' +
+//                    '<tr><td>1</td><td>2014-04-07</td><td>check</td><td></td></tr>' +
+//                    '<tr><td>1</td><td>2014-04-07</td><td>check</td><td></td></tr>' +
+//                    '<tr><td>1</td><td>2014-04-07</td><td>check</td><td></td></tr>' +
+//                    '<tr><td>1</td><td>2014-04-07</td><td>check</td><td></td></tr>' +
+//                    '<tr><td>1</td><td>2014-04-07</td><td>check</td><td></td></tr>' +
+//                    '<tr><td>1</td><td>2014-04-07</td><td>check</td><td></td></tr>' +
+//                    '<tr><td>1</td><td>2014-04-07</td><td>check</td><td></td></tr>' +
+//                    '<tr><td>1</td><td>2014-04-07</td><td>check</td><td></td></tr>' +
+//                    '<tr><td>1</td><td>2014-04-07</td><td>check</td><td></td></tr>' +
+//                    '<tr><td>1</td><td>2014-04-07</td><td>check</td><td></td></tr>' +
+//                    '<tr><td>1</td><td>2014-04-07</td><td>check</td><td></td></tr>' +
+//                    '<tr><td>1</td><td>2014-04-07</td><td>check</td><td></td></tr>' +
+//                    '</tbody>' +
+//                    '</table></div></div>';
+//            $('.related-table-wrapper').remove();
+//            $('.related-table-wrapper .close span').click(function (e) {
+//                $('.related-table-wrapper').remove();
+//            });
+//            $('#relative-table-container').append(newDiv);
+//            $('.related-table-wrapper').draggable();
+//            console.error(this);
+//        })
+
+
+        $('#book-table tr').click(function (e) {
+            console.log('!!!');
+            $.ajax({
+                url: "/r-check",
+                type: "post",
+                data: {"index": $(this).find('td').eq(0)},
+                success: function (responseData) {
+                    $("#ajax").remove();
+//                    var data = JSON.parse(responseData);
+//                    if (!data) {
+//                        return false;
+//                    }
+                    var html = (this).find('td').eq(7);
+                    html.text('<span class="glyphicon glyphicon-ok"></span>');
+                    console.log(html);
+                }
+            });
+
+        });
 
         $('.search-btn').click(function () {
             removeAllRelDiv();
             $.ajax({
                 url: '/search',
                 type: 'post',
+//                data: {"data": jsonSearchInfo()},
                 data: {"data": jsonSearchInfo()},
                 contentType: "application/x-www-form-urlencoded; charset=UTF-8",
                 success: function (responseData) {
@@ -404,9 +464,9 @@
                         html += '<td>' + tdata.groupName + '</td>';
                         html += '<td>' + tdata.publishedDate + '</td>';
                         html += '<td>' + tdata.savedDate + '</td>';
-                        html += '<td class="author-td author' + i + '" title="' + tdata.author + '" href="#">' + tdata.author +
-                                '<span class="nickname-td">' + (tdata.nickname != undefined ? ('(' + tdata.nickname + ')') : '') + '</span>' + '</td>';
-                        html += '<td class="relation-td">' + tdata.referencedAuthor + '</td>';
+                        html += '<td class="author' + i + '" title="' + tdata.author + '" href="#">' + tdata.author +
+                                '<span>' + (tdata.nickname != undefined ? '(' + tdata.nickname + ')' : '') + '</span>' + '</td>';
+                        html += '<td>' + tdata.referencedAuthor + '</td>';
                         if (tdata.r == 't') {
                             tdata.r = '<span class="glyphicon glyphicon-ok"></span>';
                         } else {
@@ -421,7 +481,7 @@
                                 tdata.author + ' - 참조저자' +
                                 '" href="#">' + tdata.r + '</td>';
                         html += '<td class="check-e">' + tdata.e + '</td>';
-                        html += '<td class="content-td">' + tdata.contents + '</td>';
+                        html += '<td>' + tdata.contents + '</td>';
                         html += '<td>' + tdata.note1 + '</td>';
                         html += '<td>' + tdata.note2 + '</tr></td>';
                     });
@@ -445,7 +505,6 @@
                                 addAuthorClickListener(i, tdata);
                                 addCheckRBtnListener(i);
                             });
-                            highLightResult();
                         });
                     });
                     getSearchHistory();
@@ -558,7 +617,7 @@
             newDiv.find('.search-operator-option').text(a.data[i].operator);
             $('#search-input-wrapper').append(newDiv);
             $('.close-search-option-btn').click(function (e) {
-                $(this).parent().parent().remove();
+                this.parentElement.parentElement.remove();
                 $('#search-input-wrapper>div').eq($('#search-input-wrapper>div').length - 1).find('.search-operator-option').text('SEL');
             });
 
@@ -567,11 +626,57 @@
             });
         });
 
+//        $('#search-input-wrapper').append('<div class="input-group input-group-sm search-input-group"><div class="dropdown input-group-btn"><div class="btn-group"><button type="button" class="btn btn-default btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="width: 72px"><span class="search-category-option">저자</span>\n<div style="display: inline-block"><span class="caret"></span><span class="sr-only"></span></div></button><ul class="dropdown-menu search-category-selector" role="menu" aria-labelledby="dropdownMenu1"><li role="presentation"><a role="menuitem" tabindex="-1" href="#">저자</a></li><li role="presentation"><a role="menuitem" tabindex="-1" href="#">내용</a></li><li role="presentation"><a role="menuitem" tabindex="-1" href="#">참조</a></li></ul></div></div><input type="text" class="form-control col-xs-4 search-input" placeholder="검색어를 입력해주세요."><div class="dropdown input-group-btn"><div class="btn-group"><button type="button" class="btn btn-default btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="width: 55px"><span class="search-operator-option">SEL</span>\n<div style="display: inline-block"><span class="caret"></span><span class="sr-only"></span></div></button><ul id="operator-selector" class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu1"><li role="presentation"><a role="menuitem" tabindex="1" href="#">SEL</a></li><li role="presentation"><a role="menuitem" tabindex="2" href="#" onclick="handleOperatorSelect(this);return false;">AND</a></li><li role="presentation"><a role="menuitem" tabindex="3" href="#" onclick="handleOperatorSelect(this);return false;">O R</a></li></ul></div><label class="btn btn-default btn-sm close-search-option-btn">-</label></div></div>');
     }
 
     function setNickname() {
 
     }
+
+
+    function callAjaxLoop() {
+        jobRun = true;
+        console.log(jobRun + " : id=" + userID + " : job=" + job + " jOBOrder=" + jOBOrder + " repeatCnt=" + repeatCnt + " :: " + order[job][2 * jOBOrder] + " : " + order[job][2 * jOBOrder + 1]);
+        if (order[job][2 * jOBOrder] == 0) {
+            console.log("id=" + userID + "  : job=" + job + " jOBOrder=" + jOBOrder + " repeatCnt=" + repeatCnt);
+            if (setTime != 0) clearTimeout(setTime);
+        }
+        else  stop = true;
+        callAjax(userID, order[job][2 * jOBOrder], order[job][2 * jOBOrder + 1]);
+        repeatCnt++;
+    }
+
+    function callAjax(id, sel, page) {
+        $.ajax({
+            type: "post",
+            url: "./Socket.jsp",
+            data: {
+                id: id,
+                sel: sel,
+                page: page
+            },
+            success: whenSuccess,
+            error: whenError
+        });
+    }
+
+    function whenSuccess(resdata1) {
+        clearTimeout(ep);
+        var r = resdata1.split("\n");		//stringSplit
+        //alert(r[12]);
+        //alert(r[13]);
+        if (r[12] == "0") $("#query").html("QUERY : " + r[13]);
+        else if (r[12] == "3") $("#relation").html(r[13]);
+        else if (r[12] == "2") $("#table").html(r[13]);
+        else if (r[12] == "4") $("#count").html("COUNT : " + r[13]);
+        console.log(resdata1);
+    }
+
+    function whenError() {
+        clearTimeout(ep);
+        alert("Error");
+    }
+
 
     function addCheckRBtnListener(i) {
         $('.check-r' + i).click(function () {
@@ -593,7 +698,7 @@
                     '<li><a href="#">5</a></li>' +
                     '<li><a href="#" aria-label="Next"><span aria-hidden="true">»</span></a></li></ul></nav></div>' +
                     '<label class="btn btn-primary btn-export" style="position: absolute;right: 15px;bottom: 15px;font-size: 11px;">export</label></div>');
-            setRelTablePos();
+            setRelPos();
             console.log(relStartPos.left);
             for (j = 0; j < 20; j++) {
                 tmpEl.find('tbody').append('<tr><td>' +
@@ -663,9 +768,11 @@
                     console.log(html);
                 }
             });
+
+
         });
     }
-
+    var test;
     function addAuthorClickListener(i, tdata) {
 
         var content = $('<div class="popover-content-wrapper' + i + '" style="display: none;">' +
@@ -708,7 +815,7 @@
             $('.popover').remove();
         }).on('shown.bs.popover', function () {
             //handle after popover shown
-            var clickedTd = $(this);
+
             $('.popover-input-author').val(tdata.author);
             $('.btn-popover-close').click(function (e) {
                 $('.popover').remove();
@@ -736,7 +843,6 @@
                                 if (responseData == 'true') {
                                     $('.popover .btn-identity-check').attr('disabled', '');
                                     $('.popover .btn-modify-nickname').toggleClass('btn-primary').text('편집');
-                                    clickedTd.find('.nickname-td').text('(' + $('.popover-input-nickname').val() + ')');
                                     $('.popover').remove();
                                     $('.popover-input').attr('disabled', '');
                                 } else {
@@ -774,6 +880,8 @@
                     type: "post",
                     data: {"nickname": $('.popover-input-nickname').val()},
                     success: function (responseData) {
+//                        console.error(responseData);
+                        test = responseData;
                         if (responseData == 'true') {
                             $('.popover .btn-identity-check').attr('disabled', '');
                             $('.popover .btn-identity-check').append('<span class="glyphicon glyphicon-ok" style="color:#3ce63d;"></span>');
@@ -835,7 +943,6 @@
             }
             document.body.appendChild(download_link);
             download_link.click();
-            saveAs
             document.body.removeChild(download_link);
 
 
@@ -844,73 +951,23 @@
     };
 
 
-    function removeAllRelDiv() {
+    function removeAllRelDiv(){
         $('.relative-table-wrapper').remove();
     }
 
-    function setRelTablePos() {
-        if (relStartPos.top < relStartPos.maxTop) {
-            relStartPos.left += 15;
-            relStartPos.top += 15;
+    function setRelPos() {
+        if (relStartPos.left < relStartPos.maxLeft) {
+            relStartPos.left += 10;
+            relStartPos.top += 10;
         } else {
             relStartPos.count++;
-            relStartPos.left = relStartPos.iLeft + (relStartPos.count * 15);
+            relStartPos.left = (relStartPos.count * 10);
             relStartPos.top = relStartPos.iTop;
         }
     }
 
-    $('#highlight-checkbox').click(function () {
-        $('.matched-content').toggleClass('highlight-background');
-    });
-
     function highLightResult() {
-        for (i = 0; i < lastQuery.data.length; i++) {
-            var regex = new RegExp("(" + RegExp.escape(lastQuery.data[i].input) + ")", "gi");
-//            var regex = new RegExp("(" + RegExp.escape('tom') + ")", "gi");
-            if (lastQuery.data[i].category == '저자') {
-                $.each($('.author-td'), function (i, contentTd) {
-                    $(contentTd).html($(contentTd).text().replace(regex, '<span class="matched-content">$1</span>'));
-                });
-            } else if (lastQuery.data[i].category == '내용') {
-                $.each($('.content-td'), function (i, contentTd) {
-                    $(contentTd).html($(contentTd).text().replace(regex, '<span class="matched-content">$1</span>'));
-                });
-            } else if (lastQuery.data[i].category == '참조') {
-                $.each($('.relation-td'), function (i, contentTd) {
-                    $(contentTd).html($(contentTd).text().replace(regex, '<span class="matched-content">$1</span>'));
-                });
-            }
-        }
-    }
 
-    RegExp.escape = function (str) {
-        var specials = /[.*+?|()\[\]{}\\$^]/g; // .*+?|()[]{}\$^
-        return str.replace(specials, "\\$&");
-    }
-
-
-    function initPagination(current, from, to, lastPage, cssSelector) {
-        var pageController = $('.pagination');
-//        var pageController = $(cssSelector);
-        pageController.children().remove();
-        var pageEl = $('<li><a href="#" aria-label="Previous"><span aria-hidden="true">«</span></a></li>')
-        if (from == 1) {
-            pageEl.addClass('disabled');
-        }
-        pageController.append(pageEl);
-
-        for (i = from; i <= to; i++) {
-            pageEl = $('<li class="page-btn"><a href="#">' + i + '</a></li>');
-            if (i == current) {
-                pageEl.addClass('active');
-            }
-            pageController.append(pageEl);
-        }
-        pageEl = $('<li><a href="#" aria-label="Next"><span aria-hidden="true">»</span></a></li>');
-        if (to == lastPage) {
-            pageEl.addClass('disabled');
-        }
-        pageController.append(pageEl);
     }
 </script>
 </body>

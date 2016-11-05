@@ -222,7 +222,7 @@ public class MainPageController {
             e.printStackTrace();
         }
         ModelAndView modelAndView = new ModelAndView("api");
-        modelAndView.addObject("json", "");
+        modelAndView.addObject("json", true);
         return modelAndView;
     }
 
@@ -239,7 +239,7 @@ public class MainPageController {
         }
 
         ModelAndView modelAndView = new ModelAndView("api");
-
+        modelAndView.addObject("json", true);
         return modelAndView;
     }
 
