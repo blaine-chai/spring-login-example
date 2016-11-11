@@ -89,11 +89,11 @@
             <div id="search-wrapper">
                 <div id="search-option-radio-wrapper" class="btn-group btn-group-justified" data-toggle="buttons">
                     <label class="btn btn-default btn-sm active"><input type="radio" name="options" id="option1"
-                                                                        autocomplete="off" checked>문자 포함</label>
+                                                                        autocomplete="off" checked>문자포함</label>
                     <label class="btn btn-default btn-sm"><input type="radio" name="options" id="option2"
                                                                  autocomplete="off">형태소</label>
-                    <label class="btn  btn-default btn-sm"><input type="radio" name="options" id="option3"
-                                                                  autocomplete="off">문자</label>
+                    <label class="btn btn-default btn-sm"><input type="radio" name="options" id="option3"
+                                                                 autocomplete="off">완전일치</label>
                 </div>
                 <div id="search-input-wrapper" class="">
                     <div class="input-group input-group-sm search-input-group">
@@ -102,15 +102,15 @@
                                 <button type="button" class="btn btn-default btn-sm dropdown-toggle"
                                         data-toggle="dropdown" aria-haspopup="true"
                                         aria-expanded="false" style="width: 72px">
-                                    <span class="search-category-option">저자</span>
+                                    <span class="search-category-option">내용</span>
                                     <div style="display: inline-block"><span class="caret"></span><span
                                             class="sr-only"></span>
                                     </div>
                                 </button>
                                 <ul class="dropdown-menu search-category-selector" role="menu"
                                     aria-labelledby="dropdownMenu1">
-                                    <li role="presentation"><a role="menuitem" tabindex="-1" href="#">저자</a></li>
                                     <li role="presentation"><a role="menuitem" tabindex="-1" href="#">내용</a></li>
+                                    <li role="presentation"><a role="menuitem" tabindex="-1" href="#">저자</a></li>
                                     <li role="presentation"><a role="menuitem" tabindex="-1" href="#">참조</a></li>
                                 </ul>
                             </div>
@@ -131,14 +131,13 @@
                                     <li role="presentation"><a role="menuitem" tabindex="2" href="#"
                                                                onclick="handleOperatorSelect(this);return false;">AND</a>
                                     </li>
-                                    <li role="presentation"><a role="menuitem" tabindex="3" href="#"
-                                                               onclick="handleOperatorSelect(this);return false;">O
-                                        R</a>
+                                    <li role="presentation">
+                                        <a role="menuitem" tabindex="3" href="#"
+                                           onclick="handleOperatorSelect(this);return false;">O R</a>
                                     </li>
                                 </ul>
                             </div>
-                            <label class="btn btn-default btn-sm close-search-option-btn"
-                                   style="visibility: hidden">-</label>
+                            <label class="btn btn-default btn-sm close-search-option-btn" disabled>-</label>
                         </div>
                     </div>
                 </div>
@@ -177,8 +176,8 @@
                     <label class="btn btn-default btn-sm" style="width:calc(100% - 29px); margin:0;">Admin
                         History</label>
                     <div id="admin-history" class="panel history"
-                         style="display:block;overflow: scroll; max-height:300px; margin-left: 2px; margin-right: 2px; display: none;">
-                        <table style="font-size:11px;max-height: 300px; overflow: scroll"
+                         style="overflow: auto; max-height:300px; margin-left: 2px; margin-right: 2px; display: none;">
+                        <table style="font-size:11px;max-height: 300px; overflow: auto;word-break: break-all;"
                                class="table table-fixed table-bordered table-striped table-condensed">
                             <tbody></tbody>
                         </table>
@@ -191,8 +190,8 @@
                     <label class="btn btn-default btn-sm" style="width:calc(100% - 29px); margin:0;">User
                         History</label>
                     <div id="user-history" class="panel history"
-                         style="display:block;overflow: scroll; max-height:300px; margin-left: 2px; margin-right: 2px; display: none;">
-                        <table style="font-size:11px;max-height: 300px; overflow: scroll"
+                         style="overflow: auto; max-height:300px; margin-left: 2px; margin-right: 2px; display: none;">
+                        <table style="font-size:11px;max-height: 300px; overflow: auto;word-break: break-all;"
                                class="table table-fixed table-bordered table-striped table-condensed">
                             <tbody></tbody>
                         </table>
@@ -216,7 +215,7 @@
                     </div>
                 </div>
                 <div id="result-table-wrapper" class="panel panel-default"
-                     style="margin: 15px; overflow: scroll; height: calc(100% - 200px); font-size: 11px">
+                     style="margin: 15px; overflow: auto; height: calc(100% - 200px); font-size: 11px">
                     <div style="background: #ffffff;">
                         <table id="book-table-header"
                                class="table table-fixed table-bordered table-striped JColResizer JCLRFlex table-condensed"
@@ -301,10 +300,14 @@
     function handleOperatorSelect(element) {
         var list = $(element).parent().parent().parent().parent().parent();
         if ($('#search-input-wrapper>div').length - 1 == $('#search-input-wrapper>div').index(list) && $(element).text() != "SEL") {
-            $('#search-input-wrapper').append('<div class="input-group input-group-sm search-input-group"><div class="dropdown input-group-btn"><div class="btn-group"><button type="button" class="btn btn-default btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="width: 72px"><span class="search-category-option">저자</span>\n<div style="display: inline-block"><span class="caret"></span><span class="sr-only"></span></div></button><ul class="dropdown-menu search-category-selector" role="menu" aria-labelledby="dropdownMenu1"><li role="presentation"><a role="menuitem" tabindex="-1" href="#">저자</a></li><li role="presentation"><a role="menuitem" tabindex="-1" href="#">내용</a></li><li role="presentation"><a role="menuitem" tabindex="-1" href="#">참조</a></li></ul></div></div><input type="text" class="form-control col-xs-4 search-input" placeholder="검색어를 입력해주세요."><div class="dropdown input-group-btn"><div class="btn-group"><button type="button" class="btn btn-default btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="width: 55px"><span class="search-operator-option">SEL</span>\n<div style="display: inline-block"><span class="caret"></span><span class="sr-only"></span></div></button><ul id="operator-selector" class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu1"><li role="presentation"><a role="menuitem" tabindex="1" href="#">SEL</a></li><li role="presentation"><a role="menuitem" tabindex="2" href="#" onclick="handleOperatorSelect(this);return false;">AND</a></li><li role="presentation"><a role="menuitem" tabindex="3" href="#" onclick="handleOperatorSelect(this);return false;">O R</a></li></ul></div><label class="btn btn-default btn-sm close-search-option-btn">-</label></div></div>');
-            $('.close-search-option-btn').click(function (e) {
+            $('#search-input-wrapper').append('<div class="input-group input-group-sm search-input-group"><div class="dropdown input-group-btn"><div class="btn-group"><button type="button" class="btn btn-default btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="width: 72px"><span class="search-category-option">내용</span>\n<div style="display: inline-block"><span class="caret"></span><span class="sr-only"></span></div></button><ul class="dropdown-menu search-category-selector" role="menu" aria-labelledby="dropdownMenu1"><li role="presentation"><a role="menuitem" tabindex="-1" href="#">내용</a></li><li role="presentation"><a role="menuitem" tabindex="-1" href="#">저자</a></li><li role="presentation"><a role="menuitem" tabindex="-1" href="#">참조</a></li></ul></div></div><input type="text" class="form-control col-xs-4 search-input" placeholder="검색어를 입력해주세요."><div class="dropdown input-group-btn"><div class="btn-group"><button type="button" class="btn btn-default btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="width: 55px"><span class="search-operator-option">SEL</span>\n<div style="display: inline-block"><span class="caret"></span><span class="sr-only"></span></div></button><ul id="operator-selector" class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu1"><li role="presentation"><a role="menuitem" tabindex="1" href="#">SEL</a></li><li role="presentation"><a role="menuitem" tabindex="2" href="#" onclick="handleOperatorSelect(this);return false;">AND</a></li><li role="presentation"><a role="menuitem" tabindex="3" href="#" onclick="handleOperatorSelect(this);return false;">O R</a></li></ul></div><label class="btn btn-default btn-sm close-search-option-btn" disabled>-</label></div></div>');
+            $('.close-search-option-btn').removeAttr('disabled');
+            $('#search-input-wrapper .close-search-option-btn').click(function (e) {
                 $(this).parent().parent().remove();
                 $('#search-input-wrapper>div').eq($('#search-input-wrapper>div').length - 1).find('.search-operator-option').text('SEL');
+                if ($('#search-input-wrapper>div').length == 1) {
+                    $('.close-search-option-btn').attr('disabled', '');
+                }
             });
 
             $('.search-category-selector li a').click(function (e) {
@@ -443,7 +446,8 @@
 
                             $.each(data, function (i, tdata) {
                                 addAuthorClickListener(i, tdata);
-                                addCheckRBtnListener(i);
+                                addCheckRBtnListener(i, tdata);
+                                addContentTdClickListener(i, tdata.contents)
                             });
                             highLightResult();
                         });
@@ -484,11 +488,31 @@
                 data = userHistory = JSON.parse(responseData);
                 $('#user-history>table>tbody>tr').remove();
                 $.each(data, function (i) {
-                    $('#user-history>table>tbody').prepend('<tr><td><input type="checkbox"></td><td>' + data[i].word + '</td><td><label class="btn btn-default btn-sm close-search-option-btn">-</label></td></tr>');
+                    var tmpEl = $('<tr><td><input type="checkbox"></td><td>' + data[i].word + '</td><td><label class="btn btn-default btn-sm close-search-option-btn">-</label></td></tr>');
+                    $('#user-history>table>tbody').prepend(tmpEl);
+                    tmpEl.find('.close-search-option-btn').click(function (e) {
+                        deleteUserHistory(this, data[i].id);
+                        $(this).parent().parent().remove();
+                    })
                 });
                 $('#user-history>table>tbody>tr').click(function (e) {
                     addSearchInfo(JSON.parse($(this).find('td').eq(1).text()));
                 })
+            }
+        });
+    }
+
+    function deleteUserHistory(element, id) {
+        $.ajax({
+            url: "/user-history/delete",
+            type: "post",
+            data: {"id": id},
+//            data: {"data": jsonSearchInfo()},
+            contentType: "application/x-www-form-urlencoded; charset=UTF-8",
+            success: function (responseData) {
+//                data = userHistory = JSON.parse(responseData);
+//                console.error(id);
+
             }
         });
     }
@@ -546,8 +570,16 @@
 
     function addSearchInfo(a) {
         $('.search-input-group').remove();
+        if (a.typeInfo == '문자포함') {
+            $('#option1').parent().click();
+        } else if (a.typeInfo == '형태소') {
+            $('#option2').parent().click();
+        } else {
+            $('#option3').parent().click();
+        }
+
         $.each(a.data, function (i) {
-            var newDiv = $('<div class="input-group input-group-sm search-input-group"><div class="dropdown input-group-btn"><div class="btn-group"><button type="button" class="btn btn-default btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="width: 72px"><span class="search-category-option">저자</span>\n<div style="display: inline-block"><span class="caret"></span><span class="sr-only"></span></div></button><ul class="dropdown-menu search-category-selector" role="menu" aria-labelledby="dropdownMenu1"><li role="presentation"><a role="menuitem" tabindex="-1" href="#">저자</a></li><li role="presentation"><a role="menuitem" tabindex="-1" href="#">내용</a></li><li role="presentation"><a role="menuitem" tabindex="-1" href="#">참조</a></li></ul></div></div><input type="text" class="form-control col-xs-4 search-input" placeholder="검색어를 입력해주세요."><div class="dropdown input-group-btn"><div class="btn-group"><button type="button" class="btn btn-default btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="width: 55px"><span class="search-operator-option">SEL</span>\n<div style="display: inline-block"><span class="caret"></span><span class="sr-only"></span></div></button><ul id="operator-selector" class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu1"><li role="presentation"><a role="menuitem" tabindex="1" href="#">SEL</a></li><li role="presentation"><a role="menuitem" tabindex="2" href="#" onclick="handleOperatorSelect(this);return false;">AND</a></li><li role="presentation"><a role="menuitem" tabindex="3" href="#" onclick="handleOperatorSelect(this);return false;">O R</a></li></ul></div><label class="btn btn-default btn-sm close-search-option-btn">-</label></div></div>');
+            var newDiv = $('<div class="input-group input-group-sm search-input-group"><div class="dropdown input-group-btn"><div class="btn-group"><button type="button" class="btn btn-default btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="width: 72px"><span class="search-category-option">내용</span><div style="display: inline-block"><span class="caret"></span><span class="sr-only"></span></div></button><ul class="dropdown-menu search-category-selector" role="menu" aria-labelledby="dropdownMenu1"><li role="presentation"><a role="menuitem" tabindex="-1" href="#">내용</a></li><li role="presentation"><a role="menuitem" tabindex="-1" href="#">저자</a></li><li role="presentation"><a role="menuitem" tabindex="-1" href="#">참조</a></li></ul></div></div><input type="text" class="form-control col-xs-4 search-input" placeholder="검색어를 입력해주세요."><div class="dropdown input-group-btn"><div class="btn-group"><button type="button" class="btn btn-default btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="width: 55px"><span class="search-operator-option">SEL</span>\n<div style="display: inline-block"><span class="caret"></span><span class="sr-only"></span></div></button><ul id="operator-selector" class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu1"><li role="presentation"><a role="menuitem" tabindex="1" href="#">SEL</a></li><li role="presentation"><a role="menuitem" tabindex="2" href="#" onclick="handleOperatorSelect(this);return false;">AND</a></li><li role="presentation"><a role="menuitem" tabindex="3" href="#" onclick="handleOperatorSelect(this);return false;">O R</a></li></ul></div><label class="btn btn-default btn-sm close-search-option-btn">-</label></div></div>');
             if (i == 0) {
                 newDiv.find('.close-search-option-btn').css('visibility', 'hidden');
             }
@@ -557,7 +589,7 @@
             newDiv.find('.search-input').val(a.data[i].input);
             newDiv.find('.search-operator-option').text(a.data[i].operator);
             $('#search-input-wrapper').append(newDiv);
-            $('.close-search-option-btn').click(function (e) {
+            $('#search-input-wrapper .close-search-option-btn').click(function (e) {
                 $(this).parent().parent().remove();
                 $('#search-input-wrapper>div').eq($('#search-input-wrapper>div').length - 1).find('.search-operator-option').text('SEL');
             });
@@ -573,6 +605,21 @@
 
     }
 
+    function addContentTdClickListener(i, contents) {
+        $('.content-td').popover({
+            html: true,
+            content: function () {
+                return contents;
+            },
+            template: '<div class="popover popover-content-td"><div class="arrow"></div><div class="popover-inner"><h3 class="popover-title"></h3><div class="popover-content"><p></p></div></div></div>',
+            container: '#book-table',
+            placement: 'auto'
+        }).on('show.bs.popover', function () {
+            //remove popover when other popover appeared
+            $('.popover-content-td').popover('hide');
+        });
+    }
+
     function addCheckRBtnListener(i) {
         $('.check-r' + i).click(function () {
             var tmpEl = $('<div class="alert bg-white alert-dismissible fade in border-gray relative-table-wrapper" style="position: absolute; z-index: 10; width: 700px; left:' + relStartPos.left + 'px;top:' + relStartPos.top + 'px;" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span></button>' +
@@ -580,7 +627,7 @@
                     '<div style="font-size: 10px;margin-top: 10px;margin-bottom: 10px;position: relative;left: 450px;">' +
                     '<span class="relative-author-from-date">' + lastQuery.fromDate + '</span>' + (lastQuery.fromDate == '' && lastQuery.toDate == '' ? '' : '</span><span> ~ </span><span class="relative-author-to-date">' + lastQuery.toDate + '</span>') +
                     '</div>' +
-                    '<div><div style="overflow: scroll;height: 300px;">' +
+                    '<div class="draggable-content-container"><div style="overflow: scroll;height: 300px;">' +
                     '<table class="table table-hover table-fixed table-bordered table-striped table-condensed" style="font-size: 11px; height: 300px; margin-bottom: 0;">' +
                     '<thead><tr><th>저장시간</th><th>저자</th><th>참조저자</th><th>내용</th></tr></thead>' +
                     '<tbody></tbody></table></div><div><nav aria-label="..." style="text-align: center; margin-top:10px;">' +
@@ -594,18 +641,29 @@
                     '<li><a href="#" aria-label="Next"><span aria-hidden="true">»</span></a></li></ul></nav></div>' +
                     '<label class="btn btn-primary btn-export" style="position: absolute;right: 15px;bottom: 15px;font-size: 11px;">export</label></div>');
             setRelTablePos();
-            console.log(relStartPos.left);
-            for (j = 0; j < 20; j++) {
-                tmpEl.find('tbody').append('<tr><td>' +
-                        '2014-05-' + j + '</td>' +
-                        '<td>저자' + j + '</td>' +
-                        '<td>참조저자' + j + '</td>' +
-                        '<td>always work (for bootstrap' + j + '</td></tr>'
-                );
-            }
-
             $('body').append(tmpEl);
-            tmpEl.draggable();
+            for (j = 0; j < 20; j++) {
+                var content=$('<tr><td>' +
+                '2014-05-' + j + '</td>' +
+                '<td>저자' + j + '</td>' +
+                '<td>참조저자' + j + '</td>' +
+                '<td class="relative-table-content-td">always work (for bootstrap' + j + '</td></tr>');
+
+                tmpEl.find('tbody').append(content);
+                content.find('.relative-table-content-td').popover({
+                    html: true,
+                    content: function () {
+                        return $(this).text();
+                    },
+                    template: '<div class="popover popover-relative-content-td"><div class="arrow"></div><div class="popover-inner"><h3 class="popover-title"></h3><div class="popover-content"><p></p></div></div></div>',
+                    container: tmpEl,
+                    placement: 'auto'
+                }).on('show.bs.popover', function () {
+                    //remove popover when other popover appeared
+                    $('.popover-relative-content-td').popover('hide');
+                });
+            }
+            tmpEl.draggable({cancel:'.draggable-content-container'});
             var tarEl = $(this);
             tmpEl.find('.btn-export').click(function (e) {
                 exportCsv(tmpEl.find('table'));
@@ -700,18 +758,19 @@
             html: true,
             content: function () {
                 return content.html();
-            }
-            , container: '#book-table'
-            , placement: 'auto'
+            },
+            container: '#book-table',
+            template: '<div class="popover popover-author-td"><div class="arrow"></div><div class="popover-inner"><h3 class="popover-title"></h3><div class="popover-content"><p></p></div></div></div>',
+            placement: 'auto'
         }).on('show.bs.popover', function () {
             //remove popover when other popover appeared
-            $('.popover').remove();
+            $('.popover-author-td').popover('hide');
         }).on('shown.bs.popover', function () {
             //handle after popover shown
             var clickedTd = $(this);
             $('.popover-input-author').val(tdata.author);
             $('.btn-popover-close').click(function (e) {
-                $('.popover').remove();
+                $('.popover-author-td').popover('hide');
             });
             $('.popover-input').attr('disabled', '');
 
@@ -719,7 +778,7 @@
             $('.popover .btn-modify-nickname').click(function (e) {
                 if ($(this).text() == '편집') {
                     $('.popover-input').removeAttr('disabled');
-                    $(this).toggleClass('btn-primary').text('완료');
+                    $(this).toggleClass('btn-primary').text('저장');
                 } else {
                     if ($('.btn-identity-check').attr('disabled') != undefined) {
                         $.ajax({
@@ -787,6 +846,10 @@
                     }
                 });
             })
+
+            $('#book-table').on('hidden.bs.popover', function (e) {
+                $(e.target).data("bs.popover").inState = {click: false, hover: false, focus: false}
+            });
         });
     }
 
@@ -835,7 +898,6 @@
             }
             document.body.appendChild(download_link);
             download_link.click();
-            saveAs
             document.body.removeChild(download_link);
 
 
@@ -865,19 +927,21 @@
 
     function highLightResult() {
         for (i = 0; i < lastQuery.data.length; i++) {
-            var regex = new RegExp("(" + RegExp.escape(lastQuery.data[i].input) + ")", "gi");
+//            var regex = new RegExp("(" + RegExp.escape(lastQuery.data[i].input) + ")", "gi");
+            var regex = lastQuery.data[i].input;
 //            var regex = new RegExp("(" + RegExp.escape('tom') + ")", "gi");
             if (lastQuery.data[i].category == '저자') {
                 $.each($('.author-td'), function (i, contentTd) {
-                    $(contentTd).html($(contentTd).text().replace(regex, '<span class="matched-content">$1</span>'));
+                    $(contentTd).html($(contentTd).html().replace(regex, '<span class="matched-content">' + regex + '</span>'));
                 });
             } else if (lastQuery.data[i].category == '내용') {
                 $.each($('.content-td'), function (i, contentTd) {
-                    $(contentTd).html($(contentTd).text().replace(regex, '<span class="matched-content">$1</span>'));
+                    $(contentTd).html($(contentTd).html().replace(regex, '<span class="matched-content">' + regex + '</span>'));
+//                    console.error($(contentTd).text());
                 });
             } else if (lastQuery.data[i].category == '참조') {
                 $.each($('.relation-td'), function (i, contentTd) {
-                    $(contentTd).html($(contentTd).text().replace(regex, '<span class="matched-content">$1</span>'));
+                    $(contentTd).html($(contentTd).html().replace(regex, '<span class="matched-content">' + regex + '</span>'));
                 });
             }
         }
@@ -886,7 +950,7 @@
     RegExp.escape = function (str) {
         var specials = /[.*+?|()\[\]{}\\$^]/g; // .*+?|()[]{}\$^
         return str.replace(specials, "\\$&");
-    }
+    };
 
 
     function initPagination(current, from, to, lastPage, cssSelector) {

@@ -56,6 +56,18 @@ public class UserHistory implements Serializable{
         this.date = date;
     }
 
+    public static long getSerialVersionUID() {
+        return serialVersionUID;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
     @Override
     public String toString() {
 //        this.word

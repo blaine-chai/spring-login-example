@@ -3,7 +3,7 @@ package com.blainechai.controller;
 import com.blainechai.constant.UserType;
 import com.blainechai.controller.api.SocketComm;
 import com.blainechai.domain.*;
-import com.blainechai.model.BookInfo;
+import com.blainechai.model.*;
 import com.blainechai.repository.*;
 import com.blainechai.util.EncryptUtil;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -66,6 +66,85 @@ public class MainPageController {
     public String profilePage() {
         return "main_profiling";
     }
+
+    // 프로파일링에서 검색 버튼 클릭시 요청 들어옴
+    // 저자 검색에 대한 내용 필요
+    @RequestMapping(value = {"/main/profile/search-author"})
+    public ModelAndView searchAuthor(HttpServletRequest request) {
+        // 클라이언트로 부터 받아온 search keyword
+        String searchKeyword = request.getParameter("keyword");
+        // 메인 서버와 통신
+        // 저자 검색 부분이 필요
+
+        // 저자 검색 결과가 들어있는 리스트
+        List<String> authorList = new ArrayList<String>();
+        authorList.add("tom1");
+        authorList.add("tom0");
+
+        List<AuthorAndRelAuthor> resultList = searchNicknamesByAuthors(authorList);
+        ModelAndView modelAndView = new ModelAndView("api");
+        Gson gson = new Gson();
+        modelAndView.addObject("json", gson.toJson(resultList));
+        return modelAndView;
+    }
+
+    //프로파일링에서 검색 후 저자-연관저자 리스트에서 대상 클릭시 요청 들어옴
+    //from, to, 참조저자가 전달되야 함
+    @RequestMapping(value = {"/main/profile/search-rel-author"})
+    public ModelAndView searchRelAuthorByAuthor(HttpServletRequest request) {
+        String author = request.getParameter("author");
+        // 메인 서버와 통신
+        // *author* 이용
+        // 참조저자, from, to 값을 검색해옴
+
+        List<RelAuthorInfo> resultList = new ArrayList<RelAuthorInfo>(); // 메인서버에서의 검색 결과
+
+        resultList.add(new RelAuthorInfo("tom1", "10", "1"));
+        resultList.add(new RelAuthorInfo("tom0", "10", "1"));
+        resultList.add(new RelAuthorInfo("tom2", "10", "1"));
+        resultList.add(new RelAuthorInfo("tom1", "10", "1"));
+        resultList.add(new RelAuthorInfo("tom0", "10", "1"));
+        resultList.add(new RelAuthorInfo("tom1", "10", "1"));
+
+
+        for (int i = 0; i < resultList.size(); i++) {
+            RelAuthorInfo tmpRA = resultList.get(i);
+            String tmpNickname = searchNicknameByAuthor(tmpRA.getRelAuthor());
+            tmpRA.setNickname(tmpNickname);
+        }
+
+        ModelAndView modelAndView = new ModelAndView("api");
+        Gson gson = new Gson();
+        modelAndView.addObject("json", gson.toJson(resultList));
+        return modelAndView;
+    }
+
+
+    //저자와 연관저자를 키로 찾은 책의 정보를 보내줌
+    @RequestMapping(value = {"/main/profile/search-rel-author-content"})
+    public ModelAndView searchRelAuthorContent(HttpServletRequest request) {
+        String author = request.getParameter("author");
+        String relAuthor = request.getParameter("rel-author");
+        // 메인 서버와 통신
+        // 저자와 연관저자로 검색 부분이 필요
+
+
+        List<AuthorBookContent> resultList = new ArrayList<AuthorBookContent>(); //메인 서버에서의 검색 결과
+
+        resultList.add(new AuthorBookContent("tom", "bob", "hihihihi", "20110101"));
+        resultList.add(new AuthorBookContent("tom", "bob", "hihihihi", "20110101"));
+        resultList.add(new AuthorBookContent("tom", "bob", "hihihihi", "20110101"));
+        resultList.add(new AuthorBookContent("tom", "bob", "hihihihi", "20110101"));
+        resultList.add(new AuthorBookContent("tom", "bob", "hihihihi", "20110101"));
+        resultList.add(new AuthorBookContent("tom", "bob", "hihihihi", "20110101"));
+        resultList.add(new AuthorBookContent("tom", "bob", "hihihihi", "20110101"));
+
+        ModelAndView modelAndView = new ModelAndView("api");
+        Gson gson = new Gson();
+        modelAndView.addObject("json", gson.toJson(resultList));
+        return modelAndView;
+    }
+
 
     @RequestMapping(value = {"/main/statistics"})
     public String statisticsPage() {
@@ -243,10 +322,32 @@ public class MainPageController {
         return modelAndView;
     }
 
-    @RequestMapping(value = "/user-history/update")
+    @RequestMapping(value = "/user-history/delete")
     public ModelAndView userHistoryUpdate(HttpServletRequest request) {
         ModelAndView modelAndView = new ModelAndView("api");
+        Gson gson = new Gson();
+        try {
+            Long id = Long.parseLong(request.getParameter("id"));
+            userHistoryRepository.deleteById(id);
+        } catch (Exception e) {
+            System.out.println(e.getStackTrace());
+        }
+        String sessionId = request.getSession().getId();
+        String userId;
+        List<UserHistory> userHistories;
+        List<UserHistoryApi> userHistoryApis = new ArrayList<UserHistoryApi>();
+        if (sessionRepository.findByJSessionId(sessionId).size() > 0) {
+            userId = sessionRepository.findByJSessionId(sessionId).get(0).getUserId();
+            userHistories = userHistoryRepository.findByUserAccount_UserId(userId);
 
+            if (userHistories != null) {
+                for (UserHistory uHistory : userHistories) {
+                    userHistoryApis.add(new UserHistoryApi(uHistory));
+                }
+            }
+        }
+        modelAndView.addObject("json", gson.toJson(userHistoryApis));
+//        modelAndView.addObject("json", gson.toJson(rtnArray));
         return modelAndView;
     }
 
@@ -254,42 +355,22 @@ public class MainPageController {
     public ModelAndView userHistoryGet(HttpServletRequest request) {
         String sessionId = request.getSession().getId();
         String userId;
-        List<UserHistory> userHistories = new ArrayList<UserHistory>();
+        List<UserHistory> userHistories;
         Gson gson = new Gson();
-        ArrayList<String> rtnArray = new ArrayList<String>();
+        List<UserHistoryApi> userHistoryApis = new ArrayList<UserHistoryApi>();
         if (sessionRepository.findByJSessionId(sessionId).size() > 0) {
             userId = sessionRepository.findByJSessionId(sessionId).get(0).getUserId();
             userHistories = userHistoryRepository.findByUserAccount_UserId(userId);
 
             if (userHistories != null) {
                 for (UserHistory uHistory : userHistories) {
-                    ObjectMapper om = new ObjectMapper();
-                    try {
-                        Map myMap = om.readValue(uHistory.getWord(), new TypeReference<Map<String, Object>>() {
-                        });
-                        ArrayList<Map> searchOptions = (ArrayList) myMap.get("data");
-                        String rtnText = "";
-                        if (searchOptions.size() > 0) {
-                            rtnText += searchOptions.get(0).get("input").toString();
-                            if (!searchOptions.get(0).get("operator").toString().equals("SEL")) {
-                                rtnText += " " + searchOptions.get(0).get("operator").toString();
-                            }
-                        }
-                        for (int i = 1; i < searchOptions.size(); i++) {
-                            rtnText += " " + searchOptions.get(i).get("input").toString();
-                            if (!searchOptions.get(i).get("operator").toString().equals("SEL")) {
-                                rtnText += " " + searchOptions.get(i).get("operator").toString();
-                            }
-                        }
-                        rtnArray.add(rtnText);
-                    } catch (Exception e) {
-                    }
+                    userHistoryApis.add(new UserHistoryApi(uHistory));
                 }
             }
         }
         ModelAndView modelAndView = new ModelAndView("api");
 //        modelAndView.addObject("json", gson.toJson(rtnArray));
-        modelAndView.addObject("json", gson.toJson(userHistories));
+        modelAndView.addObject("json", gson.toJson(userHistoryApis));
 
 
         return modelAndView;
@@ -361,13 +442,18 @@ public class MainPageController {
     @RequestMapping(value = "/nickname/check")
     public ModelAndView checkNickname(HttpServletRequest request) {
         String nickname = request.getParameter("nickname");
+        String author = request.getParameter("author");
         boolean result;
-        if (nicknameRepository.findByNickname(nickname).size() <= 0) {
+        List<NicknameOption> nicknameOptions = nicknameRepository.findByNickname(nickname);
+        if (nicknameOptions.size() <= 0) {
+            result = true;
+        } else if (nicknameOptions.get(0).getAuthor().equals(author)) {
             result = true;
         } else {
             result = false;
         }
-//        Gson gson = new Gson();
+
+        //        Gson gson = new Gson();
         ModelAndView modelAndView = new ModelAndView("api");
         modelAndView.addObject("json", result);
         return modelAndView;
@@ -499,6 +585,28 @@ public class MainPageController {
 
             System.out.println("\t소요시간  :: " + (System.currentTimeMillis() - time));
         }
+    }
+
+    private List<AuthorAndRelAuthor> searchNicknamesByAuthors(List<String> authorList) {
+        List<AuthorAndRelAuthor> resultList = new ArrayList<AuthorAndRelAuthor>();
+        for (String author : authorList) {
+            List<NicknameOption> tmpNicknameList = nicknameRepository.findByAuthor(author);
+            if (tmpNicknameList.size() >= 0) {
+                resultList.add(new AuthorAndRelAuthor(author, tmpNicknameList.get(0).getNickname()));
+            } else {
+                resultList.add(new AuthorAndRelAuthor(author, ""));
+            }
+        }
+        return resultList;
+    }
+
+    private String searchNicknameByAuthor(String author) {
+        List<NicknameOption> tmpNicknameList = nicknameRepository.findByAuthor(author);
+        String nickname = "";
+        if (tmpNicknameList.size() > 0) {
+            nickname = tmpNicknameList.get(0).getNickname();
+        }
+        return nickname;
     }
 }
 

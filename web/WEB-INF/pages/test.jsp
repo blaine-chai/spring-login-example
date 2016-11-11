@@ -14,22 +14,21 @@
 
     <!-- 합쳐지고 최소화된 최신 자바스크립트 -->
     <script src="/js/bootstrap.min.js"></script>
-    <style type="text/css">
-        /*@import url(http://fonts.googleapis.com/earlyaccess/notosanskr.css);*/
-
-        .table-column {
-            box-sizing: border-box;
-            float: left;
-            display: table-column;
+    <style>
+        svg {
+            background-color: #eeeeee;
+            fill: gray;
         }
-
-        .table-row {
-            display: table-row;
+        svg g path.line {
+            stroke: #1db34f;
+            stroke-width: 2px;
+            stroke-opacity: 1;
+            fill: none;
         }
-
-        .pvw-title {
-            display: none;
-            content: 'whatever it is you want to add';
+        svg g circle {
+            fill: #1db34f;
+            stroke: #16873c;
+            stroke-width: 2px;
         }
     </style>
 
@@ -38,45 +37,112 @@
     <script src="/js/colResizable-1.6.js"></script>
     <script src="/js/moment.js"></script>
     <script src="/js/bootstrap-datepicker.js"></script>
+    <script src="/js/d3.v3.min.js"></script>
 </head>
 <body>
-<div class="pvw-title"><span>Facts</span></div>
-
-<div class="popover_table_content_wrapper" style="display:none">
-    <div>
-        <span class="relative-author-from-date"></span>
-        <span>~</span>
-        <span class="relative-author-to-date"></span>
-    </div>
-    <div>
-        <div>
-            <table class="table table-hover table-fixed table-bordered table-striped table-condensed">
-                <thead>
-                <tr>
-                    <th>저장시간</th>
-                    <th>저자</th>
-                    <th>참조저자</th>
-                    <th>내용</th>
-                </tr>
-                </thead>
-                <tbody>
-                </tbody>
-            </table>
-        </div>
-        <div>
-            <nav aria-label="..." style="text-align: center; margin-top:10px;">
-                <ul class="pagination pagination-sm" style="margin: 0 auto;">
-                    <li><a href="#" aria-label="Previous" class="disabled"><span aria-hidden="true">«</span></a></li>
-                    <li><a href="#" class="active">1</a></li>
-                    <li><a href="#">2</a></li>
-                    <li><a href="#">3</a></li>
-                    <li><a href="#">4</a></li>
-                    <li><a href="#">5</a></li>
-                    <li><a href="#" aria-label="Next"><span aria-hidden="true">»</span></a></li>
-                </ul>
-            </nav>
-        </div>
+<div class="main-graph">
+    <h1>Line Chart</h1>
+    <div id="main-graph-container">
     </div>
 </div>
+<script>
+    var margin = {top: 20, right: 20, bottom: 30, left: 40};
+    var width = parseInt($('#main-graph-container').innerWidth())- margin.left - margin.right;
+    var height = 200 - margin.top - margin.bottom;
+
+    var svg = d3.select("#main-graph-container").append("svg")
+            .attr("width", width + margin.left + margin.right)
+            .attr("height", height + margin.top + margin.bottom)
+            .append("g")
+            .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+    var data = [
+        {"date":new Date("2014-02-20T00:00:00"), "count":1},
+        {"date":new Date("2014-02-20T02:00:00"), "count":2},
+        {"date":new Date("2014-02-20T04:00:00"), "count":3},
+        {"date":new Date("2014-02-20T06:00:00"), "count":4},
+        {"date":new Date("2014-02-20T08:00:00"), "count":5},
+        {"date":new Date("2014-02-20T10:00:00"), "count":6},
+        {"date":new Date("2014-02-20T12:00:00"), "count":7},
+        {"date":new Date("2014-02-20T14:00:00"), "count":6},
+        {"date":new Date("2014-02-20T16:00:00"), "count":5},
+        {"date":new Date("2014-02-20T18:00:00"), "count":4},
+        {"date":new Date("2014-02-20T20:00:00"), "count":3},
+        {"date":new Date("2014-02-20T22:00:00"), "count":2},
+        {"date":new Date("2014-02-20T23:59:59"), "count":1}
+    ];
+
+    //x,y axis setting
+    var x = d3.time.scale().domain([data[0].date, data[data.length-1].date]).rangeRound([0, width], 1);
+    var y = d3.scale.linear().domain([0, 10]).range([height, 0]);
+
+    var xAxis = d3.svg.axis().scale(x).orient("bottom").ticks(d3.time.hour, 1).tickFormat(d3.time.format('%H'));
+    var yAxis = d3.svg.axis().scale(y).orient("left").ticks(5);
+
+    //draw x,y axis
+    svg.selectAll("line.y")
+            .data(y.ticks(4))
+            .enter().append("line")
+            .attr("class", "y")
+            .attr("x1", 0)
+            .attr("x2", width)
+            .attr("y1", y)
+            .attr("y2", y)
+            .style("stroke", "#ccc");
+
+    svg.append('g')
+            .attr('class', 'x axis')
+            .attr('transform', 'translate(0, '+height+')')
+            .call(xAxis);
+
+    svg.append("g")
+            .attr("class", "y axis")
+            .call(yAxis);
+
+    var line = d3.svg.line().x(function(d) {return x(d.date); }).y(function(d) { return y(d.count); }).interpolate("linear");
+
+    //Input Line
+    svg.append("path")
+            .datum(data)
+            .attr("class", "line")
+            .attr("d", line);
+    svg.append("path")
+            .datum(data)
+            .attr("class", "line2")
+            .attr("d", line);
+    svg.append("path")
+            .datum(data)
+            .attr("class", "line")
+            .attr("d", line);
+    svg.append("path")
+            .datum(data)
+            .attr("class", "line")
+            .attr("d", line);
+    svg.append("path")
+            .datum(data)
+            .attr("class", "line")
+            .attr("d", line);
+
+
+    //Draw Circle
+    svg.selectAll("dot")
+            .data(data)
+            .enter()
+            .append("circle")
+            .attr("r", 4)
+            .attr("cx", function(d) { return x(d.date); })
+            .attr("cy", function(d) { return y(d.count); });
+
+    //Input text
+    svg.selectAll("dot")
+            .data(data)
+            .enter()
+            .append("text")
+            .attr('text-anchor', 'middle')
+            .attr("x", function(d) { return x(d.date); })
+            .attr("y", function(d) { return y(d.count); })
+            .attr('dy', '-10')
+//            .text(function(d) { return d.count; });
+</script>
 </body>
 </html>
