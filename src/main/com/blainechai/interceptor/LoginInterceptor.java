@@ -21,10 +21,15 @@ public class LoginInterceptor extends HandlerInterceptorAdapter {
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
         try {
             List<Session> list = sessionRepository.findByJSessionId(request.getSession().getId());
-            if (list.size() > 0 && (list.get(0).getType().equals(UserType.USER)||list.get(0).getType().equals(UserType.ADMIN))) {
+            if (list.size() > 0 && (list.get(0).getType().equals(UserType.USER) || list.get(0).getType().equals(UserType.ADMIN))) {
                 return true;
             }
-            response.sendRedirect("/");
+            String requestedWithHeader = request.getHeader("X-Requested-With");
+            if ("XMLHttpRequest".equals(requestedWithHeader)) {
+                response.sendError(403, "Forbidden");
+            } else {
+                response.sendRedirect("/");
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }

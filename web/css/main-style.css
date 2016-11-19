@@ -73,7 +73,7 @@
 
 #content-wrapper {
     margin: 0 auto;
-    min-width: 500px;
+    min-width: 700px;
 }
 
 #progress-wrapper {
@@ -241,24 +241,29 @@ body {
     font-size: 27px;
     padding-top: 10px;
 }
-#nickname-result-table>thead>tr>th{
+
+#nickname-result-table > thead > tr > th {
     text-align: center;
 }
 
-.table-striped>thead>tr{
-    background-color: #fff;
-}
-.table-striped>tbody>tr:nth-of-type(even){
+.table-striped > thead > tr {
     background-color: #fff;
 }
 
-.nickname-search-td{
+.table-striped > tbody > tr:nth-of-type(even) {
+    background-color: #fff;
+}
+.table-hover>tbody>tr:hover{
+    background-color: #f5f5f5;
+}
+
+.nickname-search-td {
     cursor: pointer;
 }
 
-.popover-content-td{
-    width: 500px;
-    max-width: 500px;
+.popover-relative-content-td, .popover-content-td {
+    width: 400px;
+    max-width: 400px;
     word-break: break-all;
     z-index: 9;
     font-size: 11px;

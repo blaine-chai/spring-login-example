@@ -30,14 +30,6 @@
             stroke: #16873c;
             stroke-width: 2px;
         }
-
-        .axis path,
-        .axis line {
-            fill: none;
-            stroke: grey;
-            stroke-width: 1;
-            shape-rendering: crispEdges;
-        }
     </style>
 
     <link href="/css/main-style.css" rel="stylesheet" type="text/css">
@@ -93,11 +85,9 @@
     //x,y axis setting
     //    var x = d3.time.scale().domain([data[0].date, data[data.length-1].date]).rangeRound([0, width], 1);
     //    var y = d3.scale.linear().domain([0, 10]).range([height, 0]);
-    var x = d3.scale.linear().domain(
-            [d3.min(data1, function (d) {return d['index']}),
-                d3.max(data1, function (d) {return d['index']})]).range([0, width]);
-    var y = d3.scale.linear().domain([d3.min(data1, function (d) {return Math.min(d['a'],d['b'])}),
-        d3.max(data1, function (d) {return Math.max(d['a'],d['b'])})]).range([height, 0]);
+    var x = d3.scale.linear().domain([d3.min(data1, function (d) {return d3.min(d['index'])}),
+        d3.]).range([0, width]);
+    var y = d3.scale.linear().domain([0,]).range([height, 0]);
 
     //    var xAxis = d3.svg.axis().scale(x).orient("bottom").ticks(d3.time.hour, 1).tickFormat(d3.time.format('%H'));
     //    var yAxis = d3.svg.axis().scale(y).orient("left").ticks(5);
@@ -125,19 +115,12 @@
             .call(yAxis);
 
     var line = d3.svg.line().x(function(d) {return x(d['index']); }).y(function(d) { return y(d['a']); }).interpolate("linear");
-    var line2 = d3.svg.line().x(function(d) {return x(d['index']); }).y(function(d) { return y(d['b']); }).interpolate("linear");
 
     //Input Line
     svg.append("path")
             .datum(data1)
             .attr("class", "line")
             .attr("d", line);
-
-    svg.append("path")
-            .datum(data1)
-            .style("stroke", "red")
-            .attr("class", "line")
-            .attr("d", line2);
 
 
 

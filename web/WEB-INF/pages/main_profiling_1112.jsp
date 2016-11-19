@@ -171,11 +171,35 @@
 
         <div id="menu" class="col-xs-8" style="width: calc(100% - 333px)">
             <div id="relative-table-container" style="position: absolute; z-index: 10;"></div>
-            <div id="menu-wrapper" style="background: rgba(224, 234, 244, 1); height: calc(100% - 210px); padding-top: 10px;">
-                <div id="result-table-wrapper" class="panel panel-default"
-                     style="margin: 0px 15px 15px; height: 764px;font-size: 11px;overflow-x: auto;">
-                    <div id="profile-result-container" style="height: auto;">
+            <div id="menu-wrapper" style="background: rgba(224, 234, 244, 1); height: calc(100% - 200px);">
+                <div class="alert alert-info">
+                    <div id="search-result-number">검색결과 :</div>
+                    <div id="search-progress" class="progress">
+                        <div class="progress-bar progress-bar-striped active" role="progressbar" aria-valuenow="45"
+                             aria-valuemin="0" aria-valuemax="100" style="width: 45%;">
+                            45%
+                        </div>
                     </div>
+                </div>
+                <div id="result-table-wrapper" class="panel panel-default"
+                     style="margin: 15px; height: calc(100% - 200px); font-size: 11px;overflow-x: auto;">
+                    <div id="profile-result-container" style="height: auto">
+                    </div>
+                </div>
+                <div id="page-counter-wrapper">
+                    <nav aria-label="..." style="text-align: center; display: none;">
+                        <ul class="pagination pagination-sm" style="margin: 0 auto;">
+                            <li class="disabled"><a href="#" aria-label="Previous"><span
+                                    aria-hidden="true">«</span></a></li>
+                            <li class="active"><a href="#">1</a></li>
+                            <li><a href="#">2</a></li>
+                            <li><a href="#">3</a></li>
+                            <li><a href="#">4</a></li>
+                            <li><a href="#">5</a></li>
+                            <li><a href="#" aria-label="Next"><span
+                                    aria-hidden="true">»</span></a></li>
+                        </ul>
+                    </nav>
                 </div>
             </div>
         </div>
@@ -197,7 +221,6 @@
 
     $(document).ready(function () {
 
-
         $(window).resize(
                 function () {
                     //            $('#content').height($(window).height());
@@ -205,10 +228,10 @@
                             $(window).height() - 197);
                     //            console($(document).width() + 'px');
                     $('#menu-wrapper').height(
-                            $(window).height() - 207);
+                            $(window).height() - 197);
                     //            $('#book-table').attr('data-height', $(window).height() - 194 - 200)
                     //            $('#book-table').height($(window).height() - 194 - 200)
-                    $('#result-table-wrapper').height($(window).height() - 222);
+                    $('#result-table-wrapper').height($(window).height() - 197 - 130);
 //                    $('#profile-result-container>div').height($('#result-table-wrapper').height());
                     setProfileResultTableSize();
                     var results = $('#profile-result-container>div');
@@ -220,9 +243,9 @@
                     }
                 });
         $('#search-wrapper').height($(window).height() - 197);
-        $('#menu-wrapper').height($(window).height() - 207);
+        $('#menu-wrapper').height($(window).height() - 197);
         //        $('#book-table').height($(window).height() - 194 - 200)
-        $('#result-table-wrapper').height($(window).height() - 222);
+        $('#result-table-wrapper').height($(window).height() - 197 - 130);
 //        $('#profile-result-container>div').height($('#result-table-wrapper').height());
         setProfileResultTableSize();
 
@@ -337,9 +360,8 @@
         $('.matched-content').toggleClass('highlight-background');
     });
 
-    function onRelativeTdClickHandler(element) {
-        var tmpAuthor = $(element).parent().find('td').eq(1).text();
-        var classId = $(element).parent().attr('class-id');
+    function onRelativeTdClickHandler() {
+        var tmpAuthor = $(this).parent().find('td').eq(2).text();
         $.ajax({
             url: "/main/profile/search-rel-author",
             type: "post",
@@ -348,46 +370,38 @@
             },
             success: function (responseData) {
                 var result = JSON.parse(responseData);
+                var resultTable = $('<div style="width:260px; float: left; border-bottom-right-radius: 0;border-top-right-radius: 0;background-color: #fafafa;overflow:auto; border-right: 1px solid #ddd;margin-bottom: 0;"' +
+                        'class="panel profile-result-content">' +
+                        '<button type="button" class="close close-profile-result-table" data-dismiss="alert" aria-label="Close" onclick="onProfileResultCloseBtnClick(this);return false;"><span aria-hidden="true">×</span></button>' +
+                        '<div class="panel-heading author-search-result-author" style="width: 258px; border-bottom: 1px solid #ddd; border-bottom-right-radius: 0;border-top-right-radius: 0;" >' + tmpAuthor + '</div>' +
+                        '<table class="table table-hover table-fixed table-bordered table-striped table-condensed" ' +
+                        'style="width:250px;float: left;border-right: 1px solid #ddd;"><thead>' +
+                        '<tr><th style="width: 50px;">from</th>' +
+                        '<th style="width: 50px;">to</th>' +
+                        '<th>참조저자</th>' +
+                        '</tr>' +
+                        '</thead>' +
+                        '<tbody>' +
+                        '</tbody></table></div>');
 
-                ProfileResultModule.ExpandComponent().newExpandComponent({
-                    data: result,
-                    parentClassId: classId,
-                    title: tmpAuthor,
-                    parentContainer: $(element).parent().parent().parent().parent().parent().parent()
+                $.each(result, function (i, mResult) {
+                    var tmpTr = $('<tr>' +
+//                            '<td class="relative-badge-td"><span class="badge" style="background-color: #453d77;">' + parseInt(Math.random() * 30) + '</span></td>' +
+                            '<td class="relative-badge-td">' + mResult.from + '</td>' +
+//                            '<td class="relative-badge-td"><span class="badge" style="background-color: #770c35;">' + parseInt(Math.random() * 30) + '</span></td>' +
+                            '<td class="relative-badge-td">' + mResult.to + '</td>' +
+//                            '<td onclick="onRelativeTdClickHandler(this);return false;">' + mResult.relAuthor + '</td></tr>');
+                            '<td class="profile-result-relative-author-td">' + mResult.relAuthor + '</td></tr>');
+                    resultTable.find('tbody').append(tmpTr);
+                    setRelBadgeClickHandler(tmpTr);
                 });
-
-//                var resultTable = $('<div style="width:260px; float: left; border-bottom-right-radius: 0;border-top-right-radius: 0;background-color: #fafafa;overflow:auto; border-right: 1px solid #ddd;margin-bottom: 0;"' +
-//                        'class="panel profile-result-content">' +
-//                        '<button type="button" class="close close-profile-result-table" data-dismiss="alert" aria-label="Close" onclick="onProfileResultCloseBtnClick(this);return false;"><span aria-hidden="true">×</span></button>' +
-//                        '<div class="panel-heading author-search-result-author" style="width: 258px; border-bottom: 1px solid #ddd; border-bottom-right-radius: 0;border-top-right-radius: 0;" >' + tmpAuthor + '</div>' +
-//                        '<table class="table table-hover table-fixed table-bordered table-striped table-condensed" ' +
-//                        'style="width:250px;float: left;border-right: 1px solid #ddd;"><thead>' +
-//                        '<tr><th style="width: 50px;">from</th>' +
-//                        '<th style="width: 50px;">to</th>' +
-//                        '<th>참조저자</th>' +
-//                        '</tr>' +
-//                        '</thead>' +
-//                        '<tbody>' +
-//                        '</tbody></table></div>');
-//
-//                $.each(result, function (i, mResult) {
-//                    var tmpTr = $('<tr>' +
-////                            '<td class="relative-badge-td"><span class="badge" style="background-color: #453d77;">' + parseInt(Math.random() * 30) + '</span></td>' +
-//                            '<td class="relative-badge-td">' + mResult.from + '</td>' +
-////                            '<td class="relative-badge-td"><span class="badge" style="background-color: #770c35;">' + parseInt(Math.random() * 30) + '</span></td>' +
-//                            '<td class="relative-badge-td">' + mResult.to + '</td>' +
-////                            '<td onclick="onRelativeTdClickHandler(this);return false;">' + mResult.relAuthor + '</td></tr>');
-//                            '<td class="profile-result-relative-author-td">' + mResult.relAuthor + '</td></tr>');
-//                    resultTable.find('tbody').append(tmpTr);
-//                    setRelBadgeClickHandler(tmpTr);
-//                });
-//                resultTable.hide();
-//                $('#profile-result-container').append(resultTable);
-////                $('#profile-result-container>div').height($('#result-table-wrapper').height());
-//                $('#profile-result-container').width($('#profile-result-container').width() + 260);
-//                resultTable.show(300, function () {
-                setProfileResultTableSize();
-//                });
+                resultTable.hide();
+                $('#profile-result-container').append(resultTable);
+//                $('#profile-result-container>div').height($('#result-table-wrapper').height());
+                $('#profile-result-container').width($('#profile-result-container').width() + 260);
+                resultTable.show(300, function () {
+                    setProfileResultTableSize();
+                });
             }
         });
     }
@@ -431,42 +445,38 @@
                 },
                 success: function (responseData) {
                     var result = JSON.parse(responseData);
-                    ProfileResultModule.ExpandComponent().newExpandComponent({
-                        data: result,
-                        title: tmpAuthor
+                    var resultTable = $('<div style="width:260px; float: left; border-bottom-right-radius: 0;border-top-right-radius: 0;background-color: #fafafa;overflow:auto; border-right: 1px solid #ddd;margin-bottom: 0;"' +
+                            'class="panel profile-result-content">' +
+                            '<button type="button" class="close close-profile-result-table" data-dismiss="alert" aria-label="Close" onclick="onProfileResultCloseBtnClick(this);return false;"><span aria-hidden="true">×</span></button>' +
+                            '<div class="panel-heading author-search-result-author" style="width: 258px; border-bottom: 1px solid #ddd;border-bottom-right-radius: 0;border-top-right-radius: 0;" >' + tmpAuthor + '</div>' +
+                            '<table class="table table-hover table-fixed table-bordered table-striped table-condensed" ' +
+                            'style="width:250px;float: left;border-right: 1px solid #ddd;"><thead>' +
+                            '<tr><th style="width: 50px;">from</th>' +
+                            '<th style="width: 50px;">to</th>' +
+                            '<th>참조저자</th>' +
+                            '</tr>' +
+                            '</thead>' +
+                            '<tbody>' +
+                            '</tbody></table></div>');
+
+                    $.each(result, function (i, mResult) {
+                        var tmpTr = $('<tr>' +
+//                            '<td class="relative-badge-td"><span class="badge" style="background-color: #453d77;">' + parseInt(Math.random() * 30) + '</span></td>' +
+                                '<td class="relative-badge-td">' + mResult.from + '</td>' +
+//                            '<td class="relative-badge-td"><span class="badge" style="background-color: #770c35;">' + parseInt(Math.random() * 30) + '</span></td>' +
+                                '<td class="relative-badge-td">' + mResult.to + '</td>' +
+//                                '<td onclick="onRelativeTdClickHandler(this);return false;">' + mResult.relAuthor + '</td></tr>');
+                                '<td class="profile-result-relative-author-td">' + mResult.relAuthor + '</td></tr>');
+                        resultTable.find('tbody').append(tmpTr);
+                        setRelBadgeClickHandler(tmpTr);
                     });
-//                    var resultTable = $('<div style="width:260px; float: left; border-bottom-right-radius: 0;border-top-right-radius: 0;background-color: #fafafa;overflow:auto; border-right: 1px solid #ddd;margin-bottom: 0;"' +
-//                            'class="panel profile-result-content">' +
-//                            '<button type="button" class="close close-profile-result-table" data-dismiss="alert" aria-label="Close" onclick="onProfileResultCloseBtnClick(this);return false;"><span aria-hidden="true">×</span></button>' +
-//                            '<div class="panel-heading author-search-result-author" style="width: 258px; border-bottom: 1px solid #ddd;border-bottom-right-radius: 0;border-top-right-radius: 0;" >' + tmpAuthor + '</div>' +
-//                            '<table class="table table-hover table-fixed table-bordered table-striped table-condensed" ' +
-//                            'style="width:250px;float: left;border-right: 1px solid #ddd;"><thead>' +
-//                            '<tr><th style="width: 50px;">from</th>' +
-//                            '<th style="width: 50px;">to</th>' +
-//                            '<th>참조저자</th>' +
-//                            '</tr>' +
-//                            '</thead>' +
-//                            '<tbody>' +
-//                            '</tbody></table></div>');
-//
-//                    $.each(result, function (i, mResult) {
-//                        var tmpTr = $('<tr>' +
-////                            '<td class="relative-badge-td"><span class="badge" style="background-color: #453d77;">' + parseInt(Math.random() * 30) + '</span></td>' +
-//                                '<td class="relative-badge-td">' + mResult.from + '</td>' +
-////                            '<td class="relative-badge-td"><span class="badge" style="background-color: #770c35;">' + parseInt(Math.random() * 30) + '</span></td>' +
-//                                '<td class="relative-badge-td">' + mResult.to + '</td>' +
-////                                '<td onclick="onRelativeTdClickHandler(this);return false;">' + mResult.relAuthor + '</td></tr>');
-//                                '<td class="profile-result-relative-author-td">' + mResult.relAuthor + '</td></tr>');
-//                        resultTable.find('tbody').append(tmpTr);
-//                        setRelBadgeClickHandler(tmpTr);
-//                    });
-//                    resultTable.hide();
-//                    $('#profile-result-container').append(resultTable);
+                    resultTable.hide();
+                    $('#profile-result-container').append(resultTable);
 //                    $('#profile-result-container>div').height($('#result-table-wrapper').height());
                     $('#profile-result-container').width('260');
-//                    resultTable.show(300, function () {
-                    setProfileResultTableSize();
-//                    });
+                    resultTable.show(300, function () {
+                        setProfileResultTableSize();
+                    });
                 }
             });
         });
@@ -510,7 +520,7 @@
             $('#nickname-form .btn-modify-nickname').click(function (e) {
                 if ($('.btn-identity-check').attr('disabled') != undefined) {
                     $.ajax({
-                        url: "/main/nickname/update",
+                        url: "/nickname/update",
                         type: "post",
                         data: {
                             "nickname": $('.nickname-form-input-nickname').val(),
@@ -540,7 +550,7 @@
 
             //when popover opened get nickname info from server
             $.ajax({
-                url: "/main/nickname/get",
+                url: "/nickname/get",
                 type: "post",
                 data: {
                     "author": $('input[name=nickname-radio]:checked').parent().parent().find('td').eq(1).text()
@@ -558,7 +568,7 @@
 
             $('#nickname-form .btn-identity-check').click(function (e) {
                 $.ajax({
-                    url: "/main/nickname/check",
+                    url: "/nickname/check",
                     type: "post",
                     data: {
                         "nickname": $('.nickname-form-input-nickname').val(),
@@ -637,7 +647,7 @@
             $('#nickname-form .btn-modify-nickname').click(function (e) {
                 if ($('.btn-identity-check').attr('disabled') != undefined) {
                     $.ajax({
-                        url: "/main/nickname/update",
+                        url: "/nickname/update",
                         type: "post",
                         data: {
                             "nickname": $('.nickname-form-input-nickname').val(),
@@ -666,7 +676,7 @@
 
             $('#nickname-form .btn-identity-check').click(function (e) {
                 $.ajax({
-                    url: "/main/nickname/check",
+                    url: "/nickname/check",
                     type: "post",
                     data: {
                         "nickname": $('.nickname-form-input-nickname').val(),
@@ -709,13 +719,13 @@
                 url: "/main/profile/search-rel-author-content",
                 type: "post",
                 data: {
-                    "author": $(element).parent().parent().parent().parent().find('.table-expanded-title').text(),
-                    "rel-author": $(element).find('td').eq(1).text()
+                    "author": $(element).parent().parent().parent().find('.author-search-result-author').text(),
+                    "rel-author": $(element).find('td').eq(2).text()
                 },
                 success: function (responseData) {
                     var result = JSON.parse(responseData);
                     var tmpHtml = $('<div class="alert bg-white alert-dismissible fade in border-gray relative-table-wrapper" style="position: absolute; z-index: 10; width: 700px; left:' + relStartPos.left + 'px;top:' + relStartPos.top + 'px;" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span></button>' +
-                            '<div class="relative-title">' + $(element).parent().parent().parent().parent().find('.table-expanded-title').text() + ' - ' + $(element).find('td').eq(1).text() + '</div>' +
+                            '<div class="relative-title">' + $(element).parent().parent().parent().find('.author-search-result-author').text() + ' - ' + $(element).find('td').eq(2).text() + '</div>' +
                             '<div style="font-size: 10px;margin-top: 10px;margin-bottom: 10px;position: relative;left: 450px;">' +
 //                            '<span class="relative-author-from-date">' + lastQuery.fromDate + '</span>' + (lastQuery.fromDate == '' && lastQuery.toDate == '' ? '' : '</span><span> ~ </span><span class="relative-author-to-date">' + lastQuery.toDate + '</span>') +
                             '</div>' +
@@ -783,41 +793,31 @@
     }
 
 
-    //    function deleteExpandByClassId(classId) {
-    //        $('.' + classId).remove();
-    //    }
-
-
-    function expandTable(element) {
-        $(element).parent().find('.expand-btn').click();
+    function deleteExpandByClassId(classId) {
+        $('.' + classId).remove();
     }
-    var hi;
+
+
     var ProfileResultModule = (function () {
         var CLASS_NUM = 1;
         var CLASS_NAME_PREFIX = 'expand-table-';
-        var topContainer = $('#profile-result-container');
-        var ExpandComponent = function () {
+
+        var ExpandComponent = function (options) {
             var defaults = {
                 html: '<div class="btn-group" style="padding-top: 5px; width: 100%;margin:0;">' +
                 '<label class="btn btn-default btn-sm expand-btn btn-primary"' +
                 'style="width: 29px; margin:0;">+</label>' +
-                '<label class="btn btn-default btn-sm table-expanded-title" style="width:calc(100% - 59px); margin:0;" onclick="expandTable(this);return false;">User History</label>' +
-                '<label class="btn btn-default expand-component-close" style="width: 30px;height: 30px;right: 0;margin: 0;padding: 0;border-left: 0;border-top-right-radius: 4px;border-bottom-right-radius: 4px;"><span aria-hidden="true" style="font-size: 15px;margin: 0;padding: 0;line-height: 25px;">×</span></label>'+
-                '<div class="panel table-expanded-container" style="overflow: auto; max-height:300px; margin-left: 2px; margin-right: 2px; display: none;border-bottom: 1px solid #ccc;border-left: 1px solid #ccc;border-right: 1px solid #ccc;border-top-right-radius: 0;border-top-left-radius: 0;margin-bottom: 5px;">' +
-                '<table style="font-size:11px; word-break: break-all; " ' +
-                'class="table table-fixed table-bordered table-striped table-condensed table-hover"><tbody></tbody></table></div>' +
-                '<div class="component-pager" style="display: none; height: 24px;">' +
-                '<label class="btn btn-default" style="position: absolute;height: 20px;width: 20px;font-size: 14px;margin: 2px;left: 35px;">' +
-                '<span style="position: absolute;top: -2px;right: 8px;">«</span></label>' +
-                '<div style="width: 100%;position: absolute;text-align: center;line-height: 24px;"><span class="component-pager-page" style="">1</span></div>' +
-                '<label class="btn btn-default" style="height: 20px;width: 20px;font-size: 14px;margin: 2px;position: absolute;right: 35px;"><span style="position: absolute;top: -2px;right: 8px;">»</span></label></div></div>',
+                '<label class="btn btn-default btn-sm table-expanded-title" style="width:calc(100% - 29px); margin:0;">User History</label>' +
+                '<div class="panel table-expanded-container" style="overflow: auto; max-height:300px; margin-left: 2px; margin-right: 2px; display: none;">' +
+                '<table style="font-size:11px; word-break: break-all;" ' +
+                'class="table table-fixed table-bordered table-striped table-condensed"><tbody></tbody></table></div></div>',
                 paddingTop: '5px',
                 btnWidth: '29px',
                 tableHeight: '300px',
                 display: 'none',
                 onDelete: null,
                 onResize: null,
-                parentContainer: $('body'),
+                container: $('body'),
                 onExpand: null,
                 data: [{from: 1, relAuthor: 2}, {from: 3, relAuthor: 4}, {from: 5, relAuthor: 6}],
                 firstTd: '<input type="checkbox">',
@@ -825,57 +825,36 @@
                 parentClassId: ''
             };
 
+            var option = $.extend(defaults, options);
+
             var init = function (options) {
-                var opt = $.extend(defaults, options);
-                var parentContainer = opt.parentContainer;
-                var tmpEl = $(opt.html);
+                var opt = options;
+                var container = $(opt.container);
+                var tmpEl = $(options.html);
                 tmpEl.find('.expand-btn').css('width', opt.btnWidth);
                 tmpEl.find('.table-expanded-title').text(opt.title);
                 tmpEl.find('.table-expanded-container').css('max-height', opt.tableHeight);
                 tmpEl.css('padding-top', opt.paddingTop);
-
-
-                var addExpandComponent = function () {
-                    hi = parentContainer;
-                    if (topContainer.children().length == 0 || parentContainer.index() >= parentContainer.parent().children().size() - 1) {
-                        var container = $('<div class="panel profile-result-content" style="width:260px; float: left; border-bottom-right-radius: 0;border-top-right-radius: 0;background-color: #fafafa;overflow:auto; border-right: 1px solid #ddd;margin-bottom: 0;padding-left: 5px;padding-right: 5px;"></div>');
-                        container.append(tmpEl);
-                        topContainer.append(container);
-                        topContainer.width(topContainer.width() + 260);
-                    } else {
-                        parentContainer.parent().children().eq(parentContainer.index() + 1).append(tmpEl);
-                    }
-                };
-
+                tmpEl.attr('class-id', CLASS_NAME_PREFIX + CLASS_NUM);
+                tmpEl.attr('parent-class-id', opt.parentClassId);
+                container.append(tmpEl);
 
                 var setExpandBtnClickListener = function (e) {
                     $(e).find('.expand-btn').click(function () {
                         if ($(this).text() == "+" && $(this).parent().find('div>table>tbody>tr').length > 0) {
                             $(this).parent().parent().find('.table-expanded-container').hide(300);
-                            $(this).parent().parent().find('.component-pager').hide(300);
+                            //                $(this).parent().append(new_div);
+                            //                new_div.show(300);
                             $(this).parent().find('.table-expanded-container').show(300);
-                            $(this).parent().find('.component-pager').show(300);
                             $(this).parent().parent().find('.expand-btn').text('+');
+                            console.error($(this));
                             $(this).text("-");
                         } else {
                             $(this).text("+");
-                            $(this).parent().find('.table-expanded-container').hide(300);
-                            $(this).parent().find('.component-pager').hide(300);
+                            $(this).parent().find('.table-expanded-container').hide(300, function () {
+                                //                    $(this).parent().find('div').remove();
+                            });
                         }
-                    });
-                }(tmpEl);
-
-                var setCloseBtnClickListener = function (e) {
-                    $(e).find('.expand-component-close').click(function () {
-                        $.each($(this).parent().find('[class-id]'), function (i, tableTr) {
-                            deleteExpandComponentsByClassId($(tableTr).attr('class-id'));
-                        });
-                        if ($(e).parent().children().length <= 1) {
-                            $(e).parent().remove();
-                            topContainer.width(topContainer.width() - 260);
-                            return;
-                        }
-                        $(e).remove();
                     });
                 }(tmpEl);
 
@@ -883,98 +862,66 @@
                     $.each(data, function (i, data) {
                         var tmpTr = $('<tr>' +
                                 //                            '<td class="relative-badge-td"><span class="badge" style="background-color: #453d77;">' + parseInt(Math.random() * 30) + '</span></td>' +
-                                '<td class="relative-badge-td" style="cursor: pointer;">' + data.from + '</td>' +
+                                '<td class="relative-badge-td">' + data.from + '</td>' +
                                 //                            '<td class="relative-badge-td"><span class="badge" style="background-color: #770c35;">' + parseInt(Math.random() * 30) + '</span></td>' +
                                 //                        '<td class="relative-badge-td">' + data.to + '</td>' +
-                                '<td class="profile-relative-author-td" style="cursor:pointer; border-right:0;" onclick="onRelativeTdClickHandler(this);return false;">' + data.relAuthor + '</td>' +
-                                '<td style="vertical-align: middle; margin: 0; padding: 0; border-left:0; width: 15px;"><label class="btn btn-default btn-sm remove-btn" style="padding: 3px 10px; line-height: 1; margin: 0 5px 0 0;">-</label></td></tr>');
-                        tmpTr.attr('class-id', CLASS_NAME_PREFIX + CLASS_NUM);
-                        tmpTr.attr('parent-class-id', opt.parentClassId);
-                        CLASS_NUM++;
+                                '<td class="profile-relative-author-td">' + data.relAuthor + '</td></tr>');
                         tmpEl.find('tbody').append(tmpTr);
                         setRelBadgeClickHandler(tmpTr);
                     });
 
-                    tmpEl.find('.remove-btn').click(function (e) {
-                        deleteExpandComponentsByClassId($(this).parent().parent().attr('class-id'));
-//                        console.error($(this).attr('class-id'));
-                        if ($(this).parent().parent().parent().children().length <= 1) {
-                            var component = $(this).parent().parent().parent().parent().parent().parent();
-                            if (component.parent().children().length <= 1) {
-                                component.parent().remove();
-                                topContainer.width(topContainer.width() - 260);
-                                return;
-                            } else {
-                                component.remove();
-                                return;
-                            }
-                        }
-                        $(this).parent().parent().remove();
-
-                    });
                 }(opt.data);
 
-                addExpandComponent();
-
+                CLASS_NUM++;
 
                 var getClassId = function () {
                     return tmpEl.attr('class-id');
                 };
 
                 var deleteExpandComponentsByClassId = function (classId) {
-                    $('tr[parent-class-id=' + classId + ']').each(function () {
+                    $('div[parent-class-id=' + classId + ']').each(function () {
                         deleteExpandComponentsByClassId($(this).attr('class-id'));
-                        if ($(this).parent().children().length <= 1) {
-                            var component = $(this).parent().parent().parent().parent();
-                            if (component.parent().children().length <= 1) {
-                                component.parent().remove();
-                                topContainer.width(topContainer.width() - 260);
-                                return;
-                            } else {
-                                component.remove();
-                                return;
-                            }
-                        }
-                        $(this).remove();
                     });
                 };
-
-
-                jQuery.fn.deleteExpandComponentsByClassId = deleteExpandComponentsByClassId;
-                jQuery.fn.getComponent = getClassId;
-                jQuery.fn.getContainer = function () {
+                tmpEl.deleteExpandComponentsByClassId = deleteExpandComponentsByClassId;
+                tmpEl.getContainer = function () {
                     return container;
                 };
-                jQuery.fn.getComponentByClassId = function (classId) {
-                    return $('tr[class-id=' + classId + ']');
-                };
                 return {
+                    getComponent: function () {
+                        return tmpEl;
+                    },
                     getContainer: function () {
                         return tmpEl.getContainer();
                     },
                     deleteExpandComponentsByClassId: function () {
                         deleteExpandComponentsByClassId(tmpEl.attr('class-id'));
-                    },
-                    getClassId: function () {
+                    }, getClassId: function () {
                         return getClassId();
                     }
                 }
             };
 
             return {
-                newExpandComponent: function (options) {
-                    return init(options);
+                newExpandComponent: function () {
+                    return init(option);
                 }
             }
         };
 
+
+        var onRelativeTdClick = function (d) {
+
+        };
+
+        var newViewDiv = function (author, expandDiv) {
+
+        };
         return {
             ExpandComponent: ExpandComponent
         }
 
-    })(ProfileResultModule);
-
-
+    });
 </script>
 </body>
 </html>

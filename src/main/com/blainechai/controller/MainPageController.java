@@ -18,9 +18,7 @@ import org.springframework.web.servlet.ModelAndView;
 import javax.servlet.http.HttpServletRequest;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Created by blainechai on 2016. 9. 5..
@@ -151,6 +149,71 @@ public class MainPageController {
         return "main_statistics";
     }
 
+    @RequestMapping(value = {"/main/statistics/search-author"})
+    public ModelAndView statisticsSearchAuthor(HttpServletRequest request) {
+// 클라이언트로 부터 받아온 search keyword
+        String searchKeyword = request.getParameter("keyword");
+        // 메인 서버와 통신
+        // 저자 검색 부분이 필요
+
+        // 저자 검색 결과가 들어있는 리스트
+        List<String> authorList = new ArrayList<String>();
+        authorList.add("tom1");
+        authorList.add("tom0");
+
+        List<AuthorAndRelAuthor> resultList = searchNicknamesByAuthors(authorList);
+        ModelAndView modelAndView = new ModelAndView("api");
+        Gson gson = new Gson();
+        modelAndView.addObject("json", gson.toJson(resultList));
+        return modelAndView;
+    }
+
+    @RequestMapping(value = {"/main/statistics/search-total-data"})
+    public ModelAndView getStatisticsTotal(HttpServletRequest request) {
+        String searchPeriod = request.getParameter("searchPeriod");
+
+        ArrayList<String> authorList = new ArrayList<String>();
+        authorList.add("total");
+
+        ArrayList<LinkedHashMap<String, String>> resultList = getGraphDataByAuthorsAndPeriod(authorList, searchPeriod);
+
+        ModelAndView modelAndView = new ModelAndView("api");
+        Gson gson = new Gson();
+        modelAndView.addObject("json", gson.toJson(resultList));
+        return modelAndView;
+    }
+
+    @RequestMapping(value = {"/main/statistics/search-author-total-data"})
+    public ModelAndView getStatisticsAuthorTotal(HttpServletRequest request) {
+        String searchPeriod = request.getParameter("searchPeriod");
+
+        ArrayList<String> authorList = new ArrayList<String>();
+        authorList.add("total");
+
+        ArrayList<LinkedHashMap<String, String>> resultList = getGraphDataByAuthorsAndPeriod(authorList, searchPeriod);
+
+        ModelAndView modelAndView = new ModelAndView("api");
+        Gson gson = new Gson();
+        modelAndView.addObject("json", gson.toJson(resultList));
+        return modelAndView;
+    }
+
+    @RequestMapping(value = {"/main/statistics/search-author-data"})
+    public ModelAndView getStatisticsAuthor(HttpServletRequest request) {
+        String authorJson = request.getParameter("author");
+        Gson gson = new Gson();
+        ArrayList<String> authorList = (ArrayList<String>) gson.fromJson(authorJson, ArrayList.class);
+        String searchPeriod = request.getParameter("searchPeriod");
+
+        System.out.println(searchPeriod);
+
+        ArrayList<LinkedHashMap<String, String>> resultList = getGraphDataByAuthorsAndPeriod(authorList, searchPeriod);
+
+        ModelAndView modelAndView = new ModelAndView("api");
+        modelAndView.addObject("json", gson.toJson(resultList));
+        return modelAndView;
+    }
+
     @RequestMapping(value = {"/main/search"})
     public ModelAndView searchPage(HttpServletRequest request) {
         ModelAndView modelAndView = new ModelAndView("main_search");
@@ -211,7 +274,7 @@ public class MainPageController {
         return "redirect:" + "/";
     }
 
-    @RequestMapping(value = "/search")
+    @RequestMapping(value = "/main/searching")
     public ModelAndView searchItems(HttpServletRequest request) {
         Gson gson = new Gson();
         Object o = request.getParameter("data");
@@ -258,7 +321,7 @@ public class MainPageController {
         return modelAndView;
     }
 
-    @RequestMapping(value = "/relative-word")
+    @RequestMapping(value = "/main/relative-word")
     public ModelAndView relativeWord(HttpServletRequest request) {
         Gson gson = new Gson();
         ObjectMapper om = new ObjectMapper();
@@ -283,7 +346,7 @@ public class MainPageController {
         return modelAndView;
     }
 
-    @RequestMapping(value = "/r-check")
+    @RequestMapping(value = "/main/r-check")
     public ModelAndView readCheck(HttpServletRequest request) {
         String bookId = request.getParameter("bookId");
         String userId = sessionRepository.findByJSessionId(request.getSession().getId()).get(0).getUserId();
@@ -305,7 +368,7 @@ public class MainPageController {
         return modelAndView;
     }
 
-    @RequestMapping(value = "/e-check")
+    @RequestMapping(value = "/main/e-check")
     public ModelAndView priorityGet(HttpServletRequest request) {
         String bookId = request.getParameter("bookId");
         String userId = sessionRepository.findByJSessionId(request.getSession().getId()).get(0).getUserId();
@@ -322,7 +385,7 @@ public class MainPageController {
         return modelAndView;
     }
 
-    @RequestMapping(value = "/user-history/delete")
+    @RequestMapping(value = "/main/user-history/delete")
     public ModelAndView userHistoryUpdate(HttpServletRequest request) {
         ModelAndView modelAndView = new ModelAndView("api");
         Gson gson = new Gson();
@@ -351,7 +414,7 @@ public class MainPageController {
         return modelAndView;
     }
 
-    @RequestMapping(value = "/user-history/get")
+    @RequestMapping(value = "/main/user-history/get")
     public ModelAndView userHistoryGet(HttpServletRequest request) {
         String sessionId = request.getSession().getId();
         String userId;
@@ -376,7 +439,7 @@ public class MainPageController {
         return modelAndView;
     }
 
-    @RequestMapping(value = "/table-option/update")
+    @RequestMapping(value = "/main/table-option/update")
     public ModelAndView userTableUpdate(HttpServletRequest request) {
 
 //        System.out.println(request.getParameter("colSize"));
@@ -400,7 +463,7 @@ public class MainPageController {
         return modelAndView;
     }
 
-    @RequestMapping(value = "/nickname/update")
+    @RequestMapping(value = "/main/nickname/update")
     public ModelAndView updateNickname(HttpServletRequest request) {
         String nickname = request.getParameter("nickname");
         String author = request.getParameter("author");
@@ -425,7 +488,7 @@ public class MainPageController {
         return modelAndView;
     }
 
-    @RequestMapping(value = "/nickname/get")
+    @RequestMapping(value = "/main/nickname/get")
     public ModelAndView getNickname(HttpServletRequest request) {
         String author = request.getParameter("author");
         List<NicknameOption> nicknameOptions = nicknameRepository.findByAuthor(author);
@@ -439,7 +502,7 @@ public class MainPageController {
         return modelAndView;
     }
 
-    @RequestMapping(value = "/nickname/check")
+    @RequestMapping(value = "/main/nickname/check")
     public ModelAndView checkNickname(HttpServletRequest request) {
         String nickname = request.getParameter("nickname");
         String author = request.getParameter("author");
@@ -591,7 +654,7 @@ public class MainPageController {
         List<AuthorAndRelAuthor> resultList = new ArrayList<AuthorAndRelAuthor>();
         for (String author : authorList) {
             List<NicknameOption> tmpNicknameList = nicknameRepository.findByAuthor(author);
-            if (tmpNicknameList.size() >= 0) {
+            if (tmpNicknameList.size() > 0) {
                 resultList.add(new AuthorAndRelAuthor(author, tmpNicknameList.get(0).getNickname()));
             } else {
                 resultList.add(new AuthorAndRelAuthor(author, ""));
@@ -607,6 +670,64 @@ public class MainPageController {
             nickname = tmpNicknameList.get(0).getNickname();
         }
         return nickname;
+    }
+
+
+    private ArrayList<LinkedHashMap<String, String>> getGraphDataByAuthorsAndPeriod(ArrayList<String> authorList, String searchPeriod) {
+        ArrayList<LinkedHashMap<String, String>> resultList = new ArrayList<LinkedHashMap<String, String>>();
+
+        switch (Integer.parseInt(searchPeriod)) {
+            case SEARCH_PERIOD.daily:
+                for (int i = 0; i < 30; i++) {
+                    LinkedHashMap<String, String> tMap = (new LinkedHashMap<String, String>());
+                    tMap.put("index", String.valueOf(i));
+                    Random random = new Random();
+                    for (String author : authorList) {
+                        tMap.put(author, String.valueOf(random.nextInt(700)));
+                    }
+                    resultList.add(tMap);
+                }
+                break;
+            case SEARCH_PERIOD.weekly:
+                for (int i = 0; i < 7; i++) {
+                    LinkedHashMap<String, String> tMap = (new LinkedHashMap<String, String>());
+                    tMap.put("index", String.valueOf(i));
+                    Random random = new Random();
+                    for (String author : authorList) {
+                        tMap.put(author, String.valueOf(random.nextInt(1000)));
+                    }
+                    resultList.add(tMap);
+                }
+                break;
+            case SEARCH_PERIOD.monthly:
+                for (int i = 0; i < 12; i++) {
+                    LinkedHashMap<String, String> tMap = (new LinkedHashMap<String, String>());
+                    tMap.put("index", String.valueOf(i));
+                    Random random = new Random();
+                    for (String author : authorList) {
+                        tMap.put(author, String.valueOf(random.nextInt(2000)));
+                    }
+                    resultList.add(tMap);
+                }
+                break;
+            case SEARCH_PERIOD.yearly:
+                for (int i = 0; i < 10; i++) {
+                    LinkedHashMap<String, String> tMap = (new LinkedHashMap<String, String>());
+                    tMap.put("index", String.valueOf(i));
+                    Random random = new Random();
+                    for (String author : authorList) {
+                        tMap.put(author, String.valueOf(random.nextInt(3000)));
+                    }
+                    resultList.add(tMap);
+                }
+                break;
+        }
+
+        return resultList;
+    }
+
+    final class SEARCH_PERIOD {
+        final static int daily = 0, weekly = 1, monthly = 2, yearly = 3;
     }
 }
 

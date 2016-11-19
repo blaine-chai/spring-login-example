@@ -147,7 +147,7 @@
                     <div class="" style="padding: 0;  margin:0 auto;"><input id="datepicker1" data-provide="datepicker"
                                                                              style="width: 123px; text-align:center; font-size:12px; float:left;">
                     </div>
-                    <div class="" style="float:left; width: 20px; fontsize:11px;text-align: center; padding:0;">~</div>
+                    <div class="" style="float:left; width: 20px; font-size:11px;text-align: center; padding:0;">~</div>
                     <div class="" style="padding:0;  margin:0 auto;"><input id="datepicker2" data-provide="datepicker"
                                                                             style="width: 123px; text-align:center; font-size:12px; float:left;">
                     </div>
@@ -319,6 +319,12 @@
 
     $(document).ready(function () {
 
+        $(document).ajaxComplete(function(e, xhr, settings){
+            if(xhr.status === 403){
+                window.location.replace('/')
+            }
+        });
+
         $(window).resize(
                 function () {
                     //            $('#content').height($(window).height());
@@ -351,17 +357,16 @@
         });
 
         $('#datepicker1').datetimepicker({
-            format: 'YYYY/MM/DD HH:mm'
+            format: 'YYYY/MM/DD HH:mm:a'
         });
         $('#datepicker2').datetimepicker({
-            format: 'YYYY/MM/DD HH:mm'
+            format: 'YYYY/MM/DD HH:mm:a'
         });
 
 
         $('.expand-btn').click(function (e, i) {
             if ($(this).text() == "+" && $(this).parent().find('div>table>tbody>tr').length > 0) {
-                $('.history').hide(300, function () {
-                });
+                $('.history').hide(300);
 //                $(this).parent().append(new_div);
 //                new_div.show(300);
                 $(this).parent().find('div').show(300);
@@ -387,7 +392,7 @@
         $('.search-btn').click(function () {
             removeAllRelDiv();
             $.ajax({
-                url: '/search',
+                url: '/main/searching',
                 type: 'post',
                 data: {"data": jsonSearchInfo()},
                 contentType: "application/x-www-form-urlencoded; charset=UTF-8",
@@ -409,7 +414,8 @@
                         html += '<td>' + tdata.savedDate + '</td>';
                         html += '<td class="author-td author' + i + '" title="' + tdata.author + '" href="#">' + tdata.author +
                                 '<span class="nickname-td">' + (tdata.nickname != undefined ? ('(' + tdata.nickname + ')') : '') + '</span>' + '</td>';
-                        html += '<td class="relation-td">' + tdata.referencedAuthor + '</td>';
+                        //rel-author
+                        html += '<td class="relation-td rel-author' + i + '" title="' + tdata.referencedAuthor + '" href="#">' + tdata.referencedAuthor + '</td>';
                         if (tdata.r == 't') {
                             tdata.r = '<span class="glyphicon glyphicon-ok"></span>';
                         } else {
@@ -447,7 +453,8 @@
                             $.each(data, function (i, tdata) {
                                 addAuthorClickListener(i, tdata);
                                 addCheckRBtnListener(i, tdata);
-                                addContentTdClickListener(i, tdata.contents)
+                                addRelAuthorClickListener(i, tdata);
+                                addContentTdClickListener(i, tdata.contents);
                             });
                             highLightResult();
                         });
@@ -466,7 +473,7 @@
         data.bookId = bookId;
         data.priority = priority.val();
         $.ajax({
-            url: '/priority/update',
+            url: '/main/priority/update',
             type: 'post',
             data: {'data': JSON.stringify(data)},
 //            data: {"data": jsonSearchInfo()},
@@ -479,7 +486,7 @@
     function getSearchHistory(json) {
         var data;
         $.ajax({
-            url: "/user-history/get",
+            url: "/main/user-history/get",
             type: "post",
 //                data: {"data": jsonSearchInfo()},
 //            data: {"data": jsonSearchInfo()},
@@ -493,7 +500,7 @@
                     tmpEl.find('.close-search-option-btn').click(function (e) {
                         deleteUserHistory(this, data[i].id);
                         $(this).parent().parent().remove();
-                    })
+                    });
                 });
                 $('#user-history>table>tbody>tr').click(function (e) {
                     addSearchInfo(JSON.parse($(this).find('td').eq(1).text()));
@@ -504,7 +511,7 @@
 
     function deleteUserHistory(element, id) {
         $.ajax({
-            url: "/user-history/delete",
+            url: "/main/user-history/delete",
             type: "post",
             data: {"id": id},
 //            data: {"data": jsonSearchInfo()},
@@ -520,7 +527,7 @@
     function getRelativeWord(json) {
         var data;
         $.ajax({
-            url: "/relative-word",
+            url: "/main/relative-word",
             type: "post",
             data: {"data": jsonSearchInfo()},
 //            data: {"data": jsonSearchInfo()},
@@ -581,13 +588,15 @@
         $.each(a.data, function (i) {
             var newDiv = $('<div class="input-group input-group-sm search-input-group"><div class="dropdown input-group-btn"><div class="btn-group"><button type="button" class="btn btn-default btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="width: 72px"><span class="search-category-option">내용</span><div style="display: inline-block"><span class="caret"></span><span class="sr-only"></span></div></button><ul class="dropdown-menu search-category-selector" role="menu" aria-labelledby="dropdownMenu1"><li role="presentation"><a role="menuitem" tabindex="-1" href="#">내용</a></li><li role="presentation"><a role="menuitem" tabindex="-1" href="#">저자</a></li><li role="presentation"><a role="menuitem" tabindex="-1" href="#">참조</a></li></ul></div></div><input type="text" class="form-control col-xs-4 search-input" placeholder="검색어를 입력해주세요."><div class="dropdown input-group-btn"><div class="btn-group"><button type="button" class="btn btn-default btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="width: 55px"><span class="search-operator-option">SEL</span>\n<div style="display: inline-block"><span class="caret"></span><span class="sr-only"></span></div></button><ul id="operator-selector" class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu1"><li role="presentation"><a role="menuitem" tabindex="1" href="#">SEL</a></li><li role="presentation"><a role="menuitem" tabindex="2" href="#" onclick="handleOperatorSelect(this);return false;">AND</a></li><li role="presentation"><a role="menuitem" tabindex="3" href="#" onclick="handleOperatorSelect(this);return false;">O R</a></li></ul></div><label class="btn btn-default btn-sm close-search-option-btn">-</label></div></div>');
             if (i == 0) {
-                newDiv.find('.close-search-option-btn').css('visibility', 'hidden');
+                newDiv.find('.close-search-option-btn').attr('disabled', '');
             }
 //            console.error(i)
             newDiv.find('.search-category-option').text(a.data[i].category);
 //            console.error(a.data[i].operator)
             newDiv.find('.search-input').val(a.data[i].input);
             newDiv.find('.search-operator-option').text(a.data[i].operator);
+            $('#datepicker1').val(a.fromDate);
+            $('#datepicker2').val(a.toDate);
             $('#search-input-wrapper').append(newDiv);
             $('#search-input-wrapper .close-search-option-btn').click(function (e) {
                 $(this).parent().parent().remove();
@@ -609,14 +618,18 @@
         $('.content-td').popover({
             html: true,
             content: function () {
-                return contents;
+                return $(this).text();
             },
-            template: '<div class="popover popover-content-td"><div class="arrow"></div><div class="popover-inner"><h3 class="popover-title"></h3><div class="popover-content"><p></p></div></div></div>',
+            template: '<div class="popover popover-content-td"><div class="arrow"></div><div class="popover-inner"><h3 class="popover-title"></h3><button type="button" class="close" data-dismiss="popover" aria-label="Close"><span aria-hidden="true">×</span></button><div class="popover-content"><p></p></div></div></div>',
             container: '#book-table',
             placement: 'auto'
         }).on('show.bs.popover', function () {
             //remove popover when other popover appeared
             $('.popover-content-td').popover('hide');
+        }).on('shown.bs.popover', function(){
+            $('.popover-content-td .close').click(function(){
+                $('.popover-content-td').popover('hide');
+            });
         });
     }
 
@@ -628,7 +641,7 @@
                     '<span class="relative-author-from-date">' + lastQuery.fromDate + '</span>' + (lastQuery.fromDate == '' && lastQuery.toDate == '' ? '' : '</span><span> ~ </span><span class="relative-author-to-date">' + lastQuery.toDate + '</span>') +
                     '</div>' +
                     '<div class="draggable-content-container"><div style="overflow: scroll;height: 300px;">' +
-                    '<table class="table table-hover table-fixed table-bordered table-striped table-condensed" style="font-size: 11px; height: 300px; margin-bottom: 0;">' +
+                    '<table class="table table-hover table-fixed table-bordered table-striped table-condensed" style="font-size: 11px; margin-bottom: 0;">' +
                     '<thead><tr><th>저장시간</th><th>저자</th><th>참조저자</th><th>내용</th></tr></thead>' +
                     '<tbody></tbody></table></div><div><nav aria-label="..." style="text-align: center; margin-top:10px;">' +
                     '<ul class="pagination pagination-sm" style="margin: 0 auto;">' +
@@ -643,11 +656,11 @@
             setRelTablePos();
             $('body').append(tmpEl);
             for (j = 0; j < 20; j++) {
-                var content=$('<tr><td>' +
-                '2014-05-' + j + '</td>' +
-                '<td>저자' + j + '</td>' +
-                '<td>참조저자' + j + '</td>' +
-                '<td class="relative-table-content-td">always work (for bootstrap' + j + '</td></tr>');
+                var content = $('<tr><td>' +
+                        '2014-05-' + j + '</td>' +
+                        '<td>저자' + j + '</td>' +
+                        '<td>참조저자' + j + '</td>' +
+                        '<td class="relative-table-content-td">always work (for bootstrap' + j + '</td></tr>');
 
                 tmpEl.find('tbody').append(content);
                 content.find('.relative-table-content-td').popover({
@@ -655,20 +668,24 @@
                     content: function () {
                         return $(this).text();
                     },
-                    template: '<div class="popover popover-relative-content-td"><div class="arrow"></div><div class="popover-inner"><h3 class="popover-title"></h3><div class="popover-content"><p></p></div></div></div>',
-                    container: tmpEl,
+                    template: '<div class="popover popover-relative-content-td"><div class="arrow"></div><div class="popover-inner"><h3 class="popover-title"></h3><button type="button" class="close" data-dismiss="popover" aria-label="Close"><span aria-hidden="true">×</span></button><div class="popover-content"></div></div></div>',
+                    container: tmpEl.find('.draggable-content-container'),
                     placement: 'auto'
                 }).on('show.bs.popover', function () {
                     //remove popover when other popover appeared
                     $('.popover-relative-content-td').popover('hide');
+                }).on('shown.bs.popover', function(){
+                    $('.popover-relative-content-td .close').click(function(){
+                        $('.popover-relative-content-td').popover('hide');
+                    });
                 });
             }
-            tmpEl.draggable({cancel:'.draggable-content-container'});
+            tmpEl.draggable({cancel: '.draggable-content-container'});
             var tarEl = $(this);
             tmpEl.find('.btn-export').click(function (e) {
                 exportCsv(tmpEl.find('table'));
                 $.ajax({
-                    url: "/e-check",
+                    url: "/main/e-check",
                     type: "post",
                     data: {"bookId": tarEl.parent().find('td').eq(0).text()},
                     success: function (responseData) {
@@ -682,7 +699,7 @@
                 });
             });
             $.ajax({
-                url: "/r-check",
+                url: "/main/r-check",
                 type: "post",
                 data: {"bookId": tarEl.parent().find('td').eq(0).text()},
                 success: function (responseData) {
@@ -708,7 +725,7 @@
         $('.check-e').click(function () {
             var tarEl = $(this);
             $.ajax({
-                url: "/e-check",
+                url: "/main/e-check",
                 type: "post",
                 data: {"bookId": tarEl.parent().find('td').eq(0).text()},
                 success: function (responseData) {
@@ -718,7 +735,7 @@
 
                     tarEl.find('span').remove();
                     tarEl.append('<span class="glyphicon glyphicon-ok"></span>');
-                    console.log(html);
+//                    console.log(html);
                 }
             });
         });
@@ -772,6 +789,7 @@
             $('.btn-popover-close').click(function (e) {
                 $('.popover-author-td').popover('hide');
             });
+
             $('.popover-input').attr('disabled', '');
 
             //update nickname
@@ -782,7 +800,7 @@
                 } else {
                     if ($('.btn-identity-check').attr('disabled') != undefined) {
                         $.ajax({
-                            url: "/nickname/update",
+                            url: "/main/nickname/update",
                             type: "post",
                             data: {
                                 "nickname": $('.popover-input-nickname').val(),
@@ -812,7 +830,7 @@
 
             //when popover opened get nickname info from server
             $.ajax({
-                url: "/nickname/get",
+                url: "/main/nickname/get",
                 type: "post",
                 data: {
                     "author": $('.popover-input-author').val()
@@ -829,9 +847,12 @@
 
             $('.popover .btn-identity-check').click(function (e) {
                 $.ajax({
-                    url: "/nickname/check",
+                    url: "/main/nickname/check",
                     type: "post",
-                    data: {"nickname": $('.popover-input-nickname').val()},
+                    data: {
+                        "nickname": $('.popover-input-nickname').val(),
+                        "author": $('.popover-input-author').val()
+                    },
                     success: function (responseData) {
                         if (responseData == 'true') {
                             $('.popover .btn-identity-check').attr('disabled', '');
@@ -845,7 +866,138 @@
                         }
                     }
                 });
-            })
+            });
+
+            $('#book-table').on('hidden.bs.popover', function (e) {
+                $(e.target).data("bs.popover").inState = {click: false, hover: false, focus: false}
+            });
+        });
+    }
+
+    function addRelAuthorClickListener(i, tdata) {
+
+        var content = $('<div class="popover-content-wrapper' + i + '" style="display: none;">' +
+                '<div class="input-group input-group-sm" style=" width:100%">' +
+                '<span class="input-group-addon" style="width: 70px">저자</span>' +
+                '<input type="text" class="form-control popover-input-author" disabled>' +
+                '</div>' +
+                '<div class="input-group input-group-sm" style="width:100%">' +
+                '<span class="input-group-addon" style="width: 70px" >별명</span>' +
+                '<input type="text" class="form-control popover-input popover-input-nickname">' +
+                '<span class="input-group-btn">' +
+                '<label class="btn btn-default btn-sm btn-identity-check popover-input" style="width:70px;">중복 확인</label></span>' +
+                '</div>' +
+                '<div class="input-group input-group-sm" style="width:100%">' +
+                '<span class="input-group-addon" style="width: 70px;" disabled >수정시간</span>' +
+                '<input type="text" class="form-control popover-input-modified-time" disabled>' +
+                '</div>' +
+                '<div class="input-group input-group-sm" style=" width:100%">' +
+                '<span class="input-group-addon" style="width: 70px" >우선순위</span>' +
+                '<span class="input-group-addon" style="width:calc(100% - 70px);" ><select class="popover-input popover-input-priority"><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option><option>6</option><option>7</option><option>8</option><option>9</option></select></span>' +
+                '</div>' +
+                '<div class="input-group input-group-sm" style="width:100%; height: 60px;">' +
+                '<span class="input-group-addon" style="width: 70px" >메모</span>' +
+                '<textarea class="form-control popover-input popover-input-note" style="height: 60px;resize: none;"></textarea>' +
+                '</div>' +
+                '<div style="padding-top: 15px; position:relative">' +
+                '<label class="btn btn-default btn-sm btn-modify-nickname"  style="width:70px;">편집</label>' +
+                '<label class="btn btn-default btn-sm btn-popover-close" style="width:70px;position: absolute;right: 0; ">취소</label>' +
+                '</div></div>');
+
+        $('.rel-author' + i).popover({
+            html: true,
+            content: function () {
+                return content.html();
+            },
+            container: '#book-table',
+            template: '<div class="popover popover-author-td"><div class="arrow"></div><div class="popover-inner"><h3 class="popover-title"></h3><div class="popover-content"><p></p></div></div></div>',
+            placement: 'auto'
+        }).on('show.bs.popover', function () {
+            //remove popover when other popover appeared
+            $('.popover-author-td').popover('hide');
+        }).on('shown.bs.popover', function () {
+            //handle after popover shown
+            var clickedTd = $(this);
+            $('.popover-input-author').val(tdata.referencedAuthor);
+            $('.btn-popover-close').click(function (e) {
+                $('.popover-author-td').popover('hide');
+            });
+
+            $('.popover-input').attr('disabled', '');
+
+            //update nickname
+            $('.popover .btn-modify-nickname').click(function (e) {
+                if ($(this).text() == '편집') {
+                    $('.popover-input').removeAttr('disabled');
+                    $(this).toggleClass('btn-primary').text('저장');
+                } else {
+                    if ($('.btn-identity-check').attr('disabled') != undefined) {
+                        $.ajax({
+                            url: "/main/nickname/update",
+                            type: "post",
+                            data: {
+                                "nickname": $('.popover-input-nickname').val(),
+                                "author": $('.popover-input-author').val(),
+//                                "lastModifiedDate": $('.popover-input-modified-time').val(),
+                                "priority": $('.popover-input-priority').val(),
+                                "note": $('.popover-input-note').val()
+                            },
+                            success: function (responseData) {
+                                if (responseData == 'true') {
+                                    $('.popover .btn-identity-check').attr('disabled', '');
+                                    $('.popover .btn-modify-nickname').toggleClass('btn-primary').text('편집');
+                                    clickedTd.find('.nickname-td').text('(' + $('.popover-input-nickname').val() + ')');
+                                    $('.popover').remove();
+                                    $('.popover-input').attr('disabled', '');
+                                } else {
+                                    //when nickname not checked
+                                    alert('send error');
+                                }
+                            }
+                        });
+                    } else {
+                        alert('중복 확인을 해 주세요.');
+                    }
+                }
+            });
+
+            //when popover opened get nickname info from server
+            $.ajax({
+                url: "/main/nickname/get",
+                type: "post",
+                data: {
+                    "author": $('.popover-input-author').val()
+                },
+                success: function (responseData) {
+                    var result = JSON.parse(responseData);
+//                    console.error(responseData);
+                    $('.popover-input-nickname').val(result.nickname);
+                    $('.popover-input-modified-time').val(result.lastModifiedDate);
+                    $('.popover-input-priority').val(result.priority);
+                    $('.popover-input-note').val(result.note);
+                }
+            });
+
+            $('.popover .btn-identity-check').click(function (e) {
+                $.ajax({
+                    url: "/main/nickname/check",
+                    type: "post",
+                    data: {"nickname": $('.popover-input-nickname').val(),
+                        "author":$('.popover-input-author').val()},
+                    success: function (responseData) {
+                        if (responseData == 'true') {
+                            $('.popover .btn-identity-check').attr('disabled', '');
+                            $('.popover .btn-identity-check').append('<span class="glyphicon glyphicon-ok" style="color:#3ce63d;"></span>');
+                            $('.popover .popover-input-nickname').on('input', function () {
+                                $('.popover .btn-identity-check span').remove();
+                                $('.popover .btn-identity-check').removeAttr('disabled');
+                            });
+                        } else {
+                            alert('이미 같은 별명이 존재합니다.');
+                        }
+                    }
+                });
+            });
 
             $('#book-table').on('hidden.bs.popover', function (e) {
                 $(e.target).data("bs.popover").inState = {click: false, hover: false, focus: false}
@@ -976,6 +1128,8 @@
         }
         pageController.append(pageEl);
     }
+
+
 </script>
 </body>
 </html>

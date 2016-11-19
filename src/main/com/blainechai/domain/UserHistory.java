@@ -19,6 +19,7 @@ public class UserHistory implements Serializable{
     @JoinColumn(name = "userId", referencedColumnName = "userId")
     private UserAccount userAccount;
 
+    @Column(length = 2048)
     private String word;
     private long date;
 
