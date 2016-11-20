@@ -56,7 +56,15 @@ public class MainPageController {
     }
 
     @RequestMapping(value = {"/main"})
-    public String mainPage() {
+    public ModelAndView mainPage(HttpServletRequest request) {
+        ModelAndView modelAndView = new ModelAndView("main_alarm");
+        modelAndView.addObject("colSize", tableOptionRepository.findByUserAccount_UserId(sessionRepository.findByJSessionId(request.getSession().getId()).get(0).getUserId()).get(0).getColSizes());
+
+        return modelAndView;
+    }
+
+    @RequestMapping(value = {"/main/alarm/search-user-bookmark"})
+    public String getUserBookmark() {
         return "main_alarm";
     }
 
@@ -281,7 +289,7 @@ public class MainPageController {
 //        System.out.println(request.getParameter("data"));
         ObjectMapper om = new ObjectMapper();
         try {
-            Map myMap = om.readValue(request.getParameter("data").toString(), new TypeReference<Map<String, Object>>() {
+            Map myMap = om.readValue(request.getParameter("data"), new TypeReference<Map<String, Object>>() {
             });
 //            System.out.println(myMap.get("typeInfo"));
 //            System.out.println(((Map) ((ArrayList) myMap.get("data")).get(0)).get("category"));
@@ -313,9 +321,12 @@ public class MainPageController {
         String userId;
         if (sessionRepository.findByJSessionId(sessionId).size() > 0) {
             userId = sessionRepository.findByJSessionId(sessionId).get(0).getUserId();
-            UserHistory userHistory = new UserHistory(userAccountRepository.findByUserId(userId).get(0),
-                    request.getParameter("data"), new java.util.Date().getTime());
-            userHistoryRepository.save(userHistory);
+            String word = request.getParameter("data");
+            if (userHistoryRepository.findByUserAccount_UserIdAndWord(userId, word).size() <= 0) {
+                UserHistory userHistory = new UserHistory(userAccountRepository.findByUserId(userId).get(0),
+                        request.getParameter("data"), new java.util.Date().getTime());
+                userHistoryRepository.save(userHistory);
+            }
         }
 
         return modelAndView;
@@ -326,7 +337,7 @@ public class MainPageController {
         Gson gson = new Gson();
         ObjectMapper om = new ObjectMapper();
         try {
-            Map myMap = om.readValue(request.getParameter("data").toString(), new TypeReference<Map<String, Object>>() {
+            Map myMap = om.readValue(request.getParameter("data"), new TypeReference<Map<String, Object>>() {
             });
 
         } catch (Exception e) {
@@ -457,10 +468,7 @@ public class MainPageController {
             e.printStackTrace();
         }
 
-
-        ModelAndView modelAndView = new ModelAndView("api");
-
-        return modelAndView;
+        return new ModelAndView("api");
     }
 
     @RequestMapping(value = "/main/nickname/update")

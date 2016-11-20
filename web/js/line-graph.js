@@ -4,17 +4,6 @@ var timePeriodOption = {
     monthly: 2,
     yearly: 3
 };
-//
-// $(document).ready(function () {
-//
-//     a = GraphModule.graph();
-//     a.init();
-//     $(window).resize(
-//         function () {
-//             a.refresh();
-//         });
-// });
-
 
 var GraphModule = (function () {
 
@@ -31,26 +20,14 @@ var GraphModule = (function () {
             totalData: []
         };
 
-        var option;
+        var option = $.extend(defaults, opt);
         var m;
         var cWidth, cHeight, width, height;
-        var x, y, totalX, totalY, xAxis, yAxis, totalXAxis, totalYAxis;
+        var x, y, totalY, xAxis, yAxis, totalYAxis;
         var svg;
         var graphContainer;
-        var data1 = [
-            {"index": 1, "a": 50, "b": 70},
-            {"index": 2, "a": 50, "b": 70},
-            {"index": 3, "a": 70, "b": 70},
-            {"index": 4, "a": 80, "b": 30},
-            {"index": 5, "a": 190, "b": 20},
-            {"index": 6, "a": 30, "b": 10},
-            {"index": 7, "a": 20, "b": 40},
-            {"index": 8, "a": 200, "b": 30}];
-
 
         option = defaults;
-
-        // option.nameList = ['a', 'b'];
 
         var setOption = (function (opt) {
             option = $.extend(option, opt);
@@ -94,24 +71,6 @@ var GraphModule = (function () {
             option.margin = m;
         });
 
-
-//        var data = [
-//            {"date": new Date("2014-02-20T00:00:00"), "count": 1},
-//            {"date": new Date("2014-02-20T02:00:00"), "count": 2},
-//            {"date": new Date("2014-02-20T04:00:00"), "count": 3},
-//            {"date": new Date("2014-02-20T06:00:00"), "count": 4},
-//            {"date": new Date("2014-02-20T08:00:00"), "count": 5},
-//            {"date": new Date("2014-02-20T10:00:00"), "count": 6},
-//            {"date": new Date("2014-02-20T12:00:00"), "count": 7},
-//            {"date": new Date("2014-02-20T14:00:00"), "count": 6},
-//            {"date": new Date("2014-02-20T16:00:00"), "count": 5},
-//            {"date": new Date("2014-02-20T18:00:00"), "count": 4},
-//            {"date": new Date("2014-02-20T20:00:00"), "count": 3},
-//            {"date": new Date("2014-02-20T22:00:00"), "count": 2},
-//            {"date": new Date("2014-02-20T23:59:59"), "count": 1}
-//        ];
-
-
         var setSize = (function () {
 
 
@@ -125,28 +84,6 @@ var GraphModule = (function () {
                 .attr("transform", "translate(" + m.left + "," + m.top + ")");
         });
 
-        // for (var k =0;k<data_votes.length; k++){
-//     range.push(k*w/data_votes.length + xoffset)
-// }
-//
-// //domain is the desired labels in an array, range is the position of each label in an array
-// xScale.domain(['hi','b','c','d','e'])
-//     .range(range)
-//
-// //axes take a scale object
-// var xaxis = d3.svg.axis()
-//     .scale(xScale);
-
-        // var setXDomain = (function () {
-        //     x = d3.scale.linear().domain(
-        //         [d3.min(option.data, function (d) {
-        //             return d['index']
-        //         }),
-        //             d3.max(option.data, function (d) {
-        //                 return d['index']
-        //             })])
-        //         .range([0, width]);
-        // });
         var setXDomain = (function () {
             var domain = [];
             $.each(option.data, function (i, data) {
@@ -193,13 +130,6 @@ var GraphModule = (function () {
 
             totalYAxis = d3.svg.axis().scale(totalY).orient("right").ticks(5);
         });
-//    var x = d3.time.scale().domain([data[0].date, data[data.length-1].date]).rangeRound([0, width], 1);
-//    var y = d3.scale.linear().domain([0, 10]).range([height, 0]);
-
-
-//    var xAxis = d3.svg.axis().scale(x).orient("bottom").ticks(d3.time.hour, 1).tickFormat(d3.time.format('%H'));
-//    var yAxis = d3.svg.axis().scale(y).orient("left").ticks(5);
-
 
         //draw x,y axis
 
@@ -235,7 +165,6 @@ var GraphModule = (function () {
                 var line = d3.svg.line().x(function (d) {
                     return x(d['index']);
                 }).y(function (d) {
-                    // console.error(d[name]==undefined?0:d[name]);
                     return y(d[name]);
                 }).interpolate(option.interpolation);
 
@@ -250,10 +179,8 @@ var GraphModule = (function () {
                 var line = d3.svg.line().x(function (d) {
                     return x(d['index']);
                 }).y(function (d) {
-                    // console.error(d[name]==undefined?0:d[name]);
                     return totalY(d[name]);
                 }).interpolate(option.interpolation);
-                //
                 svg.select('g').append("path")
                     .datum(option.totalData)
                     .attr("class", "line total")
@@ -264,14 +191,11 @@ var GraphModule = (function () {
         });
 
         var init = function () {
-//                    svg.remove();
             setOption();
             setGraphContainer();
             setWidth();
             setHeight();
             addName();
-            // addData();
-            // setMargin();
             setSvg();
             setXDomain();
             setYDomain();

@@ -12,6 +12,7 @@ import java.util.List;
 public interface UserHistoryRepository extends JpaRepository<UserHistory, Long>{
 
     List<UserHistory> findByUserAccount_UserId(String userId);
+    List<UserHistory> findByUserAccount_UserIdAndWord(String userId, String word);
     @Transactional
     long deleteById(Long id);
 }
