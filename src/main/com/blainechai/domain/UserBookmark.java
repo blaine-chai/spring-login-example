@@ -7,8 +7,8 @@ import java.io.Serializable;
  * Created by blainechai on 2016. 10. 16..
  */
 @Entity
-@Table(name = "user_search_history")
-public class UserHistory implements Serializable{
+@Table(name = "user_bookmark")
+public class UserBookmark implements Serializable{
     private static final long serialVersionUID = 1L;
 
     @Id
@@ -21,20 +21,27 @@ public class UserHistory implements Serializable{
 
     @Column(length = 2048)
     private String word;
+
     private long date;
 
-    @ManyToOne
-    @JoinColumn(name = "bookmarkId", referencedColumnName="id")
-    private UserBookmark userBookmark;
+    private int count;
 
-    protected UserHistory() {
+    protected UserBookmark() {
     }
 
 
-    public UserHistory(UserAccount userAccount, String word, long date) {
+    public UserBookmark(UserAccount userAccount, String word, long date) {
         this.userAccount = userAccount;
         this.word = word;
         this.date = date;
+        this.count = 0;
+    }
+
+    public UserBookmark(UserHistory userHistory){
+        this.userAccount = userHistory.getUserAccount();
+        this.word = userHistory.getWord();
+        this.date = new java.util.Date().getTime();
+        this.count = 0;
     }
 
     public UserAccount getUserAccount() {
@@ -73,12 +80,12 @@ public class UserHistory implements Serializable{
         this.id = id;
     }
 
-    public UserBookmark getUserBookmark() {
-        return userBookmark;
+    public int getCount() {
+        return count;
     }
 
-    public void setUserBookmark(UserBookmark userBookmark) {
-        this.userBookmark = userBookmark;
+    public void setCount(int count) {
+        this.count = count;
     }
 
     @Override

@@ -12,6 +12,7 @@
         <class>com.blainechai.domain.UserTableOption</class>
         <class>com.blainechai.domain.UserHistory</class>
         <class>com.blainechai.domain.BookHistory</class>
+        <class>com.blainechai.domain.UserBookmark</class>
         <class>com.blainechai.domain.NicknameOption</class>
         <exclude-unlisted-classes>true</exclude-unlisted-classes>
     </persistence-unit>

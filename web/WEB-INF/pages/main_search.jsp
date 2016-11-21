@@ -173,7 +173,8 @@
                 <div class="btn-group" style="padding-top: 5px; width: 100%; margin:0;">
                     <label class="btn btn-default btn-sm expand-btn btn-primary"
                            style="width: 29px; margin:0;">+</label>
-                    <label class="btn btn-default btn-sm" style="width:calc(100% - 29px); margin:0;">Admin
+                    <label class="btn btn-default btn-sm" style="width:calc(100% - 29px); margin:0;"
+                           onclick="$(this).parent().find('.expand-btn').click();return false;">Admin
                         History</label>
                     <div id="admin-history" class="panel history"
                          style="overflow: auto; max-height:300px; margin-left: 2px; margin-right: 2px; display: none;">
@@ -187,12 +188,13 @@
                 <div class="btn-group" style="padding-top: 5px; width: 100%;margin:0;">
                     <label class="btn btn-default btn-sm expand-btn btn-primary"
                            style="width: 29px; margin:0;">+</label>
-                    <label class="btn btn-default btn-sm" style="width:calc(100% - 29px); margin:0;">User
+                    <label class="btn btn-default btn-sm" style="width:calc(100% - 29px); margin:0;"
+                           onclick="$(this).parent().find('.expand-btn').click();return false;">User
                         History</label>
                     <div id="user-history" class="panel history"
                          style="overflow: auto; max-height:300px; margin-left: 2px; margin-right: 2px; display: none;">
                         <table style="font-size:11px;max-height: 300px; overflow: auto;word-break: break-all;"
-                               class="table table-fixed table-bordered table-striped table-condensed">
+                               class="table table-fixed table-striped table-condensed">
                             <tbody></tbody>
                         </table>
                     </div>
@@ -319,8 +321,8 @@
 
     $(document).ready(function () {
 
-        $(document).ajaxComplete(function(e, xhr, settings){
-            if(xhr.status === 403){
+        $(document).ajaxComplete(function (e, xhr, settings) {
+            if (xhr.status === 403) {
                 window.location.replace('/')
             }
         });
@@ -364,7 +366,7 @@
         });
 
 
-        $('.expand-btn').click(function (e, i) {
+        $('.expand-btn').click(function (e) {
             if ($(this).text() == "+" && $(this).parent().find('div>table>tbody>tr').length > 0) {
                 $('.history').hide(300);
 //                $(this).parent().append(new_div);
@@ -406,7 +408,7 @@
                     var html = '<tbody>';
                     $.each(data, function (i, tdata) {
                         html += '<tr><td>' + tdata.number + '</td>';
-                        var priorityEl = $('')
+                        var priorityEl = $('');
                         priorityEl.find('select').val(tdata.priority);
                         html += '<td>' + '<select><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option><option>6</option><option>7</option><option>8</option><option>9</option></select>' + '</td>';
                         html += '<td>' + tdata.groupName + '</td>';
@@ -494,17 +496,45 @@
             success: function (responseData) {
                 data = userHistory = JSON.parse(responseData);
                 $('#user-history>table>tbody>tr').remove();
-                $.each(data, function (i) {
-                    var tmpEl = $('<tr><td><input type="checkbox"></td><td>' + data[i].word + '</td><td><label class="btn btn-default btn-sm close-search-option-btn">-</label></td></tr>');
+                $.each(data, function (i, d) {
+                    var tmpEl = $('<tr><td class="user-history-bookmark-td"><img class="bookmark-btn" style="width: 26px;height: 26px;"></td><td>' + d.word + '</td><td class="user-history-remove-td"><label class="btn btn-default btn-sm close-search-option-btn">-</label></td></tr>');
+                    if (d.isBookmarked) {
+                        tmpEl.find('img').addClass('bookmark-btn-active');
+                    }
                     $('#user-history>table>tbody').prepend(tmpEl);
                     tmpEl.find('.close-search-option-btn').click(function (e) {
-                        deleteUserHistory(this, data[i].id);
+                        deleteUserHistory(this, d.id);
                         $(this).parent().parent().remove();
                     });
                 });
-                $('#user-history>table>tbody>tr').click(function (e) {
-                    addSearchInfo(JSON.parse($(this).find('td').eq(1).text()));
-                })
+                $('#user-history>table>tbody>tr>td:nth-child(2)').click(function (e) {
+                    addSearchInfo(JSON.parse($(this).text()));
+                });
+
+                $('.user-history-bookmark-td').click(function (e) {
+                    var icon = $(this).find('img');
+                    if ($(this).find('img').hasClass('bookmark-btn-active')) {
+                        $.ajax({
+                            url: '/main/user-bookmark/delete',
+                            type: 'post',
+                            data: {'data': $(this).parent().find('td:nth-child(2)').text()},
+                            contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
+                            success: function (responseData) {
+                                icon.toggleClass('bookmark-btn-active');
+                            }
+                        });
+                    } else {
+                        $.ajax({
+                            url: '/main/user-bookmark/add',
+                            type: 'post',
+                            data: {'data': $(this).parent().find('td:nth-child(2)').text()},
+                            contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
+                            success: function (responseData) {
+                                icon.toggleClass('bookmark-btn-active');
+                            }
+                        });
+                    }
+                });
             }
         });
     }
@@ -626,8 +656,8 @@
         }).on('show.bs.popover', function () {
             //remove popover when other popover appeared
             $('.popover-content-td').popover('hide');
-        }).on('shown.bs.popover', function(){
-            $('.popover-content-td .close').click(function(){
+        }).on('shown.bs.popover', function () {
+            $('.popover-content-td .close').click(function () {
                 $('.popover-content-td').popover('hide');
             });
         });
@@ -674,8 +704,8 @@
                 }).on('show.bs.popover', function () {
                     //remove popover when other popover appeared
                     $('.popover-relative-content-td').popover('hide');
-                }).on('shown.bs.popover', function(){
-                    $('.popover-relative-content-td .close').click(function(){
+                }).on('shown.bs.popover', function () {
+                    $('.popover-relative-content-td .close').click(function () {
                         $('.popover-relative-content-td').popover('hide');
                     });
                 });
@@ -982,8 +1012,10 @@
                 $.ajax({
                     url: "/main/nickname/check",
                     type: "post",
-                    data: {"nickname": $('.popover-input-nickname').val(),
-                        "author":$('.popover-input-author').val()},
+                    data: {
+                        "nickname": $('.popover-input-nickname').val(),
+                        "author": $('.popover-input-author').val()
+                    },
                     success: function (responseData) {
                         if (responseData == 'true') {
                             $('.popover .btn-identity-check').attr('disabled', '');

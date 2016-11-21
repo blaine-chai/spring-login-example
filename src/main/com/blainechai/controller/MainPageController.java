@@ -46,6 +46,9 @@ public class MainPageController {
     @Autowired
     private NicknameRepository nicknameRepository;
 
+    @Autowired
+    private UserBookmarkRepository userBookmarkRepository;
+
     public static List<BookInfo> bookInfoList = new ArrayList<BookInfo>();
     public static ArrayList<String> keySet = new ArrayList<String>();
 
@@ -446,6 +449,71 @@ public class MainPageController {
 //        modelAndView.addObject("json", gson.toJson(rtnArray));
         modelAndView.addObject("json", gson.toJson(userHistoryApis));
 
+
+        return modelAndView;
+    }
+
+    @RequestMapping(value = "/main/user-bookmark/delete")
+    public ModelAndView userBookmarkDelete(HttpServletRequest request) {
+        String sessionId = request.getSession().getId();
+        String userId;
+//        Gson gson = new Gson();
+//        List<UserHistoryApi> userHistoryApis = new ArrayList<UserHistoryApi>();
+
+        if (sessionRepository.findByJSessionId(sessionId).size() > 0) {
+            userId = sessionRepository.findByJSessionId(sessionId).get(0).getUserId();
+            String word = request.getParameter("data");
+            List<UserHistory> userHistories = userHistoryRepository.findByUserAccount_UserIdAndWord(userId, word);
+            if (userHistories.size() > 0) {
+                UserHistory userHistory = userHistories.get(0);
+                userHistory.setUserBookmark(null);
+                userHistoryRepository.save(userHistory);
+            }
+            userBookmarkRepository.deleteByUserAccount_UserIdAndWord(userId, word);
+        }
+        return new ModelAndView("api").addObject("json", "");
+    }
+
+    @RequestMapping(value = "/main/user-bookmark/add")
+    public ModelAndView userBookmarkAdd(HttpServletRequest request) {
+        String sessionId = request.getSession().getId();
+        String userId;
+
+        String word = request.getParameter("data");
+        if (sessionRepository.findByJSessionId(sessionId).size() > 0) {
+            userId = sessionRepository.findByJSessionId(sessionId).get(0).getUserId();
+            List<UserHistory> userHistories = userHistoryRepository.findByUserAccount_UserIdAndWord(userId, word);
+            if (userHistories.size() > 0) {
+                UserHistory userHistory = userHistories.get(0);
+                UserBookmark tmpBookmark = userBookmarkRepository.save(new UserBookmark(userHistory));
+                userHistory.setUserBookmark(tmpBookmark);
+                userHistoryRepository.save(userHistory);
+            }
+
+        }
+        return new ModelAndView("api").addObject("json", "");
+    }
+
+    @RequestMapping(value = "/main/user-bookmark/get")
+    public ModelAndView userBookmarkGet(HttpServletRequest request) {
+        String sessionId = request.getSession().getId();
+        String userId;
+        List<UserBookmark> userBookmarks;
+        Gson gson = new Gson();
+        List<UserHistoryApi> userHistoryApis = new ArrayList<UserHistoryApi>();
+        if (sessionRepository.findByJSessionId(sessionId).size() > 0) {
+            userId = sessionRepository.findByJSessionId(sessionId).get(0).getUserId();
+            userBookmarks = userBookmarkRepository.findByUserAccount_UserId(userId);
+
+            if (userBookmarks != null) {
+                for (UserBookmark bookmark : userBookmarks) {
+                    userHistoryApis.add(new UserHistoryApi(bookmark));
+                }
+            }
+        }
+        ModelAndView modelAndView = new ModelAndView("api");
+//        modelAndView.addObject("json", gson.toJson(rtnArray));
+        modelAndView.addObject("json", gson.toJson(userHistoryApis));
 
         return modelAndView;
     }

@@ -245,7 +245,7 @@
         userBookmarkModule.setContainer($('#alarm-user-bookmark'));
         userBookmarkModule.setTBodyGenerator(function () {
             $.ajax({
-                url: "/main/user-history/get",
+                url: "/main/user-bookmark/get",
                 type: "post",
                 data: {},
                 success: function (responseData) {
