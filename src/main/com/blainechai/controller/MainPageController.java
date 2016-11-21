@@ -49,6 +49,12 @@ public class MainPageController {
     @Autowired
     private UserBookmarkRepository userBookmarkRepository;
 
+    @Autowired
+    private AdminBookmarkRepository adminBookmarkRepository;
+
+    @Autowired
+    private AdminHistoryRepository adminHistoryRepository;
+
     public static List<BookInfo> bookInfoList = new ArrayList<BookInfo>();
     public static ArrayList<String> keySet = new ArrayList<String>();
 
@@ -322,13 +328,21 @@ public class MainPageController {
 
         String sessionId = request.getSession().getId();
         String userId;
-        if (sessionRepository.findByJSessionId(sessionId).size() > 0) {
+        List<Session> sessions = sessionRepository.findByJSessionId(sessionId);
+        if (sessions.size() > 0) {
+            for (Session session : sessions) {
+                //admin type에 대한 체크가 들어가야함
+            }
             userId = sessionRepository.findByJSessionId(sessionId).get(0).getUserId();
             String word = request.getParameter("data");
             if (userHistoryRepository.findByUserAccount_UserIdAndWord(userId, word).size() <= 0) {
                 UserHistory userHistory = new UserHistory(userAccountRepository.findByUserId(userId).get(0),
                         request.getParameter("data"), new java.util.Date().getTime());
+                AdminHistory adminHistory = new AdminHistory(userAccountRepository.findByUserId(userId).get(0),
+                        request.getParameter("data"), new java.util.Date().getTime());
                 userHistoryRepository.save(userHistory);
+                adminHistoryRepository.save(adminHistory);
+
             }
         }
 
@@ -399,8 +413,57 @@ public class MainPageController {
         return modelAndView;
     }
 
+    @RequestMapping(value = "/main/admin-history/get")
+    public ModelAndView adminHistoryGet(HttpServletRequest request) {
+        List<AdminHistory> adminHistories;
+        Gson gson = new Gson();
+        List<HistoryApi> historyApis = new ArrayList<HistoryApi>();
+        adminHistories = adminHistoryRepository.findAll();
+
+        if (adminHistories != null) {
+            for (AdminHistory adminHistory : adminHistories) {
+                historyApis.add(new HistoryApi(adminHistory));
+            }
+        }
+        ModelAndView modelAndView = new ModelAndView("api");
+//        modelAndView.addObject("json", gson.toJson(rtnArray));
+        modelAndView.addObject("json", gson.toJson(historyApis));
+
+
+        return modelAndView;
+    }
+
+    @RequestMapping(value = "/main/admin-history/delete")
+    public ModelAndView adminHistoryDelete(HttpServletRequest request) {
+        ModelAndView modelAndView = new ModelAndView("api");
+        Gson gson = new Gson();
+        try {
+            Long id = Long.parseLong(request.getParameter("id"));
+            adminHistoryRepository.deleteById(id);
+        } catch (Exception e) {
+            System.out.println(e.getStackTrace());
+        }
+        String sessionId = request.getSession().getId();
+        String userId;
+        List<AdminHistory> adminHistories;
+        List<HistoryApi> historyApis = new ArrayList<HistoryApi>();
+        if (sessionRepository.findByJSessionId(sessionId).size() > 0) {
+            userId = sessionRepository.findByJSessionId(sessionId).get(0).getUserId();
+            adminHistories = adminHistoryRepository.findByUserAccount_UserId(userId);
+
+            if (adminHistories != null) {
+                for (AdminHistory adminHistory : adminHistories) {
+                    historyApis.add(new HistoryApi(adminHistory));
+                }
+            }
+        }
+        modelAndView.addObject("json", gson.toJson(historyApis));
+//        modelAndView.addObject("json", gson.toJson(rtnArray));
+        return modelAndView;
+    }
+
     @RequestMapping(value = "/main/user-history/delete")
-    public ModelAndView userHistoryUpdate(HttpServletRequest request) {
+    public ModelAndView userHistoryDelete(HttpServletRequest request) {
         ModelAndView modelAndView = new ModelAndView("api");
         Gson gson = new Gson();
         try {
@@ -412,18 +475,18 @@ public class MainPageController {
         String sessionId = request.getSession().getId();
         String userId;
         List<UserHistory> userHistories;
-        List<UserHistoryApi> userHistoryApis = new ArrayList<UserHistoryApi>();
+        List<HistoryApi> historyApis = new ArrayList<HistoryApi>();
         if (sessionRepository.findByJSessionId(sessionId).size() > 0) {
             userId = sessionRepository.findByJSessionId(sessionId).get(0).getUserId();
             userHistories = userHistoryRepository.findByUserAccount_UserId(userId);
 
             if (userHistories != null) {
                 for (UserHistory uHistory : userHistories) {
-                    userHistoryApis.add(new UserHistoryApi(uHistory));
+                    historyApis.add(new HistoryApi(uHistory));
                 }
             }
         }
-        modelAndView.addObject("json", gson.toJson(userHistoryApis));
+        modelAndView.addObject("json", gson.toJson(historyApis));
 //        modelAndView.addObject("json", gson.toJson(rtnArray));
         return modelAndView;
     }
@@ -434,23 +497,91 @@ public class MainPageController {
         String userId;
         List<UserHistory> userHistories;
         Gson gson = new Gson();
-        List<UserHistoryApi> userHistoryApis = new ArrayList<UserHistoryApi>();
+        List<HistoryApi> historyApis = new ArrayList<HistoryApi>();
         if (sessionRepository.findByJSessionId(sessionId).size() > 0) {
             userId = sessionRepository.findByJSessionId(sessionId).get(0).getUserId();
             userHistories = userHistoryRepository.findByUserAccount_UserId(userId);
 
             if (userHistories != null) {
                 for (UserHistory uHistory : userHistories) {
-                    userHistoryApis.add(new UserHistoryApi(uHistory));
+                    historyApis.add(new HistoryApi(uHistory));
                 }
             }
         }
         ModelAndView modelAndView = new ModelAndView("api");
 //        modelAndView.addObject("json", gson.toJson(rtnArray));
-        modelAndView.addObject("json", gson.toJson(userHistoryApis));
+        modelAndView.addObject("json", gson.toJson(historyApis));
 
 
         return modelAndView;
+    }
+
+    @RequestMapping(value = "/main/admin-bookmark/delete")
+    public ModelAndView adminBookmarkDelete(HttpServletRequest request) {
+        String sessionId = request.getSession().getId();
+        String adminId;
+//        Gson gson = new Gson();
+//        List<UserHistoryApi> userHistoryApis = new ArrayList<UserHistoryApi>();
+
+        if (sessionRepository.findByJSessionId(sessionId).size() > 0) {
+            adminId = sessionRepository.findByJSessionId(sessionId).get(0).getUserId();
+            String word = request.getParameter("data");
+            List<AdminHistory> adminHistories = adminHistoryRepository.findByUserAccount_UserIdAndWord(adminId, word);
+            if (adminHistories.size() > 0) {
+                AdminHistory adminHistory = adminHistories.get(0);
+                adminHistory.setAdminBookmark(null);
+                adminHistoryRepository.save(adminHistory);
+            }
+            adminBookmarkRepository.deleteByAdminAccount_UserIdAndWord(adminId, word);
+        }
+        return new ModelAndView("api").addObject("json", "");
+    }
+
+    @RequestMapping(value = "/main/admin-bookmark/get")
+    public ModelAndView adminBookmarkGet(HttpServletRequest request) {
+        String sessionId = request.getSession().getId();
+        String userId;
+        List<AdminBookmark> adminBookmarks;
+        Gson gson = new Gson();
+        List<HistoryApi> historyApis = new ArrayList<HistoryApi>();
+        if (sessionRepository.findByJSessionId(sessionId).size() > 0) {
+            userId = sessionRepository.findByJSessionId(sessionId).get(0).getUserId();
+            adminBookmarks = adminBookmarkRepository.findByUserAccount_UserId(userId);
+
+            if (adminBookmarks != null) {
+                for (AdminBookmark bookmark : adminBookmarks) {
+                    historyApis.add(new HistoryApi(bookmark));
+                }
+            }
+        }
+        ModelAndView modelAndView = new ModelAndView("api");
+//        modelAndView.addObject("json", gson.toJson(rtnArray));
+        modelAndView.addObject("json", gson.toJson(historyApis));
+
+        return modelAndView;
+    }
+
+    @RequestMapping(value = "/main/admin-bookmark/add")
+    public ModelAndView adminBookmarkAdd(HttpServletRequest request) {
+        String sessionId = request.getSession().getId();
+        String adminId;
+
+        String word = request.getParameter("data");
+        if (sessionRepository.findByJSessionId(sessionId).size() > 0) {
+            adminId = sessionRepository.findByJSessionId(sessionId).get(0).getUserId();
+            List<AdminHistory> adminHistories = adminHistoryRepository.findByUserAccount_UserIdAndWord(adminId, word);
+            if (adminHistories.size() > 0) {
+                AdminHistory adminHistory = adminHistories.get(0);
+                List<UserAccount> allUsers = userAccountRepository.findAll();
+                for (UserAccount userAccount : allUsers) {
+                    AdminBookmark tmpBookmark = adminBookmarkRepository.save(new AdminBookmark(userAccount, adminHistory.getUserAccount(), adminHistory.getWord(), adminHistory));
+                    adminHistory.setUserBookmark(tmpBookmark);
+                    adminHistoryRepository.save(adminHistory);
+                }
+            }
+
+        }
+        return new ModelAndView("api").addObject("json", "");
     }
 
     @RequestMapping(value = "/main/user-bookmark/delete")
@@ -500,20 +631,20 @@ public class MainPageController {
         String userId;
         List<UserBookmark> userBookmarks;
         Gson gson = new Gson();
-        List<UserHistoryApi> userHistoryApis = new ArrayList<UserHistoryApi>();
+        List<HistoryApi> historyApis = new ArrayList<HistoryApi>();
         if (sessionRepository.findByJSessionId(sessionId).size() > 0) {
             userId = sessionRepository.findByJSessionId(sessionId).get(0).getUserId();
             userBookmarks = userBookmarkRepository.findByUserAccount_UserId(userId);
 
             if (userBookmarks != null) {
                 for (UserBookmark bookmark : userBookmarks) {
-                    userHistoryApis.add(new UserHistoryApi(bookmark));
+                    historyApis.add(new HistoryApi(bookmark));
                 }
             }
         }
         ModelAndView modelAndView = new ModelAndView("api");
 //        modelAndView.addObject("json", gson.toJson(rtnArray));
-        modelAndView.addObject("json", gson.toJson(userHistoryApis));
+        modelAndView.addObject("json", gson.toJson(historyApis));
 
         return modelAndView;
     }
@@ -802,7 +933,19 @@ public class MainPageController {
         return resultList;
     }
 
-    final class SEARCH_PERIOD {
+    private void addAdminBookmarkToDb(AdminHistory adminHistory) {
+        List<UserAccount> userAccounts = userAccountRepository.findAll();
+        Long currentTime = new java.util.Date().getTime();
+        for (UserAccount account : userAccounts) {
+            adminBookmarkRepository.save(new AdminBookmark(account, account, adminHistory, adminHistory.getWord(), currentTime));
+        }
+    }
+
+    private void deleteAdminBookmarkToDb(AdminHistory adminHistory) {
+        adminBookmarkRepository.deleteByAdminHistory_id(adminHistory.getId());
+    }
+
+    private final class SEARCH_PERIOD {
         final static int daily = 0, weekly = 1, monthly = 2, yearly = 3;
     }
 }

@@ -132,10 +132,10 @@
 <div id="content" class="" style="">
     <div id="content-wrapper" style="height: 100%;">
         <div id="alarm-table-group" class="col-xs-5" style="height: 100%; background: #efefef;">
-            <div id="alarm-user-bookmark" class="panel panel-default"
+            <div id="alarm-admin-bookmark" class="panel panel-default"
                  style="height: calc(50% - 25px); padding: 15px;margin-top:15px;">
             </div>
-            <div id="alarm-admin-bookmark" class="panel panel-default" style="height: calc(50% - 25px); padding: 15px;">
+            <div id="alarm-user-bookmark" class="panel panel-default" style="height: calc(50% - 25px); padding: 15px;">
             </div>
         </div>
         <div class="col-xs-7"
@@ -239,30 +239,52 @@
 
     var userBookmarkModule = BookmarkTableModule.getModule();
     var adminBookmarkModule = BookmarkTableModule.getModule();
+    function deleteUserBookmark(element) {
+        var data = $(element).parent().parent().find('td:nth-child(2)').text();
+        $.ajax({
+            url: "/main/user-bookmark/delete",
+            type: "post",
+            data: {data: data},
+            success: function (responseData) {
+                var result = JSON.parse(responseData);
+            }
+        });
+    }
 
-    $(document).ready(function () {
+    var tbodyHandlerGenerator = function (type, bookmarkModule) {
+        return (function () {
 
-        userBookmarkModule.setContainer($('#alarm-user-bookmark'));
-        userBookmarkModule.setTBodyGenerator(function () {
             $.ajax({
-                url: "/main/user-bookmark/get",
-                type: "post",
+                url: '/main/'+type+'/get',
+                type: 'post',
                 data: {},
                 success: function (responseData) {
                     var result = JSON.parse(responseData);
-                    userBookmarkModule.setData(result);
-                    if (userBookmarkModule.getData().length > 0) {
-                        $.each(userBookmarkModule.getData(), function (i, d) {
-                            var tmp = $('<tr data-index="' + i + '"><td><span class="badge">N</span></td><td style="word-break: break-all">' + d.word + '</td><td><span class="">237</span></td></tr>');
-                            userBookmarkModule.getContainer().find('tbody').append(tmp);
-                            tmp.click(function () {
-                                var el = $(this);
-                                lastQuery =  JSON.parse(userBookmarkModule.getData()[parseInt(el.attr('data-index'))].word);
+                    bookmarkModule.setData(result);
+                    if (bookmarkModule.getData().length > 0) {
+                        $.each(bookmarkModule.getData(), function (i, d) {
+                            var tmp = $('<tr data-index="' + i + '"><td class="user-bookmark-alarm-td" onclick="$(this).parent().find(\'.user-bookmark-search-word-td\').click()"><span class="badge">N</span></td><td class="user-bookmark-search-word-td">' + d.word + '</td><td><span class="user-bookmark-count-td">' + d.count + '</span></td><td class="user-history-remove-td"><label class="btn btn-default btn-sm close-search-option-btn">-</label></td></tr>');
+                            tmp.find('.close-search-option-btn').click(function (e) {
+                                var data = $(this).parent().parent().find('td:nth-child(2)').text();
+                                $.ajax({
+                                    url: '/main/'+type+'/delete',
+                                    type: 'post',
+                                    data: {data: data},
+                                    success: function (responseData) {
+                                        var result = JSON.parse(responseData);
+                                    }
+                                });
+                                $(this).parent().parent().remove();
+                            });
+                            bookmarkModule.getContainer().find('tbody').append(tmp);
+                            tmp.find('.user-bookmark-search-word-td').click(function () {
+                                var el = $(this).parent();
+                                lastQuery = JSON.parse(bookmarkModule.getData()[parseInt(el.attr('data-index'))].word);
                                 removeAllRelDiv();
                                 $.ajax({
                                     url: '/main/searching',
                                     type: 'post',
-                                    data: {"data": (userBookmarkModule.getData()[parseInt(el.attr('data-index'))]).word},
+                                    data: {"data": (bookmarkModule.getData()[parseInt(el.attr('data-index'))]).word},
                                     contentType: "application/x-www-form-urlencoded; charset=UTF-8",
                                     success: function (responseData) {
                                         var data = JSON.parse(responseData);
@@ -274,7 +296,7 @@
                                         var html = '<tbody>';
                                         $.each(data, function (i, tdata) {
                                             html += '<tr><td>' + tdata.number + '</td>';
-                                            var priorityEl = $('')
+                                            var priorityEl = $('');
                                             priorityEl.find('select').val(tdata.priority);
                                             html += '<td>' + '<select><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option><option>6</option><option>7</option><option>8</option><option>9</option></select>' + '</td>';
                                             html += '<td>' + tdata.groupName + '</td>';
@@ -332,42 +354,24 @@
                             });
                         });
                     } else {
-                        for (var i = 0; i < 30; i++) {
-                            var tmp = $('<tr><td><span class="badge">N</span></td><td>북마크 검색어 목록입니다.</td><td><span class="">237</span></td></tr>');
-                            tmp.click(function (e) {
-                            });
-                            userBookmarkModule.getContainer().find('tbody').append(tmp);
-                        }
+                        var tmp = $('<tr style="height: 100%;"><td style="border: 0;">등록된 북마크가 없습니다.</td></tr>');
+                        bookmarkModule.getContainer().find('tbody').append(tmp);
                     }
                 }
             });
-
-
         });
+    };
+
+    $(document).ready(function () {
+        userBookmarkModule.setTitle('User Bookmark Alarm');
+        userBookmarkModule.setContainer($('#alarm-user-bookmark'));
+        userBookmarkModule.setTBodyGenerator(tbodyHandlerGenerator('user-bookmark',userBookmarkModule));
         userBookmarkModule.init();
         userBookmarkModule.generateTBody();
 
+        adminBookmarkModule.setTitle('Admin Bookmark Alarm');
         adminBookmarkModule.setContainer($('#alarm-admin-bookmark'));
-        adminBookmarkModule.setTBodyGenerator(function () {
-            if (adminBookmarkModule.getData().length > 0) {
-                $.each(this.option.data, function (i, d) {
-                    var tmp = $('<tr><td><span class="badge">N</span></td><td>북마크 검색어 목록입니다.</td><td><span class="">237</span></td></tr>');
-                    adminBookmarkModule.getContainer().find('tbody').append(tmp);
-                    tmp.click(function () {
-                        alert(i);
-                    });
-                });
-            } else {
-                for (i = 0; i < 30; i++) {
-                    var tmp = $('<tr><td><span class="badge">N</span></td><td>북마크 검색어 목록입니다.</td><td><span class="">237</span></td></tr>');
-                    tmp.click(function () {
-                        alert(i);
-                    });
-                    adminBookmarkModule.getContainer().find('tbody').append(tmp);
-                }
-            }
-
-        });
+        adminBookmarkModule.setTBodyGenerator(tbodyHandlerGenerator('admin-bookmark', adminBookmarkModule));
         adminBookmarkModule.init();
         adminBookmarkModule.generateTBody();
 
@@ -381,8 +385,8 @@
         });
         $('#content').height($(window).height() - 197);
 
-        $(document).ajaxComplete(function(e, xhr, settings){
-            if(xhr.status === 403){
+        $(document).ajaxComplete(function (e, xhr, settings) {
+            if (xhr.status === 403) {
                 window.location.replace('/')
             }
         });
@@ -779,8 +783,10 @@
                 $.ajax({
                     url: "/main/nickname/check",
                     type: "post",
-                    data: {"nickname": $('.popover-input-nickname').val(),
-                        "author":$('.popover-input-author').val()},
+                    data: {
+                        "nickname": $('.popover-input-nickname').val(),
+                        "author": $('.popover-input-author').val()
+                    },
                     success: function (responseData) {
                         if (responseData == 'true') {
                             $('.popover .btn-identity-check').attr('disabled', '');
@@ -830,8 +836,8 @@
         }).on('show.bs.popover', function () {
             //remove popover when other popover appeared
             $('.popover-content-td').popover('hide');
-        }).on('shown.bs.popover', function(){
-            $('.popover-content-td .close').click(function(){
+        }).on('shown.bs.popover', function () {
+            $('.popover-content-td .close').click(function () {
                 $('.popover-content-td').popover('hide');
             });
         });
@@ -878,8 +884,8 @@
                 }).on('show.bs.popover', function () {
                     //remove popover when other popover appeared
                     $('.popover-relative-content-td').popover('hide');
-                }).on('shown.bs.popover', function(){
-                    $('.popover-relative-content-td .close').click(function(){
+                }).on('shown.bs.popover', function () {
+                    $('.popover-relative-content-td .close').click(function () {
                         $('.popover-relative-content-td').popover('hide');
                     });
                 });

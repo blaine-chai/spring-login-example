@@ -15,20 +15,28 @@ public class AdminHistory implements Serializable{
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-//    @ManyToOne
-//    @JoinColumn(name = "userId", referencedColumnName = "userId")
-//    private UserAccount userAccount;
+    @ManyToOne
+    @JoinColumn(name = "adminId", referencedColumnName = "userId")
+    private UserAccount userAccount;
 
+    @Column(length = 2048)
     private String word;
     private long date;
+
+    @ManyToOne
+    @JoinColumn(name = "bookmarkId", referencedColumnName="id")
+    private AdminBookmark adminBookmark;
 
     protected AdminHistory() {
     }
 
-    public AdminHistory(String word, long date) {
+
+    public AdminHistory(UserAccount userAccount, String word, long date) {
+        this.userAccount = userAccount;
         this.word = word;
         this.date = date;
     }
+
 
     public String getWord() {
         return word;
@@ -44,6 +52,42 @@ public class AdminHistory implements Serializable{
 
     public void setDate(long date) {
         this.date = date;
+    }
+
+    public static long getSerialVersionUID() {
+        return serialVersionUID;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public AdminBookmark getUserBookmark() {
+        return adminBookmark;
+    }
+
+    public void setUserBookmark(AdminBookmark adminBookmark) {
+        this.adminBookmark = adminBookmark;
+    }
+
+    public UserAccount getUserAccount() {
+        return userAccount;
+    }
+
+    public void setUserAccount(UserAccount userAccount) {
+        this.userAccount = userAccount;
+    }
+
+    public AdminBookmark getAdminBookmark() {
+        return adminBookmark;
+    }
+
+    public void setAdminBookmark(AdminBookmark adminBookmark) {
+        this.adminBookmark = adminBookmark;
     }
 
     @Override

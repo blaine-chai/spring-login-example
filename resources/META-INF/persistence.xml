@@ -10,8 +10,10 @@
         <class>com.blainechai.domain.UserAccount</class>
         <class>com.blainechai.domain.Session</class>
         <class>com.blainechai.domain.UserTableOption</class>
+        <class>com.blainechai.domain.AdminHistory</class>
         <class>com.blainechai.domain.UserHistory</class>
         <class>com.blainechai.domain.BookHistory</class>
+        <class>com.blainechai.domain.AdminBookmark</class>
         <class>com.blainechai.domain.UserBookmark</class>
         <class>com.blainechai.domain.NicknameOption</class>
         <exclude-unlisted-classes>true</exclude-unlisted-classes>

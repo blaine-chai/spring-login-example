@@ -288,6 +288,7 @@
 
 <script type="text/javascript" charset="UTF-8">
     var userHistory = [];
+    var adminHistory = [];
     var tableData;
     var lastQuery;
     var relStartPos = new Object();
@@ -462,6 +463,7 @@
                         });
                     });
                     getSearchHistory();
+                    getAdminHistory();
                     getRelativeWord();
                 }
             });
@@ -574,11 +576,58 @@
     }
 
     function getAdminHistory(json) {
-        var data = "[\"a\",\"b\"]";
-        data = JSON.parse(data);
-        $('#admin-history>table>tbody>tr').remove();
-        $.each(data, function (i) {
-            $('#admin-history>table>tbody').prepend("<tr><td>" + data[i] + "</td></tr>");
+        var data;
+        $.ajax({
+            url: "/main/admin-history/get",
+            type: "post",
+//                data: {"data": jsonSearchInfo()},
+//            data: {"data": jsonSearchInfo()},
+            contentType: "application/x-www-form-urlencoded; charset=UTF-8",
+            success: function (responseData) {
+                data = adminHistory = JSON.parse(responseData);
+                $('#admin-history>table>tbody>tr').remove();
+                $.each(data, function (i, d) {
+                    var tmpEl = $('<tr><td class="user-history-bookmark-td"><img class="bookmark-btn" style="width: 26px;height: 26px;"></td><td>' + d.word + '</td><td class="user-history-remove-td"><label class="btn btn-default btn-sm close-search-option-btn">-</label></td></tr>');
+                    if (d.isBookmarked) {
+                        tmpEl.find('img').addClass('bookmark-btn-active');
+                    }
+                    $('#admin-history>table>tbody').prepend(tmpEl);
+                    tmpEl.find('.close-search-option-btn').click(function (e) {
+                        deleteUserHistory(this, d.id);
+                        $(this).parent().parent().remove();
+                    });
+                });
+                $('#admin-history>table>tbody>tr>td:nth-child(2)').click(function (e) {
+                    addSearchInfo(JSON.parse($(this).text()));
+                });
+
+                $('.user-history-bookmark-td').click(function (e) {
+                    var icon = $(this).find('img');
+                    if ($(this).find('img').hasClass('bookmark-btn-active')) {
+                        $.ajax({
+                            url: '/main/admin-bookmark/delete',
+                            type: 'post',
+                            data: {'data': $(this).parent().find('td:nth-child(2)').text()},
+                            contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
+                            success: function (responseData) {
+                                console.error(responseData);
+                                icon.toggleClass('bookmark-btn-active');
+                            }
+                        });
+                    } else {
+                        $.ajax({
+                            url: '/main/admin-bookmark/add',
+                            type: 'post',
+                            data: {'data': $(this).parent().find('td:nth-child(2)').text()},
+                            contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
+                            success: function (responseData) {
+                                console.error(responseData);
+                                icon.toggleClass('bookmark-btn-active');
+                            }
+                        });
+                    }
+                });
+            }
         });
     }
 

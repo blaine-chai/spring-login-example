@@ -303,6 +303,34 @@ body {
     vertical-align: middle !important;
 }
 
+.user-bookmark-alarm-td {
+    line-height: 100% !important;
+    text-align: center !important;
+    vertical-align: middle !important;
+    width: 40px;
+    cursor: pointer;
+}
+
 #user-history > table > tbody > tr > td:nth-child(2) {
+    cursor: pointer;
+}
+
+.badge {
+    background: rgba(252, 73, 55, 0.9);
+}
+
+.user-bookmark-remove-td {
+    line-height: 100% !important;
+    text-align: center !important;
+    vertical-align: middle !important;
+    width: 40px;
+}
+
+.user-bookmark-search-word-td {
+    word-break: break-all;
+    cursor: pointer;
+}
+
+.user-bookmark-count-td{
     cursor: pointer;
 }

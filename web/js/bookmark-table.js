@@ -6,11 +6,11 @@ var BookmarkTableModule = (function () {
             height: '100%',
             title: '',
             template: '<div class="panel panel-default" style="width: 100%;height: 100%;margin: 0;">' +
-            '<div id="" class="" style="border-bottom: 1px solid #ddd;width: 100%;text-align: center;font-size: 16px;vertical-align: middle;">' +
+            '<div id="" class="bookmark-title" style="border-bottom: 1px solid #ddd;width: 100%;text-align: center;font-size: 16px;vertical-align: middle;">' +
             '<h4>User Bookmark Alarm</h4>' +
             '</div>' +
             '<div id="" style="overflow-y: scroll;height: calc(100% - 40px);">' +
-            '<table class="table table-bordered table-hover" style="margin-bottom: 0;border-top: 0;">' +
+            '<table class="table table-hover" style="margin-bottom: 0;border-top: 0;">' +
             '<thead></thead>' +
             '<tbody></tbody>' +
             '</table>' +
@@ -31,7 +31,9 @@ var BookmarkTableModule = (function () {
         var container = option.container;
 
         var init = function () {
-            container.append($(option.template));
+            var template=$(option.template);
+            template.find('.bookmark-title').find('h4').text(option.title);
+            container.append(template);
         };
 
         var refresh = function () {
