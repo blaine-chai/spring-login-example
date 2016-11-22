@@ -437,7 +437,7 @@
                         html += '<td>' + tdata.note1 + '</td>';
                         html += '<td>' + tdata.note2 + '</tr></td>';
                     });
-                    html += '</tbody>'
+                    html += '</tbody>';
                     $('#book-table tbody').hide(300, function () {
                         $('#book-table tbody').remove();
                         html = $(html);
@@ -513,7 +513,7 @@
                     addSearchInfo(JSON.parse($(this).text()));
                 });
 
-                $('.user-history-bookmark-td').click(function (e) {
+                $('#user-history .user-history-bookmark-td').click(function (e) {
                     var icon = $(this).find('img');
                     if ($(this).find('img').hasClass('bookmark-btn-active')) {
                         $.ajax({
@@ -544,6 +544,21 @@
     function deleteUserHistory(element, id) {
         $.ajax({
             url: "/main/user-history/delete",
+            type: "post",
+            data: {"id": id},
+//            data: {"data": jsonSearchInfo()},
+            contentType: "application/x-www-form-urlencoded; charset=UTF-8",
+            success: function (responseData) {
+//                data = userHistory = JSON.parse(responseData);
+//                console.error(id);
+
+            }
+        });
+    }
+
+    function deleteAdminHistory(element, id) {
+        $.ajax({
+            url: "/main/admin-history/delete",
             type: "post",
             data: {"id": id},
 //            data: {"data": jsonSearchInfo()},
@@ -593,7 +608,7 @@
                     }
                     $('#admin-history>table>tbody').prepend(tmpEl);
                     tmpEl.find('.close-search-option-btn').click(function (e) {
-                        deleteUserHistory(this, d.id);
+                        deleteAdminHistory(this, d.id);
                         $(this).parent().parent().remove();
                     });
                 });
@@ -601,7 +616,7 @@
                     addSearchInfo(JSON.parse($(this).text()));
                 });
 
-                $('.user-history-bookmark-td').click(function (e) {
+                $('#admin-history .user-history-bookmark-td').click(function (e) {
                     var icon = $(this).find('img');
                     if ($(this).find('img').hasClass('bookmark-btn-active')) {
                         $.ajax({

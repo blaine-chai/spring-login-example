@@ -1,9 +1,7 @@
 package com.blainechai.repository;
 
-import com.blainechai.domain.UserAccount;
 import com.blainechai.domain.UserTableOption;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -13,7 +11,7 @@ import java.util.List;
  * private String hash;
  * private String phone;
  * private Date createDate;
- * */
+ */
 
 public interface UserTableOptionRepository extends JpaRepository<UserTableOption, Long> {
 
