@@ -12,21 +12,16 @@ import java.util.List;
  */
 public interface AdminBookmarkRepository extends JpaRepository<AdminBookmark, Long> {
 
-    List<AdminBookmark> findByUserAccount_UserId(String userId);
+    List<AdminBookmark> findByAdminAccount_UserId(String userId);
 
-    List<AdminBookmark> findByUserAccount_UserIdAndWord(String userId, String word);
+    List<AdminBookmark> findByAdminAccount_UserIdAndWord(String userId, String word);
+    List<AdminBookmark> findByWord(String word);
 
     @Transactional
     long deleteById(Long id);
 
     @Transactional
-    long deleteByAdminHistory_id(Long id);
-
-    @Transactional
-    long deleteByWord(Long word);
-
-    @Transactional
-    long deleteByUserAccount_UserIdAndWord(String userId, String word);
+    long deleteByWord(String word);
 
     @Transactional
     long deleteByAdminAccount_UserIdAndWord(String admin, String word);

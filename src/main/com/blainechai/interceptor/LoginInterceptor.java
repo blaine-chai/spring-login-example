@@ -21,7 +21,7 @@ public class LoginInterceptor extends HandlerInterceptorAdapter {
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
         try {
             List<Session> list = sessionRepository.findByJSessionId(request.getSession().getId());
-            if (list.size() > 0 && (list.get(0).getType().equals(UserType.USER) || list.get(0).getType().equals(UserType.ADMIN))) {
+            if (list.size() > 0 && (UserType.isUser(list.get(0).getType()))) {
                 return true;
             }
             String requestedWithHeader = request.getHeader("X-Requested-With");

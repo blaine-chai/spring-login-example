@@ -40,6 +40,15 @@
                                name="phone">
                         <label class="login-field-icon fui-user"></label>
                     </div>
+
+                    <div class="control-group">
+                        <select name="type" class="login-field">
+                            <option>super</option>
+                            <option>a</option>
+                            <option>b</option>
+                            <option>c</option>
+                        </select>
+                    </div>
                     <input type="submit" class="btn btn-primary btn-large btn-block" value="join">
                 </div>
             </form>

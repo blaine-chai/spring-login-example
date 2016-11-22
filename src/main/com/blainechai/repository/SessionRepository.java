@@ -12,6 +12,8 @@ import java.util.List;
 public interface SessionRepository extends JpaRepository<Session, Long> {
     List<Session> findByJSessionId(String jSessionId);
 
+    List<Session> findByJSessionIdAndType(String jSessionId, String type);
+
     @Transactional
     long deleteByJSessionId(String jSessionId);
 }

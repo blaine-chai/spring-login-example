@@ -217,8 +217,9 @@ public class AdminController {
         String username = request.getParameter("username");
         String password = request.getParameter("password");
         String phone = request.getParameter("phone");
+        String type = request.getParameter("type");
         try {
-            userAccountRepository.save(new UserAccount(userId, username, password, phone));
+            userAccountRepository.save(new UserAccount(userId, username, password, phone, type));
         } catch (Exception e) {
             return "redirect:" + "/error";
         }

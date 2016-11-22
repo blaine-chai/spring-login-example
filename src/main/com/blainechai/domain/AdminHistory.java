@@ -37,6 +37,21 @@ public class AdminHistory implements Serializable{
         this.date = date;
     }
 
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public UserAccount getUserAccount() {
+        return userAccount;
+    }
+
+    public void setUserAccount(UserAccount userAccount) {
+        this.userAccount = userAccount;
+    }
 
     public String getWord() {
         return word;
@@ -52,34 +67,6 @@ public class AdminHistory implements Serializable{
 
     public void setDate(long date) {
         this.date = date;
-    }
-
-    public static long getSerialVersionUID() {
-        return serialVersionUID;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public AdminBookmark getUserBookmark() {
-        return adminBookmark;
-    }
-
-    public void setUserBookmark(AdminBookmark adminBookmark) {
-        this.adminBookmark = adminBookmark;
-    }
-
-    public UserAccount getUserAccount() {
-        return userAccount;
-    }
-
-    public void setUserAccount(UserAccount userAccount) {
-        this.userAccount = userAccount;
     }
 
     public AdminBookmark getAdminBookmark() {

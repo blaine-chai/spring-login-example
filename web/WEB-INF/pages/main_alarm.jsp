@@ -239,23 +239,12 @@
 
     var userBookmarkModule = BookmarkTableModule.getModule();
     var adminBookmarkModule = BookmarkTableModule.getModule();
-    function deleteUserBookmark(element) {
-        var data = $(element).parent().parent().find('td:nth-child(2)').text();
-        $.ajax({
-            url: "/main/user-bookmark/delete",
-            type: "post",
-            data: {data: data},
-            success: function (responseData) {
-                var result = JSON.parse(responseData);
-            }
-        });
-    }
 
     var tbodyHandlerGenerator = function (type, bookmarkModule) {
         return (function () {
 
             $.ajax({
-                url: '/main/'+type+'/get',
+                url: '/main/' + (type == 'admin-bookmark' ? 'common-bookmark' : type) + '/get',
                 type: 'post',
                 data: {},
                 success: function (responseData) {
@@ -267,7 +256,7 @@
                             tmp.find('.close-search-option-btn').click(function (e) {
                                 var data = $(this).parent().parent().find('td:nth-child(2)').text();
                                 $.ajax({
-                                    url: '/main/'+type+'/delete',
+                                    url: '/main/' + type + '/delete',
                                     type: 'post',
                                     data: {data: data},
                                     success: function (responseData) {
@@ -365,7 +354,7 @@
     $(document).ready(function () {
         userBookmarkModule.setTitle('User Bookmark Alarm');
         userBookmarkModule.setContainer($('#alarm-user-bookmark'));
-        userBookmarkModule.setTBodyGenerator(tbodyHandlerGenerator('user-bookmark',userBookmarkModule));
+        userBookmarkModule.setTBodyGenerator(tbodyHandlerGenerator('user-bookmark', userBookmarkModule));
         userBookmarkModule.init();
         userBookmarkModule.generateTBody();
 

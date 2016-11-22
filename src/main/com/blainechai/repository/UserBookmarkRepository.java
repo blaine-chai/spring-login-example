@@ -20,7 +20,7 @@ public interface UserBookmarkRepository extends JpaRepository<UserBookmark, Long
     long deleteById(Long id);
 
     @Transactional
-    long deleteByWord(Long word);
+    long deleteByWord(String word);
 
     @Transactional
     long deleteByUserAccount_UserIdAndWord(String userId, String word);

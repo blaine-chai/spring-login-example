@@ -22,6 +22,8 @@ public interface UserAccountRepository extends JpaRepository<UserAccount, Long> 
 
     List<UserAccount> findByhash(String hash);
 
+    List<UserAccount> findByType(String userType);
+
     @Transactional
     long deleteByUserId(String userId);
 }

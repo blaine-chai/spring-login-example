@@ -14,6 +14,7 @@ public interface AdminHistoryRepository extends JpaRepository<AdminHistory, Long
 
     List<AdminHistory> findByUserAccount_UserId(String userId);
     List<AdminHistory> findByUserAccount_UserIdAndWord(String userId, String word);
+    List<AdminHistory> findByWord(String word);
     @Transactional
     long deleteById(Long id);
 }

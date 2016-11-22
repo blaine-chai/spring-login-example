@@ -1,9 +1,6 @@
 package com.blainechai.model;
 
-import com.blainechai.domain.AdminBookmark;
-import com.blainechai.domain.AdminHistory;
-import com.blainechai.domain.UserBookmark;
-import com.blainechai.domain.UserHistory;
+import com.blainechai.domain.*;
 
 /**
  * Created by blainechai on 2016. 11. 11..
@@ -29,7 +26,7 @@ public class HistoryApi {
         this.date = userHistory.getDate();
         if (userHistory.getUserBookmark() != null) {
             this.isBookmarked = true;
-        }else {
+        } else {
             this.isBookmarked = false;
         }
     }
@@ -42,23 +39,19 @@ public class HistoryApi {
         this.count = userBookmark.getCount();
     }
 
-    public HistoryApi(AdminHistory adminHistory) {
+    public HistoryApi(AdminHistory adminHistory, boolean isBookmarked) {
         this.id = adminHistory.getId();
         this.word = adminHistory.getWord();
         this.date = adminHistory.getDate();
-        if (adminHistory.getUserBookmark() != null) {
-            this.isBookmarked = true;
-        }else {
-            this.isBookmarked = false;
-        }
+        this.isBookmarked = isBookmarked;
     }
 
-    public HistoryApi(AdminBookmark adminBookmark) {
-        this.id = adminBookmark.getId();
-        this.word = adminBookmark.getAdminHistory().getWord();
-        this.date = adminBookmark.getDate();
+    public HistoryApi(CommonBookmark commonBookmark) {
+        this.id = commonBookmark.getId();
+        this.word = commonBookmark.getAdminBookmark().getWord();
+        this.date = commonBookmark.getAdminBookmark().getDate();
         this.isBookmarked = true;
-        this.count = adminBookmark.getCount();
+        this.count = commonBookmark.getCount();
     }
 
     public Long getId() {

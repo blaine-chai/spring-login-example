@@ -15,6 +15,7 @@
         <class>com.blainechai.domain.BookHistory</class>
         <class>com.blainechai.domain.AdminBookmark</class>
         <class>com.blainechai.domain.UserBookmark</class>
+        <class>com.blainechai.domain.CommonBookmark</class>
         <class>com.blainechai.domain.NicknameOption</class>
         <exclude-unlisted-classes>true</exclude-unlisted-classes>
     </persistence-unit>

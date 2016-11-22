@@ -21,28 +21,18 @@ public class UserAccount implements Serializable {
     private String hash;
     private String phone;
     private Date createDate;
-//    private int col1;
-//    private int col2;
-//    private int col3;
-//    private int col4;
-//    private int col5;
-//    private int col6;
-//    private int col7;
-//    private int col8;
-//    private int col9;
-//    private int col10;
-//    private int col11;
-//    private int col12;
+    private String type;
 
     protected UserAccount() {
     }
 
-    public UserAccount(String userId, String username, String password, String phone) {
+    public UserAccount(String userId, String username, String password, String phone, String type) {
         this.userId = userId;
         this.username = username;
         this.hash = EncryptUtil.getSHA256(EncryptUtil.FIRST_KEY + username + password + EncryptUtil.SECOND_KEY);
         this.phone = phone;
         this.createDate = new Date(new java.util.Date().getTime());
+        this.type = type;
     }
 
 //    public Long getId() {
@@ -87,5 +77,21 @@ public class UserAccount implements Serializable {
 
     public void setCreateDate(Date createDate) {
         this.createDate = createDate;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
     }
 }

@@ -53,6 +53,9 @@ public class MainPageController {
     private AdminBookmarkRepository adminBookmarkRepository;
 
     @Autowired
+    private CommonBookmarkRepository commonBookmarkRepository;
+
+    @Autowired
     private AdminHistoryRepository adminHistoryRepository;
 
     public static List<BookInfo> bookInfoList = new ArrayList<BookInfo>();
@@ -255,10 +258,15 @@ public class MainPageController {
         String username = request.getParameter("username");
         String password = request.getParameter("password");
         String phone = request.getParameter("phone");
+        String type = request.getParameter("type");
         try {
-            UserAccount userAccount = new UserAccount(userId, username, password, phone);
-            userAccountRepository.save(userAccount);
+            UserAccount userAccount = new UserAccount(userId, username, password, phone, type);
+            userAccount = userAccountRepository.save(userAccount);
             tableOptionRepository.save(new UserTableOption(userAccount, new int[]{50, 50, 50, 100, 100, 100, 100, 50, 50, 600, 50, 50}));
+            List<AdminBookmark> adminBookmarks = adminBookmarkRepository.findAll();
+            for (AdminBookmark adminBookmark : adminBookmarks) {
+                commonBookmarkRepository.save(new CommonBookmark(userAccount, adminBookmark, 0));
+            }
         } catch (Exception e) {
             return "redirect:" + "/error";
         }
@@ -279,7 +287,7 @@ public class MainPageController {
 //        System.out.println(EncryptUtil.getSHA256(EncryptUtil.FIRST_KEY + userId + password + EncryptUtil.SECOND_KEY));
         if (userAccountList.size() > 0 && userAccountList.get(0).getUserId().equals(userId) && userAccountList.get(0).getHash().equals(EncryptUtil.getSHA256(EncryptUtil.FIRST_KEY + userId + password + EncryptUtil.SECOND_KEY))) {
             request.getSession().setAttribute("userId", userId);
-            sessionRepository.save(new Session(request.getSession().getId(), userId, UserType.USER));
+            sessionRepository.save(new Session(request.getSession().getId(), userId, userAccountList.get(0).getType()));
             return "redirect:" + "/main";
         }
         return "redirect:" + "/";
@@ -338,11 +346,13 @@ public class MainPageController {
             if (userHistoryRepository.findByUserAccount_UserIdAndWord(userId, word).size() <= 0) {
                 UserHistory userHistory = new UserHistory(userAccountRepository.findByUserId(userId).get(0),
                         request.getParameter("data"), new java.util.Date().getTime());
+                userHistoryRepository.save(userHistory);
+
+            }
+            if (adminHistoryRepository.findByUserAccount_UserIdAndWord(userId, word).size() <= 0) {
                 AdminHistory adminHistory = new AdminHistory(userAccountRepository.findByUserId(userId).get(0),
                         request.getParameter("data"), new java.util.Date().getTime());
-                userHistoryRepository.save(userHistory);
                 adminHistoryRepository.save(adminHistory);
-
             }
         }
 
@@ -415,18 +425,22 @@ public class MainPageController {
 
     @RequestMapping(value = "/main/admin-history/get")
     public ModelAndView adminHistoryGet(HttpServletRequest request) {
-        List<AdminHistory> adminHistories;
+        String sessionId = request.getSession().getId();
+        String userId;
         Gson gson = new Gson();
         List<HistoryApi> historyApis = new ArrayList<HistoryApi>();
-        adminHistories = adminHistoryRepository.findAll();
+        if (sessionRepository.findByJSessionId(sessionId).size() > 0) {
+            userId = sessionRepository.findByJSessionId(sessionId).get(0).getUserId();
+            List<AdminHistory> adminHistories;
+            adminHistories = adminHistoryRepository.findByUserAccount_UserId(userId);
 
-        if (adminHistories != null) {
-            for (AdminHistory adminHistory : adminHistories) {
-                historyApis.add(new HistoryApi(adminHistory));
+            if (adminHistories != null) {
+                for (AdminHistory adminHistory : adminHistories) {
+                    historyApis.add(new HistoryApi(adminHistory, !adminBookmarkRepository.findByWord(adminHistory.getWord()).isEmpty()));
+                }
             }
         }
         ModelAndView modelAndView = new ModelAndView("api");
-//        modelAndView.addObject("json", gson.toJson(rtnArray));
         modelAndView.addObject("json", gson.toJson(historyApis));
 
 
@@ -453,12 +467,11 @@ public class MainPageController {
 
             if (adminHistories != null) {
                 for (AdminHistory adminHistory : adminHistories) {
-                    historyApis.add(new HistoryApi(adminHistory));
+                    historyApis.add(new HistoryApi(adminHistory, !adminBookmarkRepository.findByWord(adminHistory.getWord()).isEmpty()));
                 }
             }
         }
         modelAndView.addObject("json", gson.toJson(historyApis));
-//        modelAndView.addObject("json", gson.toJson(rtnArray));
         return modelAndView;
     }
 
@@ -510,6 +523,7 @@ public class MainPageController {
         }
         ModelAndView modelAndView = new ModelAndView("api");
 //        modelAndView.addObject("json", gson.toJson(rtnArray));
+        System.out.println(historyApis.size());
         modelAndView.addObject("json", gson.toJson(historyApis));
 
 
@@ -526,30 +540,30 @@ public class MainPageController {
         if (sessionRepository.findByJSessionId(sessionId).size() > 0) {
             adminId = sessionRepository.findByJSessionId(sessionId).get(0).getUserId();
             String word = request.getParameter("data");
-            List<AdminHistory> adminHistories = adminHistoryRepository.findByUserAccount_UserIdAndWord(adminId, word);
-            if (adminHistories.size() > 0) {
-                AdminHistory adminHistory = adminHistories.get(0);
+            List<AdminHistory> adminHistories = adminHistoryRepository.findByWord(word);
+            for (AdminHistory adminHistory : adminHistories) {
                 adminHistory.setAdminBookmark(null);
                 adminHistoryRepository.save(adminHistory);
             }
-            adminBookmarkRepository.deleteByAdminAccount_UserIdAndWord(adminId, word);
+            commonBookmarkRepository.deleteByAdminBookmark_Word(word);
+            adminBookmarkRepository.deleteByWord(word);
         }
         return new ModelAndView("api").addObject("json", "");
     }
 
-    @RequestMapping(value = "/main/admin-bookmark/get")
+    @RequestMapping(value = "/main/common-bookmark/get")
     public ModelAndView adminBookmarkGet(HttpServletRequest request) {
         String sessionId = request.getSession().getId();
         String userId;
-        List<AdminBookmark> adminBookmarks;
+        List<CommonBookmark> commonBookmarks;
         Gson gson = new Gson();
         List<HistoryApi> historyApis = new ArrayList<HistoryApi>();
         if (sessionRepository.findByJSessionId(sessionId).size() > 0) {
             userId = sessionRepository.findByJSessionId(sessionId).get(0).getUserId();
-            adminBookmarks = adminBookmarkRepository.findByUserAccount_UserId(userId);
+            commonBookmarks = commonBookmarkRepository.findByUserAccount_UserId(userId);
 
-            if (adminBookmarks != null) {
-                for (AdminBookmark bookmark : adminBookmarks) {
+            if (commonBookmarks != null) {
+                for (CommonBookmark bookmark : commonBookmarks) {
                     historyApis.add(new HistoryApi(bookmark));
                 }
             }
@@ -569,17 +583,20 @@ public class MainPageController {
         String word = request.getParameter("data");
         if (sessionRepository.findByJSessionId(sessionId).size() > 0) {
             adminId = sessionRepository.findByJSessionId(sessionId).get(0).getUserId();
-            List<AdminHistory> adminHistories = adminHistoryRepository.findByUserAccount_UserIdAndWord(adminId, word);
-            if (adminHistories.size() > 0) {
-                AdminHistory adminHistory = adminHistories.get(0);
-                List<UserAccount> allUsers = userAccountRepository.findAll();
-                for (UserAccount userAccount : allUsers) {
-                    AdminBookmark tmpBookmark = adminBookmarkRepository.save(new AdminBookmark(userAccount, adminHistory.getUserAccount(), adminHistory.getWord(), adminHistory));
-                    adminHistory.setUserBookmark(tmpBookmark);
+            List<UserAccount> adminAccounts = userAccountRepository.findByUserId(adminId);
+            if (adminAccounts.size() > 0) {
+                List<AdminHistory> adminHistories = adminHistoryRepository.findByUserAccount_UserIdAndWord(adminId, word);
+                if (adminHistories.size() > 0 && adminBookmarkRepository.findByWord(word).size() <= 0) {
+                    AdminHistory adminHistory = adminHistories.get(0);
+                    AdminBookmark tmpAdminBookmark = adminBookmarkRepository.save(new AdminBookmark(adminAccounts.get(0), word));
+                    adminHistory.setAdminBookmark(tmpAdminBookmark);
                     adminHistoryRepository.save(adminHistory);
+                    List<UserAccount> allUsers = userAccountRepository.findAll();
+                    for (UserAccount userAccount : allUsers) {
+                        commonBookmarkRepository.save(new CommonBookmark(userAccount, tmpAdminBookmark, 0));
+                    }
                 }
             }
-
         }
         return new ModelAndView("api").addObject("json", "");
     }
@@ -932,18 +949,18 @@ public class MainPageController {
 
         return resultList;
     }
-
-    private void addAdminBookmarkToDb(AdminHistory adminHistory) {
-        List<UserAccount> userAccounts = userAccountRepository.findAll();
-        Long currentTime = new java.util.Date().getTime();
-        for (UserAccount account : userAccounts) {
-            adminBookmarkRepository.save(new AdminBookmark(account, account, adminHistory, adminHistory.getWord(), currentTime));
-        }
-    }
-
-    private void deleteAdminBookmarkToDb(AdminHistory adminHistory) {
-        adminBookmarkRepository.deleteByAdminHistory_id(adminHistory.getId());
-    }
+//
+//    private void addAdminBookmarkToDb(AdminHistory adminHistory) {
+//        List<UserAccount> userAccounts = userAccountRepository.findAll();
+//        Long currentTime = new java.util.Date().getTime();
+//        for (UserAccount account : userAccounts) {
+//            adminBookmarkRepository.save(new AdminBookmark(account, account, adminHistory, adminHistory.getWord(), currentTime));
+//        }
+//    }
+//
+//    private void deleteAdminBookmarkToDb(AdminHistory adminHistory) {
+//        adminBookmarkRepository.deleteByAdminHistory_id(adminHistory.getId());
+//    }
 
     private final class SEARCH_PERIOD {
         final static int daily = 0, weekly = 1, monthly = 2, yearly = 3;
