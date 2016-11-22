@@ -26,6 +26,8 @@ public class AdminBookmark implements Serializable {
     @ManyToOne
     @JoinColumn(name = "bookmarkId", referencedColumnName = "id")
     private AdminHistory adminHistory;
+
+    @Column(length = 2048)
     private String word;
 
     private long date;
