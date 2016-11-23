@@ -18,7 +18,7 @@ public class AdminInterceptor extends HandlerInterceptorAdapter {
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
         try {
             List<Session> list = sessionRepository.findByJSessionId(request.getSession().getId());
-            if (list.size() > 0 && list.get(0).getType().equals(UserType.ADMIN)) {
+            if (list.size() > 0 && UserType.isAdminUser(list.get(0).getType())) {
                 return true;
             }
             response.sendRedirect("/admin");

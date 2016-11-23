@@ -6,7 +6,8 @@
              version="2.0">
 
     <persistence-unit name="jpa.unit">
-        <class>com.blainechai.domain.AdminAccount</class>
+        <class>com.blainechai.domain.CommonGroupName</class>
+        <class>com.blainechai.domain.UserGroup</class>
         <class>com.blainechai.domain.UserAccount</class>
         <class>com.blainechai.domain.Session</class>
         <class>com.blainechai.domain.UserTableOption</class>

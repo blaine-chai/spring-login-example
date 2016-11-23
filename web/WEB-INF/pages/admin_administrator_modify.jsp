@@ -5,7 +5,7 @@
     <meta charset="utf-8">
     <title>Server Admin - admin 사용자 관리</title>
     <link rel="stylesheet" href="/css/bootstrap.min.css">
-    <script src="/js/jquery-1.11.3.min.js"></script>
+    <script src="/js/jquery.min.js"></script>
     <script src="/js/bootstrap.min.js"></script>
 </head>
 <body>

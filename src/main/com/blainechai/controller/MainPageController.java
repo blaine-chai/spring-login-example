@@ -63,7 +63,10 @@ public class MainPageController {
 
 
     @RequestMapping(value = {""})
-    public String login() {
+    public String login(HttpServletRequest request) {
+        if (sessionRepository.findByJSessionId(request.getSession().getId()).size() > 0) {
+            return "redirect:" + "/main";
+        }
         return "user_login";
     }
 
@@ -258,14 +261,18 @@ public class MainPageController {
         String username = request.getParameter("username");
         String password = request.getParameter("password");
         String phone = request.getParameter("phone");
-        String type = request.getParameter("type");
+//        String type = request.getParameter("type");
         try {
-            UserAccount userAccount = new UserAccount(userId, username, password, phone, type);
-            userAccount = userAccountRepository.save(userAccount);
-            tableOptionRepository.save(new UserTableOption(userAccount, new int[]{50, 50, 50, 100, 100, 100, 100, 50, 50, 600, 50, 50}));
-            List<AdminBookmark> adminBookmarks = adminBookmarkRepository.findAll();
-            for (AdminBookmark adminBookmark : adminBookmarks) {
-                commonBookmarkRepository.save(new CommonBookmark(userAccount, adminBookmark, 0));
+            if (userAccountRepository.findByUserId(userId).size() <= 0) {
+                UserAccount userAccount = new UserAccount(userId, username, password, phone, UserType.USER);
+                userAccount = userAccountRepository.save(userAccount);
+                tableOptionRepository.save(new UserTableOption(userAccount, new int[]{50, 50, 50, 100, 100, 100, 100, 50, 50, 600, 50, 50}));
+                List<AdminBookmark> adminBookmarks = adminBookmarkRepository.findAll();
+                for (AdminBookmark adminBookmark : adminBookmarks) {
+                    commonBookmarkRepository.save(new CommonBookmark(userAccount, adminBookmark, 0));
+                }
+            } else {
+                return "redirect:" + "/error";
             }
         } catch (Exception e) {
             return "redirect:" + "/error";
@@ -273,10 +280,10 @@ public class MainPageController {
         return "redirect:" + "/";
     }
 
-    @RequestMapping(value = "/register")
-    public String registerPage(HttpServletRequest request) {
-        return "user_join";
-    }
+//    @RequestMapping(value = "/register")
+//    public String registerPage(HttpServletRequest request) {
+//        return "user_join";
+//    }
 
     @RequestMapping(value = "/login", method = RequestMethod.POST)
     public String userLogin(HttpServletRequest request) {

@@ -27,9 +27,9 @@ public class EncryptUtil {
                 int tmp1 = (byteTmp & 0xff);
                 int tmp2 = ((byteTmp & 0xff) + 0x100);
 
-                System.out.println(byteTmp + " : " + tmp1 + " : " + tmp2
-                        + " : " + Integer.toString((byteTmp & 0xff) + 0x100, 16)
-                        + " : " + (Integer.toString((byteTmp & 0xff) + 0x100, 16).substring(1)));
+//                System.out.println(byteTmp + " : " + tmp1 + " : " + tmp2
+//                        + " : " + Integer.toString((byteTmp & 0xff) + 0x100, 16)
+//                        + " : " + (Integer.toString((byteTmp & 0xff) + 0x100, 16).substring(1)));
             }
             output = sb.toString();
 
@@ -47,7 +47,7 @@ public class EncryptUtil {
             MessageDigest sh = MessageDigest.getInstance("SHA-256");
             sh.update(str.getBytes());
             byte byteData[] = sh.digest();
-            System.out.println("byte data is:");
+//            System.out.println("byte data is:");
             StringBuffer sb = new StringBuffer();
 
             for (byte byteTmp : byteData) {
@@ -55,9 +55,9 @@ public class EncryptUtil {
                 int tmp1 = (byteTmp & 0xff);
                 int tmp2 = ((byteTmp & 0xff) + 0x100);
 
-                System.out.println(byteTmp + " : " + tmp1 + " : " + tmp2
-                        + " : " + Integer.toString((byteTmp & 0xff) + 0x100, 16)
-                        + " : " + (Integer.toString((byteTmp & 0xff) + 0x100, 16).substring(1)));
+//                System.out.println(byteTmp + " : " + tmp1 + " : " + tmp2
+//                        + " : " + Integer.toString((byteTmp & 0xff) + 0x100, 16)
+//                        + " : " + (Integer.toString((byteTmp & 0xff) + 0x100, 16).substring(1)));
             }
             output = sb.toString();
 

@@ -25,11 +25,11 @@
                     </div>
 
                     <div class="control-group">
-                        <input type="submit" class="btn btn-primary btn-large btn-block" value="login">
+                        <input type="submit" class="btn btn-primary btn-large btn-block" value="login" style="cursor: pointer;">
                     </div>
-                    <div class="control-group">
-                        <a href="/register" type="button" class="btn btn-primary btn-large btn-block">register</a>
-                    </div>
+                    <%--<div class="control-group">--%>
+                        <%--<a href="/register" type="button" class="btn btn-primary btn-large btn-block">register</a>--%>
+                    <%--</div>--%>
                 </div>
             </form>
         </div>

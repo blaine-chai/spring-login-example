@@ -5,7 +5,7 @@
     <meta charset="utf-8">
     <title>Server Admin - 사용자 관리</title>
     <link rel="stylesheet" href="/css/bootstrap.min.css">
-    <script src="/js/jquery-1.11.3.min.js"></script>
+    <script src="/js/jquery.min.js"></script>
     <script src="/js/bootstrap.min.js"></script>
     <style type="text/css">
         #cssTable td {
@@ -55,7 +55,7 @@
 
     <div class="table-responsive">
         <form action="/admin/user/register" method="post" style="width: 100%; position:relative;">
-            <button class="btn btn-primary" name="userId" value="${admin.userId}" style="position: absolute; right: 50px;">생성</button>
+            <button class="btn btn-primary" style="position: absolute; right: 50px;">생성</button>
         </form>
         <table class="table table-condensed table-hover" id="cssTable">
             <thead>
@@ -63,24 +63,30 @@
                 <th width="20%" class="text-center">사용자 계정</th>
                 <th width="20%" class="text-center">사용자 이름</th>
                 <th width="20%" class="text-center">비밀번호</th>
-                <th width="40%" class="text-center">생성일</th>
+                <th width="20%" class="text-center">생성일</th>
+                <th width="20%" class="text-center">그룹</th>
                 <th class="text-center shrink"></th>
             </tr>
             </thead>
             <tbody>
             <c:forEach items="${adminList}" var="admin">
-                <td>${admin.userId}</td>
-                <td class="text-center">${admin.username}</td>
-                <td class="text-center">${admin.hash}</td>
-                <td class="text-center">${admin.createDate}</td>
-                <td class="text-center shrink">
-                    <form action="/admin/user/modify" method="post">
-                        <button class="btn btn-primary" name="userId" value="${admin.userId}">수정</button>
-                    </form>
-                    <form action="/admin/user/delete" method="post">
-                        <button class="btn btn-danger" name="userId" value="${admin.userId}">삭제</button>
-                    </form>
-                </td>
+                <tr>
+                    <td>${admin.userId}</td>
+                    <td class="text-center">${admin.username}</td>
+                        <%--<td class="text-center">${admin.hash}</td>--%>
+                    <td class="text-center">********</td>
+                    <td class="text-center">${admin.createDate}</td>
+                    <td class="text-center"><c:forEach items="${admin.userGroups}" var="userGroup">
+                        <span style="padding-right: 5px;">${userGroup.groupName.groupName}</span>
+                    </c:forEach></td>
+                    <td class="text-center shrink">
+                        <form action="/admin/user/modify" method="post">
+                            <button class="btn btn-primary" name="userId" value="${admin.userId}">수정</button>
+                        </form>
+                        <form action="/admin/user/delete" method="post">
+                            <button class="btn btn-danger" name="userId" value="${admin.userId}">삭제</button>
+                        </form>
+                    </td>
                 </tr>
             </c:forEach>
             </tbody>
