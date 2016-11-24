@@ -4233,51 +4233,51 @@
 
 
     var ko = moment__default.defineLocale('ko', {
-        months : '1¿ù_2¿ù_3¿ù_4¿ù_5¿ù_6¿ù_7¿ù_8¿ù_9¿ù_10¿ù_11¿ù_12¿ù'.split('_'),
-        monthsShort : '1¿ù_2¿ù_3¿ù_4¿ù_5¿ù_6¿ù_7¿ù_8¿ù_9¿ù_10¿ù_11¿ù_12¿ù'.split('_'),
-        weekdays : 'ÀÏ¿äÀÏ_¿ù¿äÀÏ_È­¿äÀÏ_¼ö¿äÀÏ_¸ñ¿äÀÏ_±İ¿äÀÏ_Åä¿äÀÏ'.split('_'),
-        weekdaysShort : 'ÀÏ_¿ù_È­_¼ö_¸ñ_±İ_Åä'.split('_'),
-        weekdaysMin : 'ÀÏ_¿ù_È­_¼ö_¸ñ_±İ_Åä'.split('_'),
+        months : '1ì›”_2ì›”_3ì›”_4ì›”_5ì›”_6ì›”_7ì›”_8ì›”_9ì›”_10ì›”_11ì›”_12ì›”'.split('_'),
+        monthsShort : '1ì›”_2ì›”_3ì›”_4ì›”_5ì›”_6ì›”_7ì›”_8ì›”_9ì›”_10ì›”_11ì›”_12ì›”'.split('_'),
+        weekdays : 'ì¼ìš”ì¼_ì›”ìš”ì¼_í™”ìš”ì¼_ìˆ˜ìš”ì¼_ëª©ìš”ì¼_ê¸ˆìš”ì¼_í† ìš”ì¼'.split('_'),
+        weekdaysShort : 'ì¼_ì›”_í™”_ìˆ˜_ëª©_ê¸ˆ_í† '.split('_'),
+        weekdaysMin : 'ì¼_ì›”_í™”_ìˆ˜_ëª©_ê¸ˆ_í† '.split('_'),
         longDateFormat : {
-            LT : 'A h½Ã mºĞ',
-            LTS : 'A h½Ã mºĞ sÃÊ',
+            LT : 'A hì‹œ më¶„',
+            LTS : 'A hì‹œ më¶„ sì´ˆ',
             L : 'YYYY.MM.DD',
-            LL : 'YYYY³â MMMM DÀÏ',
-            LLL : 'YYYY³â MMMM DÀÏ A h½Ã mºĞ',
-            LLLL : 'YYYY³â MMMM DÀÏ dddd A h½Ã mºĞ'
+            LL : 'YYYYë…„ MMMM Dì¼',
+            LLL : 'YYYYë…„ MMMM Dì¼ A hì‹œ më¶„',
+            LLLL : 'YYYYë…„ MMMM Dì¼ dddd A hì‹œ më¶„'
         },
         calendar : {
-            sameDay : '¿À´Ã LT',
-            nextDay : '³»ÀÏ LT',
+            sameDay : 'ì˜¤ëŠ˜ LT',
+            nextDay : 'ë‚´ì¼ LT',
             nextWeek : 'dddd LT',
-            lastDay : '¾îÁ¦ LT',
-            lastWeek : 'Áö³­ÁÖ dddd LT',
+            lastDay : 'ì–´ì œ LT',
+            lastWeek : 'ì§€ë‚œì£¼ dddd LT',
             sameElse : 'L'
         },
         relativeTime : {
-            future : '%s ÈÄ',
-            past : '%s Àü',
-            s : '¸î ÃÊ',
-            ss : '%dÃÊ',
-            m : 'ÀÏºĞ',
-            mm : '%dºĞ',
-            h : 'ÇÑ ½Ã°£',
-            hh : '%d½Ã°£',
-            d : 'ÇÏ·ç',
-            dd : '%dÀÏ',
-            M : 'ÇÑ ´Ş',
-            MM : '%d´Ş',
-            y : 'ÀÏ ³â',
-            yy : '%d³â'
+            future : '%s í›„',
+            past : '%s ì „',
+            s : 'ëª‡ ì´ˆ',
+            ss : '%dì´ˆ',
+            m : 'ì¼ë¶„',
+            mm : '%dë¶„',
+            h : 'í•œ ì‹œê°„',
+            hh : '%dì‹œê°„',
+            d : 'í•˜ë£¨',
+            dd : '%dì¼',
+            M : 'í•œ ë‹¬',
+            MM : '%dë‹¬',
+            y : 'ì¼ ë…„',
+            yy : '%dë…„'
         },
-        ordinalParse : /\d{1,2}ÀÏ/,
-        ordinal : '%dÀÏ',
-        meridiemParse : /¿ÀÀü|¿ÀÈÄ/,
+        ordinalParse : /\d{1,2}ì¼/,
+        ordinal : '%dì¼',
+        meridiemParse : /ì˜¤ì „|ì˜¤í›„/,
         isPM : function (token) {
-            return token === '¿ÀÈÄ';
+            return token === 'ì˜¤í›„';
         },
         meridiem : function (hour, minute, isUpper) {
-            return hour < 12 ? '¿ÀÀü' : '¿ÀÈÄ';
+            return hour < 12 ? 'ì˜¤ì „' : 'ì˜¤í›„';
         }
     });
 

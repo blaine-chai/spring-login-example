@@ -227,6 +227,17 @@ body {
 .relative-table-wrapper {
     padding: 15px;
 }
+.relative-table-wrapper th {
+    text-align:center; 
+}
+
+.relative-table-wrapper tr td:last-child {
+    text-align:left; 
+}
+
+.relative-table-wrapper td {
+    text-align:center; 
+}
 
 .relative-table-wrapper .close {
     top: 10px;
