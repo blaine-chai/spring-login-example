@@ -47,40 +47,40 @@
 </head>
 <body>
 <div id="header-wrapper">
-    <h1>Real-TimeMonitoring System(REMOS)</h1>
+    <h1>REMOS</h1>
+    <div id="user-info-container" class="" style="position: absolute;top:50%;right: 20px;padding-right: 5px;color:#646464;"><span style="padding-right: 15px; padding-left:5px;">${userId}</span><c:if test="${userType.equals(\"admin\")}"><a href="/admin" style="margin-right: 5px;"><label class="btn badge logout-btn" style="">admin<span class="glyphicon glyphicon-cog" style="padding-left: 10px;"></span></label></a></c:if><a href="/logout"><label class="btn badge logout-btn" style="">로그아웃<span class="glyphicon glyphicon-log-out" style="padding-left: 10px;"></span></label></a></div>
 </div>
 <div id="nav-wrapper">
-    <div id="nav"><a href="/main">
-        <div class="header-button btn">
-            <div class="glyphicon glyphicon-bell"
-                 style="text-align: center; font-size: 27px; padding-top: 10px;"></div>
-            <div>알림</div>
-        </div>
-    </a> <a href="/main/status">
-        <div class="header-button btn">
-            <div class="glyphicon glyphicon-off"
-                 style="text-align: center; font-size: 27px; padding-top: 10px;"></div>
-            <div>시스템 상태</div>
-        </div>
-    </a> <a href="/main/profile">
-        <div class="header-button btn">
-            <div class="glyphicon glyphicon-list-alt"
-                 style="text-align: center; font-size: 27px; padding-top: 10px;"></div>
-            <div>프로파일링</div>
-        </div>
-    </a> <a href="/main/statistics">
-        <div class="header-button btn">
-            <div class="glyphicon glyphicon-signal"
-                 style="text-align: center; font-size: 27px; padding-top: 10px;"></div>
-            <div>통계</div>
-        </div>
-    </a> <a href="#">
-        <div class="header-button btn active">
-            <div class="glyphicon glyphicon-search"
-                 style="text-align: center; font-size: 27px; padding-top: 10px;"></div>
-            <div>검색</div>
-        </div>
-    </a></div>
+    <div id="nav">
+        <a href="/main">
+            <div class="header-button btn">
+                <div class="glyphicon glyphicon-bell"
+                     style="text-align: center; font-size: 27px; padding-top: 10px;"></div>
+                <div>알림</div>
+            </div>
+        </a>
+        <a href="/main/profile">
+            <div class="header-button btn">
+                <div class="glyphicon glyphicon-list-alt"
+                     style="text-align: center; font-size: 27px; padding-top: 10px;"></div>
+                <div>프로파일링</div>
+            </div>
+        </a>
+        <a href="/main/statistics">
+            <div class="header-button btn">
+                <div class="glyphicon glyphicon-signal"
+                     style="text-align: center; font-size: 27px; padding-top: 10px;"></div>
+                <div>통계</div>
+            </div>
+        </a>
+        <a href="#">
+            <div class="header-button btn active">
+                <div class="glyphicon glyphicon-search"
+                     style="text-align: center; font-size: 27px; padding-top: 10px;"></div>
+                <div>검색</div>
+            </div>
+        </a>
+    </div>
 </div>
 
 <div id="content" style="">
@@ -142,6 +142,13 @@
                     </div>
                 </div>
                 <div style="margin-top: 10px">
+
+                    <div id="search-date-option-container" class="btn-group btn-group-justified" data-toggle="buttons">
+                        <label class="btn btn-default btn-sm active"><input type="radio" name="dateOption"
+                                                                            autocomplete="off" checked>발행일자</label>
+                        <label class="btn btn-default btn-sm"><input type="radio" name="dateOption"
+                                                                     autocomplete="off">저장일자</label>
+                    </div>
                     <div style="float:left; margin:0 auto;"><span class="glyphicon glyphicon-calendar"
                                                                   style="left:2px; top:5px; width:20px;"></span></div>
                     <div class="" style="padding: 0;  margin:0 auto;"><input id="datepicker1" data-provide="datepicker"
@@ -170,20 +177,23 @@
                 <%--</div>--%>
                 <%--</div>--%>
 
-                <div class="btn-group" style="padding-top: 5px; width: 100%; margin:0;">
-                    <label class="btn btn-default btn-sm expand-btn btn-primary"
-                           style="width: 29px; margin:0;">+</label>
-                    <label class="btn btn-default btn-sm" style="width:calc(100% - 29px); margin:0;"
-                           onclick="$(this).parent().find('.expand-btn').click();return false;">Admin
-                        History</label>
-                    <div id="admin-history" class="panel history"
-                         style="overflow: auto; max-height:300px; margin-left: 2px; margin-right: 2px; display: none;">
-                        <table style="font-size:11px;max-height: 300px; overflow: auto;word-break: break-all;"
-                               class="table table-fixed table-bordered table-striped table-condensed">
-                            <tbody></tbody>
-                        </table>
+                <c:if test="${userType.equals(\"admin\")}">
+                    <div class="btn-group" style="padding-top: 5px; width: 100%; margin:0;">
+                        <label class="btn btn-default btn-sm expand-btn btn-primary"
+                               style="width: 29px; margin:0;">+</label>
+                        <label class="btn btn-default btn-sm" style="width:calc(100% - 29px); margin:0;"
+                               onclick="$(this).parent().find('.expand-btn').click();return false;">Admin
+                            History</label>
+                        <div id="admin-history" class="panel history"
+                             style="overflow: auto; max-height:300px; margin-left: 2px; margin-right: 2px; display: none;">
+                            <table style="font-size:11px;max-height: 300px; overflow: auto;word-break: break-all;"
+                                   class="table table-fixed table-bordered table-striped table-condensed">
+                                <tbody></tbody>
+                            </table>
+                        </div>
                     </div>
-                </div>
+                </c:if>
+
 
                 <div class="btn-group" style="padding-top: 5px; width: 100%;margin:0;">
                     <label class="btn btn-default btn-sm expand-btn btn-primary"
@@ -497,7 +507,7 @@
             contentType: "application/x-www-form-urlencoded; charset=UTF-8",
             success: function (responseData) {
                 data = userHistory = JSON.parse(responseData);
-                console.error(responseData);
+//                console.error(responseData);
                 $('#user-history>table>tbody>tr').remove();
                 $.each(data, function (i, d) {
                     var tmpEl = $('<tr><td class="user-history-bookmark-td"><img class="bookmark-btn" style="width: 26px;height: 26px;"></td><td>' + d.word + '</td><td class="user-history-remove-td"><label class="btn btn-default btn-sm close-search-option-btn">-</label></td></tr>');
@@ -552,7 +562,7 @@
             contentType: "application/x-www-form-urlencoded; charset=UTF-8",
             success: function (responseData) {
                 data = adminHistory = JSON.parse(responseData);
-                console.error(responseData);
+//                console.error(responseData);
                 $('#admin-history>table>tbody>tr').remove();
                 $.each(data, function (i, d) {
                     var tmpEl = $('<tr><td class="user-history-bookmark-td"><img class="bookmark-btn" style="width: 26px;height: 26px;"></td><td>' + d.word + '</td><td class="user-history-remove-td"><label class="btn btn-default btn-sm close-search-option-btn">-</label></td></tr>');
@@ -578,7 +588,7 @@
                             data: {'data': $(this).parent().find('td:nth-child(2)').text()},
                             contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
                             success: function (responseData) {
-                                console.error(responseData);
+//                                console.error(responseData);
                                 icon.toggleClass('bookmark-btn-active');
                             }
                         });
@@ -589,7 +599,7 @@
                             data: {'data': $(this).parent().find('td:nth-child(2)').text()},
                             contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
                             success: function (responseData) {
-                                console.error(responseData);
+//                                console.error(responseData);
                                 icon.toggleClass('bookmark-btn-active');
                             }
                         });

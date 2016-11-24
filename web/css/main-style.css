@@ -5,18 +5,32 @@
     margin: 0 auto;
     padding: 0;
     border: 0;
-    align-content: center; /*****jsp의 style을 옮김 */
-    text-align: center; /*****jsp의 style을 옮김 */
+    /*align-content: center; !*****jsp의 style을 옮김 *!*/
+    /*text-align: center; !*****jsp의 style을 옮김 *!*/
     width: 100%; /***** 신규 */
     white-space: nowrap; /***** 신규 */
     background: #f3f3f3; /***** 신규 */
+    position: relative;
+}
 
+.logout-btn {
+
+}
+
+.logout-btn.badge {
+    background: rgba(255, 193, 99, 0.9);
+}
+
+.logout-btn.focus, .logout-btn:focus, .logout-btn:hover {
+    color: rgba(247, 247, 247, 1);
+    background: rgba(255, 193, 99, 0.7);
+    text-decoration: none;
 }
 
 /*jsp의 style을 옮김 */
 #header-wrapper h1 {
     margin: 0 auto;
-    padding: 20px 0 20px 0;
+    padding: 20px 0 20px 50px;
 }
 
 #nav-wrapper {
@@ -44,7 +58,7 @@
 .header-button {
     background: rgba(91, 146, 206, 1);
     float: left;
-    width: 20%;
+    width: 25%;
     height: 80px;
     color: rgba(165, 197, 230, 1);
 }
@@ -331,6 +345,19 @@ body {
     cursor: pointer;
 }
 
-.user-bookmark-count-td{
+.user-bookmark-count-td {
     cursor: pointer;
+}
+
+/*.search-date-option{*/
+/*font-size: 10px;*/
+/*padding: 3px 5px 3px 5px;*/
+/*margin-left: 15px;*/
+/*margin-bottom: 5px;*/
+/*border-radius: 25px;*/
+/*}*/
+
+#search-date-option-container {
+    width: 66.6666666667%;
+    margin-bottom: 10px;
 }

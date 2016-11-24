@@ -72,9 +72,13 @@ public class MainPageController {
 
     @RequestMapping(value = {"/main"})
     public ModelAndView mainPage(HttpServletRequest request) {
+
+        String sessionId = request.getSession().getId();
+        String userId = sessionRepository.findByJSessionId(sessionId).get(0).getUserId();
         ModelAndView modelAndView = new ModelAndView("main_alarm");
         modelAndView.addObject("colSize", tableOptionRepository.findByUserAccount_UserId(sessionRepository.findByJSessionId(request.getSession().getId()).get(0).getUserId()).get(0).getColSizes());
-
+        modelAndView.addObject("userId", userId);
+        modelAndView.addObject("userType", sessionRepository.findByJSessionId(sessionId).get(0).getType());
         return modelAndView;
     }
 
@@ -84,8 +88,15 @@ public class MainPageController {
     }
 
     @RequestMapping(value = {"/main/profile"})
-    public String profilePage() {
-        return "main_profiling";
+    public ModelAndView profilePage(HttpServletRequest request) {
+        String sessionId = request.getSession().getId();
+        String userId = sessionRepository.findByJSessionId(sessionId).get(0).getUserId();
+        ModelAndView modelAndView = new ModelAndView("main_profiling");
+        modelAndView.addObject("colSize", tableOptionRepository.findByUserAccount_UserId(sessionRepository.findByJSessionId(request.getSession().getId()).get(0).getUserId()).get(0).getColSizes());
+        modelAndView.addObject("userId", userId);
+        modelAndView.addObject("userType", sessionRepository.findByJSessionId(sessionId).get(0).getType());
+
+        return modelAndView;
     }
 
     // 프로파일링에서 검색 버튼 클릭시 요청 들어옴
@@ -168,8 +179,15 @@ public class MainPageController {
 
 
     @RequestMapping(value = {"/main/statistics"})
-    public String statisticsPage() {
-        return "main_statistics";
+    public ModelAndView statisticsPage(HttpServletRequest request) {
+        String sessionId = request.getSession().getId();
+        String userId = sessionRepository.findByJSessionId(sessionId).get(0).getUserId();
+        ModelAndView modelAndView = new ModelAndView("main_statistics");
+        modelAndView.addObject("colSize", tableOptionRepository.findByUserAccount_UserId(sessionRepository.findByJSessionId(request.getSession().getId()).get(0).getUserId()).get(0).getColSizes());
+        modelAndView.addObject("userId", userId);
+        modelAndView.addObject("userType", sessionRepository.findByJSessionId(sessionId).get(0).getType());
+
+        return modelAndView;
     }
 
     @RequestMapping(value = {"/main/statistics/search-author"})
@@ -239,20 +257,19 @@ public class MainPageController {
 
     @RequestMapping(value = {"/main/search"})
     public ModelAndView searchPage(HttpServletRequest request) {
+        String sessionId = request.getSession().getId();
+        String userId = sessionRepository.findByJSessionId(sessionId).get(0).getUserId();
         ModelAndView modelAndView = new ModelAndView("main_search");
+        modelAndView.addObject("userId", userId);
         modelAndView.addObject("colSize", tableOptionRepository.findByUserAccount_UserId(sessionRepository.findByJSessionId(request.getSession().getId()).get(0).getUserId()).get(0).getColSizes());
+        modelAndView.addObject("userType", sessionRepository.findByJSessionId(request.getSession().getId()).get(0).getType());
         return modelAndView;
     }
 
-    @RequestMapping(value = {"/main/search1"})
-    public String searchPage1() {
-        return "main_search_1";
-    }
-
-    @RequestMapping(value = {"/main/status"})
-    public String statusPage() {
-        return "main_system_status";
-    }
+//    @RequestMapping(value = {"/main/status"})
+//    public String statusPage() {
+//        return "main_system_status";
+//    }
 
 
     @RequestMapping(value = "/join", method = RequestMethod.POST)

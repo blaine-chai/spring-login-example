@@ -47,20 +47,15 @@
 </head>
 <body>
 <div id="header-wrapper">
-    <h1>Real-TimeMonitoring System(REMOS)</h1>
+    <h1>REMOS</h1>
+    <div id="user-info-container" class="" style="position: absolute;top:50%;right: 20px;padding-right: 5px;color:#646464;"><span style="padding-right: 15px; padding-left:5px;">${userId}</span><c:if test="${userType.equals(\"admin\")}"><a href="/admin" style="margin-right: 5px;"><label class="btn badge logout-btn" style="">admin<span class="glyphicon glyphicon-cog" style="padding-left: 10px;"></span></label></a></c:if><a href="/logout"><label class="btn badge logout-btn" style="">로그아웃<span class="glyphicon glyphicon-log-out" style="padding-left: 10px;"></span></label></a></div>
 </div>
 <div id="nav-wrapper">
-    <div id="nav"><a href="/main">
-        <div class="header-button btn">
-            <div class="glyphicon glyphicon-bell"></div>
-            <div>알림</div>
-        </div>
-    </a>
-        <a href="/main/status">
+    <div id="nav">
+        <a href="/main">
             <div class="header-button btn">
-                <div class="glyphicon glyphicon-off"
-                     style="text-align: center; font-size: 27px; padding-top: 10px;"></div>
-                <div>시스템 상태</div>
+                <div class="glyphicon glyphicon-bell"></div>
+                <div>알림</div>
             </div>
         </a>
         <a href="#">
@@ -171,7 +166,8 @@
 
         <div id="menu" class="col-xs-8" style="width: calc(100% - 333px)">
             <div id="relative-table-container" style="position: absolute; z-index: 10;"></div>
-            <div id="menu-wrapper" style="background: rgba(224, 234, 244, 1); height: calc(100% - 210px); padding-top: 10px;">
+            <div id="menu-wrapper"
+                 style="background: rgba(224, 234, 244, 1); height: calc(100% - 210px); padding-top: 10px;">
                 <div id="result-table-wrapper" class="panel panel-default"
                      style="margin: 0px 15px 15px; height: 764px;font-size: 11px;overflow-x: auto;">
                     <div id="profile-result-container" style="height: auto;">
@@ -802,7 +798,7 @@
                 '<label class="btn btn-default btn-sm expand-btn btn-primary"' +
                 'style="width: 29px; margin:0;">+</label>' +
                 '<label class="btn btn-default btn-sm table-expanded-title" style="width:calc(100% - 59px); margin:0;" onclick="expandTable(this);return false;">User History</label>' +
-                '<label class="btn btn-default expand-component-close" style="width: 30px;height: 30px;right: 0;margin: 0;padding: 0;border-left: 0;border-top-right-radius: 4px;border-bottom-right-radius: 4px;"><span aria-hidden="true" style="font-size: 15px;margin: 0;padding: 0;line-height: 25px;">×</span></label>'+
+                '<label class="btn btn-default expand-component-close" style="width: 30px;height: 30px;right: 0;margin: 0;padding: 0;border-left: 0;border-top-right-radius: 4px;border-bottom-right-radius: 4px;"><span aria-hidden="true" style="font-size: 15px;margin: 0;padding: 0;line-height: 25px;">×</span></label>' +
                 '<div class="panel table-expanded-container" style="overflow: auto; max-height:300px; margin-left: 2px; margin-right: 2px; display: none;border-bottom: 1px solid #ccc;border-left: 1px solid #ccc;border-right: 1px solid #ccc;border-top-right-radius: 0;border-top-left-radius: 0;margin-bottom: 5px;">' +
                 '<table style="font-size:11px; word-break: break-all; " ' +
                 'class="table table-fixed table-bordered table-striped table-condensed table-hover"><tbody></tbody></table></div>' +

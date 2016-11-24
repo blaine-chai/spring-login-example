@@ -5,8 +5,8 @@ package com.blainechai.constant;
  */
 public final class UserType {
 //    public final static String ADMIN = "ADMIN";
-    public final static String ADMIN = "ADMIN";
-    public final static String USER = "a";
+    public final static String ADMIN = "admin";
+    public final static String USER = "user";
 //    public final static String USER_B = "b";
 //    public final static String USER_C = "c";
 

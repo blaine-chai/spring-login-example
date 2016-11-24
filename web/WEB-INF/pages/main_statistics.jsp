@@ -88,20 +88,15 @@
 </head>
 <body>
 <div id="header-wrapper">
-    <h1>Real-TimeMonitoring System(REMOS)</h1>
+    <h1>REMOS</h1>
+    <div id="user-info-container" class="" style="position: absolute;top:50%;right: 20px;padding-right: 5px;color:#646464;"><span style="padding-right: 15px; padding-left:5px;">${userId}</span><c:if test="${userType.equals(\"admin\")}"><a href="/admin" style="margin-right: 5px;"><label class="btn badge logout-btn" style="">admin<span class="glyphicon glyphicon-cog" style="padding-left: 10px;"></span></label></a></c:if><a href="/logout"><label class="btn badge logout-btn" style="">로그아웃<span class="glyphicon glyphicon-log-out" style="padding-left: 10px;"></span></label></a></div>
 </div>
 <div id="nav-wrapper">
-    <div id="nav"><a href="/main">
-        <div class="header-button btn">
-            <div class="glyphicon glyphicon-bell"></div>
-            <div>알림</div>
-        </div>
-    </a>
-        <a href="/main/status">
+    <div id="nav">
+        <a href="/main">
             <div class="header-button btn">
-                <div class="glyphicon glyphicon-off"
-                     style="text-align: center; font-size: 27px; padding-top: 10px;"></div>
-                <div>시스템 상태</div>
+                <div class="glyphicon glyphicon-bell"></div>
+                <div>알림</div>
             </div>
         </a>
         <a href="/main/profile">
@@ -136,7 +131,9 @@
                  style="position: relative;height: calc(50% - 68px);background: #f8f8f8;margin: 30px;margin-bottom: 46px;">
                 <div class="panel panel-default"
                      style="position: relative;height: 50px;margin-bottom: 0;margin-left: 20px;margin-right: 20px;margin-top: 20px;">
-                    <div class="graph-title-text" style="height: 50px;line-height: 50px;vertical-align: middle;margin-left: 20px;">events</div>
+                    <div class="graph-title-text"
+                         style="height: 50px;line-height: 50px;vertical-align: middle;margin-left: 20px;">events
+                    </div>
                     <div class="btn-group" style="position:absolute;right:10px;bottom:10px;">
                         <button type="button" class="btn btn-default btn-sm dropdown-toggle total-book-dropdown"
                                 data-toggle="dropdown" aria-haspopup="true"
@@ -147,10 +144,14 @@
                             </div>
                         </button>
                         <ul class="dropdown-menu search-category-selector">
-                            <li><a role="total-book-dropdown" onclick="getSearchTotalData(this);return false;" period="0" href="#">일별</a></li>
-                            <li><a role="total-book-dropdown" onclick="getSearchTotalData(this);return false;" period="1" tabindex="-1" href="#">주별</a></li>
-                            <li><a role="total-book-dropdown" onclick="getSearchTotalData(this);return false;" period="2" tabindex="-1" href="#">월별</a></li>
-                            <li><a role="total-book-dropdown" onclick="getSearchTotalData(this);return false;" period="3" tabindex="-1" href="#">년도별</a></li>
+                            <li><a role="total-book-dropdown" onclick="getSearchTotalData(this);return false;"
+                                   period="0" href="#">일별</a></li>
+                            <li><a role="total-book-dropdown" onclick="getSearchTotalData(this);return false;"
+                                   period="1" tabindex="-1" href="#">주별</a></li>
+                            <li><a role="total-book-dropdown" onclick="getSearchTotalData(this);return false;"
+                                   period="2" tabindex="-1" href="#">월별</a></li>
+                            <li><a role="total-book-dropdown" onclick="getSearchTotalData(this);return false;"
+                                   period="3" tabindex="-1" href="#">년도별</a></li>
                         </ul>
                     </div>
                 </div>
@@ -162,7 +163,9 @@
                  style="position: relative;height: calc(50% - 68px);background: #f8f8f8;margin: 30px;">
                 <div class="panel panel-default"
                      style="position: relative;height: 50px;margin-bottom: 0;margin-left: 20px;margin-right: 20px;margin-top: 20px;">
-                    <div class="graph-title-text" style="height: 50px;line-height: 50px;vertical-align: middle;margin-left: 20px;">events</div>
+                    <div class="graph-title-text"
+                         style="height: 50px;line-height: 50px;vertical-align: middle;margin-left: 20px;">events
+                    </div>
                     <div class="btn-group" style="position:absolute;right:10px;bottom:10px;">
                         <button type="button" class="btn btn-default btn-sm dropdown-toggle total-author-dropdown"
                                 data-toggle="dropdown" aria-haspopup="true"
@@ -174,10 +177,14 @@
                         </button>
                         <ul class="dropdown-menu search-category-selector" role="menu"
                             aria-labelledby="dropdownMenu1">
-                            <li><a role="total-author-dropdown" onclick="getAuthorTotalGraphData(this);return false;" period="0" tabindex="-1" href="#">일별</a></li>
-                            <li><a role="total-author-dropdown" onclick="getAuthorTotalGraphData(this);return false;" period="1" tabindex="-1" href="#">주별</a></li>
-                            <li><a role="total-author-dropdown" onclick="getAuthorTotalGraphData(this);return false;" period="2" tabindex="-1" href="#">월별</a></li>
-                            <li><a role="total-author-dropdown" onclick="getAuthorTotalGraphData(this);return false;" period="3" tabindex="-1" href="#">년도별</a></li>
+                            <li><a role="total-author-dropdown" onclick="getAuthorTotalGraphData(this);return false;"
+                                   period="0" tabindex="-1" href="#">일별</a></li>
+                            <li><a role="total-author-dropdown" onclick="getAuthorTotalGraphData(this);return false;"
+                                   period="1" tabindex="-1" href="#">주별</a></li>
+                            <li><a role="total-author-dropdown" onclick="getAuthorTotalGraphData(this);return false;"
+                                   period="2" tabindex="-1" href="#">월별</a></li>
+                            <li><a role="total-author-dropdown" onclick="getAuthorTotalGraphData(this);return false;"
+                                   period="3" tabindex="-1" href="#">년도별</a></li>
                         </ul>
                     </div>
                 </div>
@@ -349,7 +356,7 @@
 
     var getAuthorGraphDataByPeriod = (function (element) {
         var authorList = authorGraph.getNameList();
-        console.error(authorList[0]);
+//        console.error(authorList[0]);
         $.ajax({
             url: "/main/statistics/search-author-data",
             type: "post",
@@ -429,7 +436,7 @@
         } else {
             timePeriod = $(element).attr('period');
         }
-        console.error(timePeriod);
+//        console.error(timePeriod);
 
         $.ajax({
             url: "/main/statistics/search-total-data",
@@ -439,13 +446,13 @@
             },
             success: function (responseData) {
                 var resultData = JSON.parse(responseData);
-                console.error(resultData);
+//                console.error(resultData);
 
                 totalGraph.setGraphContainer('#total-book-graph-container');
                 totalGraph.setOption({timePeriod: parseInt(timePeriod)});
                 totalGraph.removeSvg();
                 totalGraph.removeData();
-                totalGraph.addNameList('total')
+                totalGraph.addNameList('total');
                 totalGraph.setData(resultData);
                 totalGraph.init();
             }

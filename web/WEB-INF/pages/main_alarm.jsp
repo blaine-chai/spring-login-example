@@ -89,20 +89,15 @@
 </head>
 <body>
 <div id="header-wrapper">
-    <h1>Real-TimeMonitoring System(REMOS)</h1>
+    <h1>REMOS</h1>
+    <div id="user-info-container" class="" style="position: absolute;top:50%;right: 20px;padding-right: 5px;color:#646464;"><span style="padding-right: 15px; padding-left:5px;">${userId}</span><c:if test="${userType.equals(\"admin\")}"><a href="/admin" style="margin-right: 5px;"><label class="btn badge logout-btn" style="">admin<span class="glyphicon glyphicon-cog" style="padding-left: 10px;"></span></label></a></c:if><a href="/logout"><label class="btn badge logout-btn" style="">로그아웃<span class="glyphicon glyphicon-log-out" style="padding-left: 10px;"></span></label></a></div>
 </div>
 <div id="nav-wrapper">
-    <div id="nav"><a href="#">
-        <div class="header-button btn active">
-            <div class="glyphicon glyphicon-bell"></div>
-            <div>알림</div>
-        </div>
-    </a>
-        <a href="/main/status">
-            <div class="header-button btn">
-                <div class="glyphicon glyphicon-off"
-                     style="text-align: center; font-size: 27px; padding-top: 10px;"></div>
-                <div>시스템 상태</div>
+    <div id="nav">
+        <a href="#">
+            <div class="header-button btn active">
+                <div class="glyphicon glyphicon-bell"></div>
+                <div>알림</div>
             </div>
         </a>
         <a href="/main/profile">
@@ -252,7 +247,14 @@
                     bookmarkModule.setData(result);
                     if (bookmarkModule.getData().length > 0) {
                         $.each(bookmarkModule.getData(), function (i, d) {
-                            var tmp = $('<tr data-index="' + i + '"><td class="user-bookmark-alarm-td" onclick="$(this).parent().find(\'.user-bookmark-search-word-td\').click()"><span class="badge">N</span></td><td class="user-bookmark-search-word-td">' + d.word + '</td><td><span class="user-bookmark-count-td">' + d.count + '</span></td><td class="user-history-remove-td"><label class="btn btn-default btn-sm close-search-option-btn">-</label></td></tr>');
+                            var tmp = $('<tr data-index="' + i + '">' +
+                                    '<td class="user-bookmark-alarm-td" onclick="$(this).parent().find(\'.user-bookmark-search-word-td\').click()"><span class="badge">N</span></td>' +
+                                    '<td class="user-bookmark-search-word-td">' + d.word + '</td>' +
+                                    '<td><span class="user-bookmark-count-td">' + d.count + '</span></td>'
+                                    <c:if test="${userType.equals(\"admin\")}">
+                                    + '<td class="user-history-remove-td"><label class="btn btn-default btn-sm close-search-option-btn">-</label></td></tr>'
+                                    </c:if>
+                            );
                             tmp.find('.close-search-option-btn').click(function (e) {
                                 var data = $(this).parent().parent().find('td:nth-child(2)').text();
                                 $.ajax({
