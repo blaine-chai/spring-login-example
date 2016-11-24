@@ -59,26 +59,15 @@
     </style>
 
     <!-- Latest compiled and minified CSS -->
-
-    <%--<link rel="stylesheet"--%>
-    <%--href="//cdnjs.cloudflare.com/ajax/libs/bootstrap-table/1.11.0/bootstrap-table.min.css">--%>
-
     <link href="/css/main-style.css" rel="stylesheet" type="text/css">
-    <link href="/css/bootstrap-datetimepicker.min.css" rel="stylesheet" type="text/css">
-    <%--<link href="/css/bootstrap-select.css" rel="stylesheet" type="text/css">--%>
-
+    <link href="/css/jquery.datetimepicker.css" rel="stylesheet" type="text/css">
 
     <!-- Latest compiled and minified JavaScript -->
-    <%--<script--%>
-    <%--src="//cdnjs.cloudflare.com/ajax/libs/bootstrap-table/1.11.0/bootstrap-table.min.js"></script>--%>
 
     <!-- Latest compiled and minified Locales -->
-
     <script src="/js/colResizable-1.6.js"></script>
     <script src="/js/moment.js"></script>
-    <%--<script src="/js/transition.js"></script>--%>
-    <script src="/js/bootstrap-datetimepicker.js"></script>
-    <%--<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>--%>
+    <script src="/js/jquery.datetimepicker.full.js"></script>
     <script src="/js/jquery-ui.js"></script>
     <script src="/js/FileSaver.js"></script>
     <script src="/js/Blob.js"></script>
@@ -89,7 +78,14 @@
 <body>
 <div id="header-wrapper">
     <h1>REMOS</h1>
-    <div id="user-info-container" class="" style="position: absolute;top:50%;right: 20px;padding-right: 5px;color:#646464;"><span style="padding-right: 15px; padding-left:5px;">${userId}</span><c:if test="${userType.equals(\"admin\")}"><a href="/admin" style="margin-right: 5px;"><label class="btn badge logout-btn" style="">admin<span class="glyphicon glyphicon-cog" style="padding-left: 10px;"></span></label></a></c:if><a href="/logout"><label class="btn badge logout-btn" style="">로그아웃<span class="glyphicon glyphicon-log-out" style="padding-left: 10px;"></span></label></a></div>
+    <div id="user-info-container" class=""
+         style="position: absolute;top:50%;right: 20px;padding-right: 5px;color:#646464;"><span
+            style="padding-right: 15px; padding-left:5px;">${userId}</span><c:if test="${userType.equals(\"admin\")}"><a
+            href="/admin" style="margin-right: 5px;"><label class="btn badge logout-btn" style="">admin<span
+            class="glyphicon glyphicon-cog" style="padding-left: 10px;"></span></label></a></c:if><a
+            href="/logout"><label class="btn badge logout-btn" style="">로그아웃<span class="glyphicon glyphicon-log-out"
+                                                                                  style="padding-left: 10px;"></span></label></a>
+    </div>
 </div>
 <div id="nav-wrapper">
     <div id="nav">
@@ -304,11 +300,11 @@
 //        authorGraph.setGraphContainer('#author-graph-container');
 
 
-        $('#author-graph-add-btn').click(function (e) {
+        $('#author-graph-add-btn').click(function (e) {		// 추가 버튼을 클릭할 때
             authorGraph.removeSvg();
             addAuthorGraphData();
         });
-        $('#author-graph-new-btn').click(function (e) {
+        $('#author-graph-new-btn').click(function (e) {		// 신규 버튼을 클릭할 때
             if (authorGraph != undefined) {
                 authorGraph.removeNameList();
                 authorGraph.removeData();
@@ -316,28 +312,63 @@
             }
             getNewAuthorGraphData();
         });
+        fetch_unix_timestamp = function () {     	//return parseInt(new Date().getTime().toString().substring(0, 10));
+            return Math.floor(new Date().getTime() / 1000);
+        }
+
+        var timestamp = fetch_unix_timestamp();
+        console.log(timestamp);
+
+        function timeConverter(UNIX_timestamp) {
+            var a = new Date(UNIX_timestamp * 1000);
+            //var months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+            //var month = months[a.getMonth()];
+            var year = a.getFullYear();
+            var month = a.getMonth();
+            var date = a.getDate();
+            var hour = a.getHours();
+            var min = a.getMinutes();
+            var sec = a.getSeconds();
+            //var time = date + ' ' + month + ' ' + year + ' ' + hour + ':' + min + ':' + sec ;
+            var time = a.getFullYear() + "/" + (a.getMonth() + 1) + "/" + a.getDate();
+            return time;
+        }
+
+        console.log(timeConverter(timestamp - 3600 * 24 * 50));
+
+        //var d = new Date();
+        //var ttt = d.getFullYear() + "/" + (d.getMonth()+1) + "/" + d.getDate();
+        var ttt = timeConverter(timestamp - 3600 * 24 * 500);
 
         $('#datepicker1').datetimepicker({
-            format: 'YYYY/MM/DD HH:mm:a'
+            format: 'Y/m/d',
+            value: ttt
         });
+
         $('#datepicker2').datetimepicker({
-            format: 'YYYY/MM/DD HH:mm:a'
+            format: 'Y/m/d',
+            value: new Date()
         });
     });
 
-
+    var authorList = [];
+    var aList = "";
     var getNewAuthorGraphData = (function () {
         var authorList = [];
+        aList = "";
         authorList.push($('#author-search-input').val());
         $.ajax({
             url: "/main/statistics/search-author-data",
             type: "post",
             data: {
-                author: JSON.stringify(authorList),
+                authorJson: aList,
+                author: $('#author-search-input').val(),
+                authorList: JSON.stringify(authorList),
                 searchPeriod: timePeriodOption.monthly
             },
             success: function (responseData) {
                 var resultData = JSON.parse(responseData);
+                aList = responseData;
 //                console.error(resultData);
                 authorGraph = GraphModule.graph();
                 authorGraph.setMargin({top: 70, right: 60, bottom: 80, left: 60});
@@ -352,7 +383,41 @@
             }
         })
     });
-
+    var addAuthorGraphData = (function () {
+        //var author = [];
+        var beGood = false;
+        for (var i = 0; i < authorList; i++) {
+            if ($('#author-search-input').val() == authorList[i]) beGood = true;
+            console.log($('#author-search-input').val() + " : " + authorList[i] + " : " + beGood);
+        }
+        if (beGood) {
+            alert("중복괸 검색입니다!!!");
+            rerturn;
+        }
+        authorList.push($('#author-search-input').val());
+//        console.error(authorGraph.getOption().timePeriod);
+        $.ajax({
+            url: "/main/statistics/search-author-data",
+            type: "post",
+            data: {
+                authorJson: aList,
+                author: $('#author-search-input').val(),
+                authorList: JSON.stringify(authorList),
+                searchPeriod: timePeriodOption.monthly
+            },
+            success: function (responseData) {
+                var resultData = JSON.parse(responseData);
+                aList = responseData;
+                //console.error(resultData);
+                authorGraph.removeSvg();
+                authorGraph.setGraphContainer('#author-graph-container');
+                authorGraph.setMargin({top: 70, right: 60, bottom: 80, left: 60});
+                authorGraph.addNameList($('#author-search-input').val());
+                authorGraph.addData($('#author-search-input').val(), resultData);
+                authorGraph.refresh();
+            }
+        })
+    });
 
     var getAuthorGraphDataByPeriod = (function (element) {
         var authorList = authorGraph.getNameList();
@@ -378,86 +443,146 @@
         })
     });
 
-    var addAuthorGraphData = (function () {
-        var author = [];
-        author.push($('#author-search-input').val());
-//        console.error(authorGraph.getOption().timePeriod);
-        $.ajax({
-            url: "/main/statistics/search-author-data",
-            type: "post",
-            data: {
-                author: JSON.stringify(author),
-                searchPeriod: authorGraph.getOption().timePeriod
-            },
-            success: function (responseData) {
-                var resultData = JSON.parse(responseData);
-                authorGraph.removeSvg();
-                authorGraph.setGraphContainer('#author-graph-container');
-                authorGraph.setMargin({top: 70, right: 60, bottom: 80, left: 60});
-                authorGraph.addNameList($('#author-search-input').val());
-                authorGraph.addData(author[0], resultData);
-                authorGraph.refresh();
-            }
-        })
-    });
+    // 왼쪽 상단 : timePeriodOption.monthly
+    var getSearchTotalData = (function () {
+        var categoryEls = $('.search-category-option');
+        var category = categoryEls.eq(0).text();
+        console.log(category);
+        if (category == '일별') category = 'MSG_' + 'daily';
+        else                  category = 'MSG_' + 'monthly';
 
-    var getAuthorTotalGraphData = (function (element) {
-        var timePeriod;
-        if (element == undefined) {
-            timePeriod = timePeriodOption.monthly;
-        } else {
-            timePeriod = $(element).attr('period');
-        }
-        $.ajax({
-            url: "/main/statistics/search-author-total-data",
-            type: "post",
-            data: {
-//                author: author,
-                searchPeriod: timePeriod
-            },
-            success: function (responseData) {
-                var resultData = JSON.parse(responseData);
-//                console.error(resultData);
-                authorTotalGraph.setGraphContainer('#total-author-graph-container');
-                authorTotalGraph.setOption({timePeriod: parseInt(timePeriod)});
-                authorTotalGraph.removeSvg();
-                authorTotalGraph.removeData();
-                authorTotalGraph.addNameList('total');
-                authorTotalGraph.setData(resultData);
-                authorTotalGraph.init();
-            }
-        })
-    });
-
-    var getSearchTotalData = (function (element) {
-        var timePeriod;
-        if (element == undefined) {
-            timePeriod = timePeriodOption.monthly;
-        } else {
-            timePeriod = $(element).attr('period');
-        }
-//        console.error(timePeriod);
+//        console.log(category);
 
         $.ajax({
             url: "/main/statistics/search-total-data",
             type: "post",
             data: {
-                "searchPeriod": timePeriod
+                "searchPeriod": category
             },
             success: function (responseData) {
                 var resultData = JSON.parse(responseData);
 //                console.error(resultData);
-
+                totalGraph = GraphModule.graph();
                 totalGraph.setGraphContainer('#total-book-graph-container');
-                totalGraph.setOption({timePeriod: parseInt(timePeriod)});
-                totalGraph.removeSvg();
-                totalGraph.removeData();
+//                totalGraph.addData(responseData);
+
                 totalGraph.addNameList('total');
                 totalGraph.setData(resultData);
                 totalGraph.init();
             }
         });
     });
+    // 왼쪽 하단 : timePeriodOption.monthly
+    var getAuthorTotalGraphData = (function () {
+//        var author = $('#nickname-search-input').val();
+        var categoryEls = $('.search-category-option');
+        var category = categoryEls.eq(1).text();
+
+        if (category == '일별') category = 'DB_' + 'daily';
+        else                  category = 'DB_' + 'monthly';
+
+        $.ajax({
+            url: "/main/statistics/search-total-data",
+            type: "post",
+            data: {
+//                author: author,
+                searchPeriod: category
+            },
+            success: function (responseData) {
+                var resultData = JSON.parse(responseData);
+//                console.error(resultData);
+                authorTotalGraph = GraphModule.graph();
+                authorTotalGraph.setGraphContainer('#total-author-graph-container');
+                authorTotalGraph.addNameList('total');
+                authorTotalGraph.setData(resultData);
+                authorTotalGraph.init();
+            }
+        })
+
+    });
+
+
+    //
+    //    var addAuthorGraphData = (function () {
+    //        var author = [];
+    //        author.push($('#author-search-input').val());
+    ////        console.error(authorGraph.getOption().timePeriod);
+    //        $.ajax({
+    //            url: "/main/statistics/search-author-data",
+    //            type: "post",
+    //            data: {
+    //                author: JSON.stringify(author),
+    //                searchPeriod: authorGraph.getOption().timePeriod
+    //            },
+    //            success: function (responseData) {
+    //                var resultData = JSON.parse(responseData);
+    //                authorGraph.removeSvg();
+    //                authorGraph.setGraphContainer('#author-graph-container');
+    //                authorGraph.setMargin({top: 70, right: 60, bottom: 80, left: 60});
+    //                authorGraph.addNameList($('#author-search-input').val());
+    //                authorGraph.addData(author[0], resultData);
+    //                authorGraph.refresh();
+    //            }
+    //        })
+    //    });
+    //
+    //    var getAuthorTotalGraphData = (function (element) {
+    //        var timePeriod;
+    //        if (element == undefined) {
+    //            timePeriod = timePeriodOption.monthly;
+    //        } else {
+    //            timePeriod = $(element).attr('period');
+    //        }
+    //        $.ajax({
+    //            url: "/main/statistics/search-author-total-data",
+    //            type: "post",
+    //            data: {
+    ////                author: author,
+    //                searchPeriod: timePeriod
+    //            },
+    //            success: function (responseData) {
+    //                var resultData = JSON.parse(responseData);
+    ////                console.error(resultData);
+    //                authorTotalGraph.setGraphContainer('#total-author-graph-container');
+    //                authorTotalGraph.setOption({timePeriod: parseInt(timePeriod)});
+    //                authorTotalGraph.removeSvg();
+    //                authorTotalGraph.removeData();
+    //                authorTotalGraph.addNameList('total');
+    //                authorTotalGraph.setData(resultData);
+    //                authorTotalGraph.init();
+    //            }
+    //        })
+    //    });
+    //
+    //    var getSearchTotalData = (function (element) {
+    //        var timePeriod;
+    //        if (element == undefined) {
+    //            timePeriod = timePeriodOption.monthly;
+    //        } else {
+    //            timePeriod = $(element).attr('period');
+    //        }
+    ////        console.error(timePeriod);
+    //
+    //        $.ajax({
+    //            url: "/main/statistics/search-total-data",
+    //            type: "post",
+    //            data: {
+    //                "searchPeriod": timePeriod
+    //            },
+    //            success: function (responseData) {
+    //                var resultData = JSON.parse(responseData);
+    ////                console.error(resultData);
+    //
+    //                totalGraph.setGraphContainer('#total-book-graph-container');
+    //                totalGraph.setOption({timePeriod: parseInt(timePeriod)});
+    //                totalGraph.removeSvg();
+    //                totalGraph.removeData();
+    //                totalGraph.addNameList('total');
+    //                totalGraph.setData(resultData);
+    //                totalGraph.init();
+    //            }
+    //        });
+    //    });
 
     function handleOperatorSelect() {
         $('.search-category-selector li a').click(function (e) {
