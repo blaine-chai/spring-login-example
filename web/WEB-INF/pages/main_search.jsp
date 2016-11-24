@@ -142,9 +142,9 @@
 
                     <div id="search-date-option-container" class="btn-group btn-group-justified" data-toggle="buttons">
                         <label class="btn btn-default btn-sm active"><input type="radio" name="dateOption"
-                                                                            autocomplete="off" checked>발행일자</label>
+                                                                            autocomplete="off" value="발행일자" checked>발행일자</label>
                         <label class="btn btn-default btn-sm"><input type="radio" name="dateOption"
-                                                                     autocomplete="off">저장일자</label>
+                                                                     autocomplete="off" value="저장일자">저장일자</label>
                     </div>
                     <div style="float:left; margin:0 auto;"><span class="glyphicon glyphicon-calendar"
                                                                   style="left:2px; top:5px; width:20px;"></span></div>
@@ -363,7 +363,7 @@
 
         fetch_unix_timestamp = function () {     	//return parseInt(new Date().getTime().toString().substring(0, 10));
             return Math.floor(new Date().getTime() / 1000);
-        }
+        };
 
         var timestamp = fetch_unix_timestamp();
         // console.log(timestamp);
@@ -935,6 +935,7 @@
         data.typeInfo = typeInfo;
         data.fromDate = $('#datepicker1').val();
         data.toDate = $('#datepicker2').val();
+        data.dateOption = $('input[name=dateOption]:checked').val();
         if ((data.fromDate != "") && (data.toDate != "")) {
             if (data.fromDate > data.toDate) {
                 isOK = false;
@@ -947,6 +948,7 @@
         SearchWord += typeInfo;
         SearchWord += ">";
         SearchWord += data.fromDate + "-" + data.toDate;
+        SearchWord += ">" + data.dateOption;
         console.log(data.typeInfo + " : " + data.fromDate + " : " + data.toDate);
 
         if (!isOK) SearchWord = "";
@@ -969,8 +971,8 @@
             console.log(authorNic + " : " + refAuthorNic);
 
             html += '<tr><td>' + tdata.number + '</td>';
-            var priorityEl = $('')
-            priorityEl.find('select').val(tdata.priority);
+//          var priorityEl = $('')
+//          priorityEl.find('select').val(tdata.priority);
             html += '<td>' + '<select><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option><option>6</option><option>7</option><option>8</option><option>9</option></select>' + '</td>';
             html += '<td class="group-td">' + tdata.groupName + '</td>';
             html += '<td>' + tdata.publishedDate + '</td>';
@@ -1132,8 +1134,9 @@
             str += data[i].input;
             if (i < data.length - 1) str += " " + data[i].operator + " ";
         }
-        str += " : " + tdata.typeInfo;
-        str += " : " + tdata.fromDate + " - " + tdata.toDate;
+        str += ">" + tdata.typeInfo;
+        str += ">" + tdata.fromDate + "-" + tdata.toDate;
+        str += ">" + tdata.dateOption;
 
         return str;
     }
@@ -1316,6 +1319,12 @@
             $('#option2').parent().click();
         } else {
             $('#option3').parent().click();
+        }
+
+        if (a.dateOption == '발행일자') {
+            $('input[name=dateOption][value="발행일자"]').click();
+        } else {
+            $('input[name=dateOption][value="저장일자"]').click();
         }
 
         $.each(a.data, function (i) {
@@ -1514,26 +1523,6 @@
 
     }
 
-
-    function addCheckEBtnListener() {
-        $('.check-e').click(function () {
-            var tarEl = $(this);
-            $.ajax({
-                url: "/main/e-check",
-                type: "post",
-                data: {"bookId": tarEl.parent().find('td').eq(0).text()},
-                success: function (responseData) {
-                    var data = JSON.parse(responseData);
-
-//                    console.error(tarEl);
-
-                    tarEl.find('span').remove();
-                    tarEl.append('<span class="glyphicon glyphicon-ok"></span>');
-//                    console.log(html);
-                }
-            });
-        });
-    }
 
     function addAuthorClickListener(i, tdata) {
 

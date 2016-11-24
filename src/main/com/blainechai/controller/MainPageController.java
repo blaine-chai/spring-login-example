@@ -1054,6 +1054,8 @@ public class MainPageController {
             }
             commonBookmarkRepository.deleteByAdminBookmark_Word(word);
             adminBookmarkRepository.deleteByWord(word);
+
+            System.out.println(word);
         }
         return new ModelAndView("api").addObject("json", "");
     }

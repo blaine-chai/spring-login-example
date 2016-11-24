@@ -93,7 +93,7 @@ var BookmarkTableModule = (function () {
             },
 
             removeTableContent: function () {
-                container.find('table').children(remove());
+                container.find('tbody').children().remove();
             },
             getData: function () {
                 return option.data;
