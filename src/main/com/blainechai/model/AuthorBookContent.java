@@ -16,6 +16,13 @@ public class AuthorBookContent {
         this.savedDate = savedDate;
     }
 
+    public AuthorBookContent(String[] r) {
+        this.author = r[5];
+        this.relAuthor = r[6];
+        this.content = r[9];
+        this.savedDate = r[2];
+    }
+
     public String getAuthor() {
         return author;
     }

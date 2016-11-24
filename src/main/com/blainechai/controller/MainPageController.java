@@ -17,8 +17,18 @@ import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Random;
 
 /**
  * Created by blainechai on 2016. 9. 5..
@@ -58,9 +68,31 @@ public class MainPageController {
     @Autowired
     private AdminHistoryRepository adminHistoryRepository;
 
-    public static List<BookInfo> bookInfoList = new ArrayList<BookInfo>();
+    //    public static List<BookInfo> bookInfoList = new ArrayList<BookInfo>();
     public static ArrayList<String> keySet = new ArrayList<String>();
+    public static String ip = "10.10.10.10";
+    public static int port = 30000;
 
+    public MainPageController() throws IOException {
+        /*
+        File f = new File("./text");
+    	System.out.println("AAAAAAAAAAAAAAAAAAAAAA : " + f.getPath() + " : " + f.getCanonicalPath());
+
+		String path = MainPageController.class.getResource("").getPath(); // 현재 클래스의 절대 경로를 가져온다.
+		System.out.println(new File(path).getParentFile().getParent()); //--> 절대 경로가 출력됨
+		File fileInSamePackage = new File(path + "test.txt"); // path 폴더 내의 test.txt 를 가리킨다
+		System.out.println(new File(path).getParentFile().getParentFile().getParent()); //--> 절대 경로가 출력됨
+		*/
+//        String path = MainPageController.class.getResource("").getPath(); // 현재 클래스의 절대 경로를 가져온다.
+//        BufferedReader in = new BufferedReader(new FileReader(new File(path).getParentFile().getParentFile().getParent() + File.separator + "IPandPort.txt"));
+
+//        ip = in.readLine();
+//        port = Integer.parseInt(in.readLine());
+//        System.out.println(ip + " : " + port);
+//        in.close();
+        ip = "14.52.86.172";
+        port = 3000;
+    }
 
     @RequestMapping(value = {""})
     public String login(HttpServletRequest request) {
@@ -124,56 +156,182 @@ public class MainPageController {
     //from, to, 참조저자가 전달되야 함
     @RequestMapping(value = {"/main/profile/search-rel-author"})
     public ModelAndView searchRelAuthorByAuthor(HttpServletRequest request) {
-        String author = request.getParameter("author");
         // 메인 서버와 통신
         // *author* 이용
         // 참조저자, from, to 값을 검색해옴
+        Gson gson = new Gson();
 
-        List<RelAuthorInfo> resultList = new ArrayList<RelAuthorInfo>(); // 메인서버에서의 검색 결과
+        List<BookInfo> bookInfoList = new ArrayList<BookInfo>();
 
-        resultList.add(new RelAuthorInfo("tom1", "10", "1"));
-        resultList.add(new RelAuthorInfo("tom0", "10", "1"));
-        resultList.add(new RelAuthorInfo("tom2", "10", "1"));
-        resultList.add(new RelAuthorInfo("tom1", "10", "1"));
-        resultList.add(new RelAuthorInfo("tom0", "10", "1"));
-        resultList.add(new RelAuthorInfo("tom1", "10", "1"));
-
-
-        for (int i = 0; i < resultList.size(); i++) {
-            RelAuthorInfo tmpRA = resultList.get(i);
-            String tmpNickname = searchNicknameByAuthor(tmpRA.getRelAuthor());
-            tmpRA.setNickname(tmpNickname);
+        String sessionId = request.getSession().getId();
+        String userId = "";
+        if (sessionRepository.findByJSessionId(sessionId).size() > 0) {
+            userId = sessionRepository.findByJSessionId(sessionId).get(0).getUserId();
         }
 
+        List<RelAuthorInfo> resultList = new ArrayList<RelAuthorInfo>(); // 메인서버에서의 검색 결과
+        String[] from = null;
+       /*
+        resultList.add(new RelAuthorInfo("tom1", "10", "1"));
+        */
+
+        String id = request.getParameter("id");
+        String author = request.getParameter("author");        // author
+        String period = request.getParameter("period");        //period
+        String sel = request.getParameter("sel");
+        String p = request.getParameter("page");
+        String msg = request.getParameter("msg");
+        String data = request.getParameter("data");
+
+        System.out.println("\tsearchRelAuthorByAuthor : userID=" + userId + "@" + id + " : sel=" + sel
+                + " : page=" + p + " : author=" + author + " : period=" + period + " : msg=" + msg);
+
+        int selInt = Integer.parseInt(sel);
+        int pageInt = Integer.parseInt(p);
+
+        SocketComm sc = null;
+        if (selInt < 5) {
+            String[] s = author.split(">");
+            String strQuery = "indexB^" + s[0] + " & indexB^" + period
+                    + ">완전일치>" + s[1];
+
+            sc = new SocketComm(userId + "@" + id, ip, port, selInt, pageInt, strQuery);
+        } else if (selInt == 16) {
+            String strQuery = "indexB^" + msg;
+            sc = new SocketComm(userId + "@" + id, ip, port, selInt, pageInt, strQuery);
+        } else {
+            sc = new SocketComm(userId + "@" + id, ip, port, selInt, pageInt, author);
+        }
+        sc.runStart();
+
+        String send = "";
+
+        if (sc.beGetGood() == -2) send = "NoData";
+        else if (sc.beGetGood() == -1) send = "NotOK";
+        else {
+            if (selInt == 1) send = "OK";
+            else if ((selInt == 2) || (selInt == 12)) {
+                send += msg;
+                bookInfoList.clear();
+                bookInfoList = sc.getR();
+                /*
+                for (BookInfo bookInfo : bookInfoList) {
+		            List<NicknameOption> nicknames = nicknameRepository.findByAuthor(bookInfo.getAuthor());
+		            //find in nickname table and if nickname exist, add to BookInfo
+		            if (nicknames.size() > 0) {
+		                bookInfo.setAuthNickname(nicknames.get(0).getNickname());
+		            }
+		        }
+		        for (BookInfo bookInfo : bookInfoList) {
+		            List<NicknameOption> nicknames = nicknameRepository.findByAuthor(bookInfo.getReferencedAuthor());
+		            //find in nickname table and if nickname exist, add to BookInfo
+		            if (nicknames.size() > 0) {
+		                bookInfo.setRefNickname(nicknames.get(0).getNickname());
+		            }
+		        }
+		        */
+            } else if (selInt == 4) {
+                int progressPer = sc.getProPercent();
+                int cntTmp = sc.getCount();    // 카운트
+                if (progressPer < 100) send = "NotOK";
+                else send = cntTmp + "!@#$" + progressPer + "!@#$NOT";
+            } else if (selInt == 9) send = "OK";
+            else if (selInt == 10) {
+                resultList = sc.getQ(id); // 메인서버에서의 검색 결과
+             /*
+                    for (int i = 0; i < resultList.size(); i++) {
+			            RelAuthorInfo tmpRA = resultList.get(i);
+			            String tmpNickname = searchNicknameByAuthor(tmpRA.getRelAuthor());
+			            tmpRA.setNickname(tmpNickname);
+			        }
+			        */
+                send = "OK";
+            } else if (selInt == 15) {
+                from = sc.getFrom();
+                send = "OK";
+            } else if (selInt == 16) send = "OK";
+        }
+
+        //System.out.println("\tsearchRelAuthorByAuthor : userID=" + userId + "@" + id + " : sel=" + sel
+        //		+ " : page=" + p + " : author=" + author + " : period=" + period + " : send=" + send);
+
+        SendInfo si = null;
+        if ((selInt < 5) || (selInt == 12))
+            si = new SendInfo(id, author, period, sel, p, send, gson.toJson(bookInfoList), 1);
+        else if ((selInt == 15) && (from != null))
+            si = new SendInfo(id, author, period, sel, p, send, gson.toJson(from), 1);
+        else
+            si = new SendInfo(id, author, period, sel, p, send, gson.toJson(resultList), 1);
+
         ModelAndView modelAndView = new ModelAndView("api");
-        Gson gson = new Gson();
-        modelAndView.addObject("json", gson.toJson(resultList));
+        modelAndView.addObject("json", gson.toJson(si));
+
         return modelAndView;
     }
-
 
     //저자와 연관저자를 키로 찾은 책의 정보를 보내줌
     @RequestMapping(value = {"/main/profile/search-rel-author-content"})
     public ModelAndView searchRelAuthorContent(HttpServletRequest request) {
+
+        Gson gson = new Gson();
+
         String author = request.getParameter("author");
         String relAuthor = request.getParameter("rel-author");
+        String period = request.getParameter("period");
+        String id = request.getParameter("id");
         // 메인 서버와 통신
         // 저자와 연관저자로 검색 부분이 필요
 
+        String userId = "";
+        String sessionId = request.getSession().getId();
+        if (sessionRepository.findByJSessionId(sessionId).size() > 0) {
+            userId = sessionRepository.findByJSessionId(sessionId).get(0).getUserId();
+        }
 
         List<AuthorBookContent> resultList = new ArrayList<AuthorBookContent>(); //메인 서버에서의 검색 결과
 
+        /*
         resultList.add(new AuthorBookContent("tom", "bob", "hihihihi", "20110101"));
-        resultList.add(new AuthorBookContent("tom", "bob", "hihihihi", "20110101"));
-        resultList.add(new AuthorBookContent("tom", "bob", "hihihihi", "20110101"));
-        resultList.add(new AuthorBookContent("tom", "bob", "hihihihi", "20110101"));
-        resultList.add(new AuthorBookContent("tom", "bob", "hihihihi", "20110101"));
-        resultList.add(new AuthorBookContent("tom", "bob", "hihihihi", "20110101"));
-        resultList.add(new AuthorBookContent("tom", "bob", "hihihihi", "20110101"));
+        */
+        boolean isReady = true;
+
+        String strQuery = "indexB^" + author + "-" + relAuthor
+                + " | indexB^" + relAuthor + "-" + author
+                + ">완전일치>" + period;
+
+        SocketComm sc = new SocketComm(userId + "@" + id, ip, port, 1, 0, strQuery);
+        sc.runStart();
+
+        while (true) {
+            //try {Thread.sleep(20000);} catch (InterruptedException e) {}
+            sc = new SocketComm(userId + "@" + id, ip, port, 4, 0);
+            sc.runStart();
+
+            try {
+                Thread.sleep(200);
+            } catch (InterruptedException e) {
+            }
+            if (sc.getProPercent() == 100) break;
+            else if (sc.beGetGood() == -2) {
+                isReady = false;
+                break;
+            }
+        }
+
+        int count = sc.getCount();
+        System.out.println("sss : " + sc.getCount());
+
+        if (isReady) {
+            sc = new SocketComm(userId + "@" + id, ip, port, 2, 0);
+            sc.runStart();
+
+            resultList = sc.getS();
+        }
+        SendInfo si = new SendInfo(id, author, period, "2", "0", "" + count, gson.toJson(resultList), 1);
 
         ModelAndView modelAndView = new ModelAndView("api");
-        Gson gson = new Gson();
-        modelAndView.addObject("json", gson.toJson(resultList));
+        modelAndView.addObject("json", gson.toJson(si));
+
         return modelAndView;
     }
 
@@ -216,12 +374,131 @@ public class MainPageController {
         ArrayList<String> authorList = new ArrayList<String>();
         authorList.add("total");
 
-        ArrayList<LinkedHashMap<String, String>> resultList = getGraphDataByAuthorsAndPeriod(authorList, searchPeriod);
+        String userId = "";
+        String sessionId = request.getSession().getId();
+        if (sessionRepository.findByJSessionId(sessionId).size() > 0) {
+            userId = sessionRepository.findByJSessionId(sessionId).get(0).getUserId();
+        }
+
+        String startTime = "20150101000000";
+        String endTime = "21170531235959";
+        String msg = startTime + "-" + endTime + ">" + searchPeriod;
+        SocketComm sc = new SocketComm(userId + "@" + "stat1", ip, port, 23, 0, msg);
+        sc.runStart();
+
+        //String send = "";
+
+        while (true) {
+            //send = "OK";
+            if (sc.beGetGood() >= 0) break;
+            try {
+                Thread.sleep(100);
+            } catch (InterruptedException e) {
+            }
+        }
+        String[] time = null;
+        time = sc.getStatitcsTime();
+        int[] value = null;
+        //value = sc.getStatitcs();
+
+        String[] dayMonth = searchPeriod.split("_");
+        if (dayMonth[1].equals("monthly"))
+            value = graphDataprocessingByMonthly(startTime, endTime, time, sc.getStatitcs());
+        else value = graphDataprocessingByDaily(startTime, endTime, time, sc.getStatitcs());
+
+        long total = 0L;
+        for (int i = 0; i < value.length; i++) {
+            total += value[i];
+            //System.out.println(i + " : " + value[i]);
+            //System.out.println(i + " : " + time[i]);
+        }
+
+        System.out.println("total : " + total);
+        System.out.println(searchPeriod);
+
+        //ArrayList<LinkedHashMap<String, String>> resultList = getGraphDataByAuthorsAndPeriod(authorList, searchPeriod);
+        ArrayList<LinkedHashMap<String, String>> resultList = getGraphDataByAuthorsAndPeriod(searchPeriod, "total", value);
 
         ModelAndView modelAndView = new ModelAndView("api");
         Gson gson = new Gson();
         modelAndView.addObject("json", gson.toJson(resultList));
+
         return modelAndView;
+    }
+
+    public int[] graphDataprocessingByMonthly(String startTime, String endTime, String[] time, int[] value) {
+        ArrayList<Integer> valueList = new ArrayList<Integer>();
+
+        Calendar s = Calendar.getInstance();        //오늘 날짜를 기준으로..
+        //System.out.println(startTime);
+        //System.out.println(startTime.substring(0, 4) + " : " + startTime.substring(4, 6) + " : " +startTime.substring(6, 8));
+        //System.out.println(Integer.parseInt(startTime.substring(0, 4)));// + " : " + (Integer.parseInt(startTime.substring(4, 6))-1) + " : " + Integer.parseInt(startTime.substring(6, 6)));
+
+        s.set(Integer.parseInt(startTime.substring(0, 4)), Integer.parseInt(startTime.substring(4, 6)) - 1, Integer.parseInt(startTime.substring(6, 8)));
+        Calendar e = Calendar.getInstance();        //오늘 날짜를 기준으로..
+        e.set(Integer.parseInt(endTime.substring(0, 4)), Integer.parseInt(endTime.substring(4, 6)) - 1, Integer.parseInt(endTime.substring(6, 8)));
+
+        for (int i = 0; i < value.length; i++) {
+            int diff = (s.get(s.YEAR) + (String.format("%02d", s.get(s.MONTH) + 1))).compareTo(time[i].substring(0, 6));
+            while (diff < 0) {
+                //System.out.println(i + " :-1: " + (s.get(s.YEAR) +(String.format("%02d", s.get(s.MONTH)+1))));
+                s.add(s.MONTH, 1);
+                diff = (s.get(s.YEAR) + (String.format("%02d", s.get(s.MONTH) + 1))).compareTo(time[i].substring(0, 6));
+                valueList.add(0);
+            }
+            if (diff == 0) {
+                //System.out.println(i + " :0: " + time[i] + " : " + value[i]);
+                valueList.add(value[i]);
+            }
+            if (diff > 0)
+                System.out.println(i + " :1: " + s.get(s.YEAR) + (String.format("%02d", s.get(s.MONTH) + 1)) + " :1: " + time[i]);
+            s.add(s.MONTH, 1);
+        }
+
+        int[] returnValue = new int[valueList.size()];
+
+        for (int i = 0; i < valueList.size(); i++)
+            returnValue[i] = valueList.get(i);
+
+        return returnValue;
+    }
+
+    public int[] graphDataprocessingByDaily(String startTime, String endTime, String[] time, int[] value) {
+        ArrayList<Integer> valueList = new ArrayList<Integer>();
+
+        Calendar s = Calendar.getInstance();        //오늘 날짜를 기준으로..
+        //System.out.println(startTime);
+        //System.out.println(startTime.substring(0, 4) + " : " + startTime.substring(4, 6) + " : " +startTime.substring(6, 8));
+        //System.out.println(Integer.parseInt(startTime.substring(0, 4)));// + " : " + (Integer.parseInt(startTime.substring(4, 6))-1) + " : " + Integer.parseInt(startTime.substring(6, 6)));
+
+        s.set(Integer.parseInt(startTime.substring(0, 4)), Integer.parseInt(startTime.substring(4, 6)) - 1, Integer.parseInt(startTime.substring(6, 8)));
+        Calendar e = Calendar.getInstance();        //오늘 날짜를 기준으로..
+        e.set(Integer.parseInt(endTime.substring(0, 4)), Integer.parseInt(endTime.substring(4, 6)) - 1, Integer.parseInt(endTime.substring(6, 8)));
+
+        for (int i = 0; i < value.length; i++) {
+            int diff = (s.get(s.YEAR) + (String.format("%02d", s.get(s.MONTH) + 1)) + (String.format("%02d", s.get(s.DATE)))).compareTo(time[i].substring(0, 8));
+            while (diff < 0) {
+                //System.out.println(i + " :-1: " + (s.get(s.YEAR) +(String.format("%02d", s.get(s.MONTH)+1)) + (String.format("%02d", s.get(s.DATE)))));
+                s.add(s.MONTH, 1);
+                diff = (s.get(s.YEAR) + (String.format("%02d", s.get(s.MONTH) + 1)) + (String.format("%02d", s.get(s.DATE)))).compareTo(time[i].substring(0, 8));
+                valueList.add(0);
+            }
+            if (diff == 0) {
+                //System.out.println(i + " :0: " + time[i] + " : " + value[i]);
+                valueList.add(value[i]);
+            }
+            if (diff > 0)
+                System.out.println(i + " :1: " + (s.get(s.YEAR) + (String.format("%02d", s.get(s.MONTH) + 1)) + (String.format("%02d", s.get(s.DATE)))) + " :1: " + time[i]);
+            s.add(s.DATE, 1);
+
+        }
+
+        int[] returnValue = new int[valueList.size()];
+
+        for (int i = 0; i < valueList.size(); i++)
+            returnValue[i] = valueList.get(i);
+
+        return returnValue;
     }
 
     @RequestMapping(value = {"/main/statistics/search-author-total-data"})
@@ -241,18 +518,158 @@ public class MainPageController {
 
     @RequestMapping(value = {"/main/statistics/search-author-data"})
     public ModelAndView getStatisticsAuthor(HttpServletRequest request) {
-        String authorJson = request.getParameter("author");
+
         Gson gson = new Gson();
-        ArrayList<String> authorList = (ArrayList<String>) gson.fromJson(authorJson, ArrayList.class);
+
+        String authorJson = request.getParameter("authorJson");
+        String author = request.getParameter("author");
+        String authorListTmp = request.getParameter("authorList");
         String searchPeriod = request.getParameter("searchPeriod");
 
+        ArrayList<String> authorList = (ArrayList<String>) gson.fromJson(authorListTmp, ArrayList.class);
+        for (int i = 0; i < authorList.size(); i++)
+            System.out.println(i + " : " + authorList.get(i));
+
+        String userId = "";
+        String sessionId = request.getSession().getId();
+        if (sessionRepository.findByJSessionId(sessionId).size() > 0) {
+            userId = sessionRepository.findByJSessionId(sessionId).get(0).getUserId();
+        }
+        int[] value = null;
+
+        //String author = "111";
+        //String msg = "indexA^" + author + ">문자포함>20150101000000-20150531235959>MSG_daily";
+        String msg = "indexA^" + author + ">문자포함>20150101000000-20170531235959>MSG_monthly";
+        SocketComm sc = new SocketComm(userId + "@" + "stat2", ip, port, 21, 0, msg);
+        sc.runStart();
+
+        sc = new SocketComm(userId + "@" + "stat2", ip, port, 22, 0);
+        sc.runStart();
+
+        //String send = "";
+
+        while (true) {
+            //send = "OK";
+            if (sc.beGetGood() >= 0) break;
+            try {
+                Thread.sleep(100);
+            } catch (InterruptedException e) {
+            }
+            sc = new SocketComm(userId + "@" + "stat2", ip, port, 22, 0);
+            sc.runStart();
+        }
+        value = sc.getStatitcs();
+
+        long total = 0L;
+        for (int i = 0; i < value.length; i++) {
+            total += value[i];
+            System.out.println(i + " : " + value[i]);
+        }
+        System.out.println("total : " + total);
+
+        ArrayList<LinkedHashMap<String, String>> authorJsonTmp = (ArrayList<LinkedHashMap<String, String>>) gson.fromJson(authorJson, ArrayList.class);
         System.out.println(searchPeriod);
 
-        ArrayList<LinkedHashMap<String, String>> resultList = getGraphDataByAuthorsAndPeriod(authorList, searchPeriod);
+        ArrayList<LinkedHashMap<String, String>> resultList = getGraphDataByAuthorsAndPeriod(authorJsonTmp, searchPeriod, author, value);
 
         ModelAndView modelAndView = new ModelAndView("api");
         modelAndView.addObject("json", gson.toJson(resultList));
         return modelAndView;
+    }
+
+    private ArrayList<LinkedHashMap<String, String>> getGraphDataByAuthorsAndPeriod
+            (ArrayList<LinkedHashMap<String, String>> jjj, String searchPeriod, String author, int[] value) {
+        ArrayList<LinkedHashMap<String, String>> resultList = new ArrayList<LinkedHashMap<String, String>>();
+
+        for (int i = 0; i < value.length; i++) {
+            LinkedHashMap<String, String> tMap = (new LinkedHashMap<String, String>());
+            if (jjj == null) {
+                tMap.put("index", String.valueOf(i));
+                tMap.put(author, String.valueOf(value[i]));
+            } else {
+                tMap.putAll(jjj.get(i));
+                tMap.put(author, String.valueOf(value[i]));
+            }
+            resultList.add(tMap);
+        }
+
+        return resultList;
+    }
+
+    private ArrayList<LinkedHashMap<String, String>> getGraphDataByAuthorsAndPeriod(String searchPeriod, String author, int[] value) {
+        ArrayList<LinkedHashMap<String, String>> resultList = new ArrayList<LinkedHashMap<String, String>>();
+
+        for (int i = 0; i < value.length; i++) {
+            LinkedHashMap<String, String> tMap = (new LinkedHashMap<String, String>());
+            //if(i==(value.length-1))	tMap.put("index", String.valueOf(i));
+            //else if((i%5)==0) 		tMap.put("index", String.valueOf(i));
+            //else 		 			tMap.put("index", "");
+            tMap.put("index", String.valueOf(i));
+            //for (String author : authorList) {
+            tMap.put(author, String.valueOf(value[i]));
+            //}
+            resultList.add(tMap);
+        }
+
+        return resultList;
+    }
+
+    private ArrayList<LinkedHashMap<String, String>> getGraphDataByAuthorsAndPeriod(ArrayList<String> authorList, String searchPeriod) {
+        ArrayList<LinkedHashMap<String, String>> resultList = new ArrayList<LinkedHashMap<String, String>>();
+
+        switch (Integer.parseInt(searchPeriod)) {
+            case SEARCH_PERIOD.daily:
+                for (int i = 0; i < 30; i++) {
+                    LinkedHashMap<String, String> tMap = (new LinkedHashMap<String, String>());
+                    tMap.put("index", String.valueOf(i));
+                    Random random = new Random();
+                    for (String author : authorList) {
+                        tMap.put(author, String.valueOf(random.nextInt(700)));
+                    }
+                    resultList.add(tMap);
+                }
+                break;
+            case SEARCH_PERIOD.weekly:
+                for (int i = 0; i < 7; i++) {
+                    LinkedHashMap<String, String> tMap = (new LinkedHashMap<String, String>());
+                    tMap.put("index", String.valueOf(i));
+                    Random random = new Random();
+                    for (String author : authorList) {
+                        tMap.put(author, String.valueOf(random.nextInt(1000)));
+                    }
+                    resultList.add(tMap);
+                }
+                break;
+            case SEARCH_PERIOD.monthly:
+                for (int i = 0; i < 12; i++) {
+                    LinkedHashMap<String, String> tMap = (new LinkedHashMap<String, String>());
+                    tMap.put("index", String.valueOf(i));
+                    Random random = new Random();
+                    for (String author : authorList) {
+                        tMap.put(author, String.valueOf(random.nextInt(2000)));
+                    }
+                    resultList.add(tMap);
+                }
+                break;
+            case SEARCH_PERIOD.yearly:
+                for (int i = 0; i < 10; i++) {
+                    LinkedHashMap<String, String> tMap = (new LinkedHashMap<String, String>());
+                    tMap.put("index", String.valueOf(i));
+                    Random random = new Random();
+                    for (String author : authorList) {
+                        tMap.put(author, String.valueOf(random.nextInt(3000)));
+                    }
+                    resultList.add(tMap);
+                }
+                break;
+        }
+
+        return resultList;
+    }
+
+    @RequestMapping(value = {"/main/status"})
+    public String statusPage() {
+        return "main_system_status";
     }
 
     @RequestMapping(value = {"/main/search"})
@@ -278,7 +695,6 @@ public class MainPageController {
         String username = request.getParameter("username");
         String password = request.getParameter("password");
         String phone = request.getParameter("phone");
-//        String type = request.getParameter("type");
         try {
             if (userAccountRepository.findByUserId(userId).size() <= 0) {
                 UserAccount userAccount = new UserAccount(userId, username, password, phone, UserType.USER);
@@ -323,48 +739,16 @@ public class MainPageController {
         return "redirect:" + "/";
     }
 
-    @RequestMapping(value = "/main/searching")
-    public ModelAndView searchItems(HttpServletRequest request) {
-        Gson gson = new Gson();
-        Object o = request.getParameter("data");
-//        System.out.println(request.getParameter("data"));
-        ObjectMapper om = new ObjectMapper();
-        try {
-            Map myMap = om.readValue(request.getParameter("data"), new TypeReference<Map<String, Object>>() {
-            });
-//            System.out.println(myMap.get("typeInfo"));
-//            System.out.println(((Map) ((ArrayList) myMap.get("data")).get(0)).get("category"));
-
-        } catch (Exception e) {
-
-        }
-
-        BasicCom bc = new BasicCom(0, 0);
-        bc.start();
-        try {
-            bc.join();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        int progress = 75;
-        ModelAndView modelAndView = new ModelAndView("api");
-
-        for (BookInfo bookInfo : bookInfoList) {
-            List<NicknameOption> nicknames = nicknameRepository.findByAuthor(bookInfo.getAuthor());
-            //find in nickname table and if nickname exist, add to BookInfo
-            if (nicknames.size() > 0) {
-                bookInfo.setNickname(nicknames.get(0).getNickname());
-            }
-        }
-        modelAndView.addObject("json", gson.toJson(bookInfoList));
-
+    @RequestMapping(value = "/main/history/add")
+    public ModelAndView addHistory(HttpServletRequest request) {
         String sessionId = request.getSession().getId();
-        String userId;
+        String userId = "";
         List<Session> sessions = sessionRepository.findByJSessionId(sessionId);
         if (sessions.size() > 0) {
-            for (Session session : sessions) {
-                //admin type에 대한 체크가 들어가야함
-            }
+//            for (Session session : sessions) {
+//                //admin type에 대한 체크가 들어가야함
+//            }
+            Session session = sessions.get(0);
             userId = sessionRepository.findByJSessionId(sessionId).get(0).getUserId();
             String word = request.getParameter("data");
             if (userHistoryRepository.findByUserAccount_UserIdAndWord(userId, word).size() <= 0) {
@@ -373,12 +757,110 @@ public class MainPageController {
                 userHistoryRepository.save(userHistory);
 
             }
-            if (adminHistoryRepository.findByUserAccount_UserIdAndWord(userId, word).size() <= 0) {
+            if (UserType.isAdminUser(session.getType()) && adminHistoryRepository.findByUserAccount_UserIdAndWord(userId, word).size() <= 0) {
                 AdminHistory adminHistory = new AdminHistory(userAccountRepository.findByUserId(userId).get(0),
                         request.getParameter("data"), new java.util.Date().getTime());
                 adminHistoryRepository.save(adminHistory);
             }
         }
+        return new ModelAndView("api").addObject("json", "");
+    }
+
+    @RequestMapping(value = "/main/searching")
+    public ModelAndView searchItems(HttpServletRequest request) {
+        Gson gson = new Gson();
+        String id = request.getParameter("id");
+        String job = request.getParameter("job");
+        String jobOrder = request.getParameter("jobOrder");
+        String sel = request.getParameter("sel");
+        int selInt = Integer.parseInt(sel);
+        String p = request.getParameter("page");
+        int pageInt = Integer.parseInt(p);
+        String msg = request.getParameter("msg");
+
+        List<BookInfo> bookInfoList = new ArrayList<BookInfo>();
+        String sessionId = request.getSession().getId();
+        String userId = "";
+        List<Session> sessions = sessionRepository.findByJSessionId(sessionId);
+        if (sessions.size() > 0) {
+            userId = sessionRepository.findByJSessionId(sessionId).get(0).getUserId();
+        } else {
+            return new ModelAndView("api").addObject("json", "");
+        }
+
+        String send = "";
+
+        SocketComm sc = null;
+        if (selInt < 100) {
+            if (selInt <= 1) {
+                msg = wordParse(msg);
+                System.out.println("\tAAAA : msg = " + msg);
+                sc = new SocketComm(userId + "@" + id, ip, port, selInt, pageInt, msg);
+            } else if ((selInt == 6) || (selInt == 8) || (selInt == 13)) {
+                System.out.println("\tBBBB : msg = " + msg);
+                sc = new SocketComm(userId + "@" + id, ip, port, selInt, pageInt, msg);
+            } else
+                sc = new SocketComm(userId + "@" + id, ip, port, selInt, pageInt);
+
+            sc.runStart();
+            long time = System.currentTimeMillis();
+            //int progress = 29;
+
+            //System.out.println("AAAAAAAAAAAAAAAAAAAA :: " + sc.beGetGood());
+
+            if (sc.beGetGood() >= 0) {
+                if (selInt == 0) send += "OK";                    // query
+                else if (selInt == 1) send += "OK";            // query
+                else if ((selInt == 2) || (selInt == 12)) {
+                    send += msg;
+                    bookInfoList = sc.getR();
+                    /*
+			        for (BookInfo bookInfo : bookInfoList) {
+			            List<NicknameOption> nicknames = nicknameRepository.findByAuthor(bookInfo.getAuthor());
+			            //find in nickname table and if nickname exist, add to BookInfo
+			            if (nicknames.size() > 0) {
+			                bookInfo.setAuthNickname(nicknames.get(0).getNickname());
+			            }
+			        }
+			        for (BookInfo bookInfo : bookInfoList) {
+			            List<NicknameOption> nicknames = nicknameRepository.findByAuthor(bookInfo.getReferencedAuthor());
+			            //find in nickname table and if nickname exist, add to BookInfo
+			            if (nicknames.size() > 0) {
+			                bookInfo.setRefNickname(nicknames.get(0).getNickname());
+			            }
+			        }
+			        */
+                } else if (selInt == 3) send += sc.getKetSet();    // 연관문자
+                else if ((selInt == 4) || (selInt == 14)) {
+                    int progressPer = sc.getProPercent();
+                    int cntTmp = sc.getCount();    // 카운트
+                    if ((cntTmp < 50) && (progressPer < 100)) send = "NotOK";
+                    else {
+                        if (progressPer < 100) send = cntTmp + "!@#$" + progressPer + "!@#$OK";
+                        else send = cntTmp + "!@#$" + progressPer + "!@#$NOT";
+                    }
+                } else if (selInt == 6) {
+                    send += "OK";
+                } else send += "EXPORT";        // R
+            } else if (sc.beGetGood() == -2) {
+                send = "NoData";
+            } else {
+                send = "NotOK";
+            }
+        } else {
+            send = "OK";
+        }
+
+        //System.out.println(sc.beGetGood() + " :: " + send);
+        System.out.println("333 : " + id + " : " + job + " : " + jobOrder + " : " + sel + " : " + p);
+
+        SendInfo si = new SendInfo(id, job, jobOrder, sel, p, send, gson.toJson(bookInfoList));
+        List<SendInfo> bookInfoString = new ArrayList<SendInfo>();
+        bookInfoString.add(si);
+
+        ModelAndView modelAndView = new ModelAndView("api");
+        modelAndView.addObject("json", gson.toJson(bookInfoString));
+
 
         return modelAndView;
     }
@@ -394,7 +876,7 @@ public class MainPageController {
         } catch (Exception e) {
             e.printStackTrace();
         }
-
+/*
         BasicCom bc = new BasicCom(0, 0);
         bc.start();
         try {
@@ -402,6 +884,7 @@ public class MainPageController {
         } catch (Exception e) {
             e.printStackTrace();
         }
+        */
         ModelAndView modelAndView = new ModelAndView("api");
         modelAndView.addObject("json", gson.toJson(keySet));
 
@@ -718,6 +1201,10 @@ public class MainPageController {
 //        String nickname = request.getParameter("nickname");
         String priority = request.getParameter("priority");
         String note = request.getParameter("note");
+
+        System.out.println("/nickname/update : " + nickname + " : " + author + " : " + priority + " : " + note);
+
+
         List<NicknameOption> nicknameOptions = nicknameRepository.findByAuthor(author);
         ModelAndView modelAndView = new ModelAndView("api");
         if (nicknameOptions.size() <= 0) {
@@ -780,124 +1267,6 @@ public class MainPageController {
         return "test";
     }
 
-    class BasicCom extends Thread {
-        //private int ddl = 0;
-        private int ddl = 0;
-        private int page = 0;
-
-        private boolean stop = false;
-        private SocketComm soComm = null;
-
-        public BasicCom(int ddl, int page) {
-            this.ddl = ddl;
-            this.page = page;
-        }
-
-        public void setStop() {
-            stop = true;
-        }
-
-        public void exeThread(int sel) {
-            if (stop) return;
-            int count = 0;
-
-            soComm = new SocketComm(sel); // query or stop 전송
-            soComm.start();
-        }
-
-        public void exeThread(int sel, int p) {
-            System.out.println("\texeThread :222 " + sel);
-            if (stop) return;
-            int count = 0;
-
-            soComm = new SocketComm(sel, p);
-            soComm.start();
-            while (true) {
-                try {
-                    Thread.sleep(50);
-                } catch (InterruptedException e) {
-                }
-                if (!soComm.isAlive()) {
-                    if (stop || soComm.beGetGood()) break;
-                    else {
-                        System.out.println("\tRe Call : " + count);
-                        soComm = new SocketComm(sel, p);
-                        soComm.start();
-                    }
-                } else count++;
-
-                if (count > 1000) {
-                    stop = true;
-                    System.out.println("\tddl : " + sel + "   > Error : Call Count Over!");
-                    break;
-                }
-            }
-
-            if (!stop) {
-                if (sel == 2) {        // 페이지 가져오기
-                    String[][] r = soComm.getR();
-                    System.out.println();
-                    System.out.println("번호  우선순위  그룹\t발행일자\t\t저장일자\t저자\t참조저자\tR   E\t\t\t\t내용\t\t\t\t비고1\t비고2");
-                    bookInfoList.clear();
-                    for (int i = 0; i < r.length; i++) {
-                        bookInfoList.add(new BookInfo(r[i]));
-                        System.out.println(r[i]);
-                    }
-                } else if (sel == 3)    // 연관문자 가져오기
-                {
-//                    ArrayList<String> keySet = soComm.getKetSet();
-
-                    keySet = soComm.getKetSet();
-
-                    System.out.println("\t연관 문자 Get!!");
-                    for (int i = 0; i < keySet.size(); i++) {
-                        System.out.println(i + "\t" + keySet.get(i));
-                    }
-                } else if (sel == 4)    // 검색 count 가져오기
-                {
-                    int cnt = soComm.getViewCount();
-                    System.out.println("count : " + cnt);
-                }
-            }
-            System.out.println();
-            System.out.println("\texeThread END:222 " + sel);
-        }
-
-        public void run() {
-            BufferedReader inMonitor = new BufferedReader(new InputStreamReader(System.in));
-            long time = System.currentTimeMillis();
-
-            if (ddl == 0)            // 검색
-            {
-                System.out.println("QUERY");
-                exeThread(0);            // query 전송
-                exeThread(3, 0);        // 연관문자 가져오기
-                exeThread(4, 0);        // 검색 count 가져오기
-                exeThread(2, 0);        // 0 페이지 가져오기
-            }
-            if (ddl == 1)            // 재검색
-            {
-                System.out.println("QUERY2");
-                exeThread(0);            // query 전송
-                exeThread(4, 0);        // 검색 count 가져오기
-                exeThread(2, 0);        // 0 페이지 가져오기
-            } else if (ddl == 2) {        // 특정 page 페이지 가져오기
-                System.out.println("VIEW");
-                exeThread(2, page);
-            } else if (ddl == 3) {        // 연관문자 가져오기
-                System.out.println("KEYS");
-                exeThread(3, 0);
-            } else if (ddl == 5) {
-                System.out.println("STOP");
-                exeThread(5);        // stop
-            }
-
-            //if(stop){ exeThread(5); }	// stop 전송
-
-            System.out.println("\t소요시간  :: " + (System.currentTimeMillis() - time));
-        }
-    }
-
     private List<AuthorAndRelAuthor> searchNicknamesByAuthors(List<String> authorList) {
         List<AuthorAndRelAuthor> resultList = new ArrayList<AuthorAndRelAuthor>();
         for (String author : authorList) {
@@ -920,71 +1289,58 @@ public class MainPageController {
         return nickname;
     }
 
+    public String wordParse(String str) {
+        String first = " <AND> ";
+        String second = " <OR> ";
+        String firstAdd = " & ";
+        String secondAdd = " | ";
+        String[] s = str.split(first);
+        String word = "";
 
-    private ArrayList<LinkedHashMap<String, String>> getGraphDataByAuthorsAndPeriod(ArrayList<String> authorList, String searchPeriod) {
-        ArrayList<LinkedHashMap<String, String>> resultList = new ArrayList<LinkedHashMap<String, String>>();
+        for (int i = 0; i < s.length; i++) {
+            String[] s1 = s[i].split(second);
+            if (s1.length > 1) {
+                for (int j = 0; j < s1.length; j++) {
+                    word += wordParse2(s1[j]);
+                    if (j != s1.length - 1) word += secondAdd;
+                }
+            } else word += wordParse2(s[i]);
 
-        switch (Integer.parseInt(searchPeriod)) {
-            case SEARCH_PERIOD.daily:
-                for (int i = 0; i < 30; i++) {
-                    LinkedHashMap<String, String> tMap = (new LinkedHashMap<String, String>());
-                    tMap.put("index", String.valueOf(i));
-                    Random random = new Random();
-                    for (String author : authorList) {
-                        tMap.put(author, String.valueOf(random.nextInt(700)));
-                    }
-                    resultList.add(tMap);
-                }
-                break;
-            case SEARCH_PERIOD.weekly:
-                for (int i = 0; i < 7; i++) {
-                    LinkedHashMap<String, String> tMap = (new LinkedHashMap<String, String>());
-                    tMap.put("index", String.valueOf(i));
-                    Random random = new Random();
-                    for (String author : authorList) {
-                        tMap.put(author, String.valueOf(random.nextInt(1000)));
-                    }
-                    resultList.add(tMap);
-                }
-                break;
-            case SEARCH_PERIOD.monthly:
-                for (int i = 0; i < 12; i++) {
-                    LinkedHashMap<String, String> tMap = (new LinkedHashMap<String, String>());
-                    tMap.put("index", String.valueOf(i));
-                    Random random = new Random();
-                    for (String author : authorList) {
-                        tMap.put(author, String.valueOf(random.nextInt(2000)));
-                    }
-                    resultList.add(tMap);
-                }
-                break;
-            case SEARCH_PERIOD.yearly:
-                for (int i = 0; i < 10; i++) {
-                    LinkedHashMap<String, String> tMap = (new LinkedHashMap<String, String>());
-                    tMap.put("index", String.valueOf(i));
-                    Random random = new Random();
-                    for (String author : authorList) {
-                        tMap.put(author, String.valueOf(random.nextInt(3000)));
-                    }
-                    resultList.add(tMap);
-                }
-                break;
+            if (i != s.length - 1) word += firstAdd;
         }
-
-        return resultList;
+        //System.out.println("End : " + str);
+        //System.out.println("End : " + word);
+        return word;
     }
-//
-//    private void addAdminBookmarkToDb(AdminHistory adminHistory) {
-//        List<UserAccount> userAccounts = userAccountRepository.findAll();
-//        Long currentTime = new java.util.Date().getTime();
-//        for (UserAccount account : userAccounts) {
-//            adminBookmarkRepository.save(new AdminBookmark(account, account, adminHistory, adminHistory.getWord(), currentTime));
-//        }
-//    }
-//
-//    private void deleteAdminBookmarkToDb(AdminHistory adminHistory) {
-//        adminBookmarkRepository.deleteByAdminHistory_id(adminHistory.getId());
-//    }
+
+    public String wordParse2(String str2) {
+        String word = "";
+        String basic = "\\^";
+
+        String first = " & ";
+        String second = " \\| ";
+        String firstAdd = " & ";
+        String secondAdd = " | ";
+
+        String[] str = str2.split(basic);
+        if (str.length == 1) return word;
+        if (str[1].equals("")) return word;
+
+        String[] s = str[1].split(first);
+
+        for (int i = 0; i < s.length; i++) {
+            String[] s1 = s[i].split(second);
+            if (s1.length > 1) {
+                for (int j = 0; j < s1.length; j++) {
+                    word += str[0] + "^" + s1[j];
+                    if (j != s1.length - 1) word += secondAdd;
+                }
+            } else word += str[0] + "^" + s[i];
+
+            if (i != s.length - 1) word += firstAdd;
+        }
+        return word;
+    }
 
     private final class SEARCH_PERIOD {
         final static int daily = 0, weekly = 1, monthly = 2, yearly = 3;

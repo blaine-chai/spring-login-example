@@ -22,6 +22,13 @@ public class RelAuthorInfo {
         this.nickname = nickname;
     }
 
+    public RelAuthorInfo(String[] q) {
+        this.relAuthor = q[0];
+        this.from = q[1];
+        this.to = q[2];
+        //System.out.println(from);
+    }
+
     public String getRelAuthor() {
         return relAuthor;
     }

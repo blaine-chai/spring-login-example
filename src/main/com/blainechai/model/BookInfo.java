@@ -22,7 +22,9 @@ public class BookInfo{
     private String contents;
     private String note1;
     private String note2;
-    private String nickname;
+    private String eventNo;
+    private String authNickname;
+    private String refNickname;
 
 
     protected BookInfo() {
@@ -45,10 +47,10 @@ public class BookInfo{
 
     public BookInfo(String[] str) {
         this.number = str[0];
-        this.priority = str[1];
-        this.groupName = str[2];
-        this.publishedDate = str[3];
-        this.savedDate = str[4];
+        this.priority = str[4];
+        this.groupName = str[1];
+        this.publishedDate = str[2];
+        this.savedDate = str[3];
         this.author = str[5];
         this.referencedAuthor = str[6];
         this.r = str[7];
@@ -56,6 +58,7 @@ public class BookInfo{
         this.contents = str[9];
         this.note1 = str[10];
         this.note2 = str[11];
+        this.eventNo = str[12];
     }
 
     public String getPriority() {
@@ -146,11 +149,27 @@ public class BookInfo{
         this.note2 = note2;
     }
 
-    public String getNickname() {
-        return nickname;
+    public String getEventNo() {
+        return eventNo;
     }
 
-    public void setNickname(String nickname) {
-        this.nickname = nickname;
+    public void setEventNo(String eventNo) {
+        this.eventNo = eventNo;
+    }
+
+    public String getAuthNickname() {
+        return authNickname;
+    }
+
+    public void setAuthNickname(String authNickname) {
+        this.authNickname = authNickname;
+    }
+
+    public String getRefNickname() {
+        return refNickname;
+    }
+
+	public void setRefNickname(String refNickname) {
+        this.refNickname = refNickname;
     }
 }
