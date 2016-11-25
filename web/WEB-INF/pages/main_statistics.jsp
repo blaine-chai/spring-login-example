@@ -95,6 +95,13 @@
                 <div>알림</div>
             </div>
         </a>
+        <a href="/main/search">
+            <div class="header-button btn ">
+                <div class="glyphicon glyphicon-search"
+                     style="text-align: center; font-size: 27px; padding-top: 10px;"></div>
+                <div>검색</div>
+            </div>
+        </a>
         <a href="/main/profile">
             <div class="header-button btn">
                 <div class="glyphicon glyphicon-list-alt"
@@ -109,13 +116,6 @@
                 <div>통계</div>
             </div>
         </a>
-        <a href="/main/search">
-            <div class="header-button btn ">
-                <div class="glyphicon glyphicon-search"
-                     style="text-align: center; font-size: 27px; padding-top: 10px;"></div>
-                <div>검색</div>
-            </div>
-        </a>
     </div>
 </div>
 
@@ -124,13 +124,13 @@
         <%--<div id="total-graph-container" class="col-md-6" style="margin-top: 15px; height: 100%;">--%>
         <div id="total-graph-group" class="col-xs-5" style="height: 100%;">
             <div class="panel panel-default"
-                 style="position: relative;height: calc(50% - 68px);background: #f8f8f8;margin: 30px;margin-bottom: 46px;">
+                 style="position: relative;height: calc(50% - 45px);background: #f8f8f8;margin: 10px;margin-top: 15px;margin-bottom: 30px;">
                 <div class="panel panel-default"
-                     style="position: relative;height: 50px;margin-bottom: 0;margin-left: 20px;margin-right: 20px;margin-top: 20px;">
+                     style="position: relative;height: 40px;margin-bottom: 0;margin-left: 15px;margin-right: 15px;margin-top: 15px;">
                     <div class="graph-title-text"
-                         style="height: 50px;line-height: 50px;vertical-align: middle;margin-left: 20px;">events
+                         style="height: 40px;line-height: 40px;vertical-align: middle;margin-left: 20px;">events
                     </div>
-                    <div class="btn-group" style="position:absolute;right:10px;bottom:10px;">
+                    <div class="btn-group" style="position:absolute;right:10px;bottom:4px;">
                         <button type="button" class="btn btn-default btn-sm dropdown-toggle total-book-dropdown"
                                 data-toggle="dropdown" aria-haspopup="true"
                                 aria-expanded="false" style="width: 60px">
@@ -151,19 +151,18 @@
                         </ul>
                     </div>
                 </div>
-                <div id="total-book-graph-container" class="panel panel-default"
-                     style="margin-top: 20px;width: calc(100% - 40px);height: calc(100% - 111px);margin-left: 20px;margin-right: 20px;margin-bottom: 20px;position:relative;">
+                <div id="total-book-graph-container" class="panel panel-default"style="margin-top: 20px;width: calc(100% - 30px);height: calc(100% - 91px);margin-left: 15px;margin-right: 15px;margin-bottom: 15px;position: relative;">
                 </div>
             </div>
             <div class="panel panel-default"
-                 style="position: relative;height: calc(50% - 68px);background: #f8f8f8;margin: 30px;">
+                 style="position: relative;height: calc(50% - 45px);background: #f8f8f8;margin: 10px;margin-top: 15px;">
                 <div class="panel panel-default"
-                     style="position: relative;height: 50px;margin-bottom: 0;margin-left: 20px;margin-right: 20px;margin-top: 20px;">
+                     style="position: relative;height: 40px;margin-bottom: 0;margin-left: 15px;margin-right: 15px;margin-top: 15px;">
                     <div class="graph-title-text"
-                         style="height: 50px;line-height: 50px;vertical-align: middle;margin-left: 20px;">events
+                         style="height: 40px;line-height: 40px;vertical-align: middle;margin-left: 20px;">events
                     </div>
-                    <div class="btn-group" style="position:absolute;right:10px;bottom:10px;">
-                        <button type="button" class="btn btn-default btn-sm dropdown-toggle total-author-dropdown"
+                    <div class="btn-group" style="position:absolute;right:10px;bottom:4px;">
+                        <button type="button" class="btn btn-default btn-sm dropdown-toggle total-book-dropdown"
                                 data-toggle="dropdown" aria-haspopup="true"
                                 aria-expanded="false" style="width: 60px">
                             <span class="search-category-option">월별</span>
@@ -184,12 +183,44 @@
                         </ul>
                     </div>
                 </div>
-                <div id="total-author-graph-container" class="panel panel-default"
-                     style="margin-top: 20px;width: calc(100% - 40px);height: calc(100% - 111px);margin-left: 20px;margin-right: 20px;margin-bottom: 20px;position:relative;">
+                <div id="total-author-graph-container" class="panel panel-default"style="margin-top: 20px;width: calc(100% - 30px);height: calc(100% - 91px);margin-left: 15px;margin-right: 15px;margin-bottom: 15px;position: relative;">
                 </div>
             </div>
+            <%--<div class="panel panel-default"--%>
+                 <%--style="position: relative;height: calc(50% - 68px);background: #f8f8f8;margin: 30px;">--%>
+                <%--<div class="panel panel-default"--%>
+                     <%--style="position: relative;height: 50px;margin-bottom: 0;margin-left: 20px;margin-right: 20px;margin-top: 20px;">--%>
+                    <%--<div class="graph-title-text"--%>
+                         <%--style="height: 50px;line-height: 50px;vertical-align: middle;margin-left: 20px;">events--%>
+                    <%--</div>--%>
+                    <%--<div class="btn-group" style="position:absolute;right:10px;bottom:10px;">--%>
+                        <%--<button type="button" class="btn btn-default btn-sm dropdown-toggle total-author-dropdown"--%>
+                                <%--data-toggle="dropdown" aria-haspopup="true"--%>
+                                <%--aria-expanded="false" style="width: 60px">--%>
+                            <%--<span class="search-category-option">월별</span>--%>
+                            <%--<div style="display: inline-block"><span class="caret"></span><span--%>
+                                    <%--class="sr-only"></span>--%>
+                            <%--</div>--%>
+                        <%--</button>--%>
+                        <%--<ul class="dropdown-menu search-category-selector" role="menu"--%>
+                            <%--aria-labelledby="dropdownMenu1">--%>
+                            <%--<li><a role="total-author-dropdown" onclick="getAuthorTotalGraphData(this);return false;"--%>
+                                   <%--period="0" tabindex="-1" href="#">일별</a></li>--%>
+                            <%--<li><a role="total-author-dropdown" onclick="getAuthorTotalGraphData(this);return false;"--%>
+                                   <%--period="1" tabindex="-1" href="#">주별</a></li>--%>
+                            <%--<li><a role="total-author-dropdown" onclick="getAuthorTotalGraphData(this);return false;"--%>
+                                   <%--period="2" tabindex="-1" href="#">월별</a></li>--%>
+                            <%--<li><a role="total-author-dropdown" onclick="getAuthorTotalGraphData(this);return false;"--%>
+                                   <%--period="3" tabindex="-1" href="#">년도별</a></li>--%>
+                        <%--</ul>--%>
+                    <%--</div>--%>
+                <%--</div>--%>
+                <%--<div id="total-author-graph-container" class="panel panel-default"--%>
+                     <%--style="margin-top: 20px;width: calc(100% - 40px);height: calc(100% - 111px);margin-left: 20px;margin-right: 20px;margin-bottom: 20px;position:relative;">--%>
+                <%--</div>--%>
+            <%--</div>--%>
         </div>
-        <div class="col-xs-7" style="height: 100%;padding: 30px;padding-left: 0px;">
+        <div class="col-xs-7" style="height: 100%;padding: 15px;padding-left: 0px;">
             <div id="author-component-container" class="panel panel-default"
                  style="float: left; width:100%;height: calc(100% - 30px);position: relative;background: #f8f8f8;">
                 <div style="width: calc(100% - 40px);margin-top: 20px;padding: 20px;margin-left: 20px;margin-bottom: 20px;position: relative;height: 140px;"

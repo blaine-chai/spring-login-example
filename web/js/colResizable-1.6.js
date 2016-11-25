@@ -470,7 +470,7 @@
 
     function setTableOption(c){
         $.ajax({
-            url: "/table-option/update",
+            url: "/main/table-option/update",
             type: "post",
             data: {"colSize": JSON.stringify(c)},
             success: function (responseData) {

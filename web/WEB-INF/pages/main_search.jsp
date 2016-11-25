@@ -56,6 +56,13 @@
                 <div>알림</div>
             </div>
         </a>
+        <a href="#">
+            <div class="header-button btn active">
+                <div class="glyphicon glyphicon-search"
+                     style="text-align: center; font-size: 27px; padding-top: 10px;"></div>
+                <div>검색</div>
+            </div>
+        </a>
         <a href="/main/profile">
             <div class="header-button btn">
                 <div class="glyphicon glyphicon-list-alt"
@@ -68,13 +75,6 @@
                 <div class="glyphicon glyphicon-signal"
                      style="text-align: center; font-size: 27px; padding-top: 10px;"></div>
                 <div>통계</div>
-            </div>
-        </a>
-        <a href="#">
-            <div class="header-button btn active">
-                <div class="glyphicon glyphicon-search"
-                     style="text-align: center; font-size: 27px; padding-top: 10px;"></div>
-                <div>검색</div>
             </div>
         </a>
     </div>
@@ -1477,43 +1477,6 @@
                     + '<span>' + (tdata.refNickname != undefined ? '(' + tdata.refNickname + ')' : '') + '</span>' + '</td>' +
                     '<td style="word-break: break-all">' + tdata.contents + '</td>' +
                     '</tr>');
-        });
-    }
-
-    //    function addContentTdClickListener(i, contents) {
-    //        $('.content-td').popover({
-    //            html: true,
-    //            content: function () {
-    //                return $(this).text();
-    //            },
-    //            template: '<div class="popover popover-content-td"><div class="arrow"></div><div class="popover-inner"><h3 class="popover-title"></h3><button type="button" class="close" data-dismiss="popover" aria-label="Close"><span aria-hidden="true">×</span></button><div class="popover-content"><p></p></div></div></div>',
-    //            container: '#book-table',
-    //            placement: 'auto'
-    //        }).on('show.bs.popover', function () {
-    //            //remove popover when other popover appeared
-    //            $('.popover-content-td').popover('hide');
-    //        }).on('shown.bs.popover', function () {
-    //            $('.popover-content-td .close').click(function () {
-    //                $('.popover-content-td').popover('hide');
-    //            });
-    //        });
-    //    }
-
-    function addCheckRBtnListener(i) {
-        $('.check-r' + i).click(function () {
-            $.ajax({
-                url: "/r-check",
-                type: "post",
-                data: {"bookId": tarEl.parent().find('td').eq(0).text()},
-                success: function (responseData) {
-//                    var data = JSON.parse(responseData);
-
-//                    console.error(tarEl);
-                    tarEl.find('span').remove();
-                    tarEl.append('<span class="glyphicon glyphicon-ok"></span>');
-//                    console.log(html);
-                }
-            });
         });
     }
 

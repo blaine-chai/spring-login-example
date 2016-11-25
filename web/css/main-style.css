@@ -354,6 +354,7 @@ body {
 .user-bookmark-search-word-td {
     word-break: break-all;
     cursor: pointer;
+    vertical-align: middle;
 }
 
 .user-bookmark-count-td {

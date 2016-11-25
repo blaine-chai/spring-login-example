@@ -22,19 +22,31 @@ import java.util.List;
 public class AdminController {
 
     @Autowired
-    private UserAccountRepository userAccountRepository;
-
-    @Autowired
     private SessionRepository sessionRepository;
 
     @Autowired
+    private UserAccountRepository userAccountRepository;
+
+    @Autowired
+    private UserHistoryRepository userHistoryRepository;
+
+    @Autowired
     private UserTableOptionRepository tableOptionRepository;
+
+    @Autowired
+    private NicknameRepository nicknameRepository;
+
+    @Autowired
+    private UserBookmarkRepository userBookmarkRepository;
 
     @Autowired
     private AdminBookmarkRepository adminBookmarkRepository;
 
     @Autowired
     private CommonBookmarkRepository commonBookmarkRepository;
+
+    @Autowired
+    private AdminHistoryRepository adminHistoryRepository;
 
     @Autowired
     private CommonGroupNameRepository groupNameRepository;
@@ -125,6 +137,15 @@ public class AdminController {
 
     @RequestMapping(value = "/admin-account/delete", method = RequestMethod.POST)
     public ModelAndView delete(HttpServletRequest request) {
+        // admin_bookmark -> adminId
+        // admin_history -> adminId
+        // common_bookmark -> userId
+        // common_session -> userId
+        // user_bookmark -> userId
+        // user_group -> userId
+        // user_search_history -> userId
+        // user_table_option -> user Id
+
         userAccountRepository.deleteByUserId(request.getParameter("userId"));
         ModelAndView modelAndView = new ModelAndView("admin_administrator_list");
         List<UserAccount> adminList = userAccountRepository.findByType(UserType.ADMIN);
@@ -143,12 +164,70 @@ public class AdminController {
 
     @RequestMapping(value = "/admin-account/update", method = RequestMethod.POST)
     public String updateUser(HttpServletRequest request) {
+        // admin_bookmark -> adminId
+        // admin_history -> adminId
+        // common_bookmark -> userId
+        // common_session -> userId
+        // user_bookmark -> userId
+        // user_group -> userId
+        // user_search_history -> userId
+        // user_table_option -> user Id
+
         String userId = request.getParameter("userId");
         String username = request.getParameter("username");
         UserAccount adminAccount = userAccountRepository.findByUserId(userId).get(0);
         adminAccount.setUserId(userId);
         adminAccount.setUsername(username);
-        userAccountRepository.save(adminAccount);
+        adminAccount = userAccountRepository.save(adminAccount);
+
+        List<AdminBookmark> bookmarks = adminBookmarkRepository.findByAdminAccount_UserId(userId);
+        for(AdminBookmark bookmark:bookmarks){
+            bookmark.setAdminAccount(adminAccount);
+        }
+        adminBookmarkRepository.save(bookmarks);
+
+        List<AdminHistory> adminHistories = adminHistoryRepository.findByUserAccount_UserId(userId);
+        for(AdminHistory adminHistory:adminHistories){
+            adminHistory.setUserAccount(adminAccount);
+        }
+        adminHistoryRepository.save(adminHistories);
+
+        List<CommonBookmark> commonBookmarks = commonBookmarkRepository.findByUserAccount_UserId(userId);
+        for(CommonBookmark commonBookmark:commonBookmarks){
+            commonBookmark.setUserAccount(adminAccount);
+        }
+        commonBookmarkRepository.save(commonBookmarks);
+
+        List<Session> sessions = sessionRepository.findByUserId(userId);
+        for(Session session:sessions){
+            session.setUserId(userId);
+        }
+        commonBookmarkRepository.save(commonBookmarks);
+
+        List<UserBookmark> userBookmarks = userBookmarkRepository.findByUserAccount_UserId(userId);
+        for(UserBookmark userBookmark:userBookmarks){
+            userBookmark.setUserAccount(adminAccount);
+        }
+        userBookmarkRepository.save(userBookmarks);
+
+        List<UserGroup> userGroups = userGroupRepository.findByUserAccount_UserId(userId);
+        for(UserGroup userGroup:userGroups){
+            userGroup.setUserAccount(adminAccount);
+        }
+        userGroupRepository.save(userGroups);
+
+        List<UserHistory> userHistories = userHistoryRepository.findByUserAccount_UserId(userId);
+        for(UserHistory userHistory:userHistories){
+            userHistory.setUserAccount(adminAccount);
+        }
+        userHistoryRepository.save(userHistories);
+
+        List<UserTableOption> userTableOptions = tableOptionRepository.findByUserAccount_UserId(userId);
+        for(UserTableOption tableOption:userTableOptions){
+            tableOption.setUserAccount(adminAccount);
+        }
+        tableOptionRepository.save(userTableOptions);
+
         return "redirect:" + "/admin/admin-account"; // 중복된 번호라고 언급해야함.
     }
 

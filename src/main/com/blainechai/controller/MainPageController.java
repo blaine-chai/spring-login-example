@@ -36,8 +36,7 @@ import java.util.Random;
 @Controller
 @RequestMapping("")
 public class MainPageController {
-    //    @RequestMapping(value = "/add", method = RequestMethod.POST)
-//    public ModelAndView
+
     @Autowired
     private SessionRepository sessionRepository;
 
@@ -49,9 +48,6 @@ public class MainPageController {
 
     @Autowired
     private UserTableOptionRepository tableOptionRepository;
-
-    @Autowired
-    private BookHistoryRepository bookHistoryRepository;
 
     @Autowired
     private NicknameRepository nicknameRepository;
@@ -67,6 +63,12 @@ public class MainPageController {
 
     @Autowired
     private AdminHistoryRepository adminHistoryRepository;
+
+    @Autowired
+    private CommonGroupNameRepository groupNameRepository;
+
+    @Autowired
+    private UserGroupRepository userGroupRepository;
 
     //    public static List<BookInfo> bookInfoList = new ArrayList<BookInfo>();
     public static ArrayList<String> keySet = new ArrayList<String>();
@@ -888,45 +890,6 @@ public class MainPageController {
         ModelAndView modelAndView = new ModelAndView("api");
         modelAndView.addObject("json", gson.toJson(keySet));
 
-        return modelAndView;
-    }
-
-    @RequestMapping(value = "/main/r-check")
-    public ModelAndView readCheck(HttpServletRequest request) {
-        String bookId = request.getParameter("bookId");
-        String userId = sessionRepository.findByJSessionId(request.getSession().getId()).get(0).getUserId();
-        try {
-
-            if (bookHistoryRepository.findByUserAccount_UserIdAndBookId(userId, bookId).size() <= 0) {
-                bookHistoryRepository.save(new BookHistory(userAccountRepository.findByUserId(userId).get(0), bookId, 5, true, false));
-            } else {
-                BookHistory bookHistory = bookHistoryRepository.findByUserAccount_UserIdAndBookId(userId, bookId).get(0);
-                bookHistory.setR(true);
-                bookHistoryRepository.save(bookHistory);
-            }
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        ModelAndView modelAndView = new ModelAndView("api");
-        modelAndView.addObject("json", true);
-        return modelAndView;
-    }
-
-    @RequestMapping(value = "/main/e-check")
-    public ModelAndView priorityGet(HttpServletRequest request) {
-        String bookId = request.getParameter("bookId");
-        String userId = sessionRepository.findByJSessionId(request.getSession().getId()).get(0).getUserId();
-        if (bookHistoryRepository.findByUserAccount_UserIdAndBookId(userId, bookId).size() <= 0) {
-            bookHistoryRepository.save(new BookHistory(userAccountRepository.findByUserId(userId).get(0), bookId, 5, false, true));
-        } else {
-            BookHistory bookHistory = bookHistoryRepository.findByUserAccount_UserIdAndBookId(userId, bookId).get(0);
-            bookHistory.setE(true);
-            bookHistoryRepository.save(bookHistory);
-        }
-
-        ModelAndView modelAndView = new ModelAndView("api");
-        modelAndView.addObject("json", true);
         return modelAndView;
     }
 

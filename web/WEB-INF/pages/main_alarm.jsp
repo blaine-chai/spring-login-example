@@ -21,8 +21,8 @@
 
     <!-- Latest compiled and minified CSS -->
 
-    <link href="/css/main-style.css" rel="stylesheet" type="text/css">
     <link href="/css/jquery.datetimepicker.css" rel="stylesheet" type="text/css">
+    <link href="/css/main-style.css" rel="stylesheet" type="text/css">
 
     <!-- Latest compiled and minified JavaScript -->
 
@@ -55,6 +55,13 @@
                 <div>알림</div>
             </div>
         </a>
+        <a href="/main/search">
+            <div class="header-button btn ">
+                <div class="glyphicon glyphicon-search"
+                     style="text-align: center; font-size: 27px; padding-top: 10px;"></div>
+                <div>검색</div>
+            </div>
+        </a>
         <a href="/main/profile">
             <div class="header-button btn">
                 <div class="glyphicon glyphicon-list-alt"
@@ -69,38 +76,31 @@
                 <div>통계</div>
             </div>
         </a>
-        <a href="/main/search">
-            <div class="header-button btn ">
-                <div class="glyphicon glyphicon-search"
-                     style="text-align: center; font-size: 27px; padding-top: 10px;"></div>
-                <div>검색</div>
-            </div>
-        </a>
     </div>
 </div>
 
 <div id="content" class="" style="">
     <div id="content-wrapper" style="height: 100%;">
-        <div id="alarm-table-group" class="col-xs-5" style="height: 100%; background: #efefef;">
+        <div id="alarm-table-group" class="col-xs-5" style="width: 28%;height: 100%; background: #efefef;">
             <div id="alarm-admin-bookmark" class="panel panel-default"
                  style="height: calc(50% - 25px); padding: 15px;margin-top:15px;">
             </div>
             <div id="alarm-user-bookmark" class="panel panel-default" style="height: calc(50% - 25px); padding: 15px;">
             </div>
         </div>
-        <div class="col-xs-7"
-             style="width:calc(58.33333333% - 15px);  height: 100%;background: rgba(224, 234, 244, 1); margin-left: 15px; ">
-            <div id="alarm-content-result" class="panel panel-default"
-                 style="height: calc(100% - 30px); margin-bottom: 0;margin-top:15px;">
+        <%--<div class="col-xs-7"--%>
+             <%--style="width:calc(58.33333333% - 15px);  height: 100%;background: rgba(224, 234, 244, 1); margin-left: 15px; ">--%>
+            <div id="alarm-content-result" class="col-xs-7"
+                 style="height: calc(100% - 30px); margin-bottom: 0;width: 72%;">
                 <div id="relative-table-container" style="position: absolute; z-index: 10;"></div>
                 <div id="menu-wrapper" style="background: rgba(224, 234, 244, 1);">
                     <div class="alert alert-info">
                         <div id="search-result-number">검색결과 :
                         </div>
                         <div id="search-progress" class="progress">
-                            <div class="progress-bar progress-bar-striped active" role="progressbar" aria-valuenow="45"
-                                 aria-valuemin="0" aria-valuemax="100" style="width: 45%;">
-                                45%
+                            <div class="progress-bar progress-bar-striped active" role="progressbar" aria-valuenow="0"
+                                 aria-valuemin="0" aria-valuemax="100" style="width: 0%;">
+                                0%
                             </div>
                         </div>
                     </div>
@@ -129,9 +129,7 @@
                             </table>
                         </div>
                         <div>
-                            <table id="book-table"
-                                   class="table table-hover table-fixed table-bordered table-striped table-condensed"
-                                   style="height: 100%;">
+                            <table id="book-table" class="table table-hover table-fixed table-bordered table-striped table-condensed" style="height: 100%;">
                                 <thead>
                                 <tr style="">
                                     <th>번호</th>
@@ -155,23 +153,16 @@
                     </div>
                     <div id="page-counter-wrapper">
                         <nav aria-label="..." style="text-align: center;">
-                            <ul class="pagination pagination-sm" style="margin: 0 auto;">
-                                <li class="disabled"><a href="#" aria-label="Previous"><span
-                                        aria-hidden="true">«</span></a></li>
-                                <li class="active"><a href="#">1</a></li>
-                                <li><a href="#">2</a></li>
-                                <li><a href="#">3</a></li>
-                                <li><a href="#">4</a></li>
-                                <li><a href="#">5</a></li>
-                                <li><a href="#" aria-label="Next"><span
-                                        aria-hidden="true">»</span></a></li>
-                            </ul>
+                            <nav aria-label="..." style="text-align: center;">
+                                <ul class="pagination pagination-sm pagination-main" style="margin: 0 auto;">
+                                </ul>
+                            </nav>
                         </nav>
-                        <div>하이라이팅<input id="highlight-checkbox" type="checkbox"></div>
+                        <%--<div>하이라이팅<input id="highlight-checkbox" type="checkbox"></div>--%>
                     </div>
                 </div>
             </div>
-        </div>
+        <%--</div>--%>
     </div>
 </div>
 
@@ -206,9 +197,9 @@
                     if (bookmarkModule.getData().length > 0) {
                         $.each(bookmarkModule.getData(), function (i, d) {
                             var tmp = $('<tr data-index="' + i + '">' +
-                                    '<td class="user-bookmark-alarm-td" onclick="$(this).parent().find(\'.user-bookmark-search-word-td\').click()"><span class="badge">N</span></td>' +
-                                    '<td class="user-bookmark-search-word-td">' + changeHistory(d.word) + '</td>' +
-                                    '<td><span class="user-bookmark-count-td">' + d.count + '</span></td>'
+                                    '<td class="user-bookmark-alarm-td" onclick="$(this).parent().find(\'.user-bookmark-search-word-td\').click();"><span class="badge">N</span></td>' +
+                                    '<td class="user-bookmark-search-word-td" style="vertical-align:middle;">' + changeHistory(d.word) + '</td>' +
+                                    '<td style="vertical-align:middle;"><span class="user-bookmark-count-td">' + d.count + '</span></td>'
                                     <c:choose>
                                     <c:when test="${userType.equals(\"admin\")}">
                                     + '<td class="user-history-remove-td"><label class="btn btn-default btn-sm close-search-option-btn">-</label></td></tr>'
@@ -1635,6 +1626,139 @@
             });
         });
 
+    }
+
+    function addRefAuthorClickListener(i, tdata) {
+
+        var content = $('<div class="popover-content-wrapper' + i + '" style="display: none;">' +
+                '<div class="input-group input-group-sm" style=" width:100%">' +
+                '<span class="input-group-addon" style="width: 70px">저자</span>' +
+                '<input type="text" class="form-control popover-input-author" disabled>' +
+                '</div>' +
+                '<div class="input-group input-group-sm" style="width:100%">' +
+                '<span class="input-group-addon" style="width: 70px" >별명</span>' +
+                '<input type="text" class="form-control popover-input popover-input-nickname">' +
+                '<span class="input-group-btn">' +
+                '<label class="btn btn-default btn-sm btn-identity-check popover-input" style="width:70px;">중복 확인</label></span>' +
+                '</div>' +
+                '<div class="input-group input-group-sm" style="width:100%">' +
+                '<span class="input-group-addon" style="width: 70px;" disabled >수정시간</span>' +
+                '<input type="text" class="form-control popover-input-modified-time" disabled>' +
+                '</div>' +
+                '<div class="input-group input-group-sm" style=" width:100%">' +
+                '<span class="input-group-addon" style="width: 70px" >우선순위</span>' +
+                '<span class="input-group-addon" style="width:calc(100% - 70px);" ><select class="popover-input popover-input-priority"><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option><option>6</option><option>7</option><option>8</option><option>9</option></select></span>' +
+                '</div>' +
+                '<div class="input-group input-group-sm" style="width:100%; height: 60px;">' +
+                '<span class="input-group-addon" style="width: 70px" >메모</span>' +
+                '<textarea class="form-control popover-input popover-input-note" style="height: 60px;resize: none;"></textarea>' +
+                '</div>' +
+                '<div style="padding-top: 15px; position:relative">' +
+                '<label class="btn btn-default btn-sm btn-modify-nickname"  style="width:70px;">편집</label>' +
+                '<label class="btn btn-default btn-sm btn-popover-close" style="width:70px;position: absolute;right: 0; ">취소</label>' +
+                '</div></div>');
+
+        $('.relation' + i).popover({
+            html: true,
+            content: function () {
+                return content.html();
+            },
+            container: '#book-table',
+            template: '<div class="popover popover-author-td"><div class="arrow"></div><div class="popover-inner"><h3 class="popover-title"></h3><div class="popover-content"><p></p></div></div></div>',
+            placement: 'auto'
+        }).on('show.bs.popover', function () {
+            //remove popover when other popover appeared
+            $('.popover-author-td').popover('hide');
+        }).on('shown.bs.popover', function () {
+            //handle after popover shown
+            var clickedTd = $(this);
+            $('.popover-input-author').val(tdata.referencedAuthor);
+            $('.btn-popover-close').click(function (e) {
+                $('.popover-author-td').popover('hide');
+            });
+
+            $('.popover-input').attr('disabled', '');
+
+            //update nickname
+            $('.popover .btn-modify-nickname').click(function (e) {
+                if ($(this).text() == '편집') {
+                    $('.popover-input').removeAttr('disabled');
+                    $(this).toggleClass('btn-primary').text('저장');
+                } else {
+                    if ($('.btn-identity-check').attr('disabled') != undefined) {
+                        $.ajax({
+                            url: "/main/nickname/update",
+                            type: "post",
+                            data: {
+                                "nickname": $('.popover-input-nickname').val(),
+                                "author": $('.popover-input-author').val(),
+//                                "lastModifiedDate": $('.popover-input-modified-time').val(),
+                                "priority": $('.popover-input-priority').val(),
+                                "note": $('.popover-input-note').val()
+                            },
+                            success: function (responseData) {
+                                if (responseData == 'true') {
+                                    $('.popover .btn-identity-check').attr('disabled', '');
+                                    $('.popover .btn-modify-nickname').toggleClass('btn-primary').text('편집');
+                                    clickedTd.find('.nickname-td').text('(' + $('.popover-input-nickname').val() + ')');
+                                    $('.popover').remove();
+                                    $('.popover-input').attr('disabled', '');
+                                } else {
+                                    //when nickname not checked
+                                    alert('send error');
+                                }
+                            }
+                        });
+                    } else {
+                        alert('중복 확인을 해 주세요.');
+                    }
+                }
+            });
+
+            //when popover opened get nickname info from server
+            $.ajax({
+                url: "/main/nickname/get",
+                type: "post",
+                data: {
+                    "author": $('.popover-input-author').val()
+                },
+                success: function (responseData) {
+                    var result = JSON.parse(responseData);
+//                    console.error(responseData);
+                    $('.popover-input-nickname').val(result.nickname);
+                    $('.popover-input-modified-time').val(result.lastModifiedDate);
+                    $('.popover-input-priority').val(result.priority);
+                    $('.popover-input-note').val(result.note);
+                }
+            });
+
+            $('.popover .btn-identity-check').click(function (e) {
+                $.ajax({
+                    url: "/main/nickname/check",
+                    type: "post",
+                    data: {
+                        "nickname": $('.popover-input-nickname').val(),
+                        "author": $('.popover-input-author').val()
+                    },
+                    success: function (responseData) {
+                        if (responseData == 'true') {
+                            $('.popover .btn-identity-check').attr('disabled', '');
+                            $('.popover .btn-identity-check').append('<span class="glyphicon glyphicon-ok" style="color:#3ce63d;"></span>');
+                            $('.popover .popover-input-nickname').on('input', function () {
+                                $('.popover .btn-identity-check span').remove();
+                                $('.popover .btn-identity-check').removeAttr('disabled');
+                            });
+                        } else {
+                            alert('이미 같은 별명이 존재합니다.');
+                        }
+                    }
+                });
+            });
+
+            $('#book-table').on('hidden.bs.popover', function (e) {
+                $(e.target).data("bs.popover").inState = {click: false, hover: false, focus: false}
+            });
+        });
     }
 
     function searchBTNclick(element) {

@@ -55,6 +55,13 @@
                 <div>알림</div>
             </div>
         </a>
+        <a href="/main/search">
+            <div class="header-button btn ">
+                <div class="glyphicon glyphicon-search"
+                     style="text-align: center; font-size: 27px; padding-top: 10px;"></div>
+                <div>검색</div>
+            </div>
+        </a>
         <a href="#">
             <div class="header-button btn active">
                 <div class="glyphicon glyphicon-list-alt"
@@ -67,13 +74,6 @@
                 <div class="glyphicon glyphicon-signal"
                      style="text-align: center; font-size: 27px; padding-top: 10px;"></div>
                 <div>통계</div>
-            </div>
-        </a>
-        <a href="/main/search">
-            <div class="header-button btn ">
-                <div class="glyphicon glyphicon-search"
-                     style="text-align: center; font-size: 27px; padding-top: 10px;"></div>
-                <div>검색</div>
             </div>
         </a>
     </div>

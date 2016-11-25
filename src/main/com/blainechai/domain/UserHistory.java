@@ -7,7 +7,7 @@ import java.io.Serializable;
  * Created by blainechai on 2016. 10. 16..
  */
 @Entity
-@Table(name = "user_search_history")
+@Table(name = "user_history")
 public class UserHistory implements Serializable{
     private static final long serialVersionUID = 1L;
 

@@ -1,7 +1,7 @@
 <%@ page isELIgnored="false" %>
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
-<html>
+<html style="height: 100%;">
 <%--<head>--%>
 <%--<meta charset="utf-8">--%>
 <%--<title></title>--%>
@@ -23,8 +23,8 @@
     <meta http-equiv="content-type" content="text/html; charset=UTF-8">
     <meta charset="utf-8">
     <title>Server Admin</title>
-    <meta name="generator" content="Bootply"/>
-    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <%--<meta name="generator" content="Bootply"/>--%>
+    <%--<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">--%>
     <link href="/css/bootstrap.min.css" rel="stylesheet">
     <%--<script src="//html5shim.googlecode.com/svn/trunk/html5.js"></script>--%>
     <%--<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.2/jquery.min.js"></script>--%>
@@ -32,7 +32,7 @@
     <script src="/js/bootstrap.min.js"></script>
     <link href="/css/styles.css" rel="stylesheet">
 </head>
-<body>
+<body style="height: 100%;">
 <!-- header -->
 <div id="top-nav" class="navbar navbar-inverse navbar-static-top">
     <div class="container-fluid">
@@ -46,6 +46,7 @@
         </div>
         <div class="navbar-collapse collapse">
             <ul class="nav navbar-nav navbar-right">
+                <li><a href="/"><i class="glyphicon glyphicon-home"></i> home</a></li>
                 <li class="dropdown">
                     <a class="dropdown-toggle" role="button" data-toggle="dropdown" href="#"><i
                             class="glyphicon glyphicon-user"></i> ${userId} <span class="caret"></span></a>
@@ -62,26 +63,32 @@
 <!-- /Header -->
 
 <!-- Main -->
-<div class="container-fluid">
-    <div class="row">
+<div class="container-fluid" style="height: calc(100% - 100px);">
+    <div class="row" style="height: 100%">
         <div class="col-sm-3">
             <!-- Left column -->
-            <a href="#"><strong><i class="glyphicon glyphicon-wrench"></i> Tools</strong></a>
+            <%--<a href="#"><strong><i class="glyphicon glyphicon-wrench"></i> Tools</strong></a>--%>
 
-            <hr>
+            <%--<hr>--%>
 
             <ul class="nav nav-stacked">
-                <li class="nav-header"><a href="#" data-toggle="collapse" data-target="#userMenu">Settings <i
+                <li class="nav-header"><a href="#" data-toggle="collapse" data-target="#user-menu">Settings <i
                         class="glyphicon glyphicon-chevron-down"></i></a>
-                    <ul class="nav nav-stacked collapse in" id="userMenu">
+                    <ul class="nav nav-stacked collapse in" id="user-menu">
                         <%--<li class="active"><a href="#"><i class="glyphicon glyphicon-home"></i> Home</a></li>--%>
                         <%--<li><a href="#"><i class="glyphicon glyphicon-envelope"></i> Messages <span--%>
                         <%--class="badge badge-info">4</span></a></li>--%>
                         <%--<li><a href="#"><i class="glyphicon glyphicon-cog"></i> Options</a></li>--%>
                         <%--<li><a href="#"><i class="glyphicon glyphicon-comment"></i> Shoutbox</a></li>--%>
-                        <li><a href="/admin/admin-account"><i class="glyphicon glyphicon-user"></i> Staff List</a></li>
-                        <li><a href="/admin/user"><i class="glyphicon glyphicon-user"></i> User List</a></li>
-                        <li><a href="/admin/group-name"><i class="glyphicon glyphicon-user"></i> Group List</a></li>
+                        <li><a href="#" content="/admin/admin-account" onclick="setIframe(this);return false;"><i
+                                class="glyphicon glyphicon-user"></i> Staff
+                            List</a></li>
+                        <li><a href="#" content="/admin/user" onclick="setIframe(this);return false;"><i
+                                class="glyphicon glyphicon-user"></i> User List</a>
+                        </li>
+                        <li><a href="#" content="/admin/group-name" onclick="setIframe(this);return false;"><i
+                                class="glyphicon glyphicon-user"></i> Group List</a>
+                        </li>
                         <%--<li><a href="#"><i class="glyphicon glyphicon-flag"></i> Transactions</a></li>--%>
                         <%--<li><a href="#"><i class="glyphicon glyphicon-exclamation-sign"></i> Rules</a></li>--%>
                         <%--<li><a href="#"><i class="glyphicon glyphicon-off"></i> Logout</a></li>--%>
@@ -152,55 +159,69 @@
             <%--</ul>--%>
         </div>
         <!-- /col-3 -->
-        <div class="col-sm-9">
-
-            <!-- column 2 -->
-            <ul class="list-inline pull-right">
-                <li><a href="#"><i class="glyphicon glyphicon-cog"></i></a></li>
-                <li class="dropdown"><a href="#" class="dropdown-toggle" data-toggle="dropdown"><i
-                        class="glyphicon glyphicon-comment"></i><span class="count">3</span></a>
-                    <ul class="dropdown-menu" role="menu">
-                        <li><a href="#">1. Is there a way..</a></li>
-                        <li><a href="#">2. Hello, admin. I would..</a></li>
-                        <li><a href="#"><strong>All messages</strong></a></li>
-                    </ul>
-                </li>
-                <li><a href="#"><i class="glyphicon glyphicon-user"></i></a></li>
-                <li><a title="Add Widget" data-toggle="modal" href="#addWidgetModal"><span
-                        class="glyphicon glyphicon-plus-sign"></span> Add Widget</a></li>
-            </ul>
-            <a href="#"><strong><i class="glyphicon glyphicon-dashboard"></i> My Dashboard</strong></a>
-            <hr>
-            <div class="modal" id="addWidgetModal">
-                <div class="modal-dialog">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">횞</button>
-                            <h4 class="modal-title">Add Widget</h4>
-                        </div>
-                        <div class="modal-body">
-                            <p>Add a widget stuff here..</p>
-                        </div>
-                        <div class="modal-footer">
-                            <a href="#" data-dismiss="modal" class="btn">Close</a>
-                            <a href="#" class="btn btn-primary">Save changes</a>
-                        </div>
-                    </div>
-                    <!-- /.modal-content -->
-                </div>
-                <!-- /.modal-dalog -->
+        <div class="col-sm-9" style="height:100%;">
+            <iframe id="content-iframe" src="/admin/admin-account" style="width: 100%;height: 100%;border: 0;"></iframe>
             </div>
+        </div>
+    </div>
+<script type="text/javascript">
+    $(document).ready(function () {
+        $(".alert").addClass("in").fadeOut(4500);
 
-            <script type="text/javascript">
-                $(document).ready(function () {
-                    $(".alert").addClass("in").fadeOut(4500);
+        /* swap open/close side menu icons */
+        $('[data-toggle=collapse]').click(function () {
+            // toggle icon
+            $(this).find("i").toggleClass("glyphicon-chevron-right glyphicon-chevron-down");
+        });
 
-                    /* swap open/close side menu icons */
-                    $('[data-toggle=collapse]').click(function () {
-                        // toggle icon
-                        $(this).find("i").toggleClass("glyphicon-chevron-right glyphicon-chevron-down");
-                    });
-                });
-            </script>
+//        $('#user-menu a').click(function (e) {
+//            $('#content-iframe').attr('src', $(this).attr('content'));
+//        });
+
+    });
+    function setIframe(element) {
+        $('#content-iframe').attr('src', $(element).attr('content'));
+    }
+
+
+</script>
+                <!-- column 2 -->
+                <%--<ul class="list-inline pull-right">--%>
+                <%--<li><a href="#"><i class="glyphicon glyphicon-cog"></i></a></li>--%>
+                <%--<li class="dropdown"><a href="#" class="dropdown-toggle" data-toggle="dropdown"><i--%>
+                <%--class="glyphicon glyphicon-comment"></i><span class="count">3</span></a>--%>
+                <%--<ul class="dropdown-menu" role="menu">--%>
+                <%--<li><a href="#">1. Is there a way..</a></li>--%>
+                <%--<li><a href="#">2. Hello, admin. I would..</a></li>--%>
+                <%--<li><a href="#"><strong>All messages</strong></a></li>--%>
+                <%--</ul>--%>
+                <%--</li>--%>
+                <%--<li><a href="#"><i class="glyphicon glyphicon-user"></i></a></li>--%>
+                <%--<li><a title="Add Widget" data-toggle="modal" href="#addWidgetModal"><span--%>
+                <%--class="glyphicon glyphicon-plus-sign"></span> Add Widget</a></li>--%>
+                <%--</ul>--%>
+                <%--<a href="#"><strong><i class="glyphicon glyphicon-dashboard"></i> My Dashboard</strong></a>--%>
+                <%--<hr>--%>
+                <%--<div class="modal" id="addWidgetModal">--%>
+                <%--<div class="modal-dialog">--%>
+                <%--<div class="modal-content">--%>
+                <%--<div class="modal-header">--%>
+                <%--<button type="button" class="close" data-dismiss="modal" aria-hidden="true">횞</button>--%>
+                <%--<h4 class="modal-title">Add Widget</h4>--%>
+                <%--</div>--%>
+                <%--<div class="modal-body">--%>
+                <%--<p>Add a widget stuff here..</p>--%>
+                <%--</div>--%>
+                <%--<div class="modal-footer">--%>
+                <%--<a href="#" data-dismiss="modal" class="btn">Close</a>--%>
+                <%--<a href="#" class="btn btn-primary">Save changes</a>--%>
+                <%--</div>--%>
+                <%--</div>--%>
+                <%--<!-- /.modal-content -->--%>
+                <%--</div>--%>
+                <%--<!-- /.modal-dalog -->--%>
+                <%--</div>--%>
+
+
 </body>
 </html>

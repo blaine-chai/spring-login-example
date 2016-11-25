@@ -49,4 +49,24 @@ public class Session implements Serializable {
     public String getUserId() {
         return userId;
     }
+
+    public String getjSessionId() {
+        return jSessionId;
+    }
+
+    public void setjSessionId(String jSessionId) {
+        this.jSessionId = jSessionId;
+    }
+
+    public void setUserId(String userId) {
+        this.userId = userId;
+    }
+
+    public void setCreateDate(Date createDate) {
+        this.createDate = createDate;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
 }

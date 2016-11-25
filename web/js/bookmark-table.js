@@ -10,7 +10,7 @@ var BookmarkTableModule = (function () {
             '<h4>User Bookmark Alarm</h4>' +
             '</div>' +
             '<div id="" style="overflow-y: scroll;height: calc(100% - 40px);">' +
-            '<table class="table table-hover" style="margin-bottom: 0;border-top: 0;">' +
+            '<table class="table table-hover table-condensed" style="margin-bottom: 0;border-top: 0;font-size: 12px;">' +
             '<thead></thead>' +
             '<tbody></tbody>' +
             '</table>' +

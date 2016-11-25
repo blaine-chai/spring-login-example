@@ -254,12 +254,12 @@ var GraphModule = (function () {
             option.nameList.push()
         });
 
-        var setGraphOverall = function () {
+        var setGraphOverall = function (boolean) {
             var graphOverall = graphContainer.find('.graph-overall');
             graphOverall.children().remove();
             $.each(option.nameList, function (i, name) {
                 var tmp = $('<div style="font-size: 11px;margin-left: 5px;"></div>');
-                tmp.append(name + '<span style="position: absolute;right: 15px;">────</span>');
+                tmp.append(name + '<span style="position: absolute;right: 15px;"><b>────</b></span>');
                 tmp.find('span').css('color', option.colorSet[i]);
                 graphOverall.append(tmp);
             });
