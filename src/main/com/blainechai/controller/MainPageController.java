@@ -381,10 +381,18 @@ public class MainPageController {
         if (sessionRepository.findByJSessionId(sessionId).size() > 0) {
             userId = sessionRepository.findByJSessionId(sessionId).get(0).getUserId();
         }
+    	String[] dayMonth = searchPeriod.split("_");
 
         String startTime = "20150101000000";
-        String endTime = "21170531235959";
+        //String endTime = "21170531235959";
+        //String msg = startTime + "-" + endTime + ">" + searchPeriod;
+        Calendar c = Calendar.getInstance ( );
+        if(dayMonth[1].equals("monthly")) c.add (c.MONTH, 1);
+        else  c.add (c.DATE, 1);
+        
+    	String endTime = c.get(c.YEAR) +(String.format("%02d", c.get(c.MONTH)+1)) + (String.format("%02d", c.get(c.DATE))) + "235959"; 
         String msg = startTime + "-" + endTime + ">" + searchPeriod;
+        
         SocketComm sc = new SocketComm(userId + "@" + "stat1", ip, port, 23, 0, msg);
         sc.runStart();
 
@@ -403,7 +411,6 @@ public class MainPageController {
         int[] value = null;
         //value = sc.getStatitcs();
 
-        String[] dayMonth = searchPeriod.split("_");
         if (dayMonth[1].equals("monthly"))
             value = graphDataprocessingByMonthly(startTime, endTime, time, sc.getStatitcs());
         else value = graphDataprocessingByDaily(startTime, endTime, time, sc.getStatitcs());
@@ -816,7 +823,6 @@ public class MainPageController {
                 else if ((selInt == 2) || (selInt == 12)) {
                     send += msg;
                     bookInfoList = sc.getR();
-                    /*
 			        for (BookInfo bookInfo : bookInfoList) {
 			            List<NicknameOption> nicknames = nicknameRepository.findByAuthor(bookInfo.getAuthor());
 			            //find in nickname table and if nickname exist, add to BookInfo
@@ -831,7 +837,6 @@ public class MainPageController {
 			                bookInfo.setRefNickname(nicknames.get(0).getNickname());
 			            }
 			        }
-			        */
                 } else if (selInt == 3) send += sc.getKetSet();    // 연관문자
                 else if ((selInt == 4) || (selInt == 14)) {
                     int progressPer = sc.getProPercent();

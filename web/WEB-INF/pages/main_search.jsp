@@ -848,10 +848,10 @@
 
     function nicNameFind(name, Nic) {
         var nicname = "";
-        console.log(name + " :222: " + nicNameDB.length);
+        //console.log(name + " :222: " + nicNameDB.length);
         for (var i = 0; i < nicNameDB.length; i++) {
 
-            console.log(nicNameDB[i].name + " :333: " + nicNameDB[i].nicName);
+            //console.log(nicNameDB[i].name + " :333: " + nicNameDB[i].nicName);
             if (nicNameDB[i].name == name) {
                 nicname = nicNameDB[i].nicName;
                 break;
@@ -967,8 +967,8 @@
         $.each(data, function (i, tdata) {
             var authorNic = nicNameFind(tdata.author);
             var refAuthorNic = nicNameFind(tdata.referencedAuthor);
-            console.log(tdata.author + " : " + tdata.referencedAuthor);
-            console.log(authorNic + " : " + refAuthorNic);
+            //console.log(tdata.author + " : " + tdata.referencedAuthor);
+            //console.log(authorNic + " : " + refAuthorNic);
 
             html += '<tr><td>' + tdata.number + '</td>';
 //          var priorityEl = $('')
@@ -977,19 +977,19 @@
             html += '<td class="group-td">' + tdata.groupName + '</td>';
             html += '<td>' + tdata.publishedDate + '</td>';
             html += '<td>' + tdata.savedDate + '</td>';
-
+			/*
             html += '<td class="author-td author' + i + '" title="' + tdata.author + '" href="#">' + tdata.author +
                     '<span>' + (authorNic != "" ? '(' + authorNic + ')' : '') + '</span>' + '</td>';
             //html += '<td class="relation-td">' + tdata.referencedAuthor + '</td>';
             html += '<td class="relation-td relation' + i + '" title="' + tdata.referencedAuthor + '" href="#">' + tdata.referencedAuthor
                     + '<span>' + (refAuthorNic != "" ? '(' + refAuthorNic + ')' : '') + '</span>' + '</td>';
-            /*
+            */
              html += '<td class="author-td author' + i + '" title="' + tdata.author + '" href="#">' + tdata.author +
              '<span>' + (tdata.authNickname != undefined ? '(' + tdata.authNickname + ')' : '') + '</span>' + '</td>';
              //html += '<td class="relation-td">' + tdata.referencedAuthor + '</td>';
              html += '<td class="relation-td relation' + i + '" title="' + tdata.referencedAuthor + '" href="#">' + tdata.referencedAuthor
              + '<span>' + (tdata.refNickname != undefined ? '(' + tdata.refNickname + ')' : '') + '</span>' + '</td>';
-             */
+             
             if (tdata.r == 't') {
                 tdata.r = '<span class="glyphicon glyphicon-ok"></span>';
             } else {
@@ -1023,11 +1023,6 @@
             });
 
             html.show(0, function () {
-                initPagination(page, 0, lastPageMain);
-                //initPagination(page, 1, 5, 50);
-                addCheckBtnListener();
-
-                //addCheckEBtnListener();
 
                 $.each(data, function (i, tdata) {
                     addAuthorClickListener(i, tdata.author);
@@ -1036,6 +1031,11 @@
                     //addCheckRBtnListener(i);
                 });
 
+                initPagination(page, 0, lastPageMain);
+                //initPagination(page, 1, 5, 50);
+                addCheckBtnListener();
+
+                //addCheckEBtnListener();
                 highLightResult();
             });
         });
@@ -1175,8 +1175,6 @@
         });
     }
 
-    <c:choose>
-    <c:when test="${userType.equals(\"admin\")}">
     function getAdminHistory(json) {
         var data;
         $.ajax({
@@ -1241,7 +1239,6 @@
         });
     }
 
-
     function deleteAdminHistory(element, id) {
         $.ajax({
             url: "/main/admin-history/delete",
@@ -1256,37 +1253,12 @@
             }
         });
     }
-    </c:when>
-    <c:otherwise>
+
     function getAdminHistory(json) {
     }
+    
     function deleteAdminHistory(element, id) {
     }
-    </c:otherwise>
-    </c:choose>
-
-    //    function jsonSearchInfo() {
-    //        var typeInfo = $('#search-option-radio-wrapper>.active').text();
-    //        var categoryEls = $('.search-category-option');
-    //        var inputEls = $('.search-input');
-    //        var operatorEls = $('.search-operator-option');
-    //        var data = new Object();
-    //        var list = [];
-    //        var obj;
-    //        inputEls.each(function (i) {
-    //            obj = new Object();
-    //            obj.category = categoryEls.eq(i).text();
-    //            obj.input = inputEls.eq(i).val();
-    //            obj.operator = operatorEls.eq(i).text();
-    //            list.push(obj);
-    //        });
-    //        data.data = list;
-    //        data.typeInfo = typeInfo;
-    //        data.fromDate = $('#datepicker1').val();
-    //        data.toDate = $('#datepicker2').val();
-    //        lastQuery = data;
-    //        return JSON.stringify(data);
-    //    }
 
     function jsonSearchInfo2() {
         var typeInfo = $('#search-option-radio-wrapper>.active').text();
@@ -1349,9 +1321,7 @@
                 $($(this).parent().parent().parent()).find('button span').eq(0).text($(this).text());
             });
         });
-
     }
-
 
     function setCheckR(responseData, row, count, id, page) {
         var data = JSON.parse(responseData);
@@ -1480,6 +1450,24 @@
         });
     }
 
+    function addCheckRBtnListener(i) {
+        $('.check-r' + i).click(function () {
+            $.ajax({
+                url: "/r-check",
+                type: "post",
+                data: {"bookId": tarEl.parent().find('td').eq(0).text()},
+                success: function (responseData) {
+//                    var data = JSON.parse(responseData);
+
+//                    console.error(tarEl);
+                    tarEl.find('span').remove();
+                    tarEl.append('<span class="glyphicon glyphicon-ok"></span>');
+//                    console.log(html);
+                }
+            });
+        });
+    }
+
     function exportCsv(table) {
         var rows = table.find('tbody>tr');
         table.tableToCSV();
@@ -1487,9 +1475,9 @@
     }
 
 
-    function addAuthorClickListener(i, tdata) {
-
-        var content = $('<div class="popover-content-wrapper' + i + '" style="display: none;">' +
+    function addAuthorClickListener(i, tdata) 
+    {
+    	var content = $('<div class="popover-content-wrapper' + i + '" style="display: none;">' +
                 '<div class="input-group input-group-sm" style=" width:100%">' +
                 '<span class="input-group-addon" style="width: 70px">저자</span>' +
                 '<input type="text" class="form-control popover-input-author" disabled>' +
@@ -1531,7 +1519,7 @@
         }).on('shown.bs.popover', function () {
             //handle after popover shown
             var clickedTd = $(this);
-            $('.popover-input-author').val(tdata.author);
+            $('.popover-input-author').val(tdata);
             $('.btn-popover-close').click(function (e) {
                 $('.popover-author-td').popover('hide');
             });
@@ -1545,27 +1533,48 @@
                     $(this).toggleClass('btn-primary').text('저장');
                 } else {
                     if ($('.btn-identity-check').attr('disabled') != undefined) {
+                    	var nicname = $('.popover-input-nickname').val();
+                    	var author = $('.popover-input-author').val();
                         $.ajax({
                             url: "/main/nickname/update",
                             type: "post",
                             data: {
-                                "nickname": $('.popover-input-nickname').val(),
-                                "author": $('.popover-input-author').val(),
+                                "nickname": nicname,
+                                "author": author,
 //                                "lastModifiedDate": $('.popover-input-modified-time').val(),
                                 "priority": $('.popover-input-priority').val(),
                                 "note": $('.popover-input-note').val()
                             },
                             success: function (responseData) {
                                 if (responseData == 'true') {
-                                    $('.popover .btn-identity-check').attr('disabled', '');
+
+                                	for(var k=0; k < $('#book-table tbody').find('tr').length; k++) 
+                                	{
+                                		var nicTmp = $('#book-table tbody').find('tr').eq(k).find('td').eq(5).text();
+                                		var html = '';
+                                		if(nicTmp == author) {
+                                			html = author +'<span>(' + nicname + ')</span>';
+	                                		$('#book-table tbody').find('tr').eq(k).find('td').eq(5).html(html);
+                                		}
+                                		
+                                		nicTmp = $('#book-table tbody').find('tr').eq(k).find('td').eq(6).text();
+                                		html = '';
+                                		if(nicTmp == $('.popover-input-author').val()) {
+                                			html = author +'<span>(' + nicname + ')</span>';
+                                			$('#book-table tbody').find('tr').eq(k).find('td').eq(6).html(html);
+                                		}
+                                			
+                                		//console.log("BBBBBB : " + $('#book-table tbody').find('tr').eq(k).find('td').eq(5).text());
+                                	}
+                                	//highLightResult();
+                              	
+                                	$('.popover .btn-identity-check').attr('disabled', '');
                                     $('.popover .btn-modify-nickname').toggleClass('btn-primary').text('편집');
                                     clickedTd.find('span').text('(' + $('.popover-input-nickname').val() + ')');
                                     $('.popover').remove();
                                     $('.popover-input').attr('disabled', '');
-
-                                    nicNameAdd(NAME, NIC);
-
-                                } else {
+                                } 
+                                else {
                                     //when nickname not checked
                                     alert('send error');
                                 }
@@ -1667,7 +1676,7 @@
         }).on('shown.bs.popover', function () {
             //handle after popover shown
             var clickedTd = $(this);
-            $('.popover-input-author').val(tdata.referencedAuthor);
+            $('.popover-input-author').val(tdata);
             $('.btn-popover-close').click(function (e) {
                 $('.popover-author-td').popover('hide');
             });
@@ -1680,20 +1689,40 @@
                     $('.popover-input').removeAttr('disabled');
                     $(this).toggleClass('btn-primary').text('저장');
                 } else {
+                	var nicname = $('.popover-input-nickname').val();
+                	var author = $('.popover-input-author').val();
                     if ($('.btn-identity-check').attr('disabled') != undefined) {
                         $.ajax({
                             url: "/main/nickname/update",
                             type: "post",
                             data: {
-                                "nickname": $('.popover-input-nickname').val(),
-                                "author": $('.popover-input-author').val(),
+                                "nickname": nicname,
+                                "author": author,
 //                                "lastModifiedDate": $('.popover-input-modified-time').val(),
                                 "priority": $('.popover-input-priority').val(),
                                 "note": $('.popover-input-note').val()
                             },
                             success: function (responseData) {
                                 if (responseData == 'true') {
-                                    $('.popover .btn-identity-check').attr('disabled', '');
+                                	for(var k=0; k < $('#book-table tbody').find('tr').length; k++) 
+                                	{
+                                		var nicTmp = $('#book-table tbody').find('tr').eq(k).find('td').eq(5).text();
+                                		var html = '';
+                                		if(nicTmp == author) {
+                                			html = author +'<span>(' + nicname + ')</span>';
+	                                		$('#book-table tbody').find('tr').eq(k).find('td').eq(5).html(html);
+                                		}
+                                		
+                                		nicTmp = $('#book-table tbody').find('tr').eq(k).find('td').eq(6).text();
+                                		html = '';
+                                		if(nicTmp == $('.popover-input-author').val()) {
+                                			html = author +'<span>(' + nicname + ')</span>';
+                                			$('#book-table tbody').find('tr').eq(k).find('td').eq(6).html(html);
+                                		}                                			
+                                		//console.log("BBBBBB : " + $('#book-table tbody').find('tr').eq(k).find('td').eq(5).text());
+                                	}
+                                	//highLightResult();
+                                	$('.popover .btn-identity-check').attr('disabled', '');
                                     $('.popover .btn-modify-nickname').toggleClass('btn-primary').text('편집');
                                     clickedTd.find('.nickname-td').text('(' + $('.popover-input-nickname').val() + ')');
                                     $('.popover').remove();
@@ -1829,6 +1858,7 @@
     });
 
     function highLightResult() {
+    	console.log("QQQ : " + lastQuery);
         $.each($('.author-td'), function (j, contentTd) {
             var stt = $(contentTd).text();
             for (i = 0; i < lastQuery.data.length; i++) {

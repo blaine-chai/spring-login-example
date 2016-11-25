@@ -469,9 +469,9 @@
     };
 
     function setTableOption(c) {
-        $.each(c, function (i, col) {
-            col = parseInt(col);
-        });
+        // $.each(c, function (i, col) {
+        //     col = parseInt(col);
+        // });
         $.ajax({
             url: "/main/table-option/update",
             type: "post",
