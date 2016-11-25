@@ -21,7 +21,6 @@ public class CommonBookmark implements Serializable {
     private UserAccount userAccount;
 
     @ManyToOne
-    @JoinColumn(name = "adminBookmarkId", referencedColumnName = "id")
     private AdminBookmark adminBookmark;
 
     private int count;

@@ -96,7 +96,7 @@
                     </div>
                 </div>
                 <div>
-                    <div style="margin-top: 10px">
+                    <div style="margin-top: 10px;height: 25px;">
                         <div style="float:left; margin:0 auto;"><span class="glyphicon glyphicon-calendar"
                                                                       style="left:2px; top:5px; width:20px;"></span>
                         </div>

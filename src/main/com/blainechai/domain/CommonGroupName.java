@@ -1,6 +1,10 @@
 package com.blainechai.domain;
 
+import org.eclipse.persistence.annotations.CascadeOnDelete;
+
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by blainechai on 2016. 11. 23..
@@ -19,7 +23,6 @@ public class CommonGroupName {
     public CommonGroupName(String groupName) {
         this.groupName = groupName;
     }
-
 
     public String getGroupName() {
         return groupName;

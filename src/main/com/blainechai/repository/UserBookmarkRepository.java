@@ -2,6 +2,7 @@ package com.blainechai.repository;
 
 import com.blainechai.domain.UserBookmark;
 import com.blainechai.domain.UserHistory;
+import org.eclipse.persistence.annotations.CascadeOnDelete;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,4 +25,7 @@ public interface UserBookmarkRepository extends JpaRepository<UserBookmark, Long
 
     @Transactional
     long deleteByUserAccount_UserIdAndWord(String userId, String word);
+
+    @Transactional
+    long deleteByUserAccount_UserId(String userId);
 }

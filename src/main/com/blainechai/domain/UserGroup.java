@@ -1,5 +1,7 @@
 package com.blainechai.domain;
 
+import org.eclipse.persistence.annotations.CascadeOnDelete;
+
 import javax.persistence.*;
 
 /**
@@ -15,12 +17,12 @@ public class UserGroup {
     private Long id;
 
     @ManyToOne
-    @JoinColumn(name="groupName", referencedColumnName = "groupName")
+    @JoinColumn(name = "groupName", referencedColumnName = "groupName")
     private CommonGroupName groupName;
 
 
     @ManyToOne
-    @JoinColumn(name="userId", referencedColumnName = "userId")
+    @JoinColumn(name = "userId", referencedColumnName = "userId")
     private UserAccount userAccount;
 
     protected UserGroup() {

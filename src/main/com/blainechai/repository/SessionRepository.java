@@ -1,6 +1,7 @@
 package com.blainechai.repository;
 
 import com.blainechai.domain.Session;
+import org.eclipse.persistence.annotations.CascadeOnDelete;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -18,4 +19,7 @@ public interface SessionRepository extends JpaRepository<Session, Long> {
 
     @Transactional
     long deleteByJSessionId(String jSessionId);
+
+    @Transactional
+    long deleteByUserId(String userId);
 }

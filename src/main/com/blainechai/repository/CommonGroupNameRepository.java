@@ -1,6 +1,7 @@
 package com.blainechai.repository;
 
 import com.blainechai.domain.CommonGroupName;
+import org.eclipse.persistence.annotations.CascadeOnDelete;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.transaction.annotation.Transactional;
 

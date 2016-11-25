@@ -2,6 +2,7 @@ package com.blainechai.repository;
 
 import com.blainechai.domain.CommonBookmark;
 import com.blainechai.domain.UserBookmark;
+import org.eclipse.persistence.annotations.CascadeOnDelete;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,4 +25,10 @@ public interface CommonBookmarkRepository extends JpaRepository<CommonBookmark, 
 
     @Transactional
     long deleteByUserAccount_UserIdAndAdminBookmark_Word(String userId, String word);
+
+    @Transactional
+    long deleteByUserAccount_UserId(String userId);
+
+//    @Transactional
+//    long deleteByUserId(String userId);
 }

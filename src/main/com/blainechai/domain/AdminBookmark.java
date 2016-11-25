@@ -2,6 +2,8 @@ package com.blainechai.domain;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by blainechai on 2016. 10. 16..
@@ -16,13 +18,16 @@ public class AdminBookmark implements Serializable {
     private Long id;
 
     @ManyToOne
-    @JoinColumn(name = "adminId", referencedColumnName = "userId")
+    @JoinColumn(name = "userId", referencedColumnName = "userId")
     private UserAccount adminAccount;
 
     @Column(length = 2048)
     private String word;
 
     private long date;
+
+    @OneToMany(cascade = CascadeType.REMOVE, mappedBy = "adminBookmark")
+    private List<CommonBookmark> commonBookmarks = new ArrayList<CommonBookmark>();
 
     protected AdminBookmark() {
     }
@@ -76,6 +81,14 @@ public class AdminBookmark implements Serializable {
 
     public void setWord(String word) {
         this.word = word;
+    }
+
+    public List<CommonBookmark> getCommonBookmarks() {
+        return commonBookmarks;
+    }
+
+    public void setCommonBookmarks(List<CommonBookmark> commonBookmarks) {
+        this.commonBookmarks = commonBookmarks;
     }
 
     @Override

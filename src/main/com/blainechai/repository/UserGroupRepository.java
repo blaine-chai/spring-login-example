@@ -2,6 +2,7 @@ package com.blainechai.repository;
 
 import com.blainechai.domain.UserAccount;
 import com.blainechai.domain.UserGroup;
+import org.eclipse.persistence.annotations.CascadeOnDelete;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -10,7 +11,7 @@ import java.util.List;
 /**
  * Created by blainechai on 2016. 11. 23..
  */
-public interface UserGroupRepository extends JpaRepository<UserGroup, Long>{
+public interface UserGroupRepository extends JpaRepository<UserGroup, Long> {
 
     List<UserGroup> findByGroupName_GroupName(String groupName);
 

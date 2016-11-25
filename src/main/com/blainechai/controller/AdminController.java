@@ -72,6 +72,7 @@ public class AdminController {
         String username = request.getParameter("username");
         String password = request.getParameter("password");
 //        String phone = request.getParameter("p")
+
         try {
             UserAccount adminAccount = new UserAccount(userId, username, password, "0", UserType.ADMIN);
             adminAccount = userAccountRepository.save(adminAccount);
@@ -80,7 +81,6 @@ public class AdminController {
             for (AdminBookmark adminBookmark : adminBookmarks) {
                 commonBookmarkRepository.save(new CommonBookmark(adminAccount, adminBookmark, 0));
             }
-//        }
         } catch (Exception e) {
             return "redirect:" + "/error";
         }
@@ -145,8 +145,25 @@ public class AdminController {
         // user_group -> userId
         // user_search_history -> userId
         // user_table_option -> user Id
+        String userId = request.getParameter("userId");
+//        String username = request.getParameter("username");
+//        UserAccount adminAccount = userAccountRepository.findByUserId(userId).get(0);
+//        adminAccount.setUserId(userId);
+//        adminAccount.setUsername(username);
+//        adminAccount = userAccountRepository.save(adminAccount);
 
-        userAccountRepository.deleteByUserId(request.getParameter("userId"));
+        System.out.println(userId);
+
+        commonBookmarkRepository.deleteByUserAccount_UserId(userId);
+        adminBookmarkRepository.deleteByAdminAccount_UserId(userId);
+        adminHistoryRepository.deleteByAdminAccount_userId(userId);
+        sessionRepository.deleteByUserId(userId);
+        userBookmarkRepository.deleteByUserAccount_UserId(userId);
+        userGroupRepository.deleteByUserAccount_UserId(userId);
+        userHistoryRepository.deleteByUserAccount_UserId(userId);
+        tableOptionRepository.deleteByUserAccount_UserId(userId);
+
+        userAccountRepository.deleteByUserId(userId);
         ModelAndView modelAndView = new ModelAndView("admin_administrator_list");
         List<UserAccount> adminList = userAccountRepository.findByType(UserType.ADMIN);
         modelAndView.addObject("adminList", adminList);
@@ -172,58 +189,59 @@ public class AdminController {
         // user_group -> userId
         // user_search_history -> userId
         // user_table_option -> user Id
+        String userIdOrg = sessionRepository.findByJSessionId(request.getSession().getId()).get(0).getUserId();
 
         String userId = request.getParameter("userId");
         String username = request.getParameter("username");
-        UserAccount adminAccount = userAccountRepository.findByUserId(userId).get(0);
+        UserAccount adminAccount = userAccountRepository.findByUserId(userIdOrg).get(0);
         adminAccount.setUserId(userId);
         adminAccount.setUsername(username);
         adminAccount = userAccountRepository.save(adminAccount);
 
-        List<AdminBookmark> bookmarks = adminBookmarkRepository.findByAdminAccount_UserId(userId);
-        for(AdminBookmark bookmark:bookmarks){
+        List<AdminBookmark> bookmarks = adminBookmarkRepository.findByAdminAccount_UserId(userIdOrg);
+        for (AdminBookmark bookmark : bookmarks) {
             bookmark.setAdminAccount(adminAccount);
         }
         adminBookmarkRepository.save(bookmarks);
 
-        List<AdminHistory> adminHistories = adminHistoryRepository.findByUserAccount_UserId(userId);
-        for(AdminHistory adminHistory:adminHistories){
-            adminHistory.setUserAccount(adminAccount);
+        List<AdminHistory> adminHistories = adminHistoryRepository.findByAdminAccount_UserId(userIdOrg);
+        for (AdminHistory adminHistory : adminHistories) {
+            adminHistory.setAdminAccount(adminAccount);
         }
         adminHistoryRepository.save(adminHistories);
 
-        List<CommonBookmark> commonBookmarks = commonBookmarkRepository.findByUserAccount_UserId(userId);
-        for(CommonBookmark commonBookmark:commonBookmarks){
+        List<CommonBookmark> commonBookmarks = commonBookmarkRepository.findByUserAccount_UserId(userIdOrg);
+        for (CommonBookmark commonBookmark : commonBookmarks) {
             commonBookmark.setUserAccount(adminAccount);
         }
         commonBookmarkRepository.save(commonBookmarks);
 
-        List<Session> sessions = sessionRepository.findByUserId(userId);
-        for(Session session:sessions){
+        List<Session> sessions = sessionRepository.findByUserId(userIdOrg);
+        for (Session session : sessions) {
             session.setUserId(userId);
         }
-        commonBookmarkRepository.save(commonBookmarks);
+        sessionRepository.save(sessions);
 
-        List<UserBookmark> userBookmarks = userBookmarkRepository.findByUserAccount_UserId(userId);
-        for(UserBookmark userBookmark:userBookmarks){
+        List<UserBookmark> userBookmarks = userBookmarkRepository.findByUserAccount_UserId(userIdOrg);
+        for (UserBookmark userBookmark : userBookmarks) {
             userBookmark.setUserAccount(adminAccount);
         }
         userBookmarkRepository.save(userBookmarks);
 
-        List<UserGroup> userGroups = userGroupRepository.findByUserAccount_UserId(userId);
-        for(UserGroup userGroup:userGroups){
+        List<UserGroup> userGroups = userGroupRepository.findByUserAccount_UserId(userIdOrg);
+        for (UserGroup userGroup : userGroups) {
             userGroup.setUserAccount(adminAccount);
         }
         userGroupRepository.save(userGroups);
 
-        List<UserHistory> userHistories = userHistoryRepository.findByUserAccount_UserId(userId);
-        for(UserHistory userHistory:userHistories){
+        List<UserHistory> userHistories = userHistoryRepository.findByUserAccount_UserId(userIdOrg);
+        for (UserHistory userHistory : userHistories) {
             userHistory.setUserAccount(adminAccount);
         }
         userHistoryRepository.save(userHistories);
 
-        List<UserTableOption> userTableOptions = tableOptionRepository.findByUserAccount_UserId(userId);
-        for(UserTableOption tableOption:userTableOptions){
+        List<UserTableOption> userTableOptions = tableOptionRepository.findByUserAccount_UserId(userIdOrg);
+        for (UserTableOption tableOption : userTableOptions) {
             tableOption.setUserAccount(adminAccount);
         }
         tableOptionRepository.save(userTableOptions);
@@ -289,6 +307,23 @@ public class AdminController {
 
     @RequestMapping(value = "/user/delete", method = RequestMethod.POST)
     public ModelAndView userDelete(HttpServletRequest request) {
+
+        // common_bookmark -> userId
+        // common_session -> userId
+        // user_bookmark -> userId
+        // user_group -> userId
+        // user_search_history -> userId
+        // user_table_option -> user Id
+        String userId = request.getParameter("userId");
+
+        commonBookmarkRepository.deleteByUserAccount_UserId(userId);
+        sessionRepository.deleteByUserId(userId);
+        userBookmarkRepository.deleteByUserAccount_UserId(userId);
+        userGroupRepository.deleteByUserAccount_UserId(userId);
+        userHistoryRepository.deleteByUserAccount_UserId(userId);
+        tableOptionRepository.deleteByUserAccount_UserId(userId);
+
+
         userAccountRepository.deleteByUserId(request.getParameter("userId"));
         ModelAndView modelAndView = new ModelAndView("admin_user_list");
         List<UserAccount> adminList = userAccountRepository.findAll();
@@ -310,25 +345,58 @@ public class AdminController {
         Gson gson = new Gson();
         List<String> groupNames = gson.fromJson(request.getParameter("groupNames"), ArrayList.class);
         List<String> uncheckedGroupNames = gson.fromJson(request.getParameter("uncheckedGroupNames"), ArrayList.class);
-        try {
-            String userId = request.getParameter("userId");
-            String username = request.getParameter("username");
-            UserAccount userAccount = userAccountRepository.findByUserId(userId).get(0);
-            userAccount.setUserId(userId);
-            userAccount.setUsername(username);
-            userAccount = userAccountRepository.save(userAccount);
-            for (String groupNameStr : groupNames) {
-                if (userGroupRepository.findByUserAccount_UserIdAndGroupName_GroupName(userId, groupNameStr).size() <= 0) {
-                    CommonGroupName commonGroupName = groupNameRepository.findByGroupName(groupNameStr).get(0);
-                    userGroupRepository.save(new UserGroup(commonGroupName, userAccount));
-                }
-            }
-            for (String groupNameStr : uncheckedGroupNames) {
-                userGroupRepository.deleteByUserAccount_UserIdAndGroupName_GroupName(userId, groupNameStr);
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
+
+        String userIdOrg = sessionRepository.findByJSessionId(request.getSession().getId()).get(0).getUserId();
+        // common_bookmark -> userId
+        // common_session -> userId
+        // user_bookmark -> userId
+        // user_group -> userId
+        // user_search_history -> userId
+        // user_table_option -> user Id
+
+        String userId = request.getParameter("userId");
+        String username = request.getParameter("username");
+        UserAccount userAccount = userAccountRepository.findByUserId(userId).get(0);
+        userAccount.setUserId(userId);
+        userAccount.setUsername(username);
+        userAccount = userAccountRepository.save(userAccount);
+
+        List<CommonBookmark> commonBookmarks = commonBookmarkRepository.findByUserAccount_UserId(userIdOrg);
+        for (CommonBookmark commonBookmark : commonBookmarks) {
+            commonBookmark.setUserAccount(userAccount);
         }
+        commonBookmarkRepository.save(commonBookmarks);
+
+        List<Session> sessions = sessionRepository.findByUserId(userIdOrg);
+        for (Session session : sessions) {
+            session.setUserId(userId);
+        }
+        sessionRepository.save(sessions);
+
+        List<UserBookmark> userBookmarks = userBookmarkRepository.findByUserAccount_UserId(userIdOrg);
+        for (UserBookmark userBookmark : userBookmarks) {
+            userBookmark.setUserAccount(userAccount);
+        }
+        userBookmarkRepository.save(userBookmarks);
+
+        List<UserGroup> userGroups = userGroupRepository.findByUserAccount_UserId(userIdOrg);
+        for (UserGroup userGroup : userGroups) {
+            userGroup.setUserAccount(userAccount);
+        }
+        userGroupRepository.save(userGroups);
+
+        List<UserHistory> userHistories = userHistoryRepository.findByUserAccount_UserId(userIdOrg);
+        for (UserHistory userHistory : userHistories) {
+            userHistory.setUserAccount(userAccount);
+        }
+        userHistoryRepository.save(userHistories);
+
+        List<UserTableOption> userTableOptions = tableOptionRepository.findByUserAccount_UserId(userIdOrg);
+        for (UserTableOption tableOption : userTableOptions) {
+            tableOption.setUserAccount(userAccount);
+        }
+        tableOptionRepository.save(userTableOptions);
+
         return "redirect:" + "/admin/user";
     }
 

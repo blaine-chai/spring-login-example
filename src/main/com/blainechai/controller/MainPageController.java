@@ -110,7 +110,7 @@ public class MainPageController {
         String sessionId = request.getSession().getId();
         String userId = sessionRepository.findByJSessionId(sessionId).get(0).getUserId();
         ModelAndView modelAndView = new ModelAndView("main_alarm");
-        modelAndView.addObject("colSize", tableOptionRepository.findByUserAccount_UserId(sessionRepository.findByJSessionId(request.getSession().getId()).get(0).getUserId()).get(0).getColSizes());
+        modelAndView.addObject("colSize", tableOptionRepository.findByUserAccount_UserId(userId).get(0).getColSizes());
         modelAndView.addObject("userId", userId);
         modelAndView.addObject("userType", sessionRepository.findByJSessionId(sessionId).get(0).getType());
         return modelAndView;
@@ -759,7 +759,7 @@ public class MainPageController {
                 userHistoryRepository.save(userHistory);
 
             }
-            if (UserType.isAdminUser(session.getType()) && adminHistoryRepository.findByUserAccount_UserIdAndWord(userId, word).size() <= 0) {
+            if (UserType.isAdminUser(session.getType()) && adminHistoryRepository.findByAdminAccount_UserIdAndWord(userId, word).size() <= 0) {
                 AdminHistory adminHistory = new AdminHistory(userAccountRepository.findByUserId(userId).get(0),
                         request.getParameter("data"), new java.util.Date().getTime());
                 adminHistoryRepository.save(adminHistory);
@@ -902,7 +902,7 @@ public class MainPageController {
         if (sessionRepository.findByJSessionId(sessionId).size() > 0) {
             userId = sessionRepository.findByJSessionId(sessionId).get(0).getUserId();
             List<AdminHistory> adminHistories;
-            adminHistories = adminHistoryRepository.findByUserAccount_UserId(userId);
+            adminHistories = adminHistoryRepository.findByAdminAccount_UserId(userId);
 
             if (adminHistories != null) {
                 for (AdminHistory adminHistory : adminHistories) {
@@ -933,7 +933,7 @@ public class MainPageController {
         List<HistoryApi> historyApis = new ArrayList<HistoryApi>();
         if (sessionRepository.findByJSessionId(sessionId).size() > 0) {
             userId = sessionRepository.findByJSessionId(sessionId).get(0).getUserId();
-            adminHistories = adminHistoryRepository.findByUserAccount_UserId(userId);
+            adminHistories = adminHistoryRepository.findByAdminAccount_UserId(userId);
 
             if (adminHistories != null) {
                 for (AdminHistory adminHistory : adminHistories) {
@@ -1057,7 +1057,7 @@ public class MainPageController {
             adminId = sessionRepository.findByJSessionId(sessionId).get(0).getUserId();
             List<UserAccount> adminAccounts = userAccountRepository.findByUserId(adminId);
             if (adminAccounts.size() > 0) {
-                List<AdminHistory> adminHistories = adminHistoryRepository.findByUserAccount_UserIdAndWord(adminId, word);
+                List<AdminHistory> adminHistories = adminHistoryRepository.findByAdminAccount_UserIdAndWord(adminId, word);
                 if (adminHistories.size() > 0 && adminBookmarkRepository.findByWord(word).size() <= 0) {
                     AdminHistory adminHistory = adminHistories.get(0);
                     AdminBookmark tmpAdminBookmark = adminBookmarkRepository.save(new AdminBookmark(adminAccounts.get(0), word));

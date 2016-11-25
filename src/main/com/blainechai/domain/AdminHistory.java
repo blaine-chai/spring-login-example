@@ -16,8 +16,8 @@ public class AdminHistory implements Serializable{
     private Long id;
 
     @ManyToOne
-    @JoinColumn(name = "adminId", referencedColumnName = "userId")
-    private UserAccount userAccount;
+    @JoinColumn(name = "userId", referencedColumnName = "userId")
+    private UserAccount adminAccount;
 
     @Column(length = 2048)
     private String word;
@@ -31,8 +31,8 @@ public class AdminHistory implements Serializable{
     }
 
 
-    public AdminHistory(UserAccount userAccount, String word, long date) {
-        this.userAccount = userAccount;
+    public AdminHistory(UserAccount adminAccount, String word, long date) {
+        this.adminAccount = adminAccount;
         this.word = word;
         this.date = date;
     }
@@ -45,12 +45,12 @@ public class AdminHistory implements Serializable{
         this.id = id;
     }
 
-    public UserAccount getUserAccount() {
-        return userAccount;
+    public UserAccount getAdminAccount() {
+        return adminAccount;
     }
 
-    public void setUserAccount(UserAccount userAccount) {
-        this.userAccount = userAccount;
+    public void setAdminAccount(UserAccount adminAccount) {
+        this.adminAccount = adminAccount;
     }
 
     public String getWord() {

@@ -1,6 +1,7 @@
 package com.blainechai.repository;
 
 import com.blainechai.domain.UserAccount;
+import org.eclipse.persistence.annotations.CascadeOnDelete;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -12,7 +13,7 @@ import java.util.List;
  * private String hash;
  * private String phone;
  * private Date createDate;
- * */
+ */
 
 public interface UserAccountRepository extends JpaRepository<UserAccount, Long> {
 
@@ -24,7 +25,7 @@ public interface UserAccountRepository extends JpaRepository<UserAccount, Long> 
 
     List<UserAccount> findByType(String userType);
 
-    List<UserAccount> findByUserIdAndType(String userId,String userType);
+    List<UserAccount> findByUserIdAndType(String userId, String userType);
 
     @Transactional
     long deleteByUserId(String userId);
