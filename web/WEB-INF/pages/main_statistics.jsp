@@ -140,14 +140,10 @@
                             </div>
                         </button>
                         <ul class="dropdown-menu search-category-selector">
-                            <li><a role="total-book-dropdown" onclick="getSearchTotalData(this);return false;"
+                            <li><a role="total-book-dropdown" onclick="getSearchTotalData('일별');return false;"
                                    period="0" href="#">일별</a></li>
-                            <li><a role="total-book-dropdown" onclick="getSearchTotalData(this);return false;"
-                                   period="1" tabindex="-1" href="#">주별</a></li>
-                            <li><a role="total-book-dropdown" onclick="getSearchTotalData(this);return false;"
+                            <li><a role="total-book-dropdown" onclick="getSearchTotalData('월별');return false;"
                                    period="2" tabindex="-1" href="#">월별</a></li>
-                            <li><a role="total-book-dropdown" onclick="getSearchTotalData(this);return false;"
-                                   period="3" tabindex="-1" href="#">년도별</a></li>
                         </ul>
                     </div>
                 </div>
@@ -172,14 +168,10 @@
                         </button>
                         <ul class="dropdown-menu search-category-selector" role="menu"
                             aria-labelledby="dropdownMenu1">
-                            <li><a role="total-author-dropdown" onclick="getAuthorTotalGraphData(this);return false;"
+                            <li><a role="total-author-dropdown" onclick="getAuthorTotalGraphData('일별');return false;"
                                    period="0" tabindex="-1" href="#">일별</a></li>
-                            <li><a role="total-author-dropdown" onclick="getAuthorTotalGraphData(this);return false;"
-                                   period="1" tabindex="-1" href="#">주별</a></li>
-                            <li><a role="total-author-dropdown" onclick="getAuthorTotalGraphData(this);return false;"
+                            <li><a role="total-author-dropdown" onclick="getAuthorTotalGraphData('월별');return false;"
                                    period="2" tabindex="-1" href="#">월별</a></li>
-                            <li><a role="total-author-dropdown" onclick="getAuthorTotalGraphData(this);return false;"
-                                   period="3" tabindex="-1" href="#">년도별</a></li>
                         </ul>
                     </div>
                 </div>
@@ -306,8 +298,8 @@
     $(document).ready(function () {
         authorTotalGraph = GraphModule.graph();
         totalGraph = GraphModule.graph();
-        getSearchTotalData();
-        getAuthorTotalGraphData();
+        getSearchTotalData($('.search-category-option').eq(0).text());
+        getAuthorTotalGraphData($('.search-category-option').eq(1).text());
 
         $('.graph-overall').draggable({
             containment: '#author-graph-container'
@@ -473,16 +465,16 @@
             }
         })
     });
+    
+    var getSearchTotalData = (function (category) 
+    {
+    	totalGraph.removeNameList();
+    	totalGraph.removeData();
+    	totalGraph.removeSvg();
 
-    // 왼쪽 상단 : timePeriodOption.monthly
-    var getSearchTotalData = (function () {
-        var categoryEls = $('.search-category-option');
-        var category = categoryEls.eq(0).text();
-        console.log(category);
         if (category == '일별') category = 'MSG_' + 'daily';
         else                  category = 'MSG_' + 'monthly';
-
-//        console.log(category);
+    	console.log(category);
 
         $.ajax({
             url: "/main/statistics/search-total-data",
@@ -503,15 +495,18 @@
             }
         });
     });
-    // 왼쪽 하단 : timePeriodOption.monthly
-    var getAuthorTotalGraphData = (function () {
-//        var author = $('#nickname-search-input').val();
-        var categoryEls = $('.search-category-option');
-        var category = categoryEls.eq(1).text();
+    
 
-        if (category == '일별') category = 'DB_' + 'daily';
-        else                  category = 'DB_' + 'monthly';
+    var getAuthorTotalGraphData = (function (category) 
+    {
+		authorTotalGraph.removeNameList();
+		authorTotalGraph.removeData();
+		authorTotalGraph.removeSvg();
+		
+		if (category == '일별') category = 'DB_' + 'daily';
+		else                  category = 'DB_' + 'monthly';
 
+		console.log(category);
         $.ajax({
             url: "/main/statistics/search-total-data",
             type: "post",
@@ -520,6 +515,7 @@
                 searchPeriod: category
             },
             success: function (responseData) {
+
                 var resultData = JSON.parse(responseData);
 //                console.error(resultData);
                 authorTotalGraph = GraphModule.graph();

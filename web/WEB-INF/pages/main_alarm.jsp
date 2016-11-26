@@ -652,7 +652,7 @@
                 //' <div id="checkR-result-number">검색결과 : 00000000</div>' +
                 '<div style="font-size: 11px;position: relative;left: 450px;">' +
                 //'<span class="relative-author-from-date">' + lastQuery.fromDate + '</span>' + (lastQuery.fromDate == '' && lastQuery.toDate == '' ? '' : '</span><span> ~ </span><span class="relative-author-to-date">' + lastQuery.toDate + '</span>') +
-                '<span class="relative-author-from-date">' + lastQuery.fromDate + '</span>' + (lastQuery.fromDate == '' && lastQuery.toDate == '' ? '' : '</span><span> ~ </span><span class="relative-author-to-date">' + lastQuery.toDate + '</span>') +
+                '<span class="relative-author-from-date">' + lastQuery.fromDate + '</span>' + (lastQuery.fromDate == '' && lastQuery.toDate == '' ? '' : '</span><span> ~ </span><span class="relative-author-to-date">' + lastQuery.toDate + '(' + lastQuery.dateOption+ ')' + '</span>') +
                 '</div>' +
                 '<div><div style="overflow:auto; height: 300px;">' +
                 '<table class="table table-hover table-fixed table-bordered table-striped table-condensed" style="font-size: 11px; margin-bottom: 0;">' +
@@ -748,7 +748,7 @@
              callAjaxLoop("author"+authorNUM, 8, row, 8, 8, tableData[row].eventNo+">f", "");
              */
             callAjaxLoop("author" + authorNUM, 8, row, 8, 8, tableData[row].eventNo + ">" + "indexB^" + tableData[row].author + " & "
-                    + "indexB^" + tableData[row].referencedAuthor + ">완전일치>" + lastQuery.fromDate + "-" + lastQuery.toDate, "");
+                    + "indexB^" + tableData[row].referencedAuthor + ">완전일치>" + lastQuery.fromDate + "-" + lastQuery.toDate + '>' + lastQuery.dateOption, "");
         });
     }
 
@@ -1231,7 +1231,7 @@
 
                 var m = "indexB^" + tableData[row].author
                         + " & " + tableData[row].referencedAuthor + ">완전일치>"
-                        + lastQuery.fromDate + "-" + lastQuery.toDate;
+                        + lastQuery.fromDate + "-" + lastQuery.toDate + ">" + lastQuery.dateOption;
                 console.log(m);
                 //if ($('#book-table tbody').find('tr').eq(row).find('td').eq(col).find('span').hasClass( "glyphicon-ok"))
                 callAjaxLoop("author" + authorNUM, row, 1, 1, col, m, "");

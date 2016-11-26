@@ -142,9 +142,9 @@
 
                     <div id="search-date-option-container" class="btn-group btn-group-justified" data-toggle="buttons">
                         <label class="btn btn-default btn-sm active"><input type="radio" name="dateOption"
-                                                                            autocomplete="off" value="발행일자" checked>발행일자</label>
+                                                                            autocomplete="off" value="MSG" checked>발행일자</label>
                         <label class="btn btn-default btn-sm"><input type="radio" name="dateOption"
-                                                                     autocomplete="off" value="저장일자">저장일자</label>
+                                                                     autocomplete="off" value="DB">저장일자</label>
                     </div>
                     <div style="float:left; margin:0 auto;"><span class="glyphicon glyphicon-calendar"
                                                                   style="left:2px; top:5px; width:20px;"></span></div>
@@ -179,8 +179,7 @@
                         <label class="btn btn-default btn-sm expand-btn btn-primary"
                                style="width: 29px; margin:0;">+</label>
                         <label class="btn btn-default btn-sm" style="width:calc(100% - 29px); margin:0;"
-                               onclick="$(this).parent().find('.expand-btn').click();return false;">Admin
-                            History</label>
+                               onclick="$(this).parent().find('.expand-btn').click();return false;">Admin History</label>
                         <div id="admin-history" class="panel history"
                              style="overflow: auto; max-height:300px; margin-left: 2px; margin-right: 2px; display: none;">
                             <table style="font-size:11px;max-height: 300px; overflow: auto;word-break: break-all;"
@@ -196,8 +195,7 @@
                     <label class="btn btn-default btn-sm expand-btn btn-primary"
                            style="width: 29px; margin:0;">+</label>
                     <label class="btn btn-default btn-sm" style="width:calc(100% - 29px); margin:0;"
-                           onclick="$(this).parent().find('.expand-btn').click();return false;">User
-                        History</label>
+                           onclick="$(this).parent().find('.expand-btn').click();return false;">User History</label>
                     <div id="user-history" class="panel history"
                          style="overflow: auto; max-height:300px; margin-left: 2px; margin-right: 2px; display: none;">
                         <table style="font-size:11px;max-height: 300px; overflow: auto;word-break: break-all;"
@@ -595,7 +593,7 @@
 
                 var m = "indexB^" + tableData[row].author
                         + " & " + tableData[row].referencedAuthor + ">완전일치>"
-                        + lastQuery.fromDate + "-" + lastQuery.toDate;
+                        + lastQuery.fromDate + "-" + lastQuery.toDate + ">" + lastQuery.dateOption;
                 console.log(m);
                 //if ($('#book-table tbody').find('tr').eq(row).find('td').eq(col).find('span').hasClass( "glyphicon-ok"))
                 callAjaxLoop("author" + authorNUM, row, 1, 1, col, m, "");
@@ -953,7 +951,7 @@
 
         if (!isOK) SearchWord = "";
 ///
-        return JSON.stringify(data);
+		return JSON.stringify(data);
     }
 
     function setQuery(responseData, page) {
@@ -1063,6 +1061,7 @@
         });
     }
 
+    var noticeNo = 0;
     function getSearchHistory(json) {
         var data;
         $.ajax({
@@ -1099,6 +1098,7 @@
                     var word = userHistory[userHistory.length - col - 1].word;
                     var icon = $(this).find('img');
                     if ($(this).find('img').hasClass('bookmark-btn-active')) {
+//                    	console.log("AAAAAAAAAAAAAAAAAAAAAAAAAA");
                         $.ajax({
                             url: '/main/user-bookmark/delete',
                             type: 'post',
@@ -1109,10 +1109,15 @@
                             }
                         });
                     } else {
+                    	noticeNo++;                 
                         $.ajax({
                             url: '/main/user-bookmark/add',
                             type: 'post',
-                            data: {'data': word},
+                            data: {
+                            	'id' : 'notice' + noticeNo,
+                            	'msg' : dataParsing(word),
+                            	'data': word
+                            },
                             contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
                             success: function (responseData) {
                                 icon.toggleClass('bookmark-btn-active');
@@ -1123,6 +1128,7 @@
             }
         });
     }
+    
     function changeHistory(source) {
         var tdata = JSON.parse(source);
 
@@ -1223,10 +1229,15 @@
                             }
                         });
                     } else {
+                    	noticeNo++;
                         $.ajax({
                             url: '/main/admin-bookmark/add',
                             type: 'post',
-                            data: {'data': word},
+                            data: {
+                            	'id' : 'notice' + noticeNo,
+                            	'msg' : dataParsing(word),
+                            	'data': word
+                            },
                             contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
                             success: function (responseData) {
 //                                console.error(responseData);
@@ -1238,7 +1249,30 @@
             }
         });
     }
+    function dataParsing(source) {
+        var tdata = JSON.parse(source);
+        lastQuery = tdata;
 
+        var data = tdata.data;
+        
+        var str = "";
+
+        for (var i = 0; i < data.length; i++) {
+            if (data[i].category == "내용") str += 'indexA^';
+            else if (data[i].category == "저자") str += 'indexB^';
+            else if (data[i].category == "참조") str += 'indexC^';
+            str += data[i].input;
+            if (i < data.length - 1) {
+                if (data[i].operator == "O R") str += " <OR> ";
+                else str += " <AND> ";
+            }
+        }
+        str += ">" + tdata.typeInfo;
+        str += ">" + tdata.fromDate + "-" + tdata.toDate;
+       	str += ">" + tdata.dateOption;
+
+        return str;
+    }
     function deleteAdminHistory(element, id) {
         $.ajax({
             url: "/main/admin-history/delete",
@@ -1260,29 +1294,6 @@
     function deleteAdminHistory(element, id) {
     }
 
-    function jsonSearchInfo2() {
-        var typeInfo = $('#search-option-radio-wrapper>.active').text();
-        var categoryEls = $('.search-category-option');
-        var inputEls = $('.search-input');
-        var operatorEls = $('.search-operator-option');
-        var data = new Object();
-        var list = [];
-        var obj;
-        inputEls.each(function (i) {
-            obj = new Object();
-            obj.category = categoryEls.eq(i).text();
-            obj.input = inputEls.eq(i).val();
-            obj.operator = operatorEls.eq(i).text();
-            list.push(obj);
-        });
-        data.data = list;
-        data.typeInfo = typeInfo;
-        data.fromDate = $('#datepicker1').val();
-        data.toDate = $('#datepicker2').val();
-        lastQuery = data;
-        return JSON.stringify(data);
-    }
-
     function addSearchInfo(a) {
         $('.search-input-group').remove();
         if (a.typeInfo == '문자포함') {
@@ -1293,10 +1304,10 @@
             $('#option3').parent().click();
         }
 
-        if (a.dateOption == '발행일자') {
-            $('input[name=dateOption][value="발행일자"]').click();
+        if (a.dateOption == 'MSG') {
+            $('input[name=dateOption][value="MSG"]').click();
         } else {
-            $('input[name=dateOption][value="저장일자"]').click();
+            $('input[name=dateOption][value="DB"]').click();
         }
 
         $.each(a.data, function (i) {
@@ -1333,7 +1344,7 @@
                 //' <div id="checkR-result-number">검색결과 : 00000000</div>' +
                 '<div style="font-size: 11px;position: relative;left: 450px;">' +
                 //'<span class="relative-author-from-date">' + lastQuery.fromDate + '</span>' + (lastQuery.fromDate == '' && lastQuery.toDate == '' ? '' : '</span><span> ~ </span><span class="relative-author-to-date">' + lastQuery.toDate + '</span>') +
-                '<span class="relative-author-from-date">' + lastQuery.fromDate + '</span>' + (lastQuery.fromDate == '' && lastQuery.toDate == '' ? '' : '</span><span> ~ </span><span class="relative-author-to-date">' + lastQuery.toDate + '</span>') +
+                '<span class="relative-author-from-date">' + lastQuery.fromDate + '</span>' + (lastQuery.fromDate == '' && lastQuery.toDate == '' ? '' : '</span><span> ~ </span><span class="relative-author-to-date">' + lastQuery.toDate + '(' + lastQuery.dateOption+ ')' + '</span>') +
                 '</div>' +
                 '<div><div style="overflow:auto; height: 300px;">' +
                 '<table class="table table-hover table-fixed table-bordered table-striped table-condensed" style="font-size: 11px; margin-bottom: 0;">' +
@@ -1429,7 +1440,7 @@
              callAjaxLoop("author"+authorNUM, 8, row, 8, 8, tableData[row].eventNo+">f", "");
              */
             callAjaxLoop("author" + authorNUM, 8, row, 8, 8, tableData[row].eventNo + ">" + "indexB^" + tableData[row].author + " & "
-                    + "indexB^" + tableData[row].referencedAuthor + ">완전일치>" + lastQuery.fromDate + "-" + lastQuery.toDate, "");
+                    + "indexB^" + tableData[row].referencedAuthor + ">완전일치>" + lastQuery.fromDate + "-" + lastQuery.toDate + '>' + lastQuery.dateOption, "");
         });
     }
 

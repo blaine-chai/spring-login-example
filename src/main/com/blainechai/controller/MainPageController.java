@@ -85,15 +85,15 @@ public class MainPageController {
 		File fileInSamePackage = new File(path + "test.txt"); // path 폴더 내의 test.txt 를 가리킨다
 		System.out.println(new File(path).getParentFile().getParentFile().getParent()); //--> 절대 경로가 출력됨
 		*/
-//        String path = MainPageController.class.getResource("").getPath(); // 현재 클래스의 절대 경로를 가져온다.
-//        BufferedReader in = new BufferedReader(new FileReader(new File(path).getParentFile().getParentFile().getParent() + File.separator + "IPandPort.txt"));
+        String path = MainPageController.class.getResource("").getPath(); // 현재 클래스의 절대 경로를 가져온다.
+        BufferedReader in = new BufferedReader(new FileReader(new File(path).getParentFile().getParentFile().getParent() + File.separator + "IPandPort.txt"));
 
-//        ip = in.readLine();
-//        port = Integer.parseInt(in.readLine());
-//        System.out.println(ip + " : " + port);
-//        in.close();
-        ip = "14.52.86.172";
-        port = 3000;
+        ip = in.readLine();
+        port = Integer.parseInt(in.readLine());
+        System.out.println(ip + " : " + port);
+        in.close();
+        //ip = "14.52.86.172";
+        //port = 3000;
     }
 
     @RequestMapping(value = {""})
@@ -370,7 +370,8 @@ public class MainPageController {
     }
 
     @RequestMapping(value = {"/main/statistics/search-total-data"})
-    public ModelAndView getStatisticsTotal(HttpServletRequest request) {
+    public ModelAndView getStatisticsTotal(HttpServletRequest request) 
+    {
         String searchPeriod = request.getParameter("searchPeriod");
 
         ArrayList<String> authorList = new ArrayList<String>();
@@ -413,7 +414,8 @@ public class MainPageController {
 
         if (dayMonth[1].equals("monthly"))
             value = graphDataprocessingByMonthly(startTime, endTime, time, sc.getStatitcs());
-        else value = graphDataprocessingByDaily(startTime, endTime, time, sc.getStatitcs());
+        else 
+        	value = graphDataprocessingByDaily(startTime, endTime, time, sc.getStatitcs());
 
         long total = 0L;
         for (int i = 0; i < value.length; i++) {
@@ -435,80 +437,145 @@ public class MainPageController {
         return modelAndView;
     }
 
-    public int[] graphDataprocessingByMonthly(String startTime, String endTime, String[] time, int[] value) {
-        ArrayList<Integer> valueList = new ArrayList<Integer>();
+    public int[] graphDataprocessingByMonthly(String startTime, String endTime, String[] time, int[] value)
+    {
+    	ArrayList<Integer> valueList = new ArrayList<Integer>();
+    	ArrayList<String> timeList = new ArrayList<String>();
 
-        Calendar s = Calendar.getInstance();        //오늘 날짜를 기준으로..
-        //System.out.println(startTime);
-        //System.out.println(startTime.substring(0, 4) + " : " + startTime.substring(4, 6) + " : " +startTime.substring(6, 8));
-        //System.out.println(Integer.parseInt(startTime.substring(0, 4)));// + " : " + (Integer.parseInt(startTime.substring(4, 6))-1) + " : " + Integer.parseInt(startTime.substring(6, 6)));
+    	Calendar s = Calendar.getInstance ( );		//오늘 날짜를 기준으로..
+    	s.set(Integer.parseInt(startTime.substring(0, 4)), Integer.parseInt(startTime.substring(4, 6))-1, Integer.parseInt(startTime.substring(6, 8)));
+    	Calendar e = Calendar.getInstance ( );		//오늘 날짜를 기준으로..
+    	e.set(Integer.parseInt(endTime.substring(0, 4)), Integer.parseInt(endTime.substring(4, 6))-1, Integer.parseInt(endTime.substring(6, 8)));
 
-        s.set(Integer.parseInt(startTime.substring(0, 4)), Integer.parseInt(startTime.substring(4, 6)) - 1, Integer.parseInt(startTime.substring(6, 8)));
-        Calendar e = Calendar.getInstance();        //오늘 날짜를 기준으로..
-        e.set(Integer.parseInt(endTime.substring(0, 4)), Integer.parseInt(endTime.substring(4, 6)) - 1, Integer.parseInt(endTime.substring(6, 8)));
+    	String timeS = "";
+    	String timeNow = "";
+    	String timeE = e.get(e.YEAR) + String.format("%02d", e.get(e.MONTH)+1);
+    	
+    	for(int i=0; i < value.length; i++) {
+    		timeS = s.get(s.YEAR) +String.format("%02d", s.get(s.MONTH)+1);
+    		timeNow = time[i].substring(0, 6);
+	    	while(timeS.compareTo(timeNow) < 0){
+		    	valueList.add(0);
+		    	timeList.add(timeS);
 
-        for (int i = 0; i < value.length; i++) {
-            int diff = (s.get(s.YEAR) + (String.format("%02d", s.get(s.MONTH) + 1))).compareTo(time[i].substring(0, 6));
-            while (diff < 0) {
-                //System.out.println(i + " :-1: " + (s.get(s.YEAR) +(String.format("%02d", s.get(s.MONTH)+1))));
-                s.add(s.MONTH, 1);
-                diff = (s.get(s.YEAR) + (String.format("%02d", s.get(s.MONTH) + 1))).compareTo(time[i].substring(0, 6));
-                valueList.add(0);
-            }
-            if (diff == 0) {
-                //System.out.println(i + " :0: " + time[i] + " : " + value[i]);
-                valueList.add(value[i]);
-            }
-            if (diff > 0)
-                System.out.println(i + " :1: " + s.get(s.YEAR) + (String.format("%02d", s.get(s.MONTH) + 1)) + " :1: " + time[i]);
-            s.add(s.MONTH, 1);
-        }
+		    	s.add (s.MONTH, 1);
+		    	timeS = s.get(s.YEAR) + String.format("%02d", s.get(s.MONTH)+1);
+	    	}
+	    	if(timeE.compareTo(timeNow) < 0) {
+    	   		System.out.println(i + " :222: timeE = " + timeE + " :1: timeNow = " + timeNow);
+    	   		break;
+	    	}
+	    	if(timeS.compareTo(timeNow) == 0) {
+		    	timeList.add(timeS);
+		    	valueList.add(value[i]);
+	    	}
+	    	s.add (s.MONTH, 1);
+	    }
+    	
+    	timeS = s.get(s.YEAR) + String.format("%02d", s.get(s.MONTH)+1);
+    	 
+    	while(timeS.compareTo(timeE) <= 0) 
+    	{
+	    	valueList.add(0);
+	    	timeList.add(timeS);
 
-        int[] returnValue = new int[valueList.size()];
+        	s.add (s.MONTH, 1);
 
-        for (int i = 0; i < valueList.size(); i++)
-            returnValue[i] = valueList.get(i);
-
-        return returnValue;
+        	timeS = s.get(s.YEAR) + String.format("%02d", s.get(s.MONTH)+1);
+    	}
+    	String startDate = timeList.get(0);
+    	String centerDate = startDate;
+    	String endDate = startDate;
+    	if(timeList.size() == 2) {
+	    	valueList.add(0);
+	    	timeList.add(timeS);   		
+    	}
+    	if(timeList.size() > 2) {
+    		centerDate = timeList.get((int)(timeList.size()/2)-1);
+    		endDate = timeList.get(timeList.size()-1);
+    	}
+    	System.out.println(" :444:  startDate = " + startDate + " : centerDate = " + centerDate + " : endDate = " + endDate);
+	
+    	int[] returnValue = new int[valueList.size()];
+    	
+    	for(int i=0; i < valueList.size(); i++) {
+    		returnValue[i] = valueList.get(i);
+        	//System.out.println(" :555:  time = " + timeList.get(i) + " :1: value = " + valueList.get(i));
+    	}
+    	    	
+    	return returnValue;
     }
+    
+    public int[] graphDataprocessingByDaily(String startTime, String endTime, String[] time, int[] value)
+    {
+    	ArrayList<Integer> valueList = new ArrayList<Integer>();
+    	ArrayList<String> timeList = new ArrayList<String>();
+   	
+    	Calendar s = Calendar.getInstance ( );		//오늘 날짜를 기준으로
+    	s.set(Integer.parseInt(startTime.substring(0, 4)), Integer.parseInt(startTime.substring(4, 6))-1, Integer.parseInt(startTime.substring(6, 8)));
+    	Calendar e = Calendar.getInstance ( );		//오늘 날짜를 기준으로..
+    	e.set(Integer.parseInt(endTime.substring(0, 4)), Integer.parseInt(endTime.substring(4, 6))-1, Integer.parseInt(endTime.substring(6, 8)));
 
-    public int[] graphDataprocessingByDaily(String startTime, String endTime, String[] time, int[] value) {
-        ArrayList<Integer> valueList = new ArrayList<Integer>();
+    	String timeS = "";
+    	String timeNow = "";
+    	String timeE = e.get(e.YEAR) +(String.format("%02d", e.get(e.MONTH)+1)) + (String.format("%02d", e.get(e.DATE)));
+    	
+    	for(int i=0; i < value.length; i++) {
+    		timeS = s.get(s.YEAR) +(String.format("%02d", s.get(s.MONTH)+1)) + (String.format("%02d", s.get(s.DATE)));
+    		timeNow = time[i].substring(0, 8);
+	    	while(timeS.compareTo(timeNow) < 0){
+		    	valueList.add(0);
+		    	timeList.add(timeS);
 
-        Calendar s = Calendar.getInstance();        //오늘 날짜를 기준으로..
-        //System.out.println(startTime);
-        //System.out.println(startTime.substring(0, 4) + " : " + startTime.substring(4, 6) + " : " +startTime.substring(6, 8));
-        //System.out.println(Integer.parseInt(startTime.substring(0, 4)));// + " : " + (Integer.parseInt(startTime.substring(4, 6))-1) + " : " + Integer.parseInt(startTime.substring(6, 6)));
-
-        s.set(Integer.parseInt(startTime.substring(0, 4)), Integer.parseInt(startTime.substring(4, 6)) - 1, Integer.parseInt(startTime.substring(6, 8)));
-        Calendar e = Calendar.getInstance();        //오늘 날짜를 기준으로..
-        e.set(Integer.parseInt(endTime.substring(0, 4)), Integer.parseInt(endTime.substring(4, 6)) - 1, Integer.parseInt(endTime.substring(6, 8)));
-
-        for (int i = 0; i < value.length; i++) {
-            int diff = (s.get(s.YEAR) + (String.format("%02d", s.get(s.MONTH) + 1)) + (String.format("%02d", s.get(s.DATE)))).compareTo(time[i].substring(0, 8));
-            while (diff < 0) {
-                //System.out.println(i + " :-1: " + (s.get(s.YEAR) +(String.format("%02d", s.get(s.MONTH)+1)) + (String.format("%02d", s.get(s.DATE)))));
-                s.add(s.MONTH, 1);
-                diff = (s.get(s.YEAR) + (String.format("%02d", s.get(s.MONTH) + 1)) + (String.format("%02d", s.get(s.DATE)))).compareTo(time[i].substring(0, 8));
-                valueList.add(0);
-            }
-            if (diff == 0) {
-                //System.out.println(i + " :0: " + time[i] + " : " + value[i]);
-                valueList.add(value[i]);
-            }
-            if (diff > 0)
-                System.out.println(i + " :1: " + (s.get(s.YEAR) + (String.format("%02d", s.get(s.MONTH) + 1)) + (String.format("%02d", s.get(s.DATE)))) + " :1: " + time[i]);
-            s.add(s.DATE, 1);
-
-        }
-
-        int[] returnValue = new int[valueList.size()];
-
-        for (int i = 0; i < valueList.size(); i++)
-            returnValue[i] = valueList.get(i);
-
-        return returnValue;
+		    	s.add ( s.DATE, 1);
+		    	timeS = s.get(s.YEAR) +(String.format("%02d", s.get(s.MONTH)+1)) + (String.format("%02d", s.get(s.DATE)));
+	    	}
+	    	if(timeE.compareTo(timeNow) < 0) {
+    	   		System.out.println(i + " :222: timeE = " + timeE + " :1: timeNow = " + timeNow);
+    	   		break;
+	    	}
+	    	if(timeS.compareTo(timeNow) == 0) {
+		    	//System.out.println(i + " :0: time = " + time[i] + " : value = " + value[i] + " : timeS = " + timeS);
+		    	valueList.add(value[i]);
+		    	timeList.add(timeS);
+	    	}
+	    	s.add (s.DATE, 1);
+	    }
+    	
+    	timeS = s.get(s.YEAR) +(String.format("%02d", s.get(s.MONTH)+1)) + (String.format("%02d", s.get(s.DATE)));
+  	
+    	while(timeS.compareTo(timeE) <= 0) 
+    	{
+    		valueList.add(0);
+	    	timeList.add(timeS);
+	    	
+        	s.add (s.DATE, 1);
+	    	timeS = s.get(s.YEAR) +(String.format("%02d", s.get(s.MONTH)+1)) + (String.format("%02d", s.get(s.DATE)));
+    	}
+    	
+    	String startDate = timeList.get(0);
+    	String centerDate = startDate;
+    	String endDate = startDate;
+    	if(timeList.size() == 2) {
+	    	valueList.add(0);
+	    	timeList.add(timeS);   		
+    	}
+    	if(timeList.size() > 2) {
+    		centerDate = timeList.get((int)(timeList.size()/2)-1);
+    		endDate = timeList.get(timeList.size()-1);
+    	}
+    	System.out.println(" :444:  startDate = " + startDate + " : centerDate = " + centerDate + " : endDate = " + endDate);
+    	
+    	int[] returnValue = new int[valueList.size()];
+    	
+    	for(int i=0; i < valueList.size(); i++) {
+    		returnValue[i] = valueList.get(i);
+        	//System.out.println(" :555:  time = " + timeList.get(i) + " :1: value = " + valueList.get(i));
+    	}
+    	
+    	return returnValue;
     }
+     
 
     @RequestMapping(value = {"/main/statistics/search-author-total-data"})
     public ModelAndView getStatisticsAuthorTotal(HttpServletRequest request) {
@@ -776,7 +843,8 @@ public class MainPageController {
     }
 
     @RequestMapping(value = "/main/searching")
-    public ModelAndView searchItems(HttpServletRequest request) {
+    public ModelAndView searchItems(HttpServletRequest request) 
+    {
         Gson gson = new Gson();
         String id = request.getParameter("id");
         String job = request.getParameter("job");
@@ -1056,7 +1124,12 @@ public class MainPageController {
     public ModelAndView adminBookmarkAdd(HttpServletRequest request) {
         String sessionId = request.getSession().getId();
         String adminId;
-
+        
+        String id = request.getParameter("id");
+        String msg = request.getParameter("msg");
+        msg = wordParse(msg);
+        System.out.println("userBookmarkAdd : id = " + id + " : msg = " + msg);
+        
         String word = request.getParameter("data");
         if (sessionRepository.findByJSessionId(sessionId).size() > 0) {
             adminId = sessionRepository.findByJSessionId(sessionId).get(0).getUserId();
@@ -1072,10 +1145,12 @@ public class MainPageController {
                     for (UserAccount userAccount : allUsers) {
                         commonBookmarkRepository.save(new CommonBookmark(userAccount, tmpAdminBookmark, 0));
                     }
+                    //SocketComm sc = new SocketComm(userId + "@" + id, ip, port, 19, 0, msg);
+                    //sc.runStart();
                 }
             }
         }
-        return new ModelAndView("api").addObject("json", "");
+        return new ModelAndView("api").addObject("json", "");         
     }
 
     @RequestMapping(value = "/main/user-bookmark/delete")
@@ -1104,6 +1179,11 @@ public class MainPageController {
         String sessionId = request.getSession().getId();
         String userId;
 
+        String id = request.getParameter("id");
+        String msg = request.getParameter("msg");
+        msg = wordParse(msg);
+        System.out.println("userBookmarkAdd : id = " + id + " : msg = " + msg);
+
         String word = request.getParameter("data");
         if (sessionRepository.findByJSessionId(sessionId).size() > 0) {
             userId = sessionRepository.findByJSessionId(sessionId).get(0).getUserId();
@@ -1113,8 +1193,9 @@ public class MainPageController {
                 UserBookmark tmpBookmark = userBookmarkRepository.save(new UserBookmark(userHistory));
                 userHistory.setUserBookmark(tmpBookmark);
                 userHistoryRepository.save(userHistory);
+                //SocketComm sc = new SocketComm(userId + "@" + id, ip, port, 19, 0, msg);
+                //sc.runStart();
             }
-
         }
         return new ModelAndView("api").addObject("json", "");
     }
