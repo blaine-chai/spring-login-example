@@ -147,7 +147,8 @@
                         </ul>
                     </div>
                 </div>
-                <div id="total-book-graph-container" class="panel panel-default"style="margin-top: 20px;width: calc(100% - 30px);height: calc(100% - 91px);margin-left: 15px;margin-right: 15px;margin-bottom: 15px;position: relative;">
+                <div id="total-book-graph-container" class="panel panel-default"
+                     style="margin-top: 20px;width: calc(100% - 30px);height: calc(100% - 91px);margin-left: 15px;margin-right: 15px;margin-bottom: 15px;position: relative;">
                 </div>
             </div>
             <div class="panel panel-default"
@@ -175,103 +176,204 @@
                         </ul>
                     </div>
                 </div>
-                <div id="total-author-graph-container" class="panel panel-default"style="margin-top: 20px;width: calc(100% - 30px);height: calc(100% - 91px);margin-left: 15px;margin-right: 15px;margin-bottom: 15px;position: relative;">
+                <div id="total-author-graph-container" class="panel panel-default"
+                     style="margin-top: 20px;width: calc(100% - 30px);height: calc(100% - 91px);margin-left: 15px;margin-right: 15px;margin-bottom: 15px;position: relative;">
                 </div>
             </div>
-            <%--<div class="panel panel-default"--%>
-                 <%--style="position: relative;height: calc(50% - 68px);background: #f8f8f8;margin: 30px;">--%>
-                <%--<div class="panel panel-default"--%>
-                     <%--style="position: relative;height: 50px;margin-bottom: 0;margin-left: 20px;margin-right: 20px;margin-top: 20px;">--%>
-                    <%--<div class="graph-title-text"--%>
-                         <%--style="height: 50px;line-height: 50px;vertical-align: middle;margin-left: 20px;">events--%>
-                    <%--</div>--%>
-                    <%--<div class="btn-group" style="position:absolute;right:10px;bottom:10px;">--%>
-                        <%--<button type="button" class="btn btn-default btn-sm dropdown-toggle total-author-dropdown"--%>
-                                <%--data-toggle="dropdown" aria-haspopup="true"--%>
-                                <%--aria-expanded="false" style="width: 60px">--%>
-                            <%--<span class="search-category-option">월별</span>--%>
-                            <%--<div style="display: inline-block"><span class="caret"></span><span--%>
-                                    <%--class="sr-only"></span>--%>
-                            <%--</div>--%>
-                        <%--</button>--%>
-                        <%--<ul class="dropdown-menu search-category-selector" role="menu"--%>
-                            <%--aria-labelledby="dropdownMenu1">--%>
-                            <%--<li><a role="total-author-dropdown" onclick="getAuthorTotalGraphData(this);return false;"--%>
-                                   <%--period="0" tabindex="-1" href="#">일별</a></li>--%>
-                            <%--<li><a role="total-author-dropdown" onclick="getAuthorTotalGraphData(this);return false;"--%>
-                                   <%--period="1" tabindex="-1" href="#">주별</a></li>--%>
-                            <%--<li><a role="total-author-dropdown" onclick="getAuthorTotalGraphData(this);return false;"--%>
-                                   <%--period="2" tabindex="-1" href="#">월별</a></li>--%>
-                            <%--<li><a role="total-author-dropdown" onclick="getAuthorTotalGraphData(this);return false;"--%>
-                                   <%--period="3" tabindex="-1" href="#">년도별</a></li>--%>
-                        <%--</ul>--%>
-                    <%--</div>--%>
-                <%--</div>--%>
-                <%--<div id="total-author-graph-container" class="panel panel-default"--%>
-                     <%--style="margin-top: 20px;width: calc(100% - 40px);height: calc(100% - 111px);margin-left: 20px;margin-right: 20px;margin-bottom: 20px;position:relative;">--%>
-                <%--</div>--%>
-            <%--</div>--%>
         </div>
-        <div class="col-xs-7" style="height: 100%;padding: 15px;padding-left: 0px;">
+        <div class="col-xs-7" style="height: 100%;padding: 15px;padding-left: 0;">
             <div id="author-component-container" class="panel panel-default"
                  style="float: left; width:100%;height: calc(100% - 30px);position: relative;background: #f8f8f8;">
-                <div style="width: calc(100% - 40px);margin-top: 20px;padding: 20px;margin-left: 20px;margin-bottom: 20px;position: relative;height: 140px;"
+                <div style="width: calc(100% - 40px);padding: 20px;position: relative;height: 180px;margin-bottom: 20px;margin-top: 20px;margin-left: 20px;"
                      class="panel panel-default">
-                    <div id="statistic-author-input-container">
-                        <div class="input-group input-group-sm" style="width: 300px;margin-bottom: 10px;">
-                            <input id="author-search-input" type="text" class="form-control" placeholder="검색어를 입력해주세요."
-                            <%--onkeypress="if(event.keyCode==13) {$('#nickname-search-btn').click(); return false;}">--%>
-                            >
-                            <div class="input-group-btn"><label style="width:55px;" id="author-graph-add-btn"
-                                                                class="btn btn-default">추가</label>
-                                <label style="width:55px;" id="author-graph-new-btn"
-                                       class="btn btn-default btn-primary">신규</label></div>
-                        </div>
-                        <div class="btn-group" style="height: 25px;position: absolute;bottom: 20px;right: 23px;">
-                            <button type="button" class="btn btn-default btn-sm dropdown-toggle author-dropdown"
-                                    data-toggle="dropdown" aria-haspopup="true"
-                                    aria-expanded="false" style="width: 60px">
-                                <span class="search-category-option">월별</span>
-                                <div style="display: inline-block"><span class="caret"></span><span
-                                        class="sr-only"></span>
+                    <div style="max-width: 500px;margin: auto;">
+                        <div id="statistic-author-input-container">
+                            <div class="input-group input-group-sm" style="width:100%;margin-bottom: 10px;">
+                                <div id="search-input-wrapper" class="" style="padding-left: 0;">
+                                    <div class="input-group input-group-sm search-input-group">
+                                        <div class="dropdown input-group-btn">
+                                            <div class="btn-group" style="">
+                                                <button type="button" class="btn btn-default btn-sm dropdown-toggle"
+                                                        data-toggle="dropdown" aria-haspopup="true"
+                                                        aria-expanded="false"
+                                                        style="width: 55px">
+                                                    <span class="search-category-option">내용</span>
+                                                    <div style="display: inline-block"><span class="caret"></span><span
+                                                            class="sr-only"></span>
+                                                    </div>
+                                                </button>
+                                                <ul class="dropdown-menu search-category-selector" role="menu"
+                                                    aria-labelledby="dropdownMenu1">
+                                                    <li role="presentation"><a role="menuitem" tabindex="-1"
+                                                                               href="#">내용</a>
+                                                    </li>
+                                                    <li role="presentation"><a role="menuitem" tabindex="-1"
+                                                                               href="#">저자</a>
+                                                    </li>
+                                                    <li role="presentation"><a role="menuitem" tabindex="-1"
+                                                                               href="#">참조</a>
+                                                    </li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                        <input type="text" class="form-control col-xs-4 search-input"
+                                               placeholder="검색어를 입력해주세요.">
+                                        <div class="dropdown input-group-btn">
+                                            <div class="btn-group">
+                                                <button type="button" class="btn btn-default btn-sm dropdown-toggle"
+                                                        data-toggle="dropdown" aria-haspopup="true"
+                                                        aria-expanded="false"
+                                                        style="width: 55px;"><span
+                                                        class="search-operator-option">SEL</span>
+                                                    <div style="display: inline-block"><span class="caret"></span><span
+                                                            class="sr-only"></span></div>
+                                                </button>
+                                                <ul class="dropdown-menu operator-selector" role="menu"
+                                                    aria-labelledby="dropdownMenu1">
+                                                    <li role="presentation"><a role="menuitem" tabindex="1"
+                                                                               href="#">SEL</a>
+                                                    </li>
+                                                    <li role="presentation"><a role="menuitem" tabindex="2" href="#"
+                                                                               onclick="handleOperatorSelect(this);return false;">AND</a>
+                                                    </li>
+                                                    <li role="presentation">
+                                                        <a role="menuitem" tabindex="3" href="#"
+                                                           onclick="handleOperatorSelect(this);return false;">O R</a>
+                                                    </li>
+                                                </ul>
+                                            </div>
+
+                                        </div>
+                                    </div>
                                 </div>
-                            </button>
-                            <ul class="dropdown-menu search-category-selector" role="menu"
-                                aria-labelledby="dropdownMenu1">
-                                <li><a role="author-dropdown" period="0"
-                                       onclick="getAuthorGraphDataByPeriod(this);return false;" tabindex="-1" href="#">일별</a>
-                                </li>
-                                <li><a role="author-dropdown" period="1"
-                                       onclick="getAuthorGraphDataByPeriod(this);return false;" tabindex="-1" href="#">주별</a>
-                                </li>
-                                <li><a role="author-dropdown" period="2"
-                                       onclick="getAuthorGraphDataByPeriod(this);return false;" tabindex="-1" href="#">월별</a>
-                                </li>
-                                <li><a role="author-dropdown" period="3"
-                                       onclick="getAuthorGraphDataByPeriod(this);return false;" tabindex="-1" href="#">년도별</a>
-                                </li>
-                            </ul>
-                        </div>
-                    </div>
-                    <div class="author-datepicker-container" style="height: 25px;margin-top: 10px;">
-                        <div style="float:left; margin:0 auto;"><span class="glyphicon glyphicon-calendar"
-                                                                      style="left:2px; top:5px; width:20px;"></span>
-                        </div>
-                        <div class="" style="padding: 0;  margin:0 auto;"><input id="datepicker1"
-                                                                                 data-provide="datepicker"
-                                                                                 style="width: 123px; text-align:center; font-size:12px; float:left;">
-                        </div>
-                        <div class="" style="float:left; width: 20px; font-size:11px;text-align: center; padding:0;">~
-                        </div>
-                        <div class="" style="padding:0;  margin:0 auto;"><input id="datepicker2"
-                                                                                data-provide="datepicker"
-                                                                                style="width: 123px; text-align:center; font-size:12px; float:left;">
+                                <div id="search-input-wrapper2" class="" style="padding-right:0;">
+                                    <div class="input-group input-group-sm search-input-group  ">
+                                        <div class="dropdown input-group-btn">
+                                            <div class="btn-group" style="">
+                                                <button type="button" class="btn btn-default btn-sm dropdown-toggle"
+                                                        data-toggle="dropdown" aria-haspopup="true"
+                                                        aria-expanded="false"
+                                                        style="width: 55px;">
+                                                    <span class="search-category-option">내용</span>
+                                                    <div style="display: inline-block"><span class="caret"></span><span
+                                                            class="sr-only"></span>
+                                                    </div>
+                                                </button>
+                                                <ul class="dropdown-menu search-category-selector" role="menu"
+                                                    aria-labelledby="dropdownMenu1">
+                                                    <li role="presentation"><a role="menuitem" tabindex="-1"
+                                                                               href="#">내용</a>
+                                                    </li>
+                                                    <li role="presentation"><a role="menuitem" tabindex="-1"
+                                                                               href="#">저자</a>
+                                                    </li>
+                                                    <li role="presentation"><a role="menuitem" tabindex="-1"
+                                                                               href="#">참조</a>
+                                                    </li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                        <input type="text" class="form-control col-xs-4 search-input"
+                                               placeholder="검색어를 입력해주세요.">
+                                        <div class="dropdown input-group-btn">
+                                            <div class="btn-group">
+                                                <button type="button" class="btn btn-default btn-sm dropdown-toggle"
+                                                        data-toggle="dropdown" aria-haspopup="true"
+                                                        aria-expanded="false"
+                                                        style="width: 55px;"><span
+                                                        class="search-operator-option">SEL</span>
+                                                    <div style="display: inline-block"><span class="caret"></span><span
+                                                            class="sr-only"></span></div>
+                                                </button>
+                                                <ul class="dropdown-menu operator-selector" role="menu"
+                                                    aria-labelledby="dropdownMenu1">
+                                                    <li role="presentation"><a role="menuitem" tabindex="1"
+                                                                               href="#">SEL</a>
+                                                    </li>
+                                                    <li role="presentation"><a role="menuitem" tabindex="2" href="#"
+                                                                               onclick="handleOperatorSelect(this);return false;">AND</a>
+                                                    </li>
+                                                    <li role="presentation">
+                                                        <a role="menuitem" tabindex="3" href="#"
+                                                           onclick="handleOperatorSelect(this);return false;">O R</a>
+                                                    </li>
+                                                </ul>
+                                            </div>
+
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div>
+                                <div class="author-datepicker-container"
+                                     style="height: 30px;margin-top: 10px;width: 100%">
+                                    <div style="position: relative;height: 30px;text-align: center;margin: 0 auto;width: 356px;">
+                                        <div class="btn-group"
+                                             style="height: 25px;height: 25px;float: left;margin: auto;margin-right: 15px;">
+                                            <button type="button"
+                                                    class="btn btn-default btn-sm dropdown-toggle author-dropdown"
+                                                    data-toggle="dropdown" aria-haspopup="true"
+                                                    aria-expanded="false" style="width: 90px">
+                                                <span class="search-category-option">월별</span>
+                                                <div style="display: inline-block"><span class="caret"></span><span
+                                                        class="sr-only"></span>
+                                                </div>
+                                            </button>
+                                            <ul class="dropdown-menu search-category-selector" role="menu"
+                                                aria-labelledby="dropdownMenu1">
+                                                <li><a role="author-dropdown" period="0"
+                                                       onclick="getAuthorGraphDataByPeriod(this);return false;"
+                                                       tabindex="-1"
+                                                       href="#">MSG 일별</a>
+                                                </li>
+                                                <li><a role="author-dropdown" period="1"
+                                                       onclick="getAuthorGraphDataByPeriod(this);return false;"
+                                                       tabindex="-1"
+                                                       href="#">MSG 월별</a>
+                                                </li>
+                                                <li><a role="author-dropdown" period="2"
+                                                       onclick="getAuthorGraphDataByPeriod(this);return false;"
+                                                       tabindex="-1"
+                                                       href="#">DB 일별</a>
+                                                </li>
+                                                <li><a role="author-dropdown" period="3"
+                                                       onclick="getAuthorGraphDataByPeriod(this);return false;"
+                                                       tabindex="-1"
+                                                       href="#">DB 월별</a>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                        <div style="float: left;width: 250px;text-align: center;display: inline-block;margin: auto;margin-top: 3px;">
+                                            <div class="" style="padding: 0; margin:0 auto; float: left;"><input
+                                                    id="datepicker1"
+                                                    data-provide="datepicker"
+                                                    style="width: 113px; text-align:center; font-size:12px; float:left;">
+                                            </div>
+                                            <div style="float:left; width: 20px; font-size:11px;text-align: center; padding:0;vertical-align: middle;line-height: 23px;">
+                                                ~
+                                            </div>
+                                            <div style="padding:0;margin:0 auto;float: left;"><input id="datepicker2"
+                                                                                                     data-provide="datepicker"
+                                                                                                     style="width: 113px; text-align:center; font-size:12px; float:left;">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div style="margin-top: 10px;width: 100%;text-align: center;">
+                                <div class="btn-group" style="width:200px;margin:0 auto;">
+                                    <label style="width: 50%;max-width: 100px;" id="author-graph-add-btn"
+                                           class="btn btn-default btn-sm">추가</label>
+                                    <label style="width: 50%;max-width: 100px;" id="author-graph-new-btn"
+                                           class="btn btn-default btn-primary btn-sm">신규</label>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
 
                 <div id="author-graph-container" class="panel panel-default"
-                     style="margin-top: 10px;height: calc(100% - 210px);float: left;width: calc(100% - 40px);background: #fff;margin-left: 20px;margin-right: 20px; position:relative;">
+                     style="margin-top: 10px;height: calc(100% - 245px);float: left;width: calc(100% - 40px);background: #fff;margin-left: 20px;margin-right: 20px; position:relative;">
 
                     <%--<div id="author-graph-container" class="col-md-6" style="margin-top: 15px; height: 100%;">--%>
                 </div>
@@ -296,14 +398,14 @@
 
 
     $(document).ready(function () {
-        authorTotalGraph = GraphModule.graph();
-        totalGraph = GraphModule.graph();
+        authorTotalGraph = GraphModule.graph({graphOverall: false});
+        totalGraph = GraphModule.graph({graphOverall: false});
         getSearchTotalData($('.search-category-option').eq(0).text());
         getAuthorTotalGraphData($('.search-category-option').eq(1).text());
 
-        $('.graph-overall').draggable({
-            containment: '#author-graph-container'
-        });
+//        $('.graph-overall').draggable({
+//            containment: '#author-graph-container'
+//        });
 
         $(window).resize(function () {
             $('#content').height($(window).height() - 197);
@@ -337,7 +439,7 @@
         });
         fetch_unix_timestamp = function () {     	//return parseInt(new Date().getTime().toString().substring(0, 10));
             return Math.floor(new Date().getTime() / 1000);
-        }
+        };
 
         var timestamp = fetch_unix_timestamp();
         console.log(timestamp);
@@ -371,6 +473,14 @@
         $('#datepicker2').datetimepicker({
             format: 'Y/m/d',
             value: new Date()
+        });
+
+        $('label[name=dateOption]').click(function () {
+            if ($(this).text() == 'MSG') {
+                $(this).text('DB');
+            } else {
+                $(this).text('MSG');
+            }
         });
     });
 
@@ -415,7 +525,7 @@
         }
         if (beGood) {
             alert("중복괸 검색입니다!!!");
-            rerturn;
+            return;
         }
         authorList.push($('#author-search-input').val());
 //        console.error(authorGraph.getOption().timePeriod);
@@ -465,16 +575,15 @@
             }
         })
     });
-    
-    var getSearchTotalData = (function (category) 
-    {
-    	totalGraph.removeNameList();
-    	totalGraph.removeData();
-    	totalGraph.removeSvg();
+
+    var getSearchTotalData = (function (category) {
+        totalGraph.removeNameList();
+        totalGraph.removeData();
+        totalGraph.removeSvg();
 
         if (category == '일별') category = 'MSG_' + 'daily';
         else                  category = 'MSG_' + 'monthly';
-    	console.log(category);
+        console.log(category);
 
         $.ajax({
             url: "/main/statistics/search-total-data",
@@ -485,7 +594,7 @@
             success: function (responseData) {
                 var resultData = JSON.parse(responseData);
 //                console.error(resultData);
-                totalGraph = GraphModule.graph();
+                totalGraph = GraphModule.graph({graphOverall: false});
                 totalGraph.setGraphContainer('#total-book-graph-container');
 //                totalGraph.addData(responseData);
 
@@ -495,18 +604,17 @@
             }
         });
     });
-    
 
-    var getAuthorTotalGraphData = (function (category) 
-    {
-		authorTotalGraph.removeNameList();
-		authorTotalGraph.removeData();
-		authorTotalGraph.removeSvg();
-		
-		if (category == '일별') category = 'DB_' + 'daily';
-		else                  category = 'DB_' + 'monthly';
 
-		console.log(category);
+    var getAuthorTotalGraphData = (function (category) {
+        authorTotalGraph.removeNameList();
+        authorTotalGraph.removeData();
+        authorTotalGraph.removeSvg();
+
+        if (category == '일별') category = 'DB_' + 'daily';
+        else                  category = 'DB_' + 'monthly';
+
+        console.log(category);
         $.ajax({
             url: "/main/statistics/search-total-data",
             type: "post",
@@ -518,7 +626,7 @@
 
                 var resultData = JSON.parse(responseData);
 //                console.error(resultData);
-                authorTotalGraph = GraphModule.graph();
+                authorTotalGraph = GraphModule.graph({graphOverall: false});
                 authorTotalGraph.setGraphContainer('#total-author-graph-container');
                 authorTotalGraph.addNameList('total');
                 authorTotalGraph.setData(resultData);

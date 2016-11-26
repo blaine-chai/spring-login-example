@@ -96,19 +96,22 @@
                     </div>
                 </div>
                 <div>
-                    <div style="margin-top: 10px;height:25px;">
-                        <div style="float:left; margin:0 auto;"><span class="glyphicon glyphicon-calendar"
-                                                                      style="left:2px; top:5px; width:20px;"></span>
+                    <div class="author-datepicker-container" style="height: 25px;margin-top: 10px;">
+                        <div id="search-date-option-container" class="btn-group btn-group-justified">
+                            <label class="btn btn-default btn-sm" name="dateOption" style="padding: 4px;">MSG</label>
                         </div>
-                        <div class="" style="padding: 0;  margin:0 auto;"><input id="datepicker1"
-                                                                                 data-provide="datepicker"
-                                                                                 style="width: 123px; text-align:center; font-size:12px; float:left;">
-                        </div>
-                        <div class="" style="float:left; width: 20px; fontsize:11px;text-align: center; padding:0;">~
-                        </div>
-                        <div class="" style="padding:0;  margin:0 auto;"><input id="datepicker2"
-                                                                                data-provide="datepicker"
-                                                                                style="width: 123px; text-align:center; font-size:12px; float:left;">
+                        <div style="float: left;margin-top: 3px;">
+                            <div class="" style="padding: 0; margin:0 auto; float: left;"><input id="datepicker1"
+                                                                                                 data-provide="datepicker"
+                                                                                                 style="width: 113px; text-align:center; font-size:12px; float:left;">
+                            </div>
+                            <div style="float:left; width: 20px; font-size:11px;text-align: center; padding:0;vertical-align: middle;line-height: 23px;">
+                                ~
+                            </div>
+                            <div style="padding:0;margin:0 auto;float: left;"><input id="datepicker2"
+                                                                                     data-provide="datepicker"
+                                                                                     style="width: 113px; text-align:center; font-size:12px; float:left;">
+                            </div>
                         </div>
                     </div>
                     <div class="input-group input-group-sm" style="width: 100%; margin-top:10px;">
@@ -314,7 +317,13 @@
 //                });
 //            });
 //            setNicknameModifyHandler();
-
+        $('label[name=dateOption]').click(function () {
+            if ($(this).text() == 'MSG') {
+                $(this).text('DB');
+            } else {
+                $(this).text('MSG');
+            }
+        });
 
         $('#nickname-search-btn').click(function (e) {
             $('#nickname-result-table>tbody').children().remove();

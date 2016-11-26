@@ -17,7 +17,8 @@ var GraphModule = (function () {
             nameList: [],
             interpolation: "monotone",
             colorSet: [],
-            totalData: []
+            totalData: [],
+            graphOverall: true
         };
 
         var option = $.extend(defaults, opt);
@@ -203,12 +204,14 @@ var GraphModule = (function () {
             setXAxis();
             setYAxis();
             drawGraph();
-            graphContainer.find('.graph-overall-container').remove();
-            var graphOverall = $('<div class="panel panel-default graph-overall-container" style="position: absolute;width: 130px;top: 15px;left:75px;padding: 5px;margin-bottom: 0;">' +
-                '<div class="panel panel-default graph-overall" style="padding: 5px;margin-bottom: 0;"></div></div>');
-            graphOverall.draggable({containment: option.containerSelector});
-            graphContainer.append(graphOverall);
-            setGraphOverall();
+            if (option.graphOverall) {
+                graphContainer.find('.graph-overall-container').remove();
+                var graphOverall = $('<div class="panel panel-default graph-overall-container" style="position: absolute;width: 130px;top: 15px;left:75px;padding: 5px;margin-bottom: 0;">' +
+                    '<div class="panel panel-default graph-overall" style="padding: 5px;margin-bottom: 0;"></div></div>');
+                graphOverall.draggable({containment: option.containerSelector});
+                graphContainer.append(graphOverall);
+                setGraphOverall();
+            }
         };
 
         //Draw Circle
@@ -255,14 +258,16 @@ var GraphModule = (function () {
         });
 
         var setGraphOverall = function (boolean) {
-            var graphOverall = graphContainer.find('.graph-overall');
-            graphOverall.children().remove();
-            $.each(option.nameList, function (i, name) {
-                var tmp = $('<div style="font-size: 11px;margin-left: 5px;"></div>');
-                tmp.append(name + '<span style="position: absolute;right: 15px;"><b>────</b></span>');
-                tmp.find('span').css('color', option.colorSet[i]);
-                graphOverall.append(tmp);
-            });
+            if (option.graphOverall) {
+                var graphOverall = graphContainer.find('.graph-overall');
+                graphOverall.children().remove();
+                $.each(option.nameList, function (i, name) {
+                    var tmp = $('<div style="font-size: 11px;margin-left: 5px;"></div>');
+                    tmp.append(name + '<span style="position: absolute;right: 15px;"><b>────</b></span>');
+                    tmp.find('span').css('color', option.colorSet[i]);
+                    graphOverall.append(tmp);
+                });
+            }
         };
 
 
@@ -369,7 +374,9 @@ var GraphModule = (function () {
                     setXAxis();
                     setYAxis();
                     drawGraph();
-                    setGraphOverall();
+                    if (option.graphOverall) {
+                        setGraphOverall();
+                    }
                 }
             },
             getNameList: function () {
