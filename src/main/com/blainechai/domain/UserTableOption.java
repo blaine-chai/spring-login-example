@@ -169,7 +169,7 @@ public class UserTableOption implements Serializable {
         this.col12 = col12;
     }
 
-    public void setColSizes(int[] colSizes){
+    public void setColSizes(int[] colSizes) {
         this.col1 = colSizes[0];
         this.col2 = colSizes[1];
         this.col3 = colSizes[2];
@@ -184,23 +184,23 @@ public class UserTableOption implements Serializable {
         this.col12 = colSizes[11];
     }
 
-    public void setColSizes(List colSizes){
-        this.col1 = Integer.parseInt(colSizes.get(0).toString());
-        this.col2 = Integer.parseInt(colSizes.get(1).toString());;
-        this.col3 = Integer.parseInt(colSizes.get(2).toString());;
-        this.col4 = Integer.parseInt(colSizes.get(3).toString());;
-        this.col5 = Integer.parseInt(colSizes.get(4).toString());;
-        this.col6 = Integer.parseInt(colSizes.get(5).toString());;
-        this.col7 = Integer.parseInt(colSizes.get(6).toString());;
-        this.col8 = Integer.parseInt(colSizes.get(7).toString());;
-        this.col9 = Integer.parseInt(colSizes.get(8).toString());;
-        this.col10 = Integer.parseInt(colSizes.get(9).toString());;
-        this.col11 = Integer.parseInt(colSizes.get(10).toString());;
-        this.col12 = Integer.parseInt(colSizes.get(11).toString());;
+    public void setColSizes(List colSizes) {
+        this.col1 = (int) Float.parseFloat(colSizes.get(0).toString());
+        this.col2 = (int) Float.parseFloat(colSizes.get(1).toString());
+        this.col3 = (int) Float.parseFloat(colSizes.get(2).toString());
+        this.col4 = (int) Float.parseFloat(colSizes.get(3).toString());
+        this.col5 = (int) Float.parseFloat(colSizes.get(4).toString());
+        this.col6 = (int) Float.parseFloat(colSizes.get(5).toString());
+        this.col7 = (int) Float.parseFloat(colSizes.get(6).toString());
+        this.col8 = (int) Float.parseFloat(colSizes.get(7).toString());
+        this.col9 = (int) Float.parseFloat(colSizes.get(8).toString());
+        this.col10 = (int) Float.parseFloat(colSizes.get(9).toString());
+        this.col11 = (int) Float.parseFloat(colSizes.get(10).toString());
+        this.col12 = (int) Float.parseFloat(colSizes.get(11).toString());
     }
 
-    public String getColSizes(){
-        return "["+col1+", "+col2+", "+col3+", "+col4+", "+col5+", "+col6+", "+col7+", "+col8+", "+col9+", "+col10+", "+col11+", "+col12+"]";
+    public String getColSizes() {
+        return "[" + col1 + ", " + col2 + ", " + col3 + ", " + col4 + ", " + col5 + ", " + col6 + ", " + col7 + ", " + col8 + ", " + col9 + ", " + col10 + ", " + col11 + ", " + col12 + "]";
     }
 
     //    @Override
