@@ -207,7 +207,7 @@ public class SocketComm
 		try
 		{
 			System.out.println("\tmsg : " + msg);
-			int k = 3;
+			int k = 4;
 			dos.writeInt(k);
 
 			String[] sss = msg.split(">");
@@ -286,7 +286,7 @@ public class SocketComm
 		String[] s = msg.split(">");
 
 		s[3] = getPeriod(s[3]);
-		msg = s[0] + ">" + s[1] + ">" + s[2] + ">" + s[3];
+		msg = s[0] + ">" + s[1] + ">" + s[2] + ">" + s[3] + ">" + s[4];
 		System.out.println("msg = " + msg);
 
 		dos.writeUTF(msg);
@@ -433,6 +433,19 @@ public class SocketComm
 
 		System.out.println("SocketComm.java : reqStat2Read : " + cnt);
 	}
+	public void reqNotice() throws IOException
+	{
+		System.out.println("msg = " + msg);
+		String[] s = msg.split(">");
+
+		System.out.println("s[0] = " + s[0]);
+		System.out.println("s[1] = " + s[1]);
+
+		dos.writeUTF(s[0]);
+		dos.writeUTF(s[1]);
+		//dos.writeUTF(s[1]);
+		good = 0;
+	}
 
 	public void runStart()
 	{
@@ -527,6 +540,11 @@ public class SocketComm
 				dos.writeBoolean(false);
 				dos.writeUTF("STAT1");
 				reqStat1();
+			}
+			else  if (sel == 19) {			// checkR
+				dos.writeBoolean(false);
+				dos.writeUTF("NOTICE");
+				reqNotice();
 			}
 
 			if (good >= 0)

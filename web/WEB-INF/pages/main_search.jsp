@@ -138,22 +138,22 @@
                         </div>
                     </div>
                 </div>
-                <div style="margin-top: 10px">
-
-                    <div id="search-date-option-container" class="btn-group btn-group-justified" data-toggle="buttons">
-                        <label class="btn btn-default btn-sm active"><input type="radio" name="dateOption"
-                                                                            autocomplete="off" value="MSG" checked>발행일자</label>
-                        <label class="btn btn-default btn-sm"><input type="radio" name="dateOption"
-                                                                     autocomplete="off" value="DB">저장일자</label>
+                <div style="margin-top: 10px;height: 30px;">
+                    <div id="search-date-option-container" class="btn-group btn-group-justified">
+                        <label class="btn btn-default btn-sm" name="dateOption" style="padding: 4px;">MSG</label>
                     </div>
-                    <div style="float:left; margin:0 auto;"><span class="glyphicon glyphicon-calendar"
-                                                                  style="left:2px; top:5px; width:20px;"></span></div>
-                    <div class="" style="padding: 0;  margin:0 auto;"><input id="datepicker1" data-provide="datepicker"
-                                                                             style="width: 123px; text-align:center; font-size:12px; float:left;">
-                    </div>
-                    <div class="" style="float:left; width: 20px; font-size:11px;text-align: center; padding:0;">~</div>
-                    <div class="" style="padding:0;  margin:0 auto;"><input id="datepicker2" data-provide="datepicker"
-                                                                            style="width: 123px; text-align:center; font-size:12px; float:left;">
+                    <div style="float: left;margin-top: 3px;">
+                        <div class="" style="padding: 0; margin:0 auto; float: left;"><input id="datepicker1"
+                                                                                             data-provide="datepicker"
+                                                                                             style="width: 113px; text-align:center; font-size:12px; float:left;">
+                        </div>
+                        <div style="float:left; width: 20px; font-size:11px;text-align: center; padding:0;vertical-align: middle;line-height: 23px;">
+                            ~
+                        </div>
+                        <div style="padding:0;margin:0 auto;float: left;"><input id="datepicker2"
+                                                                                 data-provide="datepicker"
+                                                                                 style="width: 113px; text-align:center; font-size:12px; float:left;">
+                        </div>
                     </div>
                 </div>
 
@@ -179,7 +179,8 @@
                         <label class="btn btn-default btn-sm expand-btn btn-primary"
                                style="width: 29px; margin:0;">+</label>
                         <label class="btn btn-default btn-sm" style="width:calc(100% - 29px); margin:0;"
-                               onclick="$(this).parent().find('.expand-btn').click();return false;">Admin History</label>
+                               onclick="$(this).parent().find('.expand-btn').click();return false;">Admin
+                            History</label>
                         <div id="admin-history" class="panel history"
                              style="overflow: auto; max-height:300px; margin-left: 2px; margin-right: 2px; display: none;">
                             <table style="font-size:11px;max-height: 300px; overflow: auto;word-break: break-all;"
@@ -425,6 +426,14 @@
         $('.search-btn').click(function () {
             searchBTNclick();
         });
+
+        $('label[name=dateOption]').click(function () {
+            if ($(this).text() == 'MSG') {
+                $(this).text('DB');
+            } else {
+                $(this).text('MSG');
+            }
+        })
 
     });
 
@@ -933,7 +942,7 @@
         data.typeInfo = typeInfo;
         data.fromDate = $('#datepicker1').val();
         data.toDate = $('#datepicker2').val();
-        data.dateOption = $('input[name=dateOption]:checked').val();
+        data.dateOption = $('label[name=dateOption]').text();
         if ((data.fromDate != "") && (data.toDate != "")) {
             if (data.fromDate > data.toDate) {
                 isOK = false;
@@ -951,7 +960,7 @@
 
         if (!isOK) SearchWord = "";
 ///
-		return JSON.stringify(data);
+        return JSON.stringify(data);
     }
 
     function setQuery(responseData, page) {
@@ -975,19 +984,19 @@
             html += '<td class="group-td">' + tdata.groupName + '</td>';
             html += '<td>' + tdata.publishedDate + '</td>';
             html += '<td>' + tdata.savedDate + '</td>';
-			/*
-            html += '<td class="author-td author' + i + '" title="' + tdata.author + '" href="#">' + tdata.author +
-                    '<span>' + (authorNic != "" ? '(' + authorNic + ')' : '') + '</span>' + '</td>';
-            //html += '<td class="relation-td">' + tdata.referencedAuthor + '</td>';
-            html += '<td class="relation-td relation' + i + '" title="' + tdata.referencedAuthor + '" href="#">' + tdata.referencedAuthor
-                    + '<span>' + (refAuthorNic != "" ? '(' + refAuthorNic + ')' : '') + '</span>' + '</td>';
-            */
+            /*
              html += '<td class="author-td author' + i + '" title="' + tdata.author + '" href="#">' + tdata.author +
-             '<span>' + (tdata.authNickname != undefined ? '(' + tdata.authNickname + ')' : '') + '</span>' + '</td>';
+             '<span>' + (authorNic != "" ? '(' + authorNic + ')' : '') + '</span>' + '</td>';
              //html += '<td class="relation-td">' + tdata.referencedAuthor + '</td>';
              html += '<td class="relation-td relation' + i + '" title="' + tdata.referencedAuthor + '" href="#">' + tdata.referencedAuthor
-             + '<span>' + (tdata.refNickname != undefined ? '(' + tdata.refNickname + ')' : '') + '</span>' + '</td>';
-             
+             + '<span>' + (refAuthorNic != "" ? '(' + refAuthorNic + ')' : '') + '</span>' + '</td>';
+             */
+            html += '<td class="author-td author' + i + '" title="' + tdata.author + '" href="#">' + tdata.author +
+                    '<span>' + (tdata.authNickname != undefined ? '(' + tdata.authNickname + ')' : '') + '</span>' + '</td>';
+            //html += '<td class="relation-td">' + tdata.referencedAuthor + '</td>';
+            html += '<td class="relation-td relation' + i + '" title="' + tdata.referencedAuthor + '" href="#">' + tdata.referencedAuthor
+                    + '<span>' + (tdata.refNickname != undefined ? '(' + tdata.refNickname + ')' : '') + '</span>' + '</td>';
+
             if (tdata.r == 't') {
                 tdata.r = '<span class="glyphicon glyphicon-ok"></span>';
             } else {
@@ -1109,14 +1118,14 @@
                             }
                         });
                     } else {
-                    	noticeNo++;                 
+                        noticeNo++;
                         $.ajax({
                             url: '/main/user-bookmark/add',
                             type: 'post',
                             data: {
-                            	'id' : 'notice' + noticeNo,
-                            	'msg' : dataParsing(word),
-                            	'data': word
+                                'id': 'notice' + noticeNo,
+                                'msg': dataParsing(word),
+                                'data': word
                             },
                             contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
                             success: function (responseData) {
@@ -1128,7 +1137,7 @@
             }
         });
     }
-    
+
     function changeHistory(source) {
         var tdata = JSON.parse(source);
 
@@ -1229,14 +1238,14 @@
                             }
                         });
                     } else {
-                    	noticeNo++;
+                        noticeNo++;
                         $.ajax({
                             url: '/main/admin-bookmark/add',
                             type: 'post',
                             data: {
-                            	'id' : 'notice' + noticeNo,
-                            	'msg' : dataParsing(word),
-                            	'data': word
+                                'id': 'notice' + noticeNo,
+                                'msg': dataParsing(word),
+                                'data': word
                             },
                             contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
                             success: function (responseData) {
@@ -1254,7 +1263,7 @@
         lastQuery = tdata;
 
         var data = tdata.data;
-        
+
         var str = "";
 
         for (var i = 0; i < data.length; i++) {
@@ -1269,7 +1278,7 @@
         }
         str += ">" + tdata.typeInfo;
         str += ">" + tdata.fromDate + "-" + tdata.toDate;
-       	str += ">" + tdata.dateOption;
+        str += ">" + tdata.dateOption;
 
         return str;
     }
@@ -1288,11 +1297,11 @@
         });
     }
 
-    function getAdminHistory(json) {
-    }
-    
-    function deleteAdminHistory(element, id) {
-    }
+//    function getAdminHistory(json) {
+//    }
+//
+//    function deleteAdminHistory(element, id) {
+//    }
 
     function addSearchInfo(a) {
         $('.search-input-group').remove();
@@ -1304,11 +1313,12 @@
             $('#option3').parent().click();
         }
 
-        if (a.dateOption == 'MSG') {
-            $('input[name=dateOption][value="MSG"]').click();
-        } else {
-            $('input[name=dateOption][value="DB"]').click();
-        }
+        $('label[name=dateOption]').text(a.dateOption);
+//        if (a.dateOption == 'MSG') {
+//            $('input[name=dateOption][value="MSG"]').click();
+//        } else {
+//            $('input[name=dateOption][value="DB"]').click();
+//        }
 
         $.each(a.data, function (i) {
             var newDiv = $('<div class="input-group input-group-sm search-input-group"><div class="dropdown input-group-btn"><div class="btn-group"><button type="button" class="btn btn-default btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="width: 72px"><span class="search-category-option">내용</span><div style="display: inline-block"><span class="caret"></span><span class="sr-only"></span></div></button><ul class="dropdown-menu search-category-selector" role="menu" aria-labelledby="dropdownMenu1"><li role="presentation"><a role="menuitem" tabindex="-1" href="#">내용</a></li><li role="presentation"><a role="menuitem" tabindex="-1" href="#">저자</a></li><li role="presentation"><a role="menuitem" tabindex="-1" href="#">참조</a></li></ul></div></div><input type="text" class="form-control col-xs-4 search-input" onkeypress="onkeypressClick()" placeholder="검색어를 입력해주세요."><div class="dropdown input-group-btn"><div class="btn-group"><button type="button" class="btn btn-default btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="width: 55px"><span class="search-operator-option">SEL</span>\n<div style="display: inline-block"><span class="caret"></span><span class="sr-only"></span></div></button><ul id="operator-selector" class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu1"><li role="presentation"><a role="menuitem" tabindex="1" href="#">SEL</a></li><li role="presentation"><a role="menuitem" tabindex="2" href="#" onclick="handleOperatorSelect(this);return false;">AND</a></li><li role="presentation"><a role="menuitem" tabindex="3" href="#" onclick="handleOperatorSelect(this);return false;">O R</a></li></ul></div><label class="btn btn-default btn-sm close-search-option-btn">-</label></div></div>');
@@ -1344,7 +1354,7 @@
                 //' <div id="checkR-result-number">검색결과 : 00000000</div>' +
                 '<div style="font-size: 11px;position: relative;left: 450px;">' +
                 //'<span class="relative-author-from-date">' + lastQuery.fromDate + '</span>' + (lastQuery.fromDate == '' && lastQuery.toDate == '' ? '' : '</span><span> ~ </span><span class="relative-author-to-date">' + lastQuery.toDate + '</span>') +
-                '<span class="relative-author-from-date">' + lastQuery.fromDate + '</span>' + (lastQuery.fromDate == '' && lastQuery.toDate == '' ? '' : '</span><span> ~ </span><span class="relative-author-to-date">' + lastQuery.toDate + '(' + lastQuery.dateOption+ ')' + '</span>') +
+                '<span class="relative-author-from-date">' + lastQuery.fromDate + '</span>' + (lastQuery.fromDate == '' && lastQuery.toDate == '' ? '' : '</span><span> ~ </span><span class="relative-author-to-date">' + lastQuery.toDate + '(' + lastQuery.dateOption + ')' + '</span>') +
                 '</div>' +
                 '<div><div style="overflow:auto; height: 300px;">' +
                 '<table class="table table-hover table-fixed table-bordered table-striped table-condensed" style="font-size: 11px; margin-bottom: 0;">' +
@@ -1486,9 +1496,8 @@
     }
 
 
-    function addAuthorClickListener(i, tdata) 
-    {
-    	var content = $('<div class="popover-content-wrapper' + i + '" style="display: none;">' +
+    function addAuthorClickListener(i, tdata) {
+        var content = $('<div class="popover-content-wrapper' + i + '" style="display: none;">' +
                 '<div class="input-group input-group-sm" style=" width:100%">' +
                 '<span class="input-group-addon" style="width: 70px">저자</span>' +
                 '<input type="text" class="form-control popover-input-author" disabled>' +
@@ -1544,8 +1553,8 @@
                     $(this).toggleClass('btn-primary').text('저장');
                 } else {
                     if ($('.btn-identity-check').attr('disabled') != undefined) {
-                    	var nicname = $('.popover-input-nickname').val();
-                    	var author = $('.popover-input-author').val();
+                        var nicname = $('.popover-input-nickname').val();
+                        var author = $('.popover-input-author').val();
                         $.ajax({
                             url: "/main/nickname/update",
                             type: "post",
@@ -1559,32 +1568,31 @@
                             success: function (responseData) {
                                 if (responseData == 'true') {
 
-                                	for(var k=0; k < $('#book-table tbody').find('tr').length; k++) 
-                                	{
-                                		var nicTmp = $('#book-table tbody').find('tr').eq(k).find('td').eq(5).text();
-                                		var html = '';
-                                		if(nicTmp == author) {
-                                			html = author +'<span>(' + nicname + ')</span>';
-	                                		$('#book-table tbody').find('tr').eq(k).find('td').eq(5).html(html);
-                                		}
-                                		
-                                		nicTmp = $('#book-table tbody').find('tr').eq(k).find('td').eq(6).text();
-                                		html = '';
-                                		if(nicTmp == $('.popover-input-author').val()) {
-                                			html = author +'<span>(' + nicname + ')</span>';
-                                			$('#book-table tbody').find('tr').eq(k).find('td').eq(6).html(html);
-                                		}
-                                			
-                                		//console.log("BBBBBB : " + $('#book-table tbody').find('tr').eq(k).find('td').eq(5).text());
-                                	}
-                                	//highLightResult();
-                              	
-                                	$('.popover .btn-identity-check').attr('disabled', '');
+                                    for (var k = 0; k < $('#book-table tbody').find('tr').length; k++) {
+                                        var nicTmp = $('#book-table tbody').find('tr').eq(k).find('td').eq(5).text();
+                                        var html = '';
+                                        if (nicTmp == author) {
+                                            html = author + '<span>(' + nicname + ')</span>';
+                                            $('#book-table tbody').find('tr').eq(k).find('td').eq(5).html(html);
+                                        }
+
+                                        nicTmp = $('#book-table tbody').find('tr').eq(k).find('td').eq(6).text();
+                                        html = '';
+                                        if (nicTmp == $('.popover-input-author').val()) {
+                                            html = author + '<span>(' + nicname + ')</span>';
+                                            $('#book-table tbody').find('tr').eq(k).find('td').eq(6).html(html);
+                                        }
+
+                                        //console.log("BBBBBB : " + $('#book-table tbody').find('tr').eq(k).find('td').eq(5).text());
+                                    }
+                                    //highLightResult();
+
+                                    $('.popover .btn-identity-check').attr('disabled', '');
                                     $('.popover .btn-modify-nickname').toggleClass('btn-primary').text('편집');
                                     clickedTd.find('span').text('(' + $('.popover-input-nickname').val() + ')');
                                     $('.popover').remove();
                                     $('.popover-input').attr('disabled', '');
-                                } 
+                                }
                                 else {
                                     //when nickname not checked
                                     alert('send error');
@@ -1700,8 +1708,8 @@
                     $('.popover-input').removeAttr('disabled');
                     $(this).toggleClass('btn-primary').text('저장');
                 } else {
-                	var nicname = $('.popover-input-nickname').val();
-                	var author = $('.popover-input-author').val();
+                    var nicname = $('.popover-input-nickname').val();
+                    var author = $('.popover-input-author').val();
                     if ($('.btn-identity-check').attr('disabled') != undefined) {
                         $.ajax({
                             url: "/main/nickname/update",
@@ -1715,25 +1723,24 @@
                             },
                             success: function (responseData) {
                                 if (responseData == 'true') {
-                                	for(var k=0; k < $('#book-table tbody').find('tr').length; k++) 
-                                	{
-                                		var nicTmp = $('#book-table tbody').find('tr').eq(k).find('td').eq(5).text();
-                                		var html = '';
-                                		if(nicTmp == author) {
-                                			html = author +'<span>(' + nicname + ')</span>';
-	                                		$('#book-table tbody').find('tr').eq(k).find('td').eq(5).html(html);
-                                		}
-                                		
-                                		nicTmp = $('#book-table tbody').find('tr').eq(k).find('td').eq(6).text();
-                                		html = '';
-                                		if(nicTmp == $('.popover-input-author').val()) {
-                                			html = author +'<span>(' + nicname + ')</span>';
-                                			$('#book-table tbody').find('tr').eq(k).find('td').eq(6).html(html);
-                                		}                                			
-                                		//console.log("BBBBBB : " + $('#book-table tbody').find('tr').eq(k).find('td').eq(5).text());
-                                	}
-                                	//highLightResult();
-                                	$('.popover .btn-identity-check').attr('disabled', '');
+                                    for (var k = 0; k < $('#book-table tbody').find('tr').length; k++) {
+                                        var nicTmp = $('#book-table tbody').find('tr').eq(k).find('td').eq(5).text();
+                                        var html = '';
+                                        if (nicTmp == author) {
+                                            html = author + '<span>(' + nicname + ')</span>';
+                                            $('#book-table tbody').find('tr').eq(k).find('td').eq(5).html(html);
+                                        }
+
+                                        nicTmp = $('#book-table tbody').find('tr').eq(k).find('td').eq(6).text();
+                                        html = '';
+                                        if (nicTmp == $('.popover-input-author').val()) {
+                                            html = author + '<span>(' + nicname + ')</span>';
+                                            $('#book-table tbody').find('tr').eq(k).find('td').eq(6).html(html);
+                                        }
+                                        //console.log("BBBBBB : " + $('#book-table tbody').find('tr').eq(k).find('td').eq(5).text());
+                                    }
+                                    //highLightResult();
+                                    $('.popover .btn-identity-check').attr('disabled', '');
                                     $('.popover .btn-modify-nickname').toggleClass('btn-primary').text('편집');
                                     clickedTd.find('.nickname-td').text('(' + $('.popover-input-nickname').val() + ')');
                                     $('.popover').remove();
@@ -1869,7 +1876,7 @@
     });
 
     function highLightResult() {
-    	console.log("QQQ : " + lastQuery);
+        console.log("QQQ : " + lastQuery);
         $.each($('.author-td'), function (j, contentTd) {
             var stt = $(contentTd).text();
             for (i = 0; i < lastQuery.data.length; i++) {
