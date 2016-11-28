@@ -16,7 +16,15 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.LinkedHashMap;
@@ -591,68 +599,90 @@ public class MainPageController {
 
         Gson gson = new Gson();
 
+        String id = request.getParameter("id");
+        String sel = request.getParameter("sel");
+        int selInt = Integer.parseInt(sel);
         String authorJson = request.getParameter("authorJson");
-        String author = request.getParameter("author");
-        String authorListTmp = request.getParameter("authorList");
-        String searchPeriod = request.getParameter("searchPeriod");
-
-        ArrayList<String> authorList = (ArrayList<String>) gson.fromJson(authorListTmp, ArrayList.class);
-        System.out.println(authorListTmp);
-        for (int i = 0; i < authorList.size(); i++)
-            System.out.println(i + " : " + authorList.get(i));
+        String keyword = request.getParameter("keyword");
+        System.out.println("keyword : " + keyword);
 
         String userId = "";
         String sessionId = request.getSession().getId();
         if (sessionRepository.findByJSessionId(sessionId).size() > 0) {
             userId = sessionRepository.findByJSessionId(sessionId).get(0).getUserId();
         }
-        int[] value = null;
+        SocketComm sc = null;
+        String send = "";
+        ArrayList<LinkedHashMap<String, String>> resultList = new ArrayList<LinkedHashMap<String, String>>();
 
-        //String msg = "indexA^" + author + ">문자포함>20150101000000-20170531235959>MSG_monthly";
-        String msg = request.getParameter("msg");
-        msg = wordParse(msg);
+        if(selInt <= 1) {
+	        String msg = request.getParameter("msg");
+	        msg = wordParse(msg);
 
-        SocketComm sc = new SocketComm(userId + "@" + "stat2", ip, port, 21, 0, msg);
-        sc.runStart();
+	        sc = new SocketComm(userId + "@" + id, ip, port, 21, 0, msg);
+	        sc.runStart();
 
-        sc = new SocketComm(userId + "@" + "stat2", ip, port, 22, 0);
-        sc.runStart();
-
-        //String send = "";
-
-        while (true) {
-            //send = "OK";
-            if (sc.beGetGood() >= 0) break;
-            try {
-                Thread.sleep(100);
-            } catch (InterruptedException e) {
-            }
-            sc = new SocketComm(userId + "@" + "stat2", ip, port, 22, 0);
-            sc.runStart();
+	        send = "OK";
         }
-        value = sc.getStatitcs();
+        else {
 
-        long total = 0L;
-        for (int i = 0; i < value.length; i++) {
-            total += value[i];
-            System.out.println(i + " : " + value[i]);
+	        sc = new SocketComm(userId + "@" + id, ip, port, 22, 0);
+	        sc.runStart();
+
+	        if (sc.beGetGood() >= 0)
+	        {
+	        	String msg = request.getParameter("msg");
+		        msg = wordParse(msg);
+
+		        System.out.println("msg : " + msg);
+
+		        String[] s = msg.split(">");
+		        System.out.println("resultList : " + resultList);
+
+		        String[] s1 = s[2].split("-");
+		        String[] s2 = s[3].split("_");
+
+	        	Calendar c = Calendar.getInstance ( );
+	            SimpleDateFormat formatter = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+	            try { c.setTime(formatter.parse(s1[0]));} catch (ParseException e) {e.printStackTrace();}
+	        	String startTime = c.get(c.YEAR) +(String.format("%02d", c.get(c.MONTH)+1)) + (String.format("%02d", c.get(c.DATE))) + "000000";
+		        System.out.println("startTime : " + startTime);
+
+	            try { c.setTime(formatter.parse(s1[1]));} catch (ParseException e) {e.printStackTrace();}
+	        	if(s2[1].equals("monthly")) c.add (c.MONTH, 1);
+	        	else  						c.add (c.DATE, 1);
+
+	        	String endTime = c.get(c.YEAR) +(String.format("%02d", c.get(c.MONTH)+1)) + (String.format("%02d", c.get(c.DATE))) + "235959";
+		        System.out.println("endTime : " + endTime);
+
+		        send = "OK";
+		        int[] value = sc.getStatitcs();
+	            String[] time = sc.getStatitcsTime();
+
+	        	if (s2[1].equals("monthly"))
+	        		value = graphDataprocessingByMonthly(startTime, endTime, time, sc.getStatitcs());
+	        	else
+	        		value = graphDataprocessingByDaily(startTime, endTime, time, sc.getStatitcs());
+
+		        ArrayList<LinkedHashMap<String, String>> authorJsonTmp
+		        	= (ArrayList<LinkedHashMap<String, String>>) gson.fromJson(authorJson, ArrayList.class);
+
+		        resultList = getGraphDataByAuthorsAndPeriod(authorJsonTmp, keyword, value);
+
+	        }
+	        else send = "NotOK";
         }
-        System.out.println("total : " + total);
 
-        ArrayList<LinkedHashMap<String, String>> authorJsonTmp = (ArrayList<LinkedHashMap<String, String>>) gson.fromJson(authorJson, ArrayList.class);
-        System.out.println(searchPeriod);
-
-        System.out.println("author : " + author);
-
-        ArrayList<LinkedHashMap<String, String>> resultList = getGraphDataByAuthorsAndPeriod(authorJsonTmp, searchPeriod, author, value);
+        SendInfo si = new SendInfo(id, sel, send, keyword, gson.toJson(resultList));
 
         ModelAndView modelAndView = new ModelAndView("api");
-        modelAndView.addObject("json", gson.toJson(resultList));
+        modelAndView.addObject("json", gson.toJson(si));
+
         return modelAndView;
     }
 
     private ArrayList<LinkedHashMap<String, String>> getGraphDataByAuthorsAndPeriod
-            (ArrayList<LinkedHashMap<String, String>> jjj, String searchPeriod, String author, int[] value) {
+            (ArrayList<LinkedHashMap<String, String>> jjj, String author, int[] value) {
         ArrayList<LinkedHashMap<String, String>> resultList = new ArrayList<LinkedHashMap<String, String>>();
 
         for (int i = 0; i < value.length; i++) {
@@ -864,6 +894,9 @@ public class MainPageController {
         } else {
             return new ModelAndView("api").addObject("json", "");
         }
+
+        //userId로 검색한 그룹의 리스트
+        List<UserGroup> userGroups = userGroupRepository.findByUserAccount_UserId(userId);
 
         String send = "";
 
@@ -1313,10 +1346,10 @@ public class MainPageController {
         return "error";
     }
 
-    @RequestMapping(value = "/test")
-    public String testPage() {
-        return "test";
-    }
+//    @RequestMapping(value = "/test")
+//    public String testPage() {
+//        return "test";
+//    }
 
     private List<AuthorAndRelAuthor> searchNicknamesByAuthors(List<String> authorList) {
         List<AuthorAndRelAuthor> resultList = new ArrayList<AuthorAndRelAuthor>();

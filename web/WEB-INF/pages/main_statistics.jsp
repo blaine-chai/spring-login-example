@@ -484,103 +484,27 @@
     var authorList = [];
     var aList = "";
     var getNewAuthorGraphData = (function () {
-        var authorList = [];
+        authorList = [];
+        aList = "";
         var searchWord = searchInfo();
         if (searchWord == "") return;
 
         var keyword = "";
 
-        if ($('.search-operator-option').eq(0).text() == "SEL")
-            keyword = $('.search-input').eq(0).val();
-        else if ($('.search-operator-option').eq(0).text() == "AND")
-            keyword = $('.search-input').eq(0).val() + "&" + $('.search-input').eq(1).val();
+        if($('.search-operator-option').eq(0).text() == "SEL")
+        	keyword = $('.search-input').eq(0).val();
+        else if($('.search-operator-option').eq(0).text() == "AND")
+        	keyword = $('.search-input').eq(0).val() + "&" + $('.search-input').eq(1).val();
         else
-            keyword = $('.search-input').eq(0).val() + "|" + $('.search-input').eq(1).val();
-
-        //console.log("AAAAA :" + keyword);
+        	keyword = $('.search-input').eq(0).val() + "|" + $('.search-input').eq(1).val();
 
         aList = "";
+        var id = "stat3";
+        var sel = 0;
+
         authorList.push(keyword);
-
-        callAjax("stat3", "0", "", keyword, searchWord);
-
+        callAjax(id, sel, aList, keyword, searchWord);
     });
-
-    function callAjax(id, sel, msg, keyword, searchWord) {
-        console.log(keyword + " : " + sel + " : " + searchWord);
-        $.ajax({
-            url: "/main/statistics/search-author-data",
-            type: "post",
-            data: {
-                "id": id,
-                "sel": sel,
-                "msg": msg,
-                "keyword": keyword,
-                "graphJson": aList,
-                "authorJson": JSON.stringify(authorList),
-                "searchWord": searchWord
-            },
-            success: searchRelAuthorSuccess
-        });
-    }
-
-    var stop = true;
-    var setTime;
-    function searchRelAuthorSuccess(responseData) {
-        var data = JSON.parse(responseData);
-        if ((data.sel == 10) && (!stop)) return;
-        console.log(stop + " : " + data.id + " : " + data.sel + " : " + data.contents + " : " + data.keyword + " : " + data.searchWord);
-
-        if (data.msg == "NotOK") {
-            if (stop) {
-                setTime = setTimeout(function () {
-                    callAjax(data.id, data.sel, "", data.keyword, data.searchWord);
-                }, 1000);
-            }
-        }
-        else if (data.msg == "NoData")
-            alert("No Data!!!");
-        else {
-            if (data.sel == 0) {
-                //var result = JSON.parse(data.bookInfoList);
-                setTime = setTimeout(function () {
-                    callAjax(data.id, "2", "", data.keyword, data.searchWord);
-                }, 100);
-            }
-            else if (data.sel == 1) {
-                setTime = setTimeout(function () {
-                    callAjax(data.id, "3", "", data.keyword, data.searchWord);
-                }, 100);
-            }
-            else if (data.sel == 2) {
-                var resultData = JSON.parse(data.resultList);
-                aList = data.resultList;
-                console.error(aList);
-                console.log(resultData);
-                authorGraph = GraphModule.graph();
-                authorGraph.setMargin({top: 20, right: 60, bottom: 30, left: 60});
-                authorGraph.setGraphContainer('#author-graph-container');
-                authorGraph.removeNameList();
-                authorGraph.removeData();
-                $.each(authorList, function (i, author) {
-                    authorGraph.addNameList(author);
-                });
-                authorGraph.setData(data.resultList);
-                authorGraph.init();
-            }
-            else if (data.sel == 3) {
-                var resultData = JSON.parse(data.resultList);
-                aList = data.resultList;
-                //console.error(resultData);
-                authorGraph.removeSvg();
-                authorGraph.setGraphContainer('#author-graph-container');
-                authorGraph.setMargin({top: 20, right: 60, bottom: 30, left: 60});
-                authorGraph.addNameList(data.keyword);
-                authorGraph.addData(data.keyword, data.resultList);
-                authorGraph.refresh();
-            }
-        }
-    }
 
     var addAuthorGraphData = (function () {
         //var author = [];
@@ -589,12 +513,12 @@
 
         var keyword = "";
 
-        if ($('.search-operator-option').eq(0).text() == "SEL")
-            keyword = $('.search-input').eq(0).val();
-        else if ($('.search-operator-option').eq(0).text() == "AND")
-            keyword = $('.search-input').eq(0).val() + "&" + $('.search-input').eq(1).val();
+        if($('.search-operator-option').eq(0).text() == "SEL")
+        	keyword = $('.search-input').eq(0).val();
+        else if($('.search-operator-option').eq(0).text() == "AND")
+        	keyword = $('.search-input').eq(0).val() + "&" + $('.search-input').eq(1).val();
         else
-            keyword = $('.search-input').eq(0).val() + "|" + $('.search-input').eq(1).val();
+        	keyword = $('.search-input').eq(0).val() + "|" + $('.search-input').eq(1).val();
 
         var beGood = false;
         for (var i = 0; i < authorList; i++) {
@@ -605,11 +529,69 @@
             alert("중복 검색입니다!!!");
             return;
         }
-        authorList.push(keyword);
-//        console.error(authorGraph.getOption().timePeriod);
 
-        callAjax("stat3", "1", "", keyword, searchWord);
+        var id = "stat3";
+        var sel = 1;
+
+        authorList.push(keyword);
+        callAjax(id, sel, aList, keyword, searchWord);
     });
+
+    var setTime = 0;
+    function callAjax(id, sel, aList, keyword, searchWord)
+    {
+    	$.ajax({
+            url: "/main/statistics/search-author-data",
+            type: "post",
+            data: {
+            	id : id,
+            	sel : sel,
+                authorJson: aList,
+                keyword: keyword,
+                msg: searchWord
+            },
+            success: function (responseData) {
+                var tdata = JSON.parse(responseData);
+                if(tdata.contents != "OK") {
+            		setTime = setTimeout(function () {callAjax(tdata.id, tdata.sel, aList, tdata.keyword, searchWord);}, 100);
+                }
+                else {
+		          	if (sel == 0) {
+	            		setTime = setTimeout(function () {callAjax(tdata.id, 2, aList, tdata.keyword, searchWord);}, 100);
+	            	}
+		          	else if (sel == 1) {
+	            		setTime = setTimeout(function () {callAjax(tdata.id, 3, aList, tdata.keyword, searchWord);}, 100);
+	            	}
+		          	else if (sel == 2) {
+		                var resultData = JSON.parse(tdata.resultList);
+		                aList = tdata.resultList;
+		//                console.error(resultData);
+		                authorGraph = GraphModule.graph();
+		                authorGraph.setMargin({top: 20, right: 60, bottom: 30, left: 60});
+		                authorGraph.setGraphContainer('#author-graph-container');
+		                authorGraph.removeNameList();
+		                authorGraph.removeData();
+		                $.each(authorList, function (i, author) {
+		                    authorGraph.addNameList(author);
+		                });
+		                authorGraph.setData(resultData);
+		                authorGraph.init();
+	            	}
+		          	else if (sel == 3) {
+		                var resultData = JSON.parse(tdata.resultList);
+		                aList = tdata.resultList;
+		                //console.error(resultData);
+		                authorGraph.removeSvg();
+		                authorGraph.setGraphContainer('#author-graph-container');
+		                authorGraph.setMargin({top: 20, right: 60, bottom: 30, left: 60});
+		                authorGraph.addNameList(tdata.keyword);
+		                authorGraph.addData(tdata.keyword, resultData);
+		                authorGraph.refresh();
+		          	}
+                }
+            }
+        })
+	}
 
     var getSearchTotalData = (function (category) {
         totalGraph.removeNameList();

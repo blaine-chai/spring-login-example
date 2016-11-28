@@ -192,6 +192,23 @@ public class SocketComm
 		return toFormat.format(fromDate);
 	}
 
+	public String formattedDate2(String date)
+	{
+		String[] s = date.split(" ");
+		date = s[0] + " " + s[1];
+		String fromFormatString = "yyyy/MM/dd HH:mm:ss";
+		String toFormatString = "yyyyMMddHHmmss";
+		SimpleDateFormat fromFormat =
+				new SimpleDateFormat(fromFormatString);
+		SimpleDateFormat toFormat =
+				new SimpleDateFormat(toFormatString);
+		Date fromDate = null;
+
+		try { fromDate = fromFormat.parse(date); } catch(ParseException e) {fromDate = new Date();}
+
+		return toFormat.format(fromDate);
+	}
+
 	public String formattedDate	(long unixTime)
 	{
 		String toFormatString = "yyyyMMddHHmmss";
@@ -400,14 +417,16 @@ public class SocketComm
 	{
 		try
 		{
-			System.out.println("\tmsg : " + msg);
+			System.out.println("\tStat2 : msg : " + msg);
 			int k = 4;
-			dos.writeInt(k-1);
+			//msg = "indexA^한국>문자포함>20150101000000-20150531235959>MSG_daily";
+			dos.writeInt(k);
 
 			String[] sss = msg.split(">");
+			sss[2] = getPeriod(sss[2]);
 
 			for (int i=0; i < k; i++) {
-				System.out.println("\tmsg333 : " + sss[i]);
+				System.out.println("\tStat2 : msg333 : " + sss[i]);
 				dos.writeUTF(sss[i]);
 			}
 			good = 0;
@@ -583,15 +602,18 @@ public class SocketComm
 		}
 		else if(ss.length == 1){
 			if(ss[0].length() == 16) fromDate = formattedDate(ss[0]);
+			else if(ss[0].length() == 19) fromDate = formattedDate2(ss[0]);
 			else 		fromDate = "19900101000000";;
 
 			toDate = formattedDate(unixtime+365*24*3600*10000L);
 		}
 		else {
 			if(ss[0].length() == 16) fromDate = formattedDate(ss[0]);
+			else if(ss[0].length() == 19) fromDate = formattedDate2(ss[0]);
 			else 		fromDate = "19900101000000";
 
 			if(ss[1].length() == 16) toDate = formattedDate(ss[1]);
+			else if(ss[1].length() == 19) toDate = formattedDate2(ss[1]);
 			else toDate = formattedDate(unixtime+365*24*3600*10000L);
 		}
 

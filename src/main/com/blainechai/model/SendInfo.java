@@ -1,14 +1,5 @@
 package com.blainechai.model;
 
-import javax.persistence.*;
-
-import com.blainechai.model.BookInfo;
-
-import java.io.Serializable;
-import java.sql.Date;
-import java.util.ArrayList;
-import java.util.List;
-
 /**
  * Created by blainechai on 2016. 10. 14..
  */
@@ -16,14 +7,19 @@ import java.util.List;
 public class SendInfo {
 
     private String id;
+    private String sel;
+    private String contents;    
+    
     private int job;
     private int jobOrder;
-    private String sel;
     private int page;
-    private String contents;    
     private String bookInfoList;
+    
     private String author;
     private String period;
+    
+    private String keyword;
+    private String resultList;
     
     protected SendInfo() {
     }
@@ -46,6 +42,15 @@ public class SendInfo {
         this.contents = contents;
         this.bookInfoList = bookInfoList;
     }
+    
+    public SendInfo(String id, String sel, String contents, String keyword, String resultList) {
+        this.id = id;
+        this.sel = sel;
+        this.contents = contents;
+        this.keyword = keyword;
+        this.resultList = resultList;
+    }
+    
 
     public String getId() {
         return id;
