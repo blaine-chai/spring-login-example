@@ -7,12 +7,31 @@ var timePeriodOption = {
 
 var GraphModule = (function () {
 
+    Number.prototype.format = function () {
+        if (this == 0) return 0;
+
+        var reg = /(^[+-]?\d+)(\d{3})/;
+        var n = (this + '');
+
+        while (reg.test(n)) n = n.replace(reg, '$1' + ',' + '$2');
+
+        return n;
+    };
+
+    String.prototype.format = function () {
+        var num = parseFloat(this);
+        if (isNaN(num)) return "0";
+
+        return num.format();
+    };
+
+
     var graph = (function (opt) {
         var defaults = {
             margin: {top: 20, right: 60, bottom: 30, left: 60},
             containerSelector: '#main-graph-container',
             data: [],
-            xRange: [],
+            // xRange: [],
             timePeriod: timePeriodOption.monthly,
             nameList: [],
             interpolation: "monotone",
@@ -24,7 +43,7 @@ var GraphModule = (function () {
         var option = $.extend(defaults, opt);
         var m;
         var cWidth, cHeight, width, height;
-        var x, y, totalY, xAxis, yAxis, totalYAxis;
+        var x, y, totalY, xAxis, yAxis, totalYAxis, totalX, totalXAxis;
         var svg;
         var graphContainer;
 
@@ -91,9 +110,29 @@ var GraphModule = (function () {
                 domain.push(data['index']);
             });
 
+            // x = d3.scale.ordinal()
+            //     .domain(domain.map(function (d) {
+            //         return 'a';
+            //     }))
+            //     .rangePoints([0, width]);
             x = d3.scale.ordinal()
                 .domain(domain)
                 .rangePoints([0, width]);
+
+            var n = parseInt(domain.length / 6);
+            var newDomain = [];
+            var last;
+            for (i = 0; i < domain.length; i += n) {
+                newDomain.push(domain[i]);
+                last = i;
+            }
+            // console.error(x(domain[last]));
+            totalX = d3.scale.ordinal()
+                .domain(newDomain).rangePoints([0, x(domain[last])]);
+            // console.error(x(domain[last]));
+            // totalX = d3.scale.ordinal()
+            //     .domain(domain).rangePoints([0, width]);
+            // console.error());
         });
 
         var setYDomain = (function () {
@@ -124,6 +163,8 @@ var GraphModule = (function () {
         //x,y axis setting
         var setXAxis = (function () {
             xAxis = d3.svg.axis().scale(x).orient("bottom").ticks(option.data.length);
+            // xAxis = d3.svg.axis().scale(x).orient("bottom").ticks(3);
+            totalXAxis = d3.svg.axis().scale(totalX).orient("bottom");
         });
 
         var setYAxis = (function () {
@@ -146,10 +187,16 @@ var GraphModule = (function () {
                 .attr("y2", y)
                 .style("stroke", "#ccc");
 
+            // svg.select('g').append('g')
+            //     .attr('class', 'x axis')
+            //     .attr('transform', 'translate(0, ' + height + ')')
+            //     .call(xAxis);
+
+
             svg.select('g').append('g')
-                .attr('class', 'x axis')
+                .attr('class', 'x axis total-x')
                 .attr('transform', 'translate(0, ' + height + ')')
-                .call(xAxis);
+                .call(totalXAxis);
 
             svg.select('g').append("g")
                 .attr("class", "y axis")
@@ -159,6 +206,7 @@ var GraphModule = (function () {
                 .attr("class", "y axis total-y")
                 .attr("transform", "translate(" + width + " ,0)")
                 .call(totalYAxis);
+
 
             // setColor();
 
@@ -182,11 +230,27 @@ var GraphModule = (function () {
                 }).y(function (d) {
                     return totalY(d[name]);
                 }).interpolate(option.interpolation);
+
                 svg.select('g').append("path")
                     .datum(option.totalData)
                     .attr("class", "line total")
                     .attr("d", line)
                     .style('stroke', option.colorSet[i]);
+
+                svg.select('.total-y')
+                    .append('g')
+                    .attr('class', 'sum')
+                    // .style('')
+                    .attr('transform', 'translate(0,' + totalY(option.totalData[option.totalData.length - 1][name]) + ')')
+                    .append('text')
+                    .text(option.totalData[option.totalData.length - 1][name].format());
+                var text = graphContainer.find('.sum text').eq(i);
+                text.css('stroke', option.colorSet[i]);
+                text.css('opacity', 0.8);
+                text.css('font-size','12px');
+
+                text.attr('x', (-text.width()) * 1.1);
+                text.attr('y', -text.height());
             });
 
         });
@@ -347,7 +411,9 @@ var GraphModule = (function () {
                 return option.totalData;
             },
             getSvg: svg,
-            getGraphContainer: graphContainer,
+            getGraphContainer: function () {
+                return graphContainer
+            },
             getWidth: width,
             getHeight: height,
             getData: function () {

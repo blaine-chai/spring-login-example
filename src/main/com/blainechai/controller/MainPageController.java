@@ -895,7 +895,7 @@ public class MainPageController {
             return new ModelAndView("api").addObject("json", "");
         }
 
-        //userId로 검색한 그룹의 리스트
+        // userId로 검색한 그룹의 리스트
         List<UserGroup> userGroups = userGroupRepository.findByUserAccount_UserId(userId);
 
         String send = "";
