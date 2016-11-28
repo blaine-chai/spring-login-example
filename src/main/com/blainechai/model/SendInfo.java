@@ -1,4 +1,4 @@
-package com.blainechai.domain;
+package com.blainechai.model;
 
 import javax.persistence.*;
 
