@@ -56,6 +56,7 @@
 }
 
 .header-button {
+    position: relative;
     background: rgba(91, 146, 206, 1);
     float: left;
     width: 25%;

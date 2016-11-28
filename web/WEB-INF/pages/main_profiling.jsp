@@ -51,7 +51,7 @@
     <div id="nav">
         <a href="/main">
             <div class="header-button btn">
-                <div class="glyphicon glyphicon-bell"></div>
+                <div class="glyphicon glyphicon-bell"><span class="badge alarm-badge" style="position:absolute;vertical-align: middle;font-family:'Helvetica Neue', Helvetica, Arial, sans-serif;"></span></div>
                 <div>알림</div>
             </div>
         </a>
@@ -201,7 +201,7 @@
         </div>
     </div>
 </div>
-
+<script type="text/javascript" charset="UTF-8" src="/js/alarm-update.js"></script>
 <script type="text/javascript" charset="UTF-8">
     var userHistory = [];
     var tableData;
@@ -218,7 +218,11 @@
 
 
     $(document).ready(function () {
-
+        $(document).ajaxComplete(function (e, xhr, settings) {
+            if (xhr.status === 403) {
+                window.location.replace('/')
+            }
+        });
 
         $(window).resize(
                 function () {
@@ -291,32 +295,7 @@
         $('#datepicker2').datetimepicker({
             value: new Date()
         });
-//            $('#nickname-search-btn').click(function (e) {
-//                $('#nickname-result-table>tbody').children().remove();
-//                $('#nickname-result-container').hide();
-//
-//                $.ajax({
-//                    url: "/main/profile/search-author",
-//                    type: "post",
-//                    data: {
-//                        "keyword": $('#nickname-search-input').val()
-//                    },
-//                    success: function (responseData) {
-//                        var result = JSON.parse(responseData);
-//                        $.each(result, function (i, authorNickname) {
-//                            var tmpEl = $('<tr>' +
-//                                    '<td style="text-align: center;"><input type="radio" class="nickname-radio" name="nickname-radio"></td>' +
-//                                    '<td class="nickname-search-td">' + authorNickname.author + '</td>' +
-//                                    '<td class="nickname-search-td">' + (authorNickname.nickname != '' ? '(' + authorNickname.nickname + ')' : '') + '</td>' +
-//                                    '</tr>');
-//                            $('#nickname-result-table').append(tmpEl);
-//
-//                        });
-//                        setAuthorResultClickHandler();
-//                    }
-//                });
-//            });
-//            setNicknameModifyHandler();
+
         $('label[name=dateOption]').click(function () {
             if ($(this).text() == 'MSG') {
                 $(this).text('DB');
@@ -324,6 +303,8 @@
                 $(this).text('MSG');
             }
         });
+
+        nicNameUpdate();
 
         $('#nickname-search-btn').click(function (e) {
             $('#nickname-result-table>tbody').children().remove();
@@ -337,31 +318,9 @@
         setNicknameModifyHandler();
     });
 
-
     function setAuthorResultClickHandler() {
-        $('#nickname-result-table .nickname-search-td').click(function (e) {
-//                var tmpAuthor = $(this).parent().find('td').eq(1).text();
-//                $('#profile-result-container').children().hide();
-//                $('#profile-result-container').children().remove();
-//
-//                $.ajax({
-//                    url: "/main/profile/search-rel-author",
-//                    type: "post",
-//                    data: {
-//                        "author": tmpAuthor
-//                    },
-//                    success: function (responseData) {
-//                        var result = JSON.parse(responseData);
-//                        ProfileResultModule.ExpandComponent().newExpandComponent({
-//                            data: result,
-//                            title: tmpAuthor
-//                        });
-//                        $('#profile-result-container').width('260');
-//                        setProfileResultTableSize();
-//                    }
-//                });
-//            });
-//            $('#nickname-result-container').show(300);
+        $('#nickname-result-table .nickname-search-td').click(function (e)
+   		{
             var tmpAuthor = nicNameOff($(this).parent().find('td').eq(1).text());
             idCNT++;
 
@@ -370,7 +329,8 @@
 
             stop = false;
             if (setTime != 0) clearTimeout(setTime);
-            callAjax("profile" + idCNT, tmpAuthor + '>' + $('#datepicker1').val() + "-" + $('#datepicker2').val(), "", 9, 0, "", "");
+            var period = tmpAuthor + '>' + $('#datepicker1').val() + "-" + $('#datepicker2').val() + ">" + $('label[name=dateOption]').text();
+            callAjax("profile" + idCNT, period, "", 9, 0, "", "");
         });
         $('#nickname-result-container').show(300);
     }
@@ -413,6 +373,7 @@
             if (data.sel == 1) {
                 //var result = JSON.parse(data.bookInfoList);
                 callAjax(data.id, data.author, data.period, 4, data.page, "", "");
+                nicNameUpdate();
             }
             else if (data.sel == 2) {
                 setRelBadgeShow(responseData);
@@ -434,6 +395,7 @@
                 stop = true;
                 var result = JSON.parse(data.bookInfoList);
                 callAjax(data.id, data.author, data.period, 10, data.page, "", "");
+                nicNameUpdate();
             }
             else if (data.sel == 10) {
                 var author = data.author.split('>');
@@ -470,28 +432,38 @@
                 }
             }
             else if (data.sel == 16) {
-                console.log(data.sel);
                 stop = true;
                 callAjax(data.id, data.author, data.period, 15, data.page, "", "");
-                console.log(data.sel);
+                nicNameUpdate();
             }
             else if (data.sel == 15) {
                 var result = JSON.parse(data.bookInfoList);
-                console.log(author);
-
-                $.each(result, function (i, nicDB) {
-                    console.log(result[i]);
-                    if (result[i].indexOf(data.author) != -1) {  //if(str1.indexOf(str2) != -1){
-                        console.log(result[i]);
-                        var nic = nicNameFindOnly(result[i]);
-                        var tmpEl = $('<tr>' +
-                                '<td style="text-align: center;"><input type="radio" class="nickname-radio" name="nickname-radio"></td>' +
-                                '<td class="nickname-search-td">' + result[i] + '</td>' +
-                                '<td class="nickname-search-td">' + (nic != '' ? '(' + nic + ')' : '') + '</td>' +
-                                '</tr>');
-                        $('#nickname-result-table').append(tmpEl);
+                var tmpEl = "";
+                $.each(nicNameDB, function (i, nicDB) {
+                    if (nicNameDB[i].nickname.indexOf(data.author) != -1) {  //if(str1.indexOf(str2) != -1){
+                        //Nic = author + "(" + nicNameDB[i].nickname + ")";
+                        tmpEl += '<tr>' +
+                        '<td style="text-align: center;"><input type="radio" class="nickname-radio" name="nickname-radio"></td>' +
+                        '<td class="nickname-search-td">' + nicDB.author + '</td>' +
+                        '<td class="nickname-search-td">' + (nicNameDB[i].nickname != '' ? '(' + nicNameDB[i].nickname + ')' : '') + '</td>' +
+                        '</tr>';
                     }
                 });
+
+				$.each(result, function (i, nicDB) {
+                    //console.log(result[i]);
+                    if (result[i].indexOf(data.author) != -1) {  //if(str1.indexOf(str2) != -1){
+                        //console.log(result[i]);
+                        var nic = nicNameFindOnly(result[i]);
+                        tmpEl += '<tr>' +
+                             '<td style="text-align: center;"><input type="radio" class="nickname-radio" name="nickname-radio"></td>' +
+                             '<td class="nickname-search-td">' + result[i] + '</td>' +
+                             '<td class="nickname-search-td">' + (nic != '' ? '(' + nic + ')' : '') + '</td>' +
+                             '</tr>';
+                    }
+                });
+
+                $('#nickname-result-table').append($(tmpEl));
                 setAuthorResultClickHandler();
 
             }
@@ -601,8 +573,8 @@
         }
 
         idCNT++;
-
-        callAjax("profile" + idCNT, tmpAuthor + '>' + $('#datepicker1').val() + "-" + $('#datepicker2').val(), classId, 9, 1, "", "");
+        var period = tmpAuthor + '>' + $('#datepicker1').val() + "-" + $('#datepicker2').val() + ">" + $('label[name=dateOption]').text();
+        callAjax("profile" + idCNT, period, classId, 9, 1, "", "");
     }
 
     function initPagination(current, from, to, lastPage, cssSelector) {
@@ -864,72 +836,12 @@
             idCNT++;
             var author = nicNameOff($(element).parent().parent().parent().parent().find('.table-expanded-title').text());
             var relAuthor = nicNameOff($(element).find('td').eq(1).text());
-            var period = $('#datepicker1').val() + "-" + $('#datepicker2').val();
+            var period = $('#datepicker1').val() + "-" + $('#datepicker2').val() + ">" + $('label[name=dateOption]').text();
             var id = "profile" + idCNT;
 
             callAjax(id, author + '>' + period, relAuthor, 1, 0, "", "");
         });
     }
-
-    //        function setRelBadgeClickHandler(element) {
-    //            $(element).find('.relative-badge-td').click(function (e) {
-    //                $.ajax({
-    //                    url: "/main/profile/search-rel-author-content",
-    //                    type: "post",
-    //                    data: {
-    //                        "author": $(element).parent().parent().parent().parent().find('.table-expanded-title').text(),
-    //                        "rel-author": $(element).find('td').eq(1).text()
-    //                    },
-    //                    success: function (responseData) {
-    //                        var result = JSON.parse(responseData);
-    //                        var tmpHtml = $('<div class="alert bg-white alert-dismissible fade in border-gray relative-table-wrapper" style="position: absolute; z-index: 10; width: 700px; left:' + relStartPos.left + 'px;top:' + relStartPos.top + 'px;" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span></button>' +
-    //                                '<div class="relative-title">' + $(element).parent().parent().parent().parent().find('.table-expanded-title').text() + ' - ' + $(element).find('td').eq(1).text() + '</div>' +
-    //                                '<div style="font-size: 10px;margin-top: 10px;margin-bottom: 10px;position: relative;left: 450px;">' +
-    ////                            '<span class="relative-author-from-date">' + lastQuery.fromDate + '</span>' + (lastQuery.fromDate == '' && lastQuery.toDate == '' ? '' : '</span><span> ~ </span><span class="relative-author-to-date">' + lastQuery.toDate + '</span>') +
-    //                                '</div>' +
-    //                                '<div class="draggable-content-container"><div style="overflow: scroll;height: 300px;">' +
-    //                                '<table class="table table-hover table-fixed table-bordered table-striped table-condensed" style="font-size: 11px; margin-bottom: 0;">' +
-    //                                '<thead><tr><th>저장시간</th><th>저자</th><th>참조저자</th><th>내용</th></tr></thead>' +
-    //                                '<tbody></tbody></table></div><div><nav aria-label="..." style="text-align: center; margin-top:10px;">' +
-    //                                '<ul class="pagination pagination-sm" style="margin: 0 auto;">' +
-    //                                '<li><a href="#" aria-label="Previous" class="disabled"><span aria-hidden="true">«</span></a></li>' +
-    //                                '<li><a href="#" class="active">1</a></li>' +
-    //                                '<li><a href="#">2</a></li>' +
-    //                                '<li><a href="#">3</a></li>' +
-    //                                '<li><a href="#">4</a></li>' +
-    //                                '<li><a href="#">5</a></li>' +
-    //                                '<li><a href="#" aria-label="Next"><span aria-hidden="true">»</span></a></li></ul></nav></div>' +
-    //                                '<label class="btn btn-primary btn-export" style="position: absolute;right: 15px;bottom: 15px;font-size: 11px;">export</label></div>');
-    //                        setRelTablePos();
-    //
-    //                        $.each(result, function (i, mResult) {
-    //                            var tmpEl = $('<tr><td>' + mResult.savedDate + '</td>' +
-    //                                    '<td>' + mResult.author + '</td>' +
-    //                                    '<td>' + mResult.relAuthor + '</td>' +
-    //                                    '<td class="relative-table-content-td">' + mResult.content + '</td></tr>');
-    //                            tmpHtml.find('tbody').append(tmpEl);
-    //                            tmpEl.find('.relative-table-content-td').popover({
-    //                                html: true,
-    //                                content: function () {
-    //                                    return $(this).text();
-    //                                },
-    //                                template: '<div class="popover popover-relative-content-td"><div class="arrow"></div><div class="popover-inner"><h3 class="popover-title"></h3><div class="popover-content"><p></p></div></div></div>',
-    //                                container: tmpHtml.find('.draggable-content-container'),
-    //                                placement: 'auto'
-    //                            }).on('show.bs.popover', function () {
-    //                                //remove popover when other popover appeared
-    //                                $('.popover-relative-content-td').popover('hide');
-    //                            });
-    //
-    //                        });
-    //
-    //                        $('body').append(tmpHtml);
-    //                        tmpHtml.draggable({cancel: '.draggable-content-container'});
-    //                        var tarEl = $(this);
-    //                    }
-    //                });
-    //            });
-    //        }
 
     function setRelBadgeShow(responseData) {
         var tmpadta = JSON.parse(responseData);
@@ -955,7 +867,7 @@
         var tmpEl = $('<div class="alert bg-white alert-dismissible fade in border-gray relative-table-wrapper" style="position: absolute; z-index: 10; width: 700px; left:' + relStartPos.left + 'px;top:' + relStartPos.top + 'px;" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span></button>' +
                 '<div class="relative-title">' + nicNameFind(author) + ' - ' + nicNameFind(relAuthor) + '<span>  : ' + count + ' 건</span></div>' +
                 '<div style="font-size: 10px;margin-top: 10px;margin-bottom: 10px;position: relative;left: 450px;">' +
-                '<span class="relative-author-from-date">' + period + '</span>' +
+                '<span class="relative-author-from-date">' + period + '(' + $('label[name=dateOption]').text() + ')</span>' +
                 '</div>' +
                 '<div class="draggable-content-container"><div style="overflow: scroll;height: 300px;">' +
                 '<table class="table table-hover table-fixed table-bordered table-striped table-condensed" style="font-size: 11px; margin-bottom: 0;">' +
@@ -1032,15 +944,15 @@
             //exportCsv(tmpEl.find('table'));
             repeatCnt = 0;
             stop = false;
-            console.log($('#book-table tbody').find('tr').eq(row).find('td').eq(8).find('span').hasClass("glyphicon-ok"));
             /*
              if (!$('#book-table tbody').find('tr').eq(row).find('td').eq(8).find('span').hasClass( "glyphicon-ok"))
              callAjaxLoop("author"+authorNUM, 8, row, 8, 8, tableData[row].eventNo+">t", "");
              else
              callAjaxLoop("author"+authorNUM, 8, row, 8, 8, tableData[row].eventNo+">f", "");
              */
-            callAjaxLoop("author" + authorNUM, 8, row, 8, 8, tableData[row].eventNo + ">" + "indexB^" + tableData[row].author + '-' + tableData[row].referencedAuthor + " | "
-                    + "indexB^" + tableData[row].referencedAuthor + '-' + tableData[row].author + ">완전일치>" + lastQuery.fromDate + "-" + lastQuery.toDate, "");
+
+			var period = $('#datepicker1').val() + "-" + $('#datepicker2').val() + ">" +  $('label[name=dateOption]').text();
+            callAjax(id, "}}}}}}}>indexB^" + author + " & " + "indexB^" + relAuthor + ">완전일치>" + period, "", 8, 0, "", "");
         });
 
     }
@@ -1068,7 +980,8 @@
             idCNT++;
             var author = nicNameOff($(element).parent().parent().parent().parent().find('.table-expanded-title').text());
             var relAuthor = nicNameOff($(element).find('td').eq(1).text());
-            var period = $('#datepicker1').val() + "-" + $('#datepicker2').val();
+            var period = $('#datepicker1').val() + "-" + $('#datepicker2').val() + ">" + $('label[name=dateOption]').text();
+
             var id = "profile" + idCNT;
 
             $.ajax({
@@ -1177,9 +1090,9 @@
                 '<table style="font-size:11px; word-break: break-all; " ' +
                 'class="table table-fixed table-bordered table-striped table-condensed table-hover"><tbody></tbody></table></div>' +
                 '<div class="component-pager" style="display: none; height: 24px;">' +
+                '<div style="width: 100%;position: absolute;text-align: center;line-height: 24px;"><span class="component-pager-page" style="">1</span></div>' +
                 '<label class="btn btn-default btn-default-left" style="position: absolute;height: 20px;width: 20px;font-size: 14px;margin: 2px;left: 35px;">' +
                 '<span style="position: absolute;top: -2px;right: 8px;">«</span></label>' +
-                '<div style="width: 100%;position: absolute;text-align: center;line-height: 24px;"><span class="component-pager-page" style="">1</span></div>' +
                 '<label class="btn btn-default btn-default-right" style="height: 20px;width: 20px;font-size: 14px;margin: 2px;position: absolute;right: 35px;"><span style="position: absolute;top: -2px;right: 8px;">»</span></label></div></div>',
                 paddingTop: '5px',
                 btnWidth: '29px',
@@ -1283,45 +1196,7 @@
                     to = data.length + "";
                     //console.log("AAAAA : " + to);
                 }
-                //else console.log("BBBBB : " + to);
                 tmpEl.find('.component-pager-page').text((from + 1) + "-" + to + "(" + data.length + ")");
-
-//                    var setContent = function (data) {
-//                        $.each(data, function (i, data) {
-//                            var tmpTr = $('<tr>' +
-//                                    //                            '<td class="relative-badge-td"><span class="badge" style="background-color: #453d77;">' + parseInt(Math.random() * 30) + '</span></td>' +
-//                                    '<td class="relative-badge-td" style="cursor: pointer; width:30px;">' + data.from + '</td>' +
-//                                    //                            '<td class="relative-badge-td"><span class="badge" style="background-color: #770c35;">' + parseInt(Math.random() * 30) + '</span></td>' +
-//                                    //                        '<td class="relative-badge-td">' + data.to + '</td>' +
-//                                    '<td class="profile-relative-author-td" style="cursor:pointer; border-right:0;" onclick="onRelativeTdClickHandler(this);return false;">' + nicNameFind(data.relAuthor) + '</td>' +
-//                                    '<td style="vertical-align: middle; margin: 0; padding: 0; border-left:0; width: 15px;"><label class="btn btn-default btn-sm remove-btn" style="padding: 3px 10px; line-height: 1; margin: 0 5px 0 0;">-</label></td></tr>');
-//                            tmpTr.attr('class-id', CLASS_NAME_PREFIX + data.to);
-//                            tmpTr.attr('parent-class-id', opt.parentClassId);
-//                            CLASS_NUM++;
-//                            tmpEl.find('tbody').append(tmpTr);
-//                            setRelBadgeClickHandler(tmpTr);
-//                        });
-//
-//                        tmpEl.find('.remove-btn').click(function (e) {
-//                            deleteExpandComponentsByClassId($(this).parent().parent().attr('class-id'));
-////                        console.error($(this).attr('class-id'));
-//                            if ($(this).parent().parent().parent().children().length <= 1) {
-//                                var component = $(this).parent().parent().parent().parent().parent().parent();
-//                                if (component.parent().children().length <= 1) {
-//                                    component.parent().remove();
-//                                    topContainer.width(topContainer.width() - 260);
-//                                    return;
-//                                } else {
-//                                    component.remove();
-//                                    return;
-//                                }
-//                            }
-//                            $(this).parent().parent().remove();
-//
-//                        });
-//                    }(opt.data);
-//
-//                    addExpandComponent();
 
                 var setContent = function (data, from, to) {
                     console.log(from + " : " + to);
@@ -1342,21 +1217,7 @@
                     });
 
                     tmpEl.find('.remove-btn').click(function (e) {
-                        /*
-                         deleteExpandComponentsByClassId($(this).parent().parent().attr('class-id'));
 
-                         if ($(this).parent().parent().parent().children().length <= 1) {
-                         var component = $(this).parent().parent().parent().parent().parent().parent();
-                         if (component.parent().children().length <= 1) {
-                         component.parent().remove();
-                         topContainer.width(topContainer.width() - 260);
-                         return;
-                         } else {
-                         component.remove();
-                         return;
-                         }
-                         }
-                         */
                         var row = $(this).parent().parent().parent().children().index($(this).parent().parent());
                         deleteExpandComponentsByClassId(CLASS_NAME_PREFIX + data[from + row].to);
 
@@ -1475,9 +1336,10 @@
             }
         });
 
-        console.log(Nic + " : " + author);
+//        console.log(Nic + " : " + author);
         return Nic;
     }
+
     function nicNameFindOnly(author) {
         var Nic = '';
         $.each(nicNameDB, function (i, nicDB) {
@@ -1488,7 +1350,7 @@
             }
         });
 
-        console.log(Nic + " : " + Nic);
+//        console.log(Nic + " : " + Nic);
         return Nic;
     }
 
@@ -1497,6 +1359,20 @@
 
         return s[0];
     }
+
+    function nicNameUpdate() {
+   	 $.ajax({
+            url: "/main/profile/search-author",
+            type: "post",
+            data: {
+                "keyword": $('#nickname-search-input').val()
+            },
+            success: function (responseData) {
+                var result = JSON.parse(responseData);
+            	nicNameDB = result;
+            }
+        });
+   }
 
 
 </script>

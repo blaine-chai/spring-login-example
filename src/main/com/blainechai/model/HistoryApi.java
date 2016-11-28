@@ -11,13 +11,15 @@ public class HistoryApi {
     private long date;
     private boolean isBookmarked;
     private int count;
+    private boolean hasNewData;
 
-    public HistoryApi(Long id, String word, long date, boolean isBookmarked, int count) {
+    public HistoryApi(Long id, String word, long date, boolean isBookmarked, int count, boolean hasNewData) {
         this.id = id;
         this.word = word;
         this.date = date;
         this.isBookmarked = isBookmarked;
         this.count = count;
+        this.hasNewData = hasNewData;
     }
 
     public HistoryApi(UserHistory userHistory) {
@@ -29,14 +31,16 @@ public class HistoryApi {
         } else {
             this.isBookmarked = false;
         }
+        this.hasNewData = false;
     }
 
-    public HistoryApi(UserBookmark userBookmark) {
+    public HistoryApi(UserBookmark userBookmark, boolean hasNewData) {
         this.id = userBookmark.getId();
         this.word = userBookmark.getWord();
         this.date = userBookmark.getDate();
         this.isBookmarked = true;
         this.count = userBookmark.getCount();
+        this.hasNewData = hasNewData;
     }
 
     public HistoryApi(AdminHistory adminHistory, boolean isBookmarked) {
@@ -44,14 +48,16 @@ public class HistoryApi {
         this.word = adminHistory.getWord();
         this.date = adminHistory.getDate();
         this.isBookmarked = isBookmarked;
+        this.hasNewData = false;
     }
 
-    public HistoryApi(CommonBookmark commonBookmark) {
+    public HistoryApi(CommonBookmark commonBookmark, boolean hasNewData) {
         this.id = commonBookmark.getId();
         this.word = commonBookmark.getAdminBookmark().getWord();
         this.date = commonBookmark.getAdminBookmark().getDate();
         this.isBookmarked = true;
         this.count = commonBookmark.getCount();
+        this.hasNewData = hasNewData;
     }
 
     public Long getId() {
@@ -92,5 +98,13 @@ public class HistoryApi {
 
     public void setCount(int count) {
         this.count = count;
+    }
+
+    public boolean isHasNewData() {
+        return hasNewData;
+    }
+
+    public void setHasNewData(boolean hasNewData) {
+        this.hasNewData = hasNewData;
     }
 }

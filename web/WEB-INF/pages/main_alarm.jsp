@@ -51,7 +51,7 @@
     <div id="nav">
         <a href="#">
             <div class="header-button btn active">
-                <div class="glyphicon glyphicon-bell"></div>
+                <div class="glyphicon glyphicon-bell"><span class="badge alarm-badge" style="position:absolute;vertical-align: middle;font-family:'Helvetica Neue', Helvetica, Arial, sans-serif;"></span></div>
                 <div>알림</div>
             </div>
         </a>
@@ -165,6 +165,7 @@
         <%--</div>--%>
     </div>
 </div>
+<script type="text/javascript" charset="UTF-8" src="/js/alarm-update.js"></script>
 
 <script type="text/javascript" charset="UTF-8">
     var relStartPos = new Object();
@@ -185,19 +186,19 @@
 
     var tbodyHandlerGenerator = function (type, bookmarkModule) {
         return (function () {
-
             $.ajax({
                 url: '/main/' + (type == 'admin-bookmark' ? 'common-bookmark' : type) + '/get',
                 type: 'post',
                 data: {},
                 success: function (responseData) {
+                    console.log(responseData);
                     var result = JSON.parse(responseData);
                     bookmarkModule.removeTableContent();
                     bookmarkModule.setData(result);
                     if (bookmarkModule.getData().length > 0) {
                         $.each(bookmarkModule.getData(), function (i, d) {
                             var tmp = $('<tr data-index="' + i + '">' +
-                                    '<td class="user-bookmark-alarm-td" onclick="$(this).parent().find(\'.user-bookmark-search-word-td\').click();"><span class="badge">N</span></td>' +
+                                    '<td class="user-bookmark-alarm-td" onclick="$(this).parent().find(\'.user-bookmark-search-word-td\').click();">'+'<span class="badge">'+(d.hasNewData?'N':'')+'</span></td>' +
                                     '<td class="user-bookmark-search-word-td" style="vertical-align:middle;">' + changeHistory(d.word) + '</td>' +
                                     //'<td style="vertical-align:middle;"><span class="user-bookmark-count-td">' + d.count + '</span></td>' +
                                     <c:choose>
@@ -209,6 +210,9 @@
                                     </c:otherwise>
                                     </c:choose>
                             );
+                            if(tmp.find('.badge')==""){
+                                tmp.find('.badge').hide();
+                            }
                             tmp.find('.close-search-option-btn').click(function (e) {
                                 var col = $(this).parent().parent().parent().children().index($(this).parent().parent());
                                 var data = (type == 'admin-bookmark' ? adminBookmarkModule.getData()[col].word : userBookmarkModule.getData()[col].word);
@@ -330,19 +334,29 @@
         });
     };
 
+    var refreshUserBookmark = function(){
+        userBookmarkModule.generateTBody();
+
+    };
+
+    var refreshAdminBookmark = function(){
+        adminBookmarkModule.generateTBody();
+    };
+
     $(document).ready(function () {
         userBookmarkModule.setTitle('User Bookmark Alarm');
         userBookmarkModule.setContainer($('#alarm-user-bookmark'));
         userBookmarkModule.setTBodyGenerator(tbodyHandlerGenerator('user-bookmark', userBookmarkModule));
         userBookmarkModule.init();
         userBookmarkModule.generateTBody();
+        setInterval(refreshUserBookmark, 1000);
 
         adminBookmarkModule.setTitle('Admin Bookmark Alarm');
         adminBookmarkModule.setContainer($('#alarm-admin-bookmark'));
         adminBookmarkModule.setTBodyGenerator(tbodyHandlerGenerator('admin-bookmark', adminBookmarkModule));
         adminBookmarkModule.init();
         adminBookmarkModule.generateTBody();
-
+        setInterval(refreshAdminBookmark, 1000);
         fetch_unix_timestamp = function () {     	//return parseInt(new Date().getTime().toString().substring(0, 10));
             return Math.floor(new Date().getTime() / 1000);
         };
@@ -368,11 +382,6 @@
 
         $(window).resize(function () {
             $('#content').height($(window).height() - 197);
-            totalGraph.refresh();
-            authorTotalGraph.refresh();
-            if (authorGraph != undefined) {
-                authorGraph.refresh();
-            }
         });
         $('#content').height($(window).height() - 197);
 
@@ -636,8 +645,8 @@
             if (i < data.length - 1) str += " " + data[i].operator + " ";
         }
         str += ">" + tdata.typeInfo;
-        //str += ">" + tdata.fromDate + "-" + tdata.toDate;
-        //str += ">" + tdata.dateOption;
+//        str += ">" + tdata.fromDate + "-" + tdata.toDate;
+        str += ">" + tdata.dateOption;
 
         return str;
     }

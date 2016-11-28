@@ -91,7 +91,7 @@
     <div id="nav">
         <a href="/main">
             <div class="header-button btn">
-                <div class="glyphicon glyphicon-bell"></div>
+                <div class="glyphicon glyphicon-bell"><span class="badge alarm-badge" style="position:absolute;vertical-align: middle;font-family:'Helvetica Neue', Helvetica, Arial, sans-serif;"></span></div>
                 <div>알림</div>
             </div>
         </a>
@@ -188,7 +188,8 @@
                      class="panel panel-default">
                     <div style="max-width: 500px;margin: auto;">
                         <div id="statistic-author-input-container">
-                            <div class="input-group input-group-sm" style="float: left; width: calc(100% - 200px);margin-bottom: 10px;padding-right: 20px;">
+                            <div class="input-group input-group-sm"
+                                 style="float: left; width: calc(100% - 200px);margin-bottom: 10px;padding-right: 20px;">
                                 <div id="search-option-radio-wrapper" class="btn-group btn-group-justified"
                                      data-toggle="buttons" style="padding-top: 0;">
                                     <label class="btn btn-default btn-sm active"><input type="radio" name="options"
@@ -345,9 +346,12 @@
                                         </div>
                                         <div style="width: 200px;text-align: center;display: flex;margin: auto;margin-top: 10px;">
                                             <div class="" style="padding: 0; margin:0 auto; float: left;"><input
-                                                    id="datepicker1" data-provide="datepicker" style="width: 90px;text-align: center;font-size: 12px;float: left;">
+                                                    id="datepicker1" data-provide="datepicker"
+                                                    style="width: 90px;text-align: center;font-size: 12px;float: left;">
                                             </div>
-                                            <div style="float:left; width: 20px; font-size:11px;text-align: center; padding:0;vertical-align: middle;line-height: 23px;">~</div>
+                                            <div style="float:left; width: 20px; font-size:11px;text-align: center; padding:0;vertical-align: middle;line-height: 23px;">
+                                                ~
+                                            </div>
                                             <div style="padding:0;margin:0 auto;float: left;"><input id="datepicker2"
                                                                                                      data-provide="datepicker"
                                                                                                      style="width: 90px;text-align: center;font-size: 12px;float: left;">
@@ -378,8 +382,8 @@
         </div>
     </div>
 </div>
-<script src="/js/line-graph.js"></script>
-
+<script  type="text/javascript" charset="UTF-8" src="/js/line-graph.js"></script>
+<script type="text/javascript" charset="UTF-8" src="/js/alarm-update.js"></script>
 <script type="text/javascript" charset="UTF-8">
     var relStartPos = new Object();
     relStartPos.left = 100;
@@ -392,9 +396,16 @@
     var totalGraph;
     var authorGraph;
     var authorTotalGraph;
+    var graphCount = 0;
 
 
     $(document).ready(function () {
+        $(document).ajaxComplete(function (e, xhr, settings) {
+            if (xhr.status === 403) {
+                window.location.replace('/')
+            }
+        });
+
         authorTotalGraph = GraphModule.graph({graphOverall: false});
         totalGraph = GraphModule.graph({graphOverall: false});
         getSearchTotalData($('.search-category-option').eq(0).text());
@@ -423,10 +434,10 @@
 
 
         $('#author-graph-add-btn').click(function (e) {		// 추가 버튼을 클릭할 때
-            authorGraph.removeSvg();
             addAuthorGraphData();
         });
         $('#author-graph-new-btn').click(function (e) {		// 신규 버튼을 클릭할 때
+            graphCount = 1;
             if (authorGraph != undefined) {
                 authorGraph.removeNameList();
                 authorGraph.removeData();
@@ -491,12 +502,12 @@
 
         var keyword = "";
 
-        if($('.search-operator-option').eq(0).text() == "SEL")
-        	keyword = $('.search-input').eq(0).val();
-        else if($('.search-operator-option').eq(0).text() == "AND")
-        	keyword = $('.search-input').eq(0).val() + "&" + $('.search-input').eq(1).val();
+        if ($('.search-operator-option').eq(0).text() == "SEL")
+            keyword = $('.search-input').eq(0).val();
+        else if ($('.search-operator-option').eq(0).text() == "AND")
+            keyword = $('.search-input').eq(0).val() + "&" + $('.search-input').eq(1).val();
         else
-        	keyword = $('.search-input').eq(0).val() + "|" + $('.search-input').eq(1).val();
+            keyword = $('.search-input').eq(0).val() + "|" + $('.search-input').eq(1).val();
 
         aList = "";
         var id = "stat3";
@@ -513,15 +524,16 @@
 
         var keyword = "";
 
-        if($('.search-operator-option').eq(0).text() == "SEL")
-        	keyword = $('.search-input').eq(0).val();
-        else if($('.search-operator-option').eq(0).text() == "AND")
-        	keyword = $('.search-input').eq(0).val() + "&" + $('.search-input').eq(1).val();
+        if ($('.search-operator-option').eq(0).text() == "SEL")
+            keyword = $('.search-input').eq(0).val();
+        else if ($('.search-operator-option').eq(0).text() == "AND")
+            keyword = $('.search-input').eq(0).val() + "&" + $('.search-input').eq(1).val();
         else
-        	keyword = $('.search-input').eq(0).val() + "|" + $('.search-input').eq(1).val();
+            keyword = $('.search-input').eq(0).val() + "|" + $('.search-input').eq(1).val();
 
         var beGood = false;
-        for (var i = 0; i < authorList; i++) {
+//        console.log(keyword + " : " + authorList[i] + " : " + beGood);
+        for (var i = 0; i < authorList.length; i++) {
             if (keyword == authorList[i]) beGood = true;
             console.log(keyword + " : " + authorList[i] + " : " + beGood);
         }
@@ -529,7 +541,12 @@
             alert("중복 검색입니다!!!");
             return;
         }
+        if (authorList.length >= 10) {
+            alert("그래프는 10개까지 추가 할 수 있습니다.");
+            return;
+        }
 
+        authorGraph.removeSvg();
         var id = "stat3";
         var sel = 1;
 
@@ -538,60 +555,65 @@
     });
 
     var setTime = 0;
-    function callAjax(id, sel, aList, keyword, searchWord)
-    {
-    	$.ajax({
+    function callAjax(id, sel, aList, keyword, searchWord) {
+        $.ajax({
             url: "/main/statistics/search-author-data",
             type: "post",
             data: {
-            	id : id,
-            	sel : sel,
+                id: id,
+                sel: sel,
                 authorJson: aList,
                 keyword: keyword,
                 msg: searchWord
             },
             success: function (responseData) {
                 var tdata = JSON.parse(responseData);
-                if(tdata.contents != "OK") {
-            		setTime = setTimeout(function () {callAjax(tdata.id, tdata.sel, aList, tdata.keyword, searchWord);}, 100);
+                if (tdata.contents != "OK") {
+                    setTime = setTimeout(function () {
+                        callAjax(tdata.id, tdata.sel, aList, tdata.keyword, searchWord);
+                    }, 100);
                 }
                 else {
-		          	if (sel == 0) {
-	            		setTime = setTimeout(function () {callAjax(tdata.id, 2, aList, tdata.keyword, searchWord);}, 100);
-	            	}
-		          	else if (sel == 1) {
-	            		setTime = setTimeout(function () {callAjax(tdata.id, 3, aList, tdata.keyword, searchWord);}, 100);
-	            	}
-		          	else if (sel == 2) {
-		                var resultData = JSON.parse(tdata.resultList);
-		                aList = tdata.resultList;
-		//                console.error(resultData);
-		                authorGraph = GraphModule.graph();
-		                authorGraph.setMargin({top: 20, right: 60, bottom: 30, left: 60});
-		                authorGraph.setGraphContainer('#author-graph-container');
-		                authorGraph.removeNameList();
-		                authorGraph.removeData();
-		                $.each(authorList, function (i, author) {
-		                    authorGraph.addNameList(author);
-		                });
-		                authorGraph.setData(resultData);
-		                authorGraph.init();
-	            	}
-		          	else if (sel == 3) {
-		                var resultData = JSON.parse(tdata.resultList);
-		                aList = tdata.resultList;
-		                //console.error(resultData);
-		                authorGraph.removeSvg();
-		                authorGraph.setGraphContainer('#author-graph-container');
-		                authorGraph.setMargin({top: 20, right: 60, bottom: 30, left: 60});
-		                authorGraph.addNameList(tdata.keyword);
-		                authorGraph.addData(tdata.keyword, resultData);
-		                authorGraph.refresh();
-		          	}
+                    if (sel == 0) {
+                        setTime = setTimeout(function () {
+                            callAjax(tdata.id, 2, aList, tdata.keyword, searchWord);
+                        }, 100);
+                    }
+                    else if (sel == 1) {
+                        setTime = setTimeout(function () {
+                            callAjax(tdata.id, 3, aList, tdata.keyword, searchWord);
+                        }, 100);
+                    }
+                    else if (sel == 2) {
+                        var resultData = JSON.parse(tdata.resultList);
+                        aList = tdata.resultList;
+                        //                console.error(resultData);
+                        authorGraph = GraphModule.graph();
+                        authorGraph.setMargin({top: 20, right: 60, bottom: 30, left: 60});
+                        authorGraph.setGraphContainer('#author-graph-container');
+                        authorGraph.removeNameList();
+                        authorGraph.removeData();
+                        $.each(authorList, function (i, author) {
+                            authorGraph.addNameList(author);
+                        });
+                        authorGraph.setData(resultData);
+                        authorGraph.init();
+                    }
+                    else if (sel == 3) {
+                        var resultData = JSON.parse(tdata.resultList);
+                        aList = tdata.resultList;
+                        //console.error(resultData);
+                        authorGraph.removeSvg();
+                        authorGraph.setGraphContainer('#author-graph-container');
+                        authorGraph.setMargin({top: 20, right: 60, bottom: 30, left: 60});
+                        authorGraph.addNameList(tdata.keyword);
+                        authorGraph.addData(tdata.keyword, resultData);
+                        authorGraph.refresh();
+                    }
                 }
             }
         })
-	}
+    }
 
     var getSearchTotalData = (function (category) {
         totalGraph.removeNameList();

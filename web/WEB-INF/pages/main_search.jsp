@@ -51,8 +51,7 @@
     <div id="nav">
         <a href="/main">
             <div class="header-button btn">
-                <div class="glyphicon glyphicon-bell"
-                     style="text-align: center; font-size: 27px; padding-top: 10px;"></div>
+                <div class="glyphicon glyphicon-bell"><span class="badge alarm-badge" style="position:absolute;vertical-align: middle;font-family:'Helvetica Neue', Helvetica, Arial, sans-serif;"></span></div>
                 <div>알림</div>
             </div>
         </a>
@@ -282,7 +281,7 @@
         </div>
     </div>
 </div>
-
+<script type="text/javascript" charset="UTF-8" src="/js/alarm-update.js"></script>
 <script type="text/javascript" charset="UTF-8">
     //var userHistory;
     var userHistory = [];

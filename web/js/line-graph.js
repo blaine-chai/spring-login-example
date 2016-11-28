@@ -35,7 +35,26 @@ var GraphModule = (function () {
             timePeriod: timePeriodOption.monthly,
             nameList: [],
             interpolation: "monotone",
-            colorSet: [],
+            colorSet: ['#000000',
+                '#3333FF',
+                '#CC33CC',
+                '#33FF33',
+                '#CC3333',
+                '#006633',
+                '#CC33FF',
+                '#33CCFF',
+                '#666633',
+                '#336699',
+                '#CCCC33',
+                '#FF33CC',
+                '#663366',
+                '#33CC33',
+                '#FF3333',
+                '#3333CC',
+                '#993366',
+                '#336666',
+                '#33CCCC',
+                '#669933'],
             totalData: [],
             graphOverall: true
         };
@@ -110,11 +129,6 @@ var GraphModule = (function () {
                 domain.push(data['index']);
             });
 
-            // x = d3.scale.ordinal()
-            //     .domain(domain.map(function (d) {
-            //         return 'a';
-            //     }))
-            //     .rangePoints([0, width]);
             x = d3.scale.ordinal()
                 .domain(domain)
                 .rangePoints([0, width]);
@@ -126,13 +140,8 @@ var GraphModule = (function () {
                 newDomain.push(domain[i]);
                 last = i;
             }
-            // console.error(x(domain[last]));
             totalX = d3.scale.ordinal()
                 .domain(newDomain).rangePoints([0, x(domain[last])]);
-            // console.error(x(domain[last]));
-            // totalX = d3.scale.ordinal()
-            //     .domain(domain).rangePoints([0, width]);
-            // console.error());
         });
 
         var setYDomain = (function () {
@@ -247,7 +256,7 @@ var GraphModule = (function () {
                 var text = graphContainer.find('.sum text').eq(i);
                 text.css('stroke', option.colorSet[i]);
                 text.css('opacity', 0.8);
-                text.css('font-size','12px');
+                text.css('font-size', '12px');
 
                 text.attr('x', (-text.width()) * 1.1);
                 text.attr('y', -text.height());
@@ -301,7 +310,7 @@ var GraphModule = (function () {
 
         var setColor = function () {
             $.each(option.data, function (i, d) {
-                option.colorSet[i] = pickColor();
+                // option.colorSet[i] = pickColor();
             });
         };
 
@@ -313,9 +322,9 @@ var GraphModule = (function () {
         };
 
 
-        var addColor = function () {
-            option.colorSet.push(pickColor());
-        };
+        // var addColor = function () {
+        //     option.colorSet.push(pickColor());
+        // };
 
         var addName = (function (name) {
             option.nameList.push()
@@ -377,7 +386,7 @@ var GraphModule = (function () {
             addData: function (name, dataSet) {
                 // console.error(dataSet);
                 $.each(dataSet, function (i, d) {
-                    console.error(d[name]);
+                    // console.error(d[name]);
                     if (option.data[i][name] != undefined) {
                         return;
                     }
@@ -388,7 +397,7 @@ var GraphModule = (function () {
                     } else {
                         option.totalData[i][name] = parseInt(d[name]);
                     }
-                    addColor();
+                    // addColor();
                 });
             },
             removeNameList: function () {
