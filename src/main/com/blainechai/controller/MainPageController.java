@@ -370,7 +370,7 @@ public class MainPageController {
     }
 
     @RequestMapping(value = {"/main/statistics/search-total-data"})
-    public ModelAndView getStatisticsTotal(HttpServletRequest request) 
+    public ModelAndView getStatisticsTotal(HttpServletRequest request)
     {
         String searchPeriod = request.getParameter("searchPeriod");
 
@@ -390,10 +390,10 @@ public class MainPageController {
         Calendar c = Calendar.getInstance ( );
         if(dayMonth[1].equals("monthly")) c.add (c.MONTH, 1);
         else  c.add (c.DATE, 1);
-        
-    	String endTime = c.get(c.YEAR) +(String.format("%02d", c.get(c.MONTH)+1)) + (String.format("%02d", c.get(c.DATE))) + "235959"; 
+
+    	String endTime = c.get(c.YEAR) +(String.format("%02d", c.get(c.MONTH)+1)) + (String.format("%02d", c.get(c.DATE))) + "235959";
         String msg = startTime + "-" + endTime + ">" + searchPeriod;
-        
+
         SocketComm sc = new SocketComm(userId + "@" + "stat1", ip, port, 23, 0, msg);
         sc.runStart();
 
@@ -414,7 +414,7 @@ public class MainPageController {
 
         if (dayMonth[1].equals("monthly"))
             value = graphDataprocessingByMonthly(startTime, endTime, time, sc.getStatitcs());
-        else 
+        else
         	value = graphDataprocessingByDaily(startTime, endTime, time, sc.getStatitcs());
 
         long total = 0L;
@@ -450,7 +450,7 @@ public class MainPageController {
     	String timeS = "";
     	String timeNow = "";
     	String timeE = e.get(e.YEAR) + String.format("%02d", e.get(e.MONTH)+1);
-    	
+
     	for(int i=0; i < value.length; i++) {
     		timeS = s.get(s.YEAR) +String.format("%02d", s.get(s.MONTH)+1);
     		timeNow = time[i].substring(0, 6);
@@ -471,10 +471,10 @@ public class MainPageController {
 	    	}
 	    	s.add (s.MONTH, 1);
 	    }
-    	
+
     	timeS = s.get(s.YEAR) + String.format("%02d", s.get(s.MONTH)+1);
-    	 
-    	while(timeS.compareTo(timeE) <= 0) 
+
+    	while(timeS.compareTo(timeE) <= 0)
     	{
 	    	valueList.add(0);
 	    	timeList.add(timeS);
@@ -488,29 +488,29 @@ public class MainPageController {
     	String endDate = startDate;
     	if(timeList.size() == 2) {
 	    	valueList.add(0);
-	    	timeList.add(timeS);   		
+	    	timeList.add(timeS);
     	}
     	if(timeList.size() > 2) {
     		centerDate = timeList.get((int)(timeList.size()/2)-1);
     		endDate = timeList.get(timeList.size()-1);
     	}
     	System.out.println(" :444:  startDate = " + startDate + " : centerDate = " + centerDate + " : endDate = " + endDate);
-	
+
     	int[] returnValue = new int[valueList.size()];
-    	
+
     	for(int i=0; i < valueList.size(); i++) {
     		returnValue[i] = valueList.get(i);
         	//System.out.println(" :555:  time = " + timeList.get(i) + " :1: value = " + valueList.get(i));
     	}
-    	    	
+
     	return returnValue;
     }
-    
+
     public int[] graphDataprocessingByDaily(String startTime, String endTime, String[] time, int[] value)
     {
     	ArrayList<Integer> valueList = new ArrayList<Integer>();
     	ArrayList<String> timeList = new ArrayList<String>();
-   	
+
     	Calendar s = Calendar.getInstance ( );		//오늘 날짜를 기준으로
     	s.set(Integer.parseInt(startTime.substring(0, 4)), Integer.parseInt(startTime.substring(4, 6))-1, Integer.parseInt(startTime.substring(6, 8)));
     	Calendar e = Calendar.getInstance ( );		//오늘 날짜를 기준으로..
@@ -519,7 +519,7 @@ public class MainPageController {
     	String timeS = "";
     	String timeNow = "";
     	String timeE = e.get(e.YEAR) +(String.format("%02d", e.get(e.MONTH)+1)) + (String.format("%02d", e.get(e.DATE)));
-    	
+
     	for(int i=0; i < value.length; i++) {
     		timeS = s.get(s.YEAR) +(String.format("%02d", s.get(s.MONTH)+1)) + (String.format("%02d", s.get(s.DATE)));
     		timeNow = time[i].substring(0, 8);
@@ -541,41 +541,41 @@ public class MainPageController {
 	    	}
 	    	s.add (s.DATE, 1);
 	    }
-    	
+
     	timeS = s.get(s.YEAR) +(String.format("%02d", s.get(s.MONTH)+1)) + (String.format("%02d", s.get(s.DATE)));
-  	
-    	while(timeS.compareTo(timeE) <= 0) 
+
+    	while(timeS.compareTo(timeE) <= 0)
     	{
     		valueList.add(0);
 	    	timeList.add(timeS);
-	    	
+
         	s.add (s.DATE, 1);
 	    	timeS = s.get(s.YEAR) +(String.format("%02d", s.get(s.MONTH)+1)) + (String.format("%02d", s.get(s.DATE)));
     	}
-    	
+
     	String startDate = timeList.get(0);
     	String centerDate = startDate;
     	String endDate = startDate;
     	if(timeList.size() == 2) {
 	    	valueList.add(0);
-	    	timeList.add(timeS);   		
+	    	timeList.add(timeS);
     	}
     	if(timeList.size() > 2) {
     		centerDate = timeList.get((int)(timeList.size()/2)-1);
     		endDate = timeList.get(timeList.size()-1);
     	}
     	System.out.println(" :444:  startDate = " + startDate + " : centerDate = " + centerDate + " : endDate = " + endDate);
-    	
+
     	int[] returnValue = new int[valueList.size()];
-    	
+
     	for(int i=0; i < valueList.size(); i++) {
     		returnValue[i] = valueList.get(i);
         	//System.out.println(" :555:  time = " + timeList.get(i) + " :1: value = " + valueList.get(i));
     	}
-    	
+
     	return returnValue;
     }
-     
+
 
     @RequestMapping(value = {"/main/statistics/search-author-total-data"})
     public ModelAndView getStatisticsAuthorTotal(HttpServletRequest request) {
@@ -603,6 +603,7 @@ public class MainPageController {
         String searchPeriod = request.getParameter("searchPeriod");
 
         ArrayList<String> authorList = (ArrayList<String>) gson.fromJson(authorListTmp, ArrayList.class);
+        System.out.println(authorListTmp);
         for (int i = 0; i < authorList.size(); i++)
             System.out.println(i + " : " + authorList.get(i));
 
@@ -613,9 +614,10 @@ public class MainPageController {
         }
         int[] value = null;
 
-        //String author = "111";
-        //String msg = "indexA^" + author + ">문자포함>20150101000000-20150531235959>MSG_daily";
-        String msg = "indexA^" + author + ">문자포함>20150101000000-20170531235959>MSG_monthly";
+        //String msg = "indexA^" + author + ">문자포함>20150101000000-20170531235959>MSG_monthly";
+        String msg = request.getParameter("msg");
+        msg = wordParse(msg);
+
         SocketComm sc = new SocketComm(userId + "@" + "stat2", ip, port, 21, 0, msg);
         sc.runStart();
 
@@ -646,6 +648,8 @@ public class MainPageController {
         ArrayList<LinkedHashMap<String, String>> authorJsonTmp = (ArrayList<LinkedHashMap<String, String>>) gson.fromJson(authorJson, ArrayList.class);
         System.out.println(searchPeriod);
 
+        System.out.println("author : " + author);
+
         ArrayList<LinkedHashMap<String, String>> resultList = getGraphDataByAuthorsAndPeriod(authorJsonTmp, searchPeriod, author, value);
 
         ModelAndView modelAndView = new ModelAndView("api");
@@ -668,6 +672,8 @@ public class MainPageController {
             }
             resultList.add(tMap);
         }
+
+        System.out.println("resultList : " + resultList);
 
         return resultList;
     }
@@ -843,7 +849,7 @@ public class MainPageController {
     }
 
     @RequestMapping(value = "/main/searching")
-    public ModelAndView searchItems(HttpServletRequest request) 
+    public ModelAndView searchItems(HttpServletRequest request)
     {
         Gson gson = new Gson();
         String id = request.getParameter("id");
@@ -1124,12 +1130,12 @@ public class MainPageController {
     public ModelAndView adminBookmarkAdd(HttpServletRequest request) {
         String sessionId = request.getSession().getId();
         String adminId;
-        
+
         String id = request.getParameter("id");
         String msg = request.getParameter("msg");
         msg = wordParse(msg);
         System.out.println("userBookmarkAdd : id = " + id + " : msg = " + msg);
-        
+
         String word = request.getParameter("data");
         if (sessionRepository.findByJSessionId(sessionId).size() > 0) {
             adminId = sessionRepository.findByJSessionId(sessionId).get(0).getUserId();
@@ -1150,7 +1156,7 @@ public class MainPageController {
                 }
             }
         }
-        return new ModelAndView("api").addObject("json", "");         
+        return new ModelAndView("api").addObject("json", "");
     }
 
     @RequestMapping(value = "/main/user-bookmark/delete")
@@ -1391,6 +1397,16 @@ public class MainPageController {
             if (i != s.length - 1) word += firstAdd;
         }
         return word;
+    }
+
+    private String getAuthorByNickname(String nickname){
+        String author = "";
+        List<NicknameOption> nicknameOptions = nicknameRepository.findByNickname(nickname);
+        if (nicknameOptions.size() <= 0) {
+            return author;
+        } else {
+            return nicknameOptions.get(0).getAuthor();
+        }
     }
 
     private final class SEARCH_PERIOD {

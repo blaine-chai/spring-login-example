@@ -29,6 +29,8 @@ public interface CommonBookmarkRepository extends JpaRepository<CommonBookmark, 
     @Transactional
     long deleteByUserAccount_UserId(String userId);
 
+    @Transactional
+    long deleteByAdminBookmark_AdminAccount_UserId(String userId);
 //    @Transactional
 //    long deleteByUserId(String userId);
 }

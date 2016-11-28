@@ -62,12 +62,12 @@
         });
         var json = JSON.stringify(a);
         console.error(json);
-        var input=$('<input name="groupNames">');
+        var input=$('<input name="groupNames">').hide();
         input.val(json);
         $('form').append(input);
 
         json = JSON.stringify(b);
-         input=$('<input name="uncheckedGroupNames">');
+         input=$('<input name="uncheckedGroupNames">').hide();
         input.val(json);
         $('form').append(input);
     }

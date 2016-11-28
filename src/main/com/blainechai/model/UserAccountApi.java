@@ -28,7 +28,7 @@ public class UserAccountApi {
         this.userGroups = userGroups;
     }
 
-    public UserAccountApi(UserAccount userAccount, List<UserGroup>userGroup) {
+    public UserAccountApi(UserAccount userAccount, List<UserGroup> userGroup) {
         this.userId = userAccount.getUserId();
         this.username = userAccount.getUsername();
         this.phone = userAccount.getPhone();
@@ -93,9 +93,9 @@ public class UserAccountApi {
         this.userGroups = userGroups;
     }
 
-    public boolean hasGroupName(String groupName){
-        for(UserGroup userGroup:userGroups){
-            if(groupName.equals(userGroup.getGroupName().getGroupName())){
+    public boolean hasGroupName(String groupName) {
+        for (UserGroup userGroup : userGroups) {
+            if (groupName.equals(userGroup.getGroupName().getGroupName())) {
                 return true;
             }
         }
