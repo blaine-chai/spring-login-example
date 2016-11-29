@@ -32,16 +32,11 @@
         <div class="panel-body">
             <form action="/admin/admin-account/search" method="post" class="form-inline" role="form">
                 <div class="input-prepend input-append form-group">
-                    <div class="checkbox">
-                        <label>
-                            <input type="checkbox" name="activeFilter" value="active"> 일시중지 사용자
-                        </label>
-                    </div>
                     <select name="searchFilter" class="form-control">
-                        <option value="userId">관리자 계정</option>
-                        <option value="username">관리자 이름</option>
+                        <option value="userId">사용자 계정</option>
+                        <option value="username">사용자 이름</option>
                         <%--<option value="password">비밀번호</option>--%>
-                        <option value="date">생성일</option>
+                        <%--<option value="date">생성일</option>--%>
                     </select>
                     <input class="form-control" name="searchInput" type="text">
                 </div>

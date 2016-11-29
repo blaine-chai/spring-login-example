@@ -434,8 +434,10 @@
 
 
         $('#author-graph-add-btn').click(function (e) {		// 추가 버튼을 클릭할 때
-            addAuthorGraphData();
+        	if(authorList.length == 0) $('#author-graph-new-btn').click();
+        	else 			addAuthorGraphData();
         });
+
         $('#author-graph-new-btn').click(function (e) {		// 신규 버튼을 클릭할 때
             graphCount = 1;
             if (authorGraph != undefined) {
@@ -471,7 +473,7 @@
 
         //var d = new Date();
         //var ttt = d.getFullYear() + "/" + (d.getMonth()+1) + "/" + d.getDate();
-        var ttt = timeConverter(timestamp - 3600 * 24 * 500);
+        var ttt = timeConverter(timestamp - 3600 * 24 * 700);
 
         $('#datepicker1').datetimepicker({
             format: 'Y/m/d',

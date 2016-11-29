@@ -35,7 +35,7 @@ var GraphModule = (function () {
             timePeriod: timePeriodOption.monthly,
             nameList: [],
             interpolation: "monotone",
-            colorSet: ['#000000',
+            colorSet: [
                 '#3333FF',
                 '#CC33CC',
                 '#33FF33',
@@ -54,7 +54,8 @@ var GraphModule = (function () {
                 '#993366',
                 '#336666',
                 '#33CCCC',
-                '#669933'],
+                '#669933',
+                '#000000'],
             totalData: [],
             graphOverall: true
         };
@@ -257,9 +258,10 @@ var GraphModule = (function () {
                 text.css('stroke', option.colorSet[i]);
                 text.css('opacity', 0.8);
                 text.css('font-size', '12px');
-
-                text.attr('x', (-text.width()) * 1.1);
-                text.attr('y', -text.height());
+                text.attr('x', -80);
+                text.attr('y', -10);
+                // text.attr('x', (-text.width()) * 1.1);
+                // text.attr('y', -text.height());
             });
 
         });

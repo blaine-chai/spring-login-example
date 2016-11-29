@@ -27,32 +27,6 @@
 <body>
 <div class="container">
     <h2>Group List</h2>
-    <div class="panel panel-info">
-        <div class="panel-heading">Search</div>
-        <div class="panel-body">
-            <form action="/admin/group-name/search" method="post" class="form-inline" role="form">
-                <div class="input-prepend input-append form-group">
-                    <div class="checkbox">
-                        <label>
-                            <input type="checkbox" name="activeFilter" value="active"> 일시중지 사용자
-                        </label>
-                    </div>
-                    <select name="searchFilter" class="form-control">
-                        <option value="userId">관리자 계정</option>
-                        <option value="username">관리자 이름</option>
-                        <%--<option value="password">비밀번호</option>--%>
-                        <option value="date">생성일</option>
-                    </select>
-                    <input class="form-control" name="searchInput" type="text">
-                </div>
-                <button class="btn btn-primary" type="submit">
-                    검색
-                </button>
-                <a href="/admin/group-name/get" class="btn btn-default">초기화</a>
-            </form>
-        </div>
-    </div>
-
     <div class="table-responsive">
         <form action="/admin/group-name/register" method="post" style="width: 100%; position:relative;">
             <button class="btn btn-primary" style="position: absolute; right: 50px;">생성</button>
@@ -60,7 +34,7 @@
         <table class="table table-condensed table-hover" id="cssTable">
             <thead>
             <tr>
-                <th width="40%" class="text-center">그룹 이름</th>
+                <th width="60%" class="text-center">그룹 이름</th>
                 <th class="text-center shrink"></th>
             </tr>
             </thead>

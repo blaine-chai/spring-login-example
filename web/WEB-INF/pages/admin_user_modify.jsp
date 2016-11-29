@@ -18,7 +18,7 @@
         <input class="form-control" name="username" value="${adminInfo.username}" type="text"/><br>
         <label>비밀번호</label>
         <%--<input class="form-control" value="**********" type="password" readOnly="true"/><br>--%>
-        <input class="form-control" value="**********" type="password"/><br>
+        <input class="form-control" value="********" type="password" name="password"/><br>
         <label>가입일</label>
         <input class="form-control" name="number" value="${adminInfo.createDate}" type="text"/><br>
         <div class="checkbox">

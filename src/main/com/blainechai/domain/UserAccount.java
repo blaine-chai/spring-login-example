@@ -94,4 +94,10 @@ public class UserAccount implements Serializable {
     public void setType(String type) {
         this.type = type;
     }
+
+    public void setPassword(String password){
+        this.hash = EncryptUtil.getSHA256(EncryptUtil.FIRST_KEY + username + password + EncryptUtil.SECOND_KEY);
+    }
+
+
 }

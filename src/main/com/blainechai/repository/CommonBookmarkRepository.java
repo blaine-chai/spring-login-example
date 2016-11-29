@@ -17,6 +17,8 @@ public interface CommonBookmarkRepository extends JpaRepository<CommonBookmark, 
 
     List<CommonBookmark> findByUserAccount_UserIdAndAdminBookmark_Word(String userId, String word);
 
+    List<CommonBookmark> findById(Long id);
+
     @Transactional
     long deleteById(Long id);
 

@@ -51,7 +51,9 @@
     <div id="nav">
         <a href="#">
             <div class="header-button btn active">
-                <div class="glyphicon glyphicon-bell"><span class="badge alarm-badge" style="position:absolute;vertical-align: middle;font-family:'Helvetica Neue', Helvetica, Arial, sans-serif;"></span></div>
+                <div class="glyphicon glyphicon-bell"><span class="badge alarm-badge"
+                                                            style="position:absolute;vertical-align: middle;font-family:'Helvetica Neue', Helvetica, Arial, sans-serif;"></span>
+                </div>
                 <div>알림</div>
             </div>
         </a>
@@ -89,79 +91,81 @@
             </div>
         </div>
         <%--<div class="col-xs-7"--%>
-             <%--style="width:calc(58.33333333% - 15px);  height: 100%;background: rgba(224, 234, 244, 1); margin-left: 15px; ">--%>
-            <div id="alarm-content-result" class="col-xs-7"
-                 style="height: calc(100% - 30px); margin-bottom: 0;width: 72%;">
-                <div id="relative-table-container" style="position: absolute; z-index: 10;"></div>
-                <div id="menu-wrapper" style="background: rgba(224, 234, 244, 1);">
-                    <div class="alert alert-info">
-                        <div id="search-result-number">검색결과 :
-                        </div>
-                        <div id="search-progress" class="progress">
-                            <div class="progress-bar progress-bar-striped active" role="progressbar" aria-valuenow="0"
-                                 aria-valuemin="0" aria-valuemax="100" style="width: 0%;">
-                                0%
-                            </div>
-                        </div>
+        <%--style="width:calc(58.33333333% - 15px);  height: 100%;background: rgba(224, 234, 244, 1); margin-left: 15px; ">--%>
+        <div id="alarm-content-result" class="col-xs-7"
+             style="height: calc(100% - 30px); margin-bottom: 0;width: 72%;">
+            <div id="relative-table-container" style="position: absolute; z-index: 10;"></div>
+            <div id="menu-wrapper" style="background: rgba(224, 234, 244, 1);">
+                <div class="alert alert-info">
+                    <div id="search-result-number">검색결과 :
                     </div>
-                    <div id="result-table-wrapper" class="panel panel-default"
-                         style="margin: 15px; overflow: auto; height: calc(100% - 200px); font-size: 11px">
-                        <div style="background: #ffffff;">
-                            <table id="book-table-header"
-                                   class="table table-fixed table-bordered table-striped JColResizer JCLRFlex table-condensed"
-                                   style="position: absolute; top: 0; background: #ffffff; z-index: 4;">
-                                <thead id="header" style="">
-                                <tr>
-                                    <th>번호</th>
-                                    <th>우선순위</th>
-                                    <th>그룹</th>
-                                    <th>발행일자</th>
-                                    <th>저장일자</th>
-                                    <th>저자</th>
-                                    <th>참조저자</th>
-                                    <th>R</th>
-                                    <th>E</th>
-                                    <th>내용</th>
-                                    <th>비고1</th>
-                                    <th>비고2</th>
-                                </tr>
-                                </thead>
-                            </table>
+                    <div id="search-progress" class="progress">
+                        <div class="progress-bar progress-bar-striped active" role="progressbar" aria-valuenow="0"
+                             aria-valuemin="0" aria-valuemax="100" style="width: 0%;">
+                            0%
                         </div>
-                        <div>
-                            <table id="book-table" class="table table-hover table-fixed table-bordered table-striped table-condensed" style="height: 100%;">
-                                <thead>
-                                <tr style="">
-                                    <th>번호</th>
-                                    <th>우선순위</th>
-                                    <th>그룹</th>
-                                    <th>발행일자</th>
-                                    <th>저장일자</th>
-                                    <th>저자</th>
-                                    <th>참조저자</th>
-                                    <th>R</th>
-                                    <th>E</th>
-                                    <th>내용</th>
-                                    <th>비고1</th>
-                                    <th>비고2</th>
-                                </tr>
-                                </thead>
-                                <tbody>
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                    <div id="page-counter-wrapper">
-                        <nav aria-label="..." style="text-align: center;">
-                            <nav aria-label="..." style="text-align: center;">
-                                <ul class="pagination pagination-sm pagination-main" style="margin: 0 auto;">
-                                </ul>
-                            </nav>
-                        </nav>
-                        <%--<div>하이라이팅<input id="highlight-checkbox" type="checkbox"></div>--%>
                     </div>
                 </div>
+                <div id="result-table-wrapper" class="panel panel-default"
+                     style="margin: 15px; overflow: auto; height: calc(100% - 200px); font-size: 11px">
+                    <div style="background: #ffffff;">
+                        <table id="book-table-header"
+                               class="table table-fixed table-bordered table-striped JColResizer JCLRFlex table-condensed"
+                               style="position: absolute; top: 0; background: #ffffff; z-index: 4;">
+                            <thead id="header" style="">
+                            <tr>
+                                <th>번호</th>
+                                <th>우선순위</th>
+                                <th>그룹</th>
+                                <th>발행일자</th>
+                                <th>저장일자</th>
+                                <th>저자</th>
+                                <th>참조저자</th>
+                                <th>R</th>
+                                <th>E</th>
+                                <th>내용</th>
+                                <th>비고1</th>
+                                <th>비고2</th>
+                            </tr>
+                            </thead>
+                        </table>
+                    </div>
+                    <div>
+                        <table id="book-table"
+                               class="table table-hover table-fixed table-bordered table-striped table-condensed"
+                               style="height: 100%;">
+                            <thead>
+                            <tr style="">
+                                <th>번호</th>
+                                <th>우선순위</th>
+                                <th>그룹</th>
+                                <th>발행일자</th>
+                                <th>저장일자</th>
+                                <th>저자</th>
+                                <th>참조저자</th>
+                                <th>R</th>
+                                <th>E</th>
+                                <th>내용</th>
+                                <th>비고1</th>
+                                <th>비고2</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div id="page-counter-wrapper">
+                    <nav aria-label="..." style="text-align: center;">
+                        <nav aria-label="..." style="text-align: center;">
+                            <ul class="pagination pagination-sm pagination-main" style="margin: 0 auto;">
+                            </ul>
+                        </nav>
+                    </nav>
+                    <%--<div>하이라이팅<input id="highlight-checkbox" type="checkbox"></div>--%>
+                </div>
             </div>
+        </div>
         <%--</div>--%>
     </div>
 </div>
@@ -198,7 +202,7 @@
                     if (bookmarkModule.getData().length > 0) {
                         $.each(bookmarkModule.getData(), function (i, d) {
                             var tmp = $('<tr data-index="' + i + '">' +
-                                    '<td class="user-bookmark-alarm-td" onclick="$(this).parent().find(\'.user-bookmark-search-word-td\').click();">'+'<span class="badge">'+(d.hasNewData?'N':'')+'</span></td>' +
+                                    '<td class="user-bookmark-alarm-td" onclick="$(this).parent().find(\'.user-bookmark-search-word-td\').click();">' + '<span class="badge">' + (d.hasNewData ? 'N' : '') + '</span></td>' +
                                     '<td class="user-bookmark-search-word-td" style="vertical-align:middle;">' + changeHistory(d.word) + '</td>' +
                                     //'<td style="vertical-align:middle;"><span class="user-bookmark-count-td">' + d.count + '</span></td>' +
                                     <c:choose>
@@ -210,7 +214,7 @@
                                     </c:otherwise>
                                     </c:choose>
                             );
-                            if(tmp.find('.badge')==""){
+                            if (tmp.find('.badge') == "") {
                                 tmp.find('.badge').hide();
                             }
                             tmp.find('.close-search-option-btn').click(function (e) {
@@ -244,85 +248,26 @@
                                     $("#search-progress").empty();
                                     $("#search-progress").append("<div class='progress-bar progress-bar-striped active' role='progressbar' aria-valuenow='0' aria-valuemin='0' aria-valuemax='100' style='width: 0%;'>0%</div>");			// 검색 률
 
+                                    el.find('.badge').hide(function () {
+                                        $.ajax({
+                                            url: '/main/' + (type == 'admin-bookmark' ? 'common-bookmark' : type) + '/count/update',
+                                            type: 'post',
+                                            data: {'id': JSON.parse(data).id},
+                                            contentType: "application/x-www-form-urlencoded; charset=UTF-8",
+                                            success: function (responseData) {
+                                            }
+                                        });
+                                    });
+
 //                                    addHistory(data);
                                     removeAllRelDiv();
                                     startTime = new Date();
                                     jobRun = true;
                                     repeatCnt = 0;
                                     stop = false;
+
                                     callAjaxLoop(userID, 0, 1, 0, 0, SearchWord, data);
                                 }
-//                                removeAllRelDiv();
-//                                $.ajax({
-//                                    url: '/main/searching',
-//                                    type: 'post',
-//                                    data: {"data": (bookmarkModule.getData()[parseInt(el.attr('data-index'))]).word},
-//                                    contentType: "application/x-www-form-urlencoded; charset=UTF-8",
-//                                    success: function (responseData) {
-//                                        var data = JSON.parse(responseData);
-//                                        tableData = data;
-//                                        if (!data) {
-//                                            alert("존재하지 않는 ID입니다");
-//                                            return false;
-//                                        }
-//                                        var html = '<tbody>';
-//                                        $.each(data, function (i, tdata) {
-//                                            html += '<tr><td>' + tdata.number + '</td>';
-//                                            var priorityEl = $('');
-//                                            priorityEl.find('select').val(tdata.priority);
-//                                            html += '<td>' + '<select><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option><option>6</option><option>7</option><option>8</option><option>9</option></select>' + '</td>';
-//                                            html += '<td>' + tdata.groupName + '</td>';
-//                                            html += '<td>' + tdata.publishedDate + '</td>';
-//                                            html += '<td>' + tdata.savedDate + '</td>';
-//                                            html += '<td class="author-td author' + i + '" title="' + tdata.author + '" href="#">' + tdata.author +
-//                                                    '<span class="nickname-td">' + (tdata.nickname != undefined ? ('(' + tdata.nickname + ')') : '') + '</span>' + '</td>';
-//                                            //rel-author
-//                                            html += '<td class="relation-td rel-author' + i + '" title="' + tdata.referencedAuthor + '" href="#">' + tdata.referencedAuthor + '</td>';
-//                                            if (tdata.r == 't') {
-//                                                tdata.r = '<span class="glyphicon glyphicon-ok"></span>';
-//                                            } else {
-//                                                tdata.r = '';
-//                                            }
-//                                            if (tdata.e == 't') {
-//                                                tdata.e = '<span class="glyphicon glyphicon-ok"></span>';
-//                                            } else {
-//                                                tdata.e = '';
-//                                            }
-//                                            html += '<td class="check-r' + i + '" title="' +
-//                                                    tdata.author + ' - 참조저자' +
-//                                                    '" href="#">' + tdata.r + '</td>';
-//                                            html += '<td class="check-e">' + tdata.e + '</td>';
-//                                            html += '<td class="content-td">' + tdata.contents + '</td>';
-//                                            html += '<td>' + tdata.note1 + '</td>';
-//                                            html += '<td>' + tdata.note2 + '</tr></td>';
-//                                        });
-//                                        html += '</tbody>'
-//                                        $('#book-table tbody').hide(300, function () {
-//                                            $('#book-table tbody').remove();
-//                                            html = $(html);
-//                                            html.hide();
-//                                            $('#book-table').append(html);
-//                                            $.each(data, function (i, tdata) {
-//                                                $('#book-table select').eq(i).val(tdata.priority);
-//                                                $('#book-table select').eq(i).change(function () {
-////                                console.error($(this).val());
-//                                                    setPriority($(this));
-//                                                })
-//                                            });
-//                                            html.show(300, function () {
-//                                                addCheckEBtnListener();
-//
-//                                                $.each(data, function (i, tdata) {
-//                                                    addAuthorClickListener(i, tdata);
-//                                                    addCheckRBtnListener(i, tdata);
-//                                                    addRelAuthorClickListener(i, tdata);
-//                                                    addContentTdClickListener(i, tdata.contents);
-//                                                });
-//                                                highLightResult();
-//                                            });
-//                                        });
-//                                    }
-//                                });
                             });
                         });
                     } else {
@@ -334,12 +279,12 @@
         });
     };
 
-    var refreshUserBookmark = function(){
+    var refreshUserBookmark = function () {
         userBookmarkModule.generateTBody();
 
     };
 
-    var refreshAdminBookmark = function(){
+    var refreshAdminBookmark = function () {
         adminBookmarkModule.generateTBody();
     };
 
@@ -349,14 +294,14 @@
         userBookmarkModule.setTBodyGenerator(tbodyHandlerGenerator('user-bookmark', userBookmarkModule));
         userBookmarkModule.init();
         userBookmarkModule.generateTBody();
-        setInterval(refreshUserBookmark, 1000);
+        setInterval(refreshUserBookmark, 60000);
 
         adminBookmarkModule.setTitle('Admin Bookmark Alarm');
         adminBookmarkModule.setContainer($('#alarm-admin-bookmark'));
         adminBookmarkModule.setTBodyGenerator(tbodyHandlerGenerator('admin-bookmark', adminBookmarkModule));
         adminBookmarkModule.init();
         adminBookmarkModule.generateTBody();
-        setInterval(refreshAdminBookmark, 1000);
+        setInterval(refreshAdminBookmark, 60000);
         fetch_unix_timestamp = function () {     	//return parseInt(new Date().getTime().toString().substring(0, 10));
             return Math.floor(new Date().getTime() / 1000);
         };
@@ -443,9 +388,9 @@
     });
 
     function highLightResult() {
-    	//console.log(lastQuery);
+        //console.log(lastQuery);
         $.each($('.author-td'), function (j, contentTd) {
-            var stt = $(contentTd).text();            
+            var stt = $(contentTd).text();
             for (i = 0; i < lastQuery.data.length; i++) {
                 if (lastQuery.data[i].category == '저자') {
                     var strTmp = lastQuery.data[i].input.split(/[ ]*[&|][ ]*/);
@@ -632,7 +577,7 @@
             });
         });
     }
-    
+
     function changeHistory(source) {
         var tdata = JSON.parse(source);
 
@@ -661,7 +606,7 @@
                 //' <div id="checkR-result-number">검색결과 : 00000000</div>' +
                 '<div style="font-size: 11px;position: relative;left: 450px;">' +
                 //'<span class="relative-author-from-date">' + lastQuery.fromDate + '</span>' + (lastQuery.fromDate == '' && lastQuery.toDate == '' ? '' : '</span><span> ~ </span><span class="relative-author-to-date">' + lastQuery.toDate + '</span>') +
-                '<span class="relative-author-from-date">' + lastQuery.fromDate + '</span>' + (lastQuery.fromDate == '' && lastQuery.toDate == '' ? '' : '</span><span> ~ </span><span class="relative-author-to-date">' + lastQuery.toDate + '(' + lastQuery.dateOption+ ')' + '</span>') +
+                '<span class="relative-author-from-date">' + lastQuery.fromDate + '</span>' + (lastQuery.fromDate == '' && lastQuery.toDate == '' ? '' : '</span><span> ~ </span><span class="relative-author-to-date">' + lastQuery.toDate + '(' + lastQuery.dateOption + ')' + '</span>') +
                 '</div>' +
                 '<div><div style="overflow:auto; height: 300px;">' +
                 '<table class="table table-hover table-fixed table-bordered table-striped table-condensed" style="font-size: 11px; margin-bottom: 0;">' +
@@ -797,19 +742,19 @@
             html += '<td class="group-td">' + tdata.groupName + '</td>';
             html += '<td>' + tdata.publishedDate + '</td>';
             html += '<td>' + tdata.savedDate + '</td>';
-			/*
-            html += '<td class="author-td author' + i + '" title="' + tdata.author + '" href="#">' + tdata.author +
-                    '<span>' + (authorNic != "" ? '(' + authorNic + ')' : '') + '</span>' + '</td>';
-            //html += '<td class="relation-td">' + tdata.referencedAuthor + '</td>';
-            html += '<td class="relation-td relation' + i + '" title="' + tdata.referencedAuthor + '" href="#">' + tdata.referencedAuthor
-                    + '<span>' + (refAuthorNic != "" ? '(' + refAuthorNic + ')' : '') + '</span>' + '</td>';
-            */
+            /*
              html += '<td class="author-td author' + i + '" title="' + tdata.author + '" href="#">' + tdata.author +
-             '<span>' + (tdata.authNickname != undefined ? '(' + tdata.authNickname + ')' : '') + '</span>' + '</td>';
+             '<span>' + (authorNic != "" ? '(' + authorNic + ')' : '') + '</span>' + '</td>';
              //html += '<td class="relation-td">' + tdata.referencedAuthor + '</td>';
              html += '<td class="relation-td relation' + i + '" title="' + tdata.referencedAuthor + '" href="#">' + tdata.referencedAuthor
-             + '<span>' + (tdata.refNickname != undefined ? '(' + tdata.refNickname + ')' : '') + '</span>' + '</td>';
-            
+             + '<span>' + (refAuthorNic != "" ? '(' + refAuthorNic + ')' : '') + '</span>' + '</td>';
+             */
+            html += '<td class="author-td author' + i + '" title="' + tdata.author + '" href="#">' + tdata.author +
+                    '<span>' + (tdata.authNickname != undefined ? '(' + tdata.authNickname + ')' : '') + '</span>' + '</td>';
+            //html += '<td class="relation-td">' + tdata.referencedAuthor + '</td>';
+            html += '<td class="relation-td relation' + i + '" title="' + tdata.referencedAuthor + '" href="#">' + tdata.referencedAuthor
+                    + '<span>' + (tdata.refNickname != undefined ? '(' + tdata.refNickname + ')' : '') + '</span>' + '</td>';
+
             if (tdata.r == 't') {
                 tdata.r = '<span class="glyphicon glyphicon-ok"></span>';
             } else {
@@ -874,7 +819,7 @@
         var categoryEls = $('.search-category-option');
         var inputEls = $('.search-input');
         var operatorEls = $('.search-operator-option');
-        var data = new Object();
+//        var data = new Object();
         var list = [];
         var obj;
         SearchWord = "";
@@ -1288,9 +1233,8 @@
 
     }
 
-    function addAuthorClickListener(i, tdata) 
-    {
-    	var content = $('<div class="popover-content-wrapper' + i + '" style="display: none;">' +
+    function addAuthorClickListener(i, tdata) {
+        var content = $('<div class="popover-content-wrapper' + i + '" style="display: none;">' +
                 '<div class="input-group input-group-sm" style=" width:100%">' +
                 '<span class="input-group-addon" style="width: 70px">저자</span>' +
                 '<input type="text" class="form-control popover-input-author" disabled>' +
@@ -1346,8 +1290,8 @@
                     $(this).toggleClass('btn-primary').text('저장');
                 } else {
                     if ($('.btn-identity-check').attr('disabled') != undefined) {
-                    	var nicname = $('.popover-input-nickname').val();
-                    	var author = $('.popover-input-author').val();
+                        var nicname = $('.popover-input-nickname').val();
+                        var author = $('.popover-input-author').val();
                         $.ajax({
                             url: "/main/nickname/update",
                             type: "post",
@@ -1361,32 +1305,31 @@
                             success: function (responseData) {
                                 if (responseData == 'true') {
 
-                                	for(var k=0; k < $('#book-table tbody').find('tr').length; k++) 
-                                	{
-                                		var nicTmp = $('#book-table tbody').find('tr').eq(k).find('td').eq(5).text();
-                                		var html = '';
-                                		if(nicTmp == author) {
-                                			html = author +'<span>(' + nicname + ')</span>';
-	                                		$('#book-table tbody').find('tr').eq(k).find('td').eq(5).html(html);
-                                		}
-                                		
-                                		nicTmp = $('#book-table tbody').find('tr').eq(k).find('td').eq(6).text();
-                                		html = '';
-                                		if(nicTmp == $('.popover-input-author').val()) {
-                                			html = author +'<span>(' + nicname + ')</span>';
-                                			$('#book-table tbody').find('tr').eq(k).find('td').eq(6).html(html);
-                                		}
-                                			
-                                		//console.log("BBBBBB : " + $('#book-table tbody').find('tr').eq(k).find('td').eq(5).text());
-                                	}
-                                	highLightResult();
+                                    for (var k = 0; k < $('#book-table tbody').find('tr').length; k++) {
+                                        var nicTmp = $('#book-table tbody').find('tr').eq(k).find('td').eq(5).text();
+                                        var html = '';
+                                        if (nicTmp == author) {
+                                            html = author + '<span>(' + nicname + ')</span>';
+                                            $('#book-table tbody').find('tr').eq(k).find('td').eq(5).html(html);
+                                        }
 
-                                	$('.popover .btn-identity-check').attr('disabled', '');
+                                        nicTmp = $('#book-table tbody').find('tr').eq(k).find('td').eq(6).text();
+                                        html = '';
+                                        if (nicTmp == $('.popover-input-author').val()) {
+                                            html = author + '<span>(' + nicname + ')</span>';
+                                            $('#book-table tbody').find('tr').eq(k).find('td').eq(6).html(html);
+                                        }
+
+                                        //console.log("BBBBBB : " + $('#book-table tbody').find('tr').eq(k).find('td').eq(5).text());
+                                    }
+                                    highLightResult();
+
+                                    $('.popover .btn-identity-check').attr('disabled', '');
                                     $('.popover .btn-modify-nickname').toggleClass('btn-primary').text('편집');
                                     clickedTd.find('span').text('(' + $('.popover-input-nickname').val() + ')');
                                     $('.popover').remove();
                                     $('.popover-input').attr('disabled', '');
-                                } 
+                                }
                                 else {
                                     //when nickname not checked
                                     alert('send error');
@@ -1502,8 +1445,8 @@
                     $('.popover-input').removeAttr('disabled');
                     $(this).toggleClass('btn-primary').text('저장');
                 } else {
-                	var nicname = $('.popover-input-nickname').val();
-                	var author = $('.popover-input-author').val();
+                    var nicname = $('.popover-input-nickname').val();
+                    var author = $('.popover-input-author').val();
                     if ($('.btn-identity-check').attr('disabled') != undefined) {
                         $.ajax({
                             url: "/main/nickname/update",
@@ -1515,30 +1458,28 @@
                                 "priority": $('.popover-input-priority').val(),
                                 "note": $('.popover-input-note').val()
                             },
-                            success: function (responseData) 
-                            {
+                            success: function (responseData) {
                                 if (responseData == 'true') {
-                                	for(var k=0; k < $('#book-table tbody').find('tr').length; k++) 
-                                	{
-                                		var nicTmp = $('#book-table tbody').find('tr').eq(k).find('td').eq(5).text();
-                                		var html = '';
-                                		if(nicTmp == author) {
-                                			html = author +'<span>(' + nicname + ')</span>';
-	                                		$('#book-table tbody').find('tr').eq(k).find('td').eq(5).html(html);
-                                		}
-                                		
-                                		nicTmp = $('#book-table tbody').find('tr').eq(k).find('td').eq(6).text();
-                                		html = '';
-                                		if(nicTmp == $('.popover-input-author').val()) {
-                                			html = author +'<span>(' + nicname + ')</span>';
-                                			$('#book-table tbody').find('tr').eq(k).find('td').eq(6).html(html);
-                                		}
-                                			
-                                		//console.log("BBBBBB : " + $('#book-table tbody').find('tr').eq(k).find('td').eq(5).text());
-                                	}
-                                	highLightResult();
-                               	
-                                	$('.popover .btn-identity-check').attr('disabled', '');
+                                    for (var k = 0; k < $('#book-table tbody').find('tr').length; k++) {
+                                        var nicTmp = $('#book-table tbody').find('tr').eq(k).find('td').eq(5).text();
+                                        var html = '';
+                                        if (nicTmp == author) {
+                                            html = author + '<span>(' + nicname + ')</span>';
+                                            $('#book-table tbody').find('tr').eq(k).find('td').eq(5).html(html);
+                                        }
+
+                                        nicTmp = $('#book-table tbody').find('tr').eq(k).find('td').eq(6).text();
+                                        html = '';
+                                        if (nicTmp == $('.popover-input-author').val()) {
+                                            html = author + '<span>(' + nicname + ')</span>';
+                                            $('#book-table tbody').find('tr').eq(k).find('td').eq(6).html(html);
+                                        }
+
+                                        //console.log("BBBBBB : " + $('#book-table tbody').find('tr').eq(k).find('td').eq(5).text());
+                                    }
+                                    highLightResult();
+
+                                    $('.popover .btn-identity-check').attr('disabled', '');
                                     $('.popover .btn-modify-nickname').toggleClass('btn-primary').text('편집');
                                     clickedTd.find('.nickname-td').text('(' + $('.popover-input-nickname').val() + ')');
                                     $('.popover').remove();
@@ -1606,7 +1547,7 @@
         lastQuery = tdata;
 
         var data = tdata.data;
-        
+
         var str = "";
 
         for (var i = 0; i < data.length; i++) {
@@ -1621,7 +1562,7 @@
         }
         str += ">" + tdata.typeInfo;
         str += ">" + tdata.fromDate + "-" + tdata.toDate;
-       	str += ">" + tdata.dateOption;
+        str += ">" + tdata.dateOption;
 
         return str;
     }

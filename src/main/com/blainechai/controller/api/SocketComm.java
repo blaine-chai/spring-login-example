@@ -396,10 +396,10 @@ public class SocketComm
 				dos.writeUTF(sss[1-i]);
 			}
 
-			while(good < 0) {
+			//while(good < 0) {
 				good = dis.readInt();
-				//Thread.sleep(100);
-			}
+			//
+			//	}
 			System.out.println("\treqStat1 : good : " + good);
 
 			statTime = new String[good];
@@ -452,6 +452,7 @@ public class SocketComm
 
 		System.out.println("SocketComm.java : reqStat2Read : " + cnt);
 	}
+
 	public void reqNotice() throws IOException
 	{
 		System.out.println("msg = " + msg);
@@ -465,6 +466,23 @@ public class SocketComm
 		//dos.writeUTF(s[1]);
 		good = 0;
 	}
+
+	public void reqGetNotice() throws IOException
+	{
+		System.out.println("msg = " + msg);
+		String[] s = msg.split(">");
+
+		System.out.println("s[0] = " + s[0]);
+		System.out.println("s[1] = " + s[1]);
+
+		dos.writeUTF(s[0]);
+		dos.writeUTF(s[1]);
+
+		good = dis.readInt();
+
+		System.out.println("\treqGetNotice : good : " + good);
+	}
+
 
 	public void runStart()
 	{
@@ -564,6 +582,11 @@ public class SocketComm
 				dos.writeBoolean(false);
 				dos.writeUTF("NOTICE");
 				reqNotice();
+			}
+			else  if (sel == 18) {			// checkR
+				dos.writeBoolean(false);
+				dos.writeUTF("GETNOTICE");
+				reqGetNotice();
 			}
 
 			if (good >= 0)

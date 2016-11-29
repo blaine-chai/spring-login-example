@@ -174,7 +174,16 @@ public class AdminController {
 
     @RequestMapping(value = "/admin-account/search")
     public ModelAndView search(HttpServletRequest request) {
-        List<UserAccount> adminList = userAccountRepository.findByUserId(request.getParameter("userId"));
+        String searchFilter = request.getParameter("searchFilter");
+        String searchInput = request.getParameter("searchInput");
+        List<UserAccount> adminList = null;
+        if (searchFilter.equals("userId")) {
+            adminList = userAccountRepository.findByUserIdAndType(searchInput, UserType.ADMIN);
+        } else if (searchFilter.equals("username")) {
+            adminList = userAccountRepository.findByUsernameAndType(searchInput, UserType.ADMIN);
+        } else {
+            adminList = new ArrayList<UserAccount>();
+        }
         ModelAndView modelAndView = new ModelAndView("admin_administrator_list");
         modelAndView.addObject("adminList", adminList);
         return modelAndView;
@@ -194,9 +203,13 @@ public class AdminController {
 
         String userId = request.getParameter("userId");
         String username = request.getParameter("username");
+        String password = request.getParameter("password");
         UserAccount adminAccount = userAccountRepository.findByUserId(userId).get(0);
         adminAccount.setUserId(userId);
         adminAccount.setUsername(username);
+        if (!password.equals("********")) {
+            adminAccount.setPassword(password);
+        }
         adminAccount = userAccountRepository.save(adminAccount);
 
         List<AdminBookmark> bookmarks = adminBookmarkRepository.findByAdminAccount_UserId(userId);
@@ -335,7 +348,16 @@ public class AdminController {
 
     @RequestMapping(value = "/user/search")
     public ModelAndView userSearch(HttpServletRequest request) {
-        List<UserAccount> adminList = userAccountRepository.findByUserId(request.getParameter("userId"));
+        String searchFilter = request.getParameter("searchFilter");
+        String searchInput = request.getParameter("searchInput");
+        List<UserAccount> adminList = null;
+        if (searchFilter.equals("userId")) {
+            adminList = userAccountRepository.findByUserId(searchInput);
+        } else if (searchFilter.equals("username")) {
+            adminList = userAccountRepository.findByUsername(searchInput);
+        } else {
+            adminList = new ArrayList<UserAccount>();
+        }
         ModelAndView modelAndView = new ModelAndView("admin_user_list");
         modelAndView.addObject("adminList", adminList);
         return modelAndView;
@@ -357,9 +379,14 @@ public class AdminController {
 
         String userId = request.getParameter("userId");
         String username = request.getParameter("username");
+        String password = request.getParameter("password");
         UserAccount userAccount = userAccountRepository.findByUserId(userId).get(0);
         userAccount.setUserId(userId);
         userAccount.setUsername(username);
+        if (!password.equals("********")) {
+            userAccount.setPassword(password);
+        }
+
         userAccount = userAccountRepository.save(userAccount);
 
         List<CommonBookmark> commonBookmarks = commonBookmarkRepository.findByUserAccount_UserId(userId);
