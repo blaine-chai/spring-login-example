@@ -64,5 +64,6 @@
         </div>
     </div>
 </div>
+<script type="text/javascript" charset="UTF-8" src="/js/auto-logout.js"></script>
 </body>
 </html>

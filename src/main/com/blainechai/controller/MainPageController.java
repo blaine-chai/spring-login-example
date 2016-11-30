@@ -524,7 +524,7 @@ public class MainPageController {
             timeNow = time[i].substring(0, 8);
             while (timeS.compareTo(timeNow) < 0) {
                 hMap.put(timeS, 0);
-                System.out.println(timeS + " : ");
+//                System.out.println(timeS + " : ");
                 s.add(s.DATE, 1);
                 timeS = s.get(s.YEAR) + (String.format("%02d", s.get(s.MONTH) + 1)) + (String.format("%02d", s.get(s.DATE)));
             }
@@ -1081,7 +1081,7 @@ public class MainPageController {
         }
         ModelAndView modelAndView = new ModelAndView("api");
 //        modelAndView.addObject("json", gson.toJson(rtnArray));
-        System.out.println(historyApis.size());
+//        System.out.println(historyApis.size());
         modelAndView.addObject("json", gson.toJson(historyApis));
 
 
@@ -1106,7 +1106,7 @@ public class MainPageController {
             commonBookmarkRepository.deleteByAdminBookmark_Word(word);
             adminBookmarkRepository.deleteByWord(word);
 
-            System.out.println(word);
+//            System.out.println(word);
         }
         return new ModelAndView("api").addObject("json", "");
     }
@@ -1116,12 +1116,12 @@ public class MainPageController {
         String id = request.getParameter("id");
         String sessionId = request.getSession().getId();
         String userId;
-        System.out.println("!!!!!!@@@");
+//        System.out.println("!!!!!!@@@");
         if (sessionRepository.findByJSessionId(sessionId).size() > 0) {
             userId = sessionRepository.findByJSessionId(sessionId).get(0).getUserId();
-            System.out.println(id + "@@@@@@@");
+//            System.out.println(id + "@@@@@@@");
             List<CommonBookmark> commonBookmarks = commonBookmarkRepository.findById(Long.parseLong(id));
-            System.out.println("@@@@@");
+//            System.out.println("@@@@@");
             if (commonBookmarks.size() > 0) {
                 CommonBookmark commonBookmark = commonBookmarks.get(0);
                 String msg = wordParse(searchWordParse(commonBookmark.getAdminBookmark().getWord()));
@@ -1130,7 +1130,7 @@ public class MainPageController {
                 sc.runStart();
                 int result = sc.beGetGood();
 
-                System.out.println("!!!!!! : " + result);
+//                System.out.println("!!!!!! : " + result);
                 commonBookmark.setCount(result);
                 commonBookmarkRepository.save(commonBookmark);
 
@@ -1271,12 +1271,12 @@ public class MainPageController {
         String id = request.getParameter("id");
         String sessionId = request.getSession().getId();
         String userId;
-        System.out.println("!!!!!!@@@");
+//        System.out.println("!!!!!!@@@");
         if (sessionRepository.findByJSessionId(sessionId).size() > 0) {
             userId = sessionRepository.findByJSessionId(sessionId).get(0).getUserId();
-            System.out.println(id + "@@@@@@@");
+//            System.out.println(id + "@@@@@@@");
             List<UserBookmark> userBookmarks = userBookmarkRepository.findById(Long.parseLong(id));
-            System.out.println("@@@@@");
+//            System.out.println("@@@@@");
             if (userBookmarks.size() > 0) {
                 UserBookmark userBookmark = userBookmarks.get(0);
                 String msg = wordParse(searchWordParse(userBookmark.getWord()));
@@ -1284,7 +1284,7 @@ public class MainPageController {
                 SocketComm sc = new SocketComm(userId + "@" + "ALRAM97", ip, port, 18, 0, msg);
                 sc.runStart();
                 int result = sc.beGetGood();
-                System.out.println("!!!!!!");
+//                System.out.println("!!!!!!");
 
                 userBookmark.setCount(result);
                 userBookmarkRepository.save(userBookmark);
