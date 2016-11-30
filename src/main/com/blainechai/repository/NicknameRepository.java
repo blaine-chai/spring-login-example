@@ -2,6 +2,7 @@ package com.blainechai.repository;
 
 import com.blainechai.domain.NicknameOption;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -11,4 +12,6 @@ import java.util.List;
 public interface NicknameRepository extends JpaRepository<NicknameOption, Long> {
     List<NicknameOption> findByAuthor(String author);
     List<NicknameOption> findByNickname(String nickname);
+    @Transactional
+    long deleteByNickname(String nickname);
 }

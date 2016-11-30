@@ -51,7 +51,9 @@
     <div id="nav">
         <a href="/main">
             <div class="header-button btn">
-                <div class="glyphicon glyphicon-bell"><span class="badge alarm-badge" style="position:absolute;vertical-align: middle;font-family:'Helvetica Neue', Helvetica, Arial, sans-serif;"></span></div>
+                <div class="glyphicon glyphicon-bell"><span class="badge alarm-badge"
+                                                            style="position:absolute;vertical-align: middle;font-family:'Helvetica Neue', Helvetica, Arial, sans-serif;"></span>
+                </div>
                 <div>알림</div>
             </div>
         </a>
@@ -154,6 +156,14 @@
                                                                                  style="width: 113px; text-align:center; font-size:12px; float:left;">
                         </div>
                     </div>
+                </div>
+                <div class="panel panel-default checkbox"
+                     style="padding-top: 5px;padding-bottom:5px;margin-top:10px;margin-bottom: 0;">
+                    <c:forEach items="${userGroups}" var="userGroup">
+                        <label style="margin-left: 10px;width:85px;font-size: 12px;max-width:85px;">
+                            <input type="checkbox" name="groups" value="${userGroup.groupName.groupName}"
+                                   checked="checked" style="">${userGroup.groupName.groupName}</label>
+                    </c:forEach>
                 </div>
 
                 <div class="btn-group btn-group-justified" style="padding-top: 10px">
@@ -399,11 +409,9 @@
 
         $('.expand-btn').click(function (e) {
             if ($(this).text() == "+" && $(this).parent().find('div>table>tbody>tr').length > 0) {
-                $('.history').hide(300);
-//                $(this).parent().append(new_div);
-//                new_div.show(300);
+//                $('.history').hide(300);
                 $(this).parent().find('div').show(300);
-                $('.expand-btn').text('+');
+//                $('.expand-btn').text('+');
                 $(this).text("-");
             } else {
                 $(this).text("+");
@@ -753,7 +761,7 @@
                             + sel2[1] + "' aria-valuemin='0' aria-valuemax='100' style='width: " + sel2[1] + "%;'>" + sel2[1] + "%</div>");			// 검색 률
 
                     console.log(sel2[0] + " : " + sel2[1]);
-					if((sel2[1] == 100)&&(sel2[0]==0)) alert("검색결과가 없습니다!!!");
+                    if ((sel2[1] == 100) && (sel2[0] == 0)) alert("검색결과가 없습니다!!!");
 
                     if (tdata.jobOrder == "1") {
                         if (sel2[1] < 100)
@@ -958,6 +966,12 @@
         SearchWord += data.fromDate + "-" + data.toDate;
         SearchWord += ">" + data.dateOption;
         console.log(data.typeInfo + " : " + data.fromDate + " : " + data.toDate);
+
+        var groupEl = $('input[name=groups]:checked');
+
+        for (var iii = 0; iii < groupEl.size(); iii++) {
+            console.log(groupEl.eq(iii).val());
+        }
 
         if (!isOK) SearchWord = "";
 ///
@@ -1298,11 +1312,11 @@
         });
     }
 
-//    function getAdminHistory(json) {
-//    }
-//
-//    function deleteAdminHistory(element, id) {
-//    }
+    //    function getAdminHistory(json) {
+    //    }
+    //
+    //    function deleteAdminHistory(element, id) {
+    //    }
 
     function addSearchInfo(a) {
         $('.search-input-group').remove();

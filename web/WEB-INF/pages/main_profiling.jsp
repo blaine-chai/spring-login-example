@@ -51,7 +51,9 @@
     <div id="nav">
         <a href="/main">
             <div class="header-button btn">
-                <div class="glyphicon glyphicon-bell"><span class="badge alarm-badge" style="position:absolute;vertical-align: middle;font-family:'Helvetica Neue', Helvetica, Arial, sans-serif;"></span></div>
+                <div class="glyphicon glyphicon-bell"><span class="badge alarm-badge"
+                                                            style="position:absolute;vertical-align: middle;font-family:'Helvetica Neue', Helvetica, Arial, sans-serif;"></span>
+                </div>
                 <div>알림</div>
             </div>
         </a>
@@ -113,6 +115,14 @@
                                                                                      style="width: 113px; text-align:center; font-size:12px; float:left;">
                             </div>
                         </div>
+                    </div>
+                    <div class="panel panel-default checkbox"
+                         style="padding-top: 5px;padding-bottom:5px;margin-top:10px;margin-bottom: 0;">
+                        <c:forEach items="${userGroups}" var="userGroup">
+                            <label style="margin-left: 10px;width:85px;font-size: 12px;max-width:85px;">
+                                <input type="checkbox" name="groups" value="${userGroup.groupName.groupName}"
+                                       checked="checked" style="">${userGroup.groupName.groupName}</label>
+                        </c:forEach>
                     </div>
                     <div class="input-group input-group-sm" style="width: 100%; margin-top:10px;">
                         <input id="nickname-search-input" type="text" class="form-control"
@@ -264,12 +274,12 @@
 
         $('#datepicker1').datetimepicker({
             format: 'Y/m/d',
-			value: timestamp
+            value: timestamp
         });
 
         $('#datepicker2').datetimepicker({
             format: 'Y/m/d',
-			value: new Date()
+            value: new Date()
         });
 
         $('label[name=dateOption]').click(function () {
@@ -287,7 +297,13 @@
             $('#nickname-result-container').hide();
             var keyword = $('#nickname-search-input').val();
             console.log(keyword);
-            if(keyword == "") return;
+            if (keyword == "") return;
+
+            var groupEl = $('input[name=groups]:checked');
+
+            for (var iii = 0; iii < groupEl.size(); iii++) {
+                console.log(groupEl.eq(iii).val());
+            }
 
             idCNT++;
             callAjax("profile" + idCNT, keyword, "", 16, 0, keyword, "");
@@ -297,8 +313,7 @@
     });
 
     function setAuthorResultClickHandler() {
-        $('#nickname-result-table .nickname-search-td').click(function (e)
-   		{
+        $('#nickname-result-table .nickname-search-td').click(function (e) {
             var tmpAuthor = nicNameOff($(this).parent().find('td').eq(1).text());
             idCNT++;
 
@@ -421,23 +436,23 @@
                     if (nicNameDB[i].nickname.indexOf(data.author) != -1) {  //if(str1.indexOf(str2) != -1){
                         //Nic = author + "(" + nicNameDB[i].nickname + ")";
                         tmpEl += '<tr>' +
-                        '<td style="text-align: center;"><input type="radio" class="nickname-radio" name="nickname-radio"></td>' +
-                        '<td class="nickname-search-td">' + nicDB.author + '</td>' +
-                        '<td class="nickname-search-td">' + (nicNameDB[i].nickname != '' ? '(' + nicNameDB[i].nickname + ')' : '') + '</td>' +
-                        '</tr>';
+                                '<td style="text-align: center;"><input type="radio" class="nickname-radio" name="nickname-radio"></td>' +
+                                '<td class="nickname-search-td">' + nicDB.author + '</td>' +
+                                '<td class="nickname-search-td">' + (nicNameDB[i].nickname != '' ? '(' + nicNameDB[i].nickname + ')' : '') + '</td>' +
+                                '</tr>';
                     }
                 });
 
-				$.each(result, function (i, nicDB) {
+                $.each(result, function (i, nicDB) {
                     //console.log(result[i]);
                     if (result[i].indexOf(data.author) != -1) {  //if(str1.indexOf(str2) != -1){
                         //console.log(result[i]);
                         var nic = nicNameFindOnly(result[i]);
                         tmpEl += '<tr>' +
-                             '<td style="text-align: center;"><input type="radio" class="nickname-radio" name="nickname-radio"></td>' +
-                             '<td class="nickname-search-td">' + result[i] + '</td>' +
-                             '<td class="nickname-search-td">' + (nic != '' ? '(' + nic + ')' : '') + '</td>' +
-                             '</tr>';
+                                '<td style="text-align: center;"><input type="radio" class="nickname-radio" name="nickname-radio"></td>' +
+                                '<td class="nickname-search-td">' + result[i] + '</td>' +
+                                '<td class="nickname-search-td">' + (nic != '' ? '(' + nic + ')' : '') + '</td>' +
+                                '</tr>';
                     }
                 });
 
@@ -540,15 +555,6 @@
 
         var tmpAuthor = nicNameOff($(element).parent().find('td').eq(1).text());
         var classId = $(element).parent().attr('class-id');
-        //console.log(classId);
-        var hasChildren = false;
-        $('tr[parent-class-id=' + classId + ']').each(function () {
-            hasChildren = true;
-        });
-        if (hasChildren) {
-            alert("중복된 ID 입니다");
-            return;
-        }
 
         idCNT++;
         var period = tmpAuthor + '>' + $('#datepicker1').val() + " 00:00:00" + "-" + $('#datepicker2').val() + " 23:59:59" + ">" + $('label[name=dateOption]').text();
@@ -929,7 +935,7 @@
              callAjaxLoop("author"+authorNUM, 8, row, 8, 8, tableData[row].eventNo+">f", "");
              */
 
-			var period = $('#datepicker1').val() + " 00:00:00" + "-" + $('#datepicker2').val() + " 23:59:59" + ">" +  $('label[name=dateOption]').text();
+            var period = $('#datepicker1').val() + " 00:00:00" + "-" + $('#datepicker2').val() + " 23:59:59" + ">" + $('label[name=dateOption]').text();
             callAjax(id, "}}}}}}}>indexB^" + author + " & " + "indexB^" + relAuthor + ">완전일치>" + period, "", 8, 0, "", "");
         });
 
@@ -1062,7 +1068,7 @@
                 '<label class="btn btn-default btn-sm expand-btn btn-primary"' +
                 'style="width: 29px; margin:0;">+</label>' +
 //                '<label class="btn btn-default btn-sm table-expanded-title" style="width:calc(100% - 59px); margin:0;" onclick="expandTable(this);return false;">User History</label>' +
-                '<label class="btn btn-default btn-sm table-expanded-title" style="width:calc(100% - 59px); margin:0;" onclick="">User History</label>' +
+                '<label class="btn btn-default btn-sm table-expanded-title" style="width:calc(100% - 59px); margin:0;" onclick="$(this).parent().find(\'.expand-btn\').click();return false;">User History</label>' +
                 '<label class="btn btn-default expand-component-close" style="width: 30px;height: 30px;right: 0;margin: 0;padding: 0;border-left: 0;border-top-right-radius: 4px;border-bottom-right-radius: 4px;"><span aria-hidden="true" style="font-size: 15px;margin: 0;padding: 0;line-height: 25px;">×</span></label>' +
                 '<div class="panel table-expanded-container" style="overflow: auto; max-height:300px; margin-left: 2px; margin-right: 2px; display: none;border-bottom: 1px solid #ccc;border-left: 1px solid #ccc;border-right: 1px solid #ccc;border-top-right-radius: 0;border-top-left-radius: 0;margin-bottom: 5px;">' +
                 '<table style="font-size:11px; word-break: break-all; " ' +
@@ -1141,11 +1147,11 @@
                 var setExpandBtnClickListener = function (e) {
                     $(e).find('.expand-btn').click(function () {
                         if ($(this).text() == "+" && $(this).parent().find('div>table>tbody>tr').length > 0) {
-                            $(this).parent().parent().find('.table-expanded-container').hide(300);
-                            $(this).parent().parent().find('.component-pager').hide(300);
+//                            $(this).parent().parent().find('.table-expanded-container').hide(300);
+//                            $(this).parent().parent().find('.component-pager').hide(300);
                             $(this).parent().find('.table-expanded-container').show(300);
                             $(this).parent().find('.component-pager').show(300);
-                            $(this).parent().parent().find('.expand-btn').text('+');
+//                            $(this).parent().parent().find('.expand-btn').text('+');
                             $(this).text("-");
                         } else {
                             $(this).text("+");
@@ -1185,7 +1191,7 @@
                                     '<td class="relative-badge-td" style="cursor: pointer; width:30px;">' + data.from + '</td>' +
                                     //                            '<td class="relative-badge-td"><span class="badge" style="background-color: #770c35;">' + parseInt(Math.random() * 30) + '</span></td>' +
                                     //                        '<td class="relative-badge-td" style="width:30px;">' + data.to + '</td>' +
-                                    '<td class="profile-relative-author-td" style="cursor:pointer; border-right:0;" onclick="onRelativeTdClickHandler(this);return false;">' + nicNameFind(data.relAuthor) + '</td>' +
+                                    '<td class="profile-relative-author-td" style="cursor:pointer; border-right:0;">' + nicNameFind(data.relAuthor) + '</td>' +
                                     '<td style="vertical-align: middle; margin: 0; padding: 0; border-left:0; width: 15px;"><label class="btn btn-default btn-sm remove-btn" style="padding: 3px 10px; line-height: 1; margin: 0 5px 0 0;">-</label></td></tr>');
                             tmpTr.attr('class-id', CLASS_NAME_PREFIX + data.to);
                             tmpTr.attr('parent-class-id', opt.parentClassId);
@@ -1193,9 +1199,20 @@
                             setRelBadgeClickHandler(tmpTr);
                         }
                     });
-
+                    tmpEl.find('.profile-relative-author-td').click(function (e) {
+                        var classId = $(this).parent().attr('class-id');
+                        //console.log(classId);
+                        var hasChildren = false;
+                        $('tr[parent-class-id=' + classId + ']').each(function () {
+                            hasChildren = true;
+                        });
+                        if (hasChildren) {
+                            alert("중복된 ID 입니다");
+                        } else {
+                            onRelativeTdClickHandler(this);
+                        }
+                    });
                     tmpEl.find('.remove-btn').click(function (e) {
-
                         var row = $(this).parent().parent().parent().children().index($(this).parent().parent());
                         deleteExpandComponentsByClassId(CLASS_NAME_PREFIX + data[from + row].to);
 
@@ -1339,7 +1356,7 @@
     }
 
     function nicNameUpdate() {
-   	 $.ajax({
+        $.ajax({
             url: "/main/profile/search-author",
             type: "post",
             data: {
@@ -1347,10 +1364,10 @@
             },
             success: function (responseData) {
                 var result = JSON.parse(responseData);
-            	nicNameDB = result;
+                nicNameDB = result;
             }
         });
-   }
+    }
 
     function timeConverter(UNIX_timestamp) {
         var a = new Date(UNIX_timestamp * 1000);

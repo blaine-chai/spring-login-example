@@ -25,12 +25,12 @@
             <c:forEach items="${groupNames}" var="groupName">
                 <c:choose>
                     <c:when test="${adminInfo.hasGroupName(groupName.groupName)}">
-                        <label>
+                        <label  style="margin-right:10px;min-width: 80px;">
                             <input type="checkbox" name="groups" value="${groupName.groupName}"
                                    checked="checked">${groupName.groupName}</label>
                     </c:when>
                     <c:otherwise>
-                        <label>
+                        <label style="margin-right:10px;min-width: 80px;">
                             <input type="checkbox" name="groups" value="${groupName.groupName}">${groupName.groupName}
                         </label>
                     </c:otherwise>
