@@ -100,17 +100,17 @@
                         <div id="search-date-option-container" class="btn-group btn-group-justified">
                             <label class="btn btn-default btn-sm" name="dateOption" style="padding: 4px;">MSG</label>
                         </div>
-                        <div style="float: left;margin-top: 3px;">
+                        <div style="float: left;margin-top: 3px;display: flex;width: calc(100% - 55px);">
                             <div class="" style="padding: 0; margin:0 auto; float: left;"><input id="datepicker1"
                                                                                                  data-provide="datepicker"
-                                                                                                 style="width: 113px; text-align:center; font-size:12px; float:left;">
+                                                                                                 style="width: 111px; text-align:center; font-size:12px; float:left;">
                             </div>
-                            <div style="float:left; width: 20px; font-size:11px;text-align: center; padding:0;vertical-align: middle;line-height: 23px;">
+                            <div style="float:left; width: 14px; font-size:11px;text-align: center; padding:0;vertical-align: middle;line-height: 23px;">
                                 ~
                             </div>
                             <div style="padding:0;margin:0 auto;float: left;"><input id="datepicker2"
                                                                                      data-provide="datepicker"
-                                                                                     style="width: 113px; text-align:center; font-size:12px; float:left;">
+                                                                                     style="width: 111px; text-align:center; font-size:12px; float:left;">
                             </div>
                         </div>
                     </div>
@@ -128,9 +128,9 @@
                     <%--<div class="input-group-btn"><label style="width:70px;" id="nickname-search-btn"--%>
                     <%--class="btn btn-default btn-primary">검색</label></div>--%>
                     <%--</div>--%>
-                    <div id="nickname-result-container" class="panel"
-                         style="overflow: auto; max-height:400px; margin-left: 2px; margin-right: 2px; display: none;">
-                        <table id="nickname-result-table" style="font-size:11px; overflow: auto"
+                    <div id="nickname-result-container" class="panel panel-default"
+                         style="overflow: auto; max-height:400px; margin-left: 2px; margin-right: 2px; display: none;border-top-left-radius: 0;border-top-right-radius: 0;">
+                        <table id="nickname-result-table" style="font-size:11px; overflow: auto;position:relative;"
                                class="table table-fixed table-condensed table-hover">
                             <%--<thead>--%>
                             <%--<tr style="text-align: center;">--%>
@@ -202,6 +202,7 @@
     </div>
 </div>
 <script type="text/javascript" charset="UTF-8" src="/js/alarm-update.js"></script>
+<script type="text/javascript" charset="UTF-8" src="/js/auto-logout.js"></script>
 <script type="text/javascript" charset="UTF-8">
     var userHistory = [];
     var tableData;
@@ -215,6 +216,7 @@
     relStartPos.maxTop = 300;
     relStartPos.count = 0;
     var nicNameDB;
+    var loadingRing = $('<img class="loading-ring" src="/imgs/ajax-loader.gif" style="position: absolute;right: 50px;">')
 
 
     $(document).ready(function () {
@@ -305,6 +307,8 @@
             $('#profile-result-container').children().hide();
             $('#profile-result-container').children().remove();
 
+            $(this).append(loadingRing);
+
             stop = false;
             if (setTime != 0) clearTimeout(setTime);
             var period = tmpAuthor + '>' + $('#datepicker1').val() + " 00:00:00" + "-" + $('#datepicker2').val() + " 23:59:59" + ">" + $('label[name=dateOption]').text();
@@ -394,7 +398,7 @@
                     exBTN.parent().find('.component-pager').show(300);
                     exBTN.parent().parent().find('.expand-btn').text('+');
                     exBTN.text("-");
-
+                    $('.loading-ring').remove();
                     $('#profile-result-container').width('260');
                 }
                 else {
@@ -404,7 +408,7 @@
                         title: author[0],
                         parentContainer: parentContainer
                     });
-
+                    $('.loading-ring').remove();
                     setProfileResultTableSize();
                     parentContainer = "";
                 }
@@ -537,18 +541,9 @@
     function onRelativeTdClickHandler(element) {
         if (parentContainer != "") return;
         parentContainer = $(element).parent().parent().parent().parent().parent().parent();
-
+        $(element).append(loadingRing);
         var tmpAuthor = nicNameOff($(element).parent().find('td').eq(1).text());
         var classId = $(element).parent().attr('class-id');
-        //console.log(classId);
-        var hasChildren = false;
-        $('tr[parent-class-id=' + classId + ']').each(function () {
-            hasChildren = true;
-        });
-        if (hasChildren) {
-            alert("중복된 ID 입니다");
-            return;
-        }
 
         idCNT++;
         var period = tmpAuthor + '>' + $('#datepicker1').val() + " 00:00:00" + "-" + $('#datepicker2').val() + " 23:59:59" + ">" + $('label[name=dateOption]').text();
@@ -609,7 +604,7 @@
                     '<textarea class="form-control nickname-form-input nickname-form-input-note" style="height: 60px;resize: none;"></textarea></div>' +
                     '<div style="padding-top: 15px; position:relative">' +
                     '<label class="btn btn-default btn-sm btn-primary btn-modify-nickname " style="width:70px;">저장</label>' +
-                    '<label class="btn btn-default btn-sm btn-danger btn-delete-nickname " style="width:70px; margin-left: 5px;">삭제</label>' +
+                    '<label class="btn btn-default btn-sm btn-delete-nickname " style="width:70px; margin-left: 5px;">삭제</label>' +
                     '<label class="btn btn-default btn-sm btn-nickname-form-close" style="width:70px;position: absolute;right: 0; ">취소</label></div>');
             nicknameForm.append(tmpEl);
             //update nickname
@@ -643,6 +638,25 @@
                 } else {
                     alert('중복 확인을 해 주세요.');
                 }
+            });
+
+            $('#nickname-form .btn-delete-nickname').click(function(){
+                $.ajax({
+                    url: "/main/nickname/delete",
+                    type: "post",
+                    data: {
+                        "author": nicNameOff($('.nickname-form-input-author').val())
+                    },
+                    success: function (responseData) {
+                        if (responseData == 'true') {
+                            nicknameForm.hide();
+                            alert('삭제 완료되었습니다.');
+                        } else {
+                            //when nickname not checked
+                            alert('에러가 발생했습니다. 다시 시도해 주세요.');
+                        }
+                    }
+                });
             });
 
             //when popover opened get nickname info from server
@@ -1062,7 +1076,7 @@
                 '<label class="btn btn-default btn-sm expand-btn btn-primary"' +
                 'style="width: 29px; margin:0;">+</label>' +
 //                '<label class="btn btn-default btn-sm table-expanded-title" style="width:calc(100% - 59px); margin:0;" onclick="expandTable(this);return false;">User History</label>' +
-                '<label class="btn btn-default btn-sm table-expanded-title" style="width:calc(100% - 59px); margin:0;" onclick="">User History</label>' +
+                '<label class="btn btn-default btn-sm table-expanded-title" style="width:calc(100% - 59px); margin:0;" onclick="$(this).parent().find(\'.expand-btn\').click();return false;">User History</label>' +
                 '<label class="btn btn-default expand-component-close" style="width: 30px;height: 30px;right: 0;margin: 0;padding: 0;border-left: 0;border-top-right-radius: 4px;border-bottom-right-radius: 4px;"><span aria-hidden="true" style="font-size: 15px;margin: 0;padding: 0;line-height: 25px;">×</span></label>' +
                 '<div class="panel table-expanded-container" style="overflow: auto; max-height:300px; margin-left: 2px; margin-right: 2px; display: none;border-bottom: 1px solid #ccc;border-left: 1px solid #ccc;border-right: 1px solid #ccc;border-top-right-radius: 0;border-top-left-radius: 0;margin-bottom: 5px;">' +
                 '<table style="font-size:11px; word-break: break-all; " ' +
@@ -1141,11 +1155,11 @@
                 var setExpandBtnClickListener = function (e) {
                     $(e).find('.expand-btn').click(function () {
                         if ($(this).text() == "+" && $(this).parent().find('div>table>tbody>tr').length > 0) {
-                            $(this).parent().parent().find('.table-expanded-container').hide(300);
-                            $(this).parent().parent().find('.component-pager').hide(300);
+//                            $(this).parent().parent().find('.table-expanded-container').hide(300);
+//                            $(this).parent().parent().find('.component-pager').hide(300);
                             $(this).parent().find('.table-expanded-container').show(300);
                             $(this).parent().find('.component-pager').show(300);
-                            $(this).parent().parent().find('.expand-btn').text('+');
+//                            $(this).parent().parent().find('.expand-btn').text('+');
                             $(this).text("-");
                         } else {
                             $(this).text("+");
@@ -1185,7 +1199,7 @@
                                     '<td class="relative-badge-td" style="cursor: pointer; width:30px;">' + data.from + '</td>' +
                                     //                            '<td class="relative-badge-td"><span class="badge" style="background-color: #770c35;">' + parseInt(Math.random() * 30) + '</span></td>' +
                                     //                        '<td class="relative-badge-td" style="width:30px;">' + data.to + '</td>' +
-                                    '<td class="profile-relative-author-td" style="cursor:pointer; border-right:0;" onclick="onRelativeTdClickHandler(this);return false;">' + nicNameFind(data.relAuthor) + '</td>' +
+                                    '<td class="profile-relative-author-td" style="cursor:pointer; border-right:0;">' + nicNameFind(data.relAuthor) + '</td>' +
                                     '<td style="vertical-align: middle; margin: 0; padding: 0; border-left:0; width: 15px;"><label class="btn btn-default btn-sm remove-btn" style="padding: 3px 10px; line-height: 1; margin: 0 5px 0 0;">-</label></td></tr>');
                             tmpTr.attr('class-id', CLASS_NAME_PREFIX + data.to);
                             tmpTr.attr('parent-class-id', opt.parentClassId);
@@ -1193,9 +1207,20 @@
                             setRelBadgeClickHandler(tmpTr);
                         }
                     });
-
+                    tmpEl.find('.profile-relative-author-td').click(function (e) {
+                        var classId = $(this).parent().attr('class-id');
+                        //console.log(classId);
+                        var hasChildren = false;
+                        $('tr[parent-class-id=' + classId + ']').each(function () {
+                            hasChildren = true;
+                        });
+                        if (hasChildren) {
+                            alert("중복된 ID 입니다");
+                        } else {
+                            onRelativeTdClickHandler(this);
+                        }
+                    });
                     tmpEl.find('.remove-btn').click(function (e) {
-
                         var row = $(this).parent().parent().parent().children().index($(this).parent().parent());
                         deleteExpandComponentsByClassId(CLASS_NAME_PREFIX + data[from + row].to);
 

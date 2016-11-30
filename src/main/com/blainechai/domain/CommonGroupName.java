@@ -4,6 +4,7 @@ import org.eclipse.persistence.annotations.CascadeOnDelete;
 
 import javax.persistence.*;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -14,8 +15,16 @@ import java.util.List;
 public class CommonGroupName {
     private static final long serialVersionUID = 1L;
 
+
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
     private String groupName;
+
+    @OneToMany(fetch=FetchType.EAGER, cascade = CascadeType.ALL)
+    @JoinColumn(name="groupName")
+    private List<UserGroup> userGroup;
 
     protected CommonGroupName() {
     }
@@ -30,5 +39,20 @@ public class CommonGroupName {
 
     public void setGroupName(String groupName) {
         this.groupName = groupName;
+    }
+
+    public Collection<UserGroup> getUserGroup() {
+        return userGroup;
+    }
+
+    public void setUserGroup(List<UserGroup> userGroup) {
+        this.userGroup = userGroup;
+    }
+
+    public void addUserGroup(UserGroup userGroup){
+        if(userGroup ==null){
+            this.userGroup = new ArrayList<UserGroup>();
+        }
+        this.userGroup.add(userGroup);
     }
 }

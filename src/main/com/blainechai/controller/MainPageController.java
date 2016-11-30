@@ -167,6 +167,8 @@ public class MainPageController {
         modelAndView.addObject("colSize", tableOptionRepository.findByUserAccount_UserId(sessionRepository.findByJSessionId(request.getSession().getId()).get(0).getUserId()).get(0).getColSizes());
         modelAndView.addObject("userId", userId);
         modelAndView.addObject("userType", sessionRepository.findByJSessionId(sessionId).get(0).getType());
+        List<UserGroup> userGroups = userGroupRepository.findByUserAccount_UserId(userId);
+        modelAndView.addObject("userGroups", userGroups);
 
         return modelAndView;
     }
@@ -265,14 +267,12 @@ public class MainPageController {
 		            }
 		        }
 		        */
-            }
-            else if (selInt == 4) {
+            } else if (selInt == 4) {
                 int progressPer = sc.getProPercent();
                 int cntTmp = sc.getCount();    // 카운트
                 if (progressPer < 100) send = "NotOK";
                 else send = cntTmp + "!@#$" + progressPer + "!@#$NOT";
-            }
-            else if (selInt == 9) send = "OK";
+            } else if (selInt == 9) send = "OK";
             else if (selInt == 10) {
                 resultList = sc.getQ(id); // 메인서버에서의 검색 결과
 
@@ -284,12 +284,10 @@ public class MainPageController {
 				}
                  */
                 send = "OK";
-            }
-            else if (selInt == 15) {
+            } else if (selInt == 15) {
                 from = sc.getFrom();
                 send = "OK";
-            }
-            else send = "OK";
+            } else send = "OK";
         }
 
         //System.out.println("\tsearchRelAuthorByAuthor : userID=" + userId + "@" + id + " : sel=" + sel
@@ -379,7 +377,8 @@ public class MainPageController {
         modelAndView.addObject("colSize", tableOptionRepository.findByUserAccount_UserId(sessionRepository.findByJSessionId(request.getSession().getId()).get(0).getUserId()).get(0).getColSizes());
         modelAndView.addObject("userId", userId);
         modelAndView.addObject("userType", sessionRepository.findByJSessionId(sessionId).get(0).getType());
-
+        List<UserGroup> userGroups = userGroupRepository.findByUserAccount_UserId(userId);
+        modelAndView.addObject("userGroups", userGroups);
         return modelAndView;
     }
 
@@ -403,9 +402,8 @@ public class MainPageController {
     }
 
     @RequestMapping(value = {"/main/statistics/search-total-data"})
-    public ModelAndView getStatisticsTotal(HttpServletRequest request)
-	{
-    	String id = request.getParameter("id");
+    public ModelAndView getStatisticsTotal(HttpServletRequest request) {
+        String id = request.getParameter("id");
         String searchPeriod = request.getParameter("searchPeriod");
 
         ArrayList<String> authorList = new ArrayList<String>();
@@ -416,20 +414,24 @@ public class MainPageController {
         if (sessionRepository.findByJSessionId(sessionId).size() > 0) {
             userId = sessionRepository.findByJSessionId(sessionId).get(0).getUserId();
         }
-    	String[] dayMonth2 = searchPeriod.split("-");
-    	String[] dayMonth = dayMonth2[1].split("_");
+        String[] dayMonth2 = searchPeriod.split("-");
+        String[] dayMonth = dayMonth2[1].split("_");
 
         SimpleDateFormat formatter = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
 
-        Calendar c = Calendar.getInstance ( );
-        try { c.setTime(formatter.parse(dayMonth2[0]));} catch (ParseException e) {e.printStackTrace();}
-    	String startTime = c.get(c.YEAR) +(String.format("%02d", c.get(c.MONTH)+1)) + (String.format("%02d", c.get(c.DATE))) + "000000";
+        Calendar c = Calendar.getInstance();
+        try {
+            c.setTime(formatter.parse(dayMonth2[0]));
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        String startTime = c.get(c.YEAR) + (String.format("%02d", c.get(c.MONTH) + 1)) + (String.format("%02d", c.get(c.DATE))) + "000000";
 
-        c = Calendar.getInstance ( );
-        if(dayMonth[1].equals("monthly")) c.add (c.MONTH, 1);
-        else  c.add (c.DATE, 1);
+        c = Calendar.getInstance();
+        if (dayMonth[1].equals("monthly")) c.add(c.MONTH, 1);
+        else c.add(c.DATE, 1);
 
-    	String endTime = c.get(c.YEAR) +(String.format("%02d", c.get(c.MONTH)+1)) + (String.format("%02d", c.get(c.DATE))) + "235959";
+        String endTime = c.get(c.YEAR) + (String.format("%02d", c.get(c.MONTH) + 1)) + (String.format("%02d", c.get(c.DATE))) + "235959";
         String msg = startTime + "-" + endTime + ">" + dayMonth2[1];
 
         SocketComm sc = new SocketComm(userId + "@" + id, ip, port, 23, 0, msg);
@@ -448,7 +450,7 @@ public class MainPageController {
 
         LinkedHashMap<String, Integer> hMap = null;
         if (dayMonth[1].equals("monthly"))
-        	hMap = graphDataprocessingByMonthly("total", startTime, endTime, sc.getStatitcsTime(), sc.getStatitcs());
+            hMap = graphDataprocessingByMonthly("total", startTime, endTime, sc.getStatitcsTime(), sc.getStatitcs());
         else
             hMap = graphDataprocessingByDaily("total", startTime, endTime, sc.getStatitcsTime(), sc.getStatitcs());
 
@@ -461,96 +463,92 @@ public class MainPageController {
         return modelAndView;
     }
 
-    public LinkedHashMap<String, Integer> graphDataprocessingByMonthly(String author, String startTime, String endTime, String[] time, int[] value)
-    {
-    	LinkedHashMap<String, Integer> hMap = new LinkedHashMap<String, Integer>();
+    public LinkedHashMap<String, Integer> graphDataprocessingByMonthly(String author, String startTime, String endTime, String[] time, int[] value) {
+        LinkedHashMap<String, Integer> hMap = new LinkedHashMap<String, Integer>();
 
-    	Calendar s = Calendar.getInstance ( );		//오늘 날짜를 기준으로..
-    	s.set(Integer.parseInt(startTime.substring(0, 4)), Integer.parseInt(startTime.substring(4, 6))-1, Integer.parseInt(startTime.substring(6, 8)));
-    	Calendar e = Calendar.getInstance ( );		//오늘 날짜를 기준으로..
-    	e.set(Integer.parseInt(endTime.substring(0, 4)), Integer.parseInt(endTime.substring(4, 6))-1, Integer.parseInt(endTime.substring(6, 8)));
+        Calendar s = Calendar.getInstance();        //오늘 날짜를 기준으로..
+        s.set(Integer.parseInt(startTime.substring(0, 4)), Integer.parseInt(startTime.substring(4, 6)) - 1, Integer.parseInt(startTime.substring(6, 8)));
+        Calendar e = Calendar.getInstance();        //오늘 날짜를 기준으로..
+        e.set(Integer.parseInt(endTime.substring(0, 4)), Integer.parseInt(endTime.substring(4, 6)) - 1, Integer.parseInt(endTime.substring(6, 8)));
 
-    	String timeS = "";
-    	String timeNow = "";
-    	String timeE = e.get(e.YEAR) + String.format("%02d", e.get(e.MONTH)+1);
+        String timeS = "";
+        String timeNow = "";
+        String timeE = e.get(e.YEAR) + String.format("%02d", e.get(e.MONTH) + 1);
 
-    	for(int i=0; i < value.length; i++) {
-    		timeS = s.get(s.YEAR) +String.format("%02d", s.get(s.MONTH)+1);
-    		timeNow = time[i].substring(0, 6);
-	    	while(timeS.compareTo(timeNow) < 0){
-	    		hMap.put(timeS, 0);
+        for (int i = 0; i < value.length; i++) {
+            timeS = s.get(s.YEAR) + String.format("%02d", s.get(s.MONTH) + 1);
+            timeNow = time[i].substring(0, 6);
+            while (timeS.compareTo(timeNow) < 0) {
+                hMap.put(timeS, 0);
 
-		    	s.add (s.MONTH, 1);
-		    	timeS = s.get(s.YEAR) + String.format("%02d", s.get(s.MONTH)+1);
-	    	}
-	    	if(timeE.compareTo(timeNow) < 0) {
-    	   		System.out.println(i + " :222: timeE = " + timeE + " :1: timeNow = " + timeNow);
-    	   		break;
-	    	}
-	    	if(timeS.compareTo(timeNow) == 0) {
-	    		hMap.put(timeS, value[i]);
-	    	}
-	    	s.add (s.MONTH, 1);
-	    }
+                s.add(s.MONTH, 1);
+                timeS = s.get(s.YEAR) + String.format("%02d", s.get(s.MONTH) + 1);
+            }
+            if (timeE.compareTo(timeNow) < 0) {
+                System.out.println(i + " :222: timeE = " + timeE + " :1: timeNow = " + timeNow);
+                break;
+            }
+            if (timeS.compareTo(timeNow) == 0) {
+                hMap.put(timeS, value[i]);
+            }
+            s.add(s.MONTH, 1);
+        }
 
-    	timeS = s.get(s.YEAR) + String.format("%02d", s.get(s.MONTH)+1);
+        timeS = s.get(s.YEAR) + String.format("%02d", s.get(s.MONTH) + 1);
 
-    	while(timeS.compareTo(timeE) <= 0)
-    	{
-    		hMap.put(timeS, 0);
+        while (timeS.compareTo(timeE) <= 0) {
+            hMap.put(timeS, 0);
 
-        	s.add (s.MONTH, 1);
+            s.add(s.MONTH, 1);
 
-        	timeS = s.get(s.YEAR) + String.format("%02d", s.get(s.MONTH)+1);
-    	}
+            timeS = s.get(s.YEAR) + String.format("%02d", s.get(s.MONTH) + 1);
+        }
 
-    	return hMap;
+        return hMap;
     }
 
-    public LinkedHashMap<String, Integer> graphDataprocessingByDaily(String author, String startTime, String endTime, String[] time, int[] value)
-    {
-    	LinkedHashMap<String, Integer> hMap = new LinkedHashMap<String, Integer>();
+    public LinkedHashMap<String, Integer> graphDataprocessingByDaily(String author, String startTime, String endTime, String[] time, int[] value) {
+        LinkedHashMap<String, Integer> hMap = new LinkedHashMap<String, Integer>();
 
-    	Calendar s = Calendar.getInstance ( );		//오늘 날짜를 기준으로
-    	s.set(Integer.parseInt(startTime.substring(0, 4)), Integer.parseInt(startTime.substring(4, 6))-1, Integer.parseInt(startTime.substring(6, 8)));
-    	Calendar e = Calendar.getInstance ( );		//오늘 날짜를 기준으로..
-    	e.set(Integer.parseInt(endTime.substring(0, 4)), Integer.parseInt(endTime.substring(4, 6))-1, Integer.parseInt(endTime.substring(6, 8)));
+        Calendar s = Calendar.getInstance();        //오늘 날짜를 기준으로
+        s.set(Integer.parseInt(startTime.substring(0, 4)), Integer.parseInt(startTime.substring(4, 6)) - 1, Integer.parseInt(startTime.substring(6, 8)));
+        Calendar e = Calendar.getInstance();        //오늘 날짜를 기준으로..
+        e.set(Integer.parseInt(endTime.substring(0, 4)), Integer.parseInt(endTime.substring(4, 6)) - 1, Integer.parseInt(endTime.substring(6, 8)));
 
-    	String timeS = "";
-    	String timeNow = "";
-    	String timeE = e.get(e.YEAR) +(String.format("%02d", e.get(e.MONTH)+1)) + (String.format("%02d", e.get(e.DATE)));
+        String timeS = "";
+        String timeNow = "";
+        String timeE = e.get(e.YEAR) + (String.format("%02d", e.get(e.MONTH) + 1)) + (String.format("%02d", e.get(e.DATE)));
 
-    	for(int i=0; i < value.length; i++) {
-    		timeS = s.get(s.YEAR) +(String.format("%02d", s.get(s.MONTH)+1)) + (String.format("%02d", s.get(s.DATE)));
-    		timeNow = time[i].substring(0, 8);
-	    	while(timeS.compareTo(timeNow) < 0){
-	    		hMap.put(timeS, 0);
-	    		System.out.println(timeS + " : ");
-		    	s.add ( s.DATE, 1);
-		    	timeS = s.get(s.YEAR) +(String.format("%02d", s.get(s.MONTH)+1)) + (String.format("%02d", s.get(s.DATE)));
-	    	}
-	    	if(timeE.compareTo(timeNow) < 0) {
-    	   		System.out.println(i + " :222: timeE = " + timeE + " :1: timeNow = " + timeNow);
-    	   		break;
-	    	}
-	    	if(timeS.compareTo(timeNow) == 0) {
-		    	//System.out.println(i + " :0: time = " + time[i] + " : value = " + value[i] + " : timeS = " + timeS);
-	    		hMap.put(timeS, value[i]);
-	    	}
-	    	s.add (s.DATE, 1);
-	    }
+        for (int i = 0; i < value.length; i++) {
+            timeS = s.get(s.YEAR) + (String.format("%02d", s.get(s.MONTH) + 1)) + (String.format("%02d", s.get(s.DATE)));
+            timeNow = time[i].substring(0, 8);
+            while (timeS.compareTo(timeNow) < 0) {
+                hMap.put(timeS, 0);
+                System.out.println(timeS + " : ");
+                s.add(s.DATE, 1);
+                timeS = s.get(s.YEAR) + (String.format("%02d", s.get(s.MONTH) + 1)) + (String.format("%02d", s.get(s.DATE)));
+            }
+            if (timeE.compareTo(timeNow) < 0) {
+                System.out.println(i + " :222: timeE = " + timeE + " :1: timeNow = " + timeNow);
+                break;
+            }
+            if (timeS.compareTo(timeNow) == 0) {
+                //System.out.println(i + " :0: time = " + time[i] + " : value = " + value[i] + " : timeS = " + timeS);
+                hMap.put(timeS, value[i]);
+            }
+            s.add(s.DATE, 1);
+        }
 
-    	timeS = s.get(s.YEAR) +(String.format("%02d", s.get(s.MONTH)+1)) + (String.format("%02d", s.get(s.DATE)));
+        timeS = s.get(s.YEAR) + (String.format("%02d", s.get(s.MONTH) + 1)) + (String.format("%02d", s.get(s.DATE)));
 
-    	while(timeS.compareTo(timeE) <= 0)
-    	{
-    		hMap.put(timeS, 0);
+        while (timeS.compareTo(timeE) <= 0) {
+            hMap.put(timeS, 0);
 
-        	s.add (s.DATE, 1);
-	    	timeS = s.get(s.YEAR) +(String.format("%02d", s.get(s.MONTH)+1)) + (String.format("%02d", s.get(s.DATE)));
-    	}
+            s.add(s.DATE, 1);
+            timeS = s.get(s.YEAR) + (String.format("%02d", s.get(s.MONTH) + 1)) + (String.format("%02d", s.get(s.DATE)));
+        }
 
-    	return hMap;
+        return hMap;
     }
 
 
@@ -590,59 +588,64 @@ public class MainPageController {
         String send = "";
         ArrayList<LinkedHashMap<String, String>> resultList = new ArrayList<LinkedHashMap<String, String>>();
 
-        if(selInt <= 1) {
-	        String msg = request.getParameter("msg");
-	        msg = wordParse(msg);
+        if (selInt <= 1) {
+            String msg = request.getParameter("msg");
+            msg = wordParse(msg);
 
-	        sc = new SocketComm(userId + "@" + id, ip, port, 21, 0, msg);
-	        sc.runStart();
+            sc = new SocketComm(userId + "@" + id, ip, port, 21, 0, msg);
+            sc.runStart();
 
-	        send = "OK";
-        }
-        else {
+            send = "OK";
+        } else {
 
-	        sc = new SocketComm(userId + "@" + id, ip, port, 22, 0);
-	        sc.runStart();
+            sc = new SocketComm(userId + "@" + id, ip, port, 22, 0);
+            sc.runStart();
 
-	        if (sc.beGetGood() >= 0)
-	        {
-	        	String msg = request.getParameter("msg");
-		        msg = wordParse(msg);
+            if (sc.beGetGood() >= 0) {
+                String msg = request.getParameter("msg");
+                msg = wordParse(msg);
 
-		        System.out.println("msg : " + msg);
+                System.out.println("msg : " + msg);
 
-		        String[] s = msg.split(">");
-		        System.out.println("resultList : " + resultList);
+                String[] s = msg.split(">");
+                System.out.println("resultList : " + resultList);
 
-		        String[] s1 = s[2].split("-");
-		        String[] s2 = s[3].split("_");
+                String[] s1 = s[2].split("-");
+                String[] s2 = s[3].split("_");
 
-	        	Calendar c = Calendar.getInstance ( );
-	            SimpleDateFormat formatter = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
-	            try { c.setTime(formatter.parse(s1[0]));} catch (ParseException e) {e.printStackTrace();}
-	        	String startTime = c.get(c.YEAR) +(String.format("%02d", c.get(c.MONTH)+1)) + (String.format("%02d", c.get(c.DATE))) + "000000";
-		        System.out.println("startTime : " + startTime);
+                Calendar c = Calendar.getInstance();
+                SimpleDateFormat formatter = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+                try {
+                    c.setTime(formatter.parse(s1[0]));
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
+                String startTime = c.get(c.YEAR) + (String.format("%02d", c.get(c.MONTH) + 1)) + (String.format("%02d", c.get(c.DATE))) + "000000";
+                System.out.println("startTime : " + startTime);
 
-	            try { c.setTime(formatter.parse(s1[1]));} catch (ParseException e) {e.printStackTrace();}
-	        	if(s2[1].equals("monthly")) c.add (c.MONTH, 1);
-	        	else  						c.add (c.DATE, 1);
+                try {
+                    c.setTime(formatter.parse(s1[1]));
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
+                if (s2[1].equals("monthly")) c.add(c.MONTH, 1);
+                else c.add(c.DATE, 1);
 
-	        	String endTime = c.get(c.YEAR) +(String.format("%02d", c.get(c.MONTH)+1)) + (String.format("%02d", c.get(c.DATE))) + "235959";
-		        System.out.println("endTime : " + endTime);
+                String endTime = c.get(c.YEAR) + (String.format("%02d", c.get(c.MONTH) + 1)) + (String.format("%02d", c.get(c.DATE))) + "235959";
+                System.out.println("endTime : " + endTime);
 
-		        send = "OK";
+                send = "OK";
 
-		    	LinkedHashMap<String, Integer> hMap = null;
-	        	if (s2[1].equals("monthly"))
-	        		hMap = graphDataprocessingByMonthly(keyword, startTime, endTime, sc.getStatitcsTime(), sc.getStatitcs());
-	        	else
-	        		hMap = graphDataprocessingByDaily(keyword, startTime, endTime, sc.getStatitcsTime(), sc.getStatitcs());
+                LinkedHashMap<String, Integer> hMap = null;
+                if (s2[1].equals("monthly"))
+                    hMap = graphDataprocessingByMonthly(keyword, startTime, endTime, sc.getStatitcsTime(), sc.getStatitcs());
+                else
+                    hMap = graphDataprocessingByDaily(keyword, startTime, endTime, sc.getStatitcsTime(), sc.getStatitcs());
 
-		        ArrayList<LinkedHashMap<String, String>> authorJsonTmp
-		        		= (ArrayList<LinkedHashMap<String, String>>) gson.fromJson(authorJson, ArrayList.class);
-		        resultList = getGraphDataByAuthorsAndPeriod(authorJsonTmp, keyword, hMap);
-	        }
-	        else send = "NotOK";
+                ArrayList<LinkedHashMap<String, String>> authorJsonTmp
+                        = (ArrayList<LinkedHashMap<String, String>>) gson.fromJson(authorJson, ArrayList.class);
+                resultList = getGraphDataByAuthorsAndPeriod(authorJsonTmp, keyword, hMap);
+            } else send = "NotOK";
         }
 
         SendInfo si = new SendInfo(id, sel, send, keyword, gson.toJson(resultList));
@@ -657,17 +660,16 @@ public class MainPageController {
             (ArrayList<LinkedHashMap<String, String>> authorJsonTmp, String author, LinkedHashMap<String, Integer> hMap) {
         ArrayList<LinkedHashMap<String, String>> resultList = new ArrayList<LinkedHashMap<String, String>>();
 
-		Set<String> hSet = hMap.keySet();
-		Iterator<String> iter = hSet.iterator();
-		int i = 0;
-		while(iter.hasNext())
-		{
+        Set<String> hSet = hMap.keySet();
+        Iterator<String> iter = hSet.iterator();
+        int i = 0;
+        while (iter.hasNext()) {
             LinkedHashMap<String, String> tMap = (new LinkedHashMap<String, String>());
             String keyData = iter.next();
 
             if (authorJsonTmp == null) {
-            	tMap.put("index", keyData);
-            	tMap.put(author, String.valueOf(hMap.get(keyData)));
+                tMap.put("index", keyData);
+                tMap.put(author, String.valueOf(hMap.get(keyData)));
             } else {
                 tMap.putAll(authorJsonTmp.get(i));
                 tMap.put(author, String.valueOf(hMap.get(keyData)));
@@ -675,20 +677,18 @@ public class MainPageController {
 
             resultList.add(tMap);
             i++;
-		}
+        }
         System.out.println("resultList : " + resultList);
 
         return resultList;
     }
 
-    private ArrayList<LinkedHashMap<String, String>> getGraphDataByAuthorsAndPeriod(String author, LinkedHashMap<String, Integer> hMap)
-    {
+    private ArrayList<LinkedHashMap<String, String>> getGraphDataByAuthorsAndPeriod(String author, LinkedHashMap<String, Integer> hMap) {
         ArrayList<LinkedHashMap<String, String>> resultList = new ArrayList<LinkedHashMap<String, String>>();
 
-		Set<String> hSet = hMap.keySet();
-		Iterator<String> iter = hSet.iterator();
-		while(iter.hasNext())
-		{
+        Set<String> hSet = hMap.keySet();
+        Iterator<String> iter = hSet.iterator();
+        while (iter.hasNext()) {
             LinkedHashMap<String, String> tMap = (new LinkedHashMap<String, String>());
             String keyData = iter.next();
 
@@ -696,9 +696,9 @@ public class MainPageController {
             tMap.put(author, String.valueOf(hMap.get(keyData)));
 
             resultList.add(tMap);
-		}
+        }
 
-		return resultList;
+        return resultList;
     }
 
     private ArrayList<LinkedHashMap<String, String>> getGraphDataByAuthorsAndPeriod(ArrayList<String> authorList, String searchPeriod) {
@@ -767,6 +767,8 @@ public class MainPageController {
         modelAndView.addObject("userId", userId);
         modelAndView.addObject("colSize", tableOptionRepository.findByUserAccount_UserId(sessionRepository.findByJSessionId(request.getSession().getId()).get(0).getUserId()).get(0).getColSizes());
         modelAndView.addObject("userType", sessionRepository.findByJSessionId(request.getSession().getId()).get(0).getType());
+        List<UserGroup> userGroups = userGroupRepository.findByUserAccount_UserId(userId);
+        modelAndView.addObject("userGroups", userGroups);
         return modelAndView;
     }
 
@@ -1117,11 +1119,11 @@ public class MainPageController {
         System.out.println("!!!!!!@@@");
         if (sessionRepository.findByJSessionId(sessionId).size() > 0) {
             userId = sessionRepository.findByJSessionId(sessionId).get(0).getUserId();
-            System.out.println(id+"@@@@@@@");
+            System.out.println(id + "@@@@@@@");
             List<CommonBookmark> commonBookmarks = commonBookmarkRepository.findById(Long.parseLong(id));
             System.out.println("@@@@@");
             if (commonBookmarks.size() > 0) {
-                 CommonBookmark commonBookmark= commonBookmarks.get(0);
+                CommonBookmark commonBookmark = commonBookmarks.get(0);
                 String msg = wordParse(searchWordParse(commonBookmark.getAdminBookmark().getWord()));
 
                 SocketComm sc = new SocketComm(userId + "@" + "ALRAM96", ip, port, 18, 0, msg);
@@ -1134,7 +1136,7 @@ public class MainPageController {
 
                 sc = new SocketComm(userId + "@" + "ALRAM96", ip, port, 5, 0);
                 sc.runStart();
-           }
+            }
         }
         return new ModelAndView("api").addObject("json", "");
     }
@@ -1171,8 +1173,10 @@ public class MainPageController {
                         historyApis.add(new HistoryApi(commonBookmarks.get(i), false));
                     }
                 }
-                sc = new SocketComm(userId + "@" + "ALRAM98", ip, port, 5, 0);
-                sc.runStart();
+                if (commonBookmarks.size() > 0) {
+                    sc = new SocketComm(userId + "@" + "ALRAM98", ip, port, 5, 0);
+                    sc.runStart();
+                }
             }
         }
         ModelAndView modelAndView = new ModelAndView("api");
@@ -1270,11 +1274,11 @@ public class MainPageController {
         System.out.println("!!!!!!@@@");
         if (sessionRepository.findByJSessionId(sessionId).size() > 0) {
             userId = sessionRepository.findByJSessionId(sessionId).get(0).getUserId();
-            System.out.println(id+"@@@@@@@");
+            System.out.println(id + "@@@@@@@");
             List<UserBookmark> userBookmarks = userBookmarkRepository.findById(Long.parseLong(id));
             System.out.println("@@@@@");
             if (userBookmarks.size() > 0) {
-                UserBookmark userBookmark= userBookmarks.get(0);
+                UserBookmark userBookmark = userBookmarks.get(0);
                 String msg = wordParse(searchWordParse(userBookmark.getWord()));
 
                 SocketComm sc = new SocketComm(userId + "@" + "ALRAM97", ip, port, 18, 0, msg);
@@ -1304,7 +1308,7 @@ public class MainPageController {
 
             if (userBookmarks != null) {
                 //bookmark들에 대해 새로운 데이터 개수를 받아오는 부분 필요
-            	SocketComm sc = null;
+                SocketComm sc = null;
                 for (int i = 0; i < userBookmarks.size(); i++) {
 //                    historyApis.add(new HistoryApi(userBookmarks.get(i), false));
 
@@ -1320,8 +1324,10 @@ public class MainPageController {
                         historyApis.add(new HistoryApi(userBookmarks.get(i), false));
                     }
                 }
-                sc = new SocketComm(userId + "@" + "ALRAM99", ip, port, 5, 0);
-                sc.runStart();
+                if (userBookmarks.size() > 0) {
+                    sc = new SocketComm(userId + "@" + "ALRAM99", ip, port, 5, 0);
+                    sc.runStart();
+                }
 
             }
         }
@@ -1413,6 +1419,18 @@ public class MainPageController {
         //        Gson gson = new Gson();
         ModelAndView modelAndView = new ModelAndView("api");
         modelAndView.addObject("json", result);
+        return modelAndView;
+    }
+
+
+    @RequestMapping(value = "/main/nickname/delete")
+    public ModelAndView deleteNickname(HttpServletRequest request) {
+        String author = request.getParameter("author");
+
+        nicknameRepository.deleteByAuthor(author);
+        ModelAndView modelAndView = new ModelAndView("api");
+        modelAndView.addObject("json", true);
+
         return modelAndView;
     }
 

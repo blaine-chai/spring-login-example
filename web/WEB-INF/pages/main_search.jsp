@@ -141,7 +141,7 @@
                     <div id="search-date-option-container" class="btn-group btn-group-justified">
                         <label class="btn btn-default btn-sm" name="dateOption" style="padding: 4px;">MSG</label>
                     </div>
-                    <div style="float: left;margin-top: 3px;">
+                    <div style="float: left;margin-top: 3px;display: flex;width: calc(100% - 55px);">
                         <div class="" style="padding: 0; margin:0 auto; float: left;"><input id="datepicker1"
                                                                                              data-provide="datepicker"
                                                                                              style="width: 113px; text-align:center; font-size:12px; float:left;">
@@ -282,6 +282,7 @@
     </div>
 </div>
 <script type="text/javascript" charset="UTF-8" src="/js/alarm-update.js"></script>
+<script type="text/javascript" charset="UTF-8" src="/js/auto-logout.js"></script>
 <script type="text/javascript" charset="UTF-8">
     //var userHistory;
     var userHistory = [];
@@ -399,11 +400,9 @@
 
         $('.expand-btn').click(function (e) {
             if ($(this).text() == "+" && $(this).parent().find('div>table>tbody>tr').length > 0) {
-                $('.history').hide(300);
-//                $(this).parent().append(new_div);
-//                new_div.show(300);
+//                $('.history').hide(300);
                 $(this).parent().find('div').show(300);
-                $('.expand-btn').text('+');
+//                $('.expand-btn').text('+');
                 $(this).text("-");
             } else {
                 $(this).text("+");

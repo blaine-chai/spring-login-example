@@ -18,7 +18,7 @@
     </style>
     <style>
         form {
-            margin: 5px;
+            /*margin: 5px;*/
             display: inline-block
         }
     </style>

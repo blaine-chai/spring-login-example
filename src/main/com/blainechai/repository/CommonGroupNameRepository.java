@@ -10,10 +10,10 @@ import java.util.List;
 /**
  * Created by blainechai on 2016. 11. 23..
  */
-public interface CommonGroupNameRepository extends JpaRepository<CommonGroupName, String> {
+public interface CommonGroupNameRepository extends JpaRepository<CommonGroupName, Long> {
 
     List<CommonGroupName> findByGroupName(String groupName);
 
     @Transactional
-    String deleteByGroupName(String groupName);
+    long deleteByGroupName(String groupName);
 }

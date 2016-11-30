@@ -17,7 +17,7 @@ public class UserGroup {
     private Long id;
 
     @ManyToOne
-    @JoinColumn(name = "groupName", referencedColumnName = "groupName")
+    @JoinColumn(name = "groupId", referencedColumnName = "id")
     private CommonGroupName groupName;
 
 

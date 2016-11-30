@@ -170,7 +170,7 @@
     </div>
 </div>
 <script type="text/javascript" charset="UTF-8" src="/js/alarm-update.js"></script>
-
+<script type="text/javascript" charset="UTF-8" src="/js/auto-logout.js"></script>
 <script type="text/javascript" charset="UTF-8">
     var relStartPos = new Object();
     var lastPageMain = 0;

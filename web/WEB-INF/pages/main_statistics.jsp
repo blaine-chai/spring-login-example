@@ -382,7 +382,7 @@
         </div>
     </div>
 </div>
-<script  type="text/javascript" charset="UTF-8" src="/js/line-graph.js"></script>
+<script type="text/javascript" charset="UTF-8" src="/js/line-graph.js"></script>
 <script type="text/javascript" charset="UTF-8" src="/js/alarm-update.js"></script>
 <script type="text/javascript" charset="UTF-8">
     var relStartPos = new Object();

@@ -17,7 +17,7 @@
         <br/>
         <br/>
         <a href="/admin/group-name" class="btn btn-lg btn-danger btn-block">취소</a>
-        <button class="btn btn-lg btn-primary btn-block" type="submit">
+        <button class="btn btn-lg btn-primary btn-block" name="orgGroupName" value="${groupInfo.groupName}" type="submit">
             저장
         </button>
     </form>

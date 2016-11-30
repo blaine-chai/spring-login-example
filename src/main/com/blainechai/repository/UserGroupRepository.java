@@ -1,5 +1,6 @@
 package com.blainechai.repository;
 
+import com.blainechai.domain.CommonGroupName;
 import com.blainechai.domain.UserAccount;
 import com.blainechai.domain.UserGroup;
 import org.eclipse.persistence.annotations.CascadeOnDelete;
@@ -19,13 +20,15 @@ public interface UserGroupRepository extends JpaRepository<UserGroup, Long> {
 
     List<UserGroup> findByUserAccount_UserId(String userId);
 
-    @Transactional
-    Long deleteByGroupName_GroupName(String groupName);
+    List<UserGroup> findByGroupName(CommonGroupName commonGroupName);
 
     @Transactional
-    Long deleteByUserAccount_UserId(String userId);
+    long deleteByGroupName_GroupName(String groupName);
 
     @Transactional
-    Long deleteByUserAccount_UserIdAndGroupName_GroupName(String userId, String groupName);
+    long deleteByUserAccount_UserId(String userId);
+
+    @Transactional
+    long deleteByUserAccount_UserIdAndGroupName_GroupName(String userId, String groupName);
 
 }
