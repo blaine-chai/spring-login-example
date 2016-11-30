@@ -137,34 +137,21 @@ public class AdminController {
 
     @RequestMapping(value = "/admin-account/delete", method = RequestMethod.POST)
     public ModelAndView delete(HttpServletRequest request) {
-        // admin_bookmark -> adminId
-        // admin_history -> adminId
-        // common_bookmark -> userId
-        // common_session -> userId
-        // user_bookmark -> userId
-        // user_group -> userId
-        // user_search_history -> userId
-        // user_table_option -> user Id
         String userId = request.getParameter("userId");
-//        String username = request.getParameter("username");
-//        UserAccount adminAccount = userAccountRepository.findByUserId(userId).get(0);
-//        adminAccount.setUserId(userId);
-//        adminAccount.setUsername(username);
-//        adminAccount = userAccountRepository.save(adminAccount);
-
         System.out.println(userId);
+        if (userAccountRepository.findByType(UserType.ADMIN).size() > 1) {
+            commonBookmarkRepository.deleteByUserAccount_UserId(userId);
+            commonBookmarkRepository.deleteByAdminBookmark_AdminAccount_UserId(userId);
+            adminBookmarkRepository.deleteByAdminAccount_UserId(userId);
+            adminHistoryRepository.deleteByAdminAccount_userId(userId);
+            sessionRepository.deleteByUserId(userId);
+            userBookmarkRepository.deleteByUserAccount_UserId(userId);
+            userGroupRepository.deleteByUserAccount_UserId(userId);
+            userHistoryRepository.deleteByUserAccount_UserId(userId);
+            tableOptionRepository.deleteByUserAccount_UserId(userId);
 
-        commonBookmarkRepository.deleteByUserAccount_UserId(userId);
-        commonBookmarkRepository.deleteByAdminBookmark_AdminAccount_UserId(userId);
-        adminBookmarkRepository.deleteByAdminAccount_UserId(userId);
-        adminHistoryRepository.deleteByAdminAccount_userId(userId);
-        sessionRepository.deleteByUserId(userId);
-        userBookmarkRepository.deleteByUserAccount_UserId(userId);
-        userGroupRepository.deleteByUserAccount_UserId(userId);
-        userHistoryRepository.deleteByUserAccount_UserId(userId);
-        tableOptionRepository.deleteByUserAccount_UserId(userId);
-
-        userAccountRepository.deleteByUserId(userId);
+            userAccountRepository.deleteByUserId(userId);
+        }
         ModelAndView modelAndView = new ModelAndView("admin_administrator_list");
         List<UserAccount> adminList = userAccountRepository.findByType(UserType.ADMIN);
         modelAndView.addObject("adminList", adminList);
@@ -291,13 +278,6 @@ public class AdminController {
 
     @RequestMapping(value = "/user")
     public ModelAndView userList() {
-//        List<UserAccount> adminList = userAccountRepository.findAll();
-//        List<UserAccountApi> userAccountApis = new ArrayList<UserAccountApi>();
-//        for (UserAccount userAccount : adminList) {
-//            List<UserGroup> userGroups = userGroupRepository.findByUserAccount_UserId(userAccount.getUserId());
-//            UserAccountApi userAccountApi = new UserAccountApi(userAccount, userGroups);
-//            userAccountApis.add(userAccountApi);
-//        }
         ModelAndView modelAndView = new ModelAndView("admin_user_list");
         modelAndView.addObject("adminList", getUserAccountApis());
         return modelAndView;
@@ -329,16 +309,27 @@ public class AdminController {
         // user_search_history -> userId
         // user_table_option -> user Id
         String userId = request.getParameter("userId");
-
-        commonBookmarkRepository.deleteByUserAccount_UserId(userId);
-        sessionRepository.deleteByUserId(userId);
-        userBookmarkRepository.deleteByUserAccount_UserId(userId);
-        userGroupRepository.deleteByUserAccount_UserId(userId);
-        userHistoryRepository.deleteByUserAccount_UserId(userId);
-        tableOptionRepository.deleteByUserAccount_UserId(userId);
-
-
-        userAccountRepository.deleteByUserId(request.getParameter("userId"));
+        if (userAccountRepository.findByType(UserType.ADMIN).size() > 1) {
+            if (userAccountRepository.findByUserId(userId).get(0).getType().equals(UserType.USER)) {
+                commonBookmarkRepository.deleteByUserAccount_UserId(userId);
+                sessionRepository.deleteByUserId(userId);
+                userBookmarkRepository.deleteByUserAccount_UserId(userId);
+                userGroupRepository.deleteByUserAccount_UserId(userId);
+                userHistoryRepository.deleteByUserAccount_UserId(userId);
+                tableOptionRepository.deleteByUserAccount_UserId(userId);
+            } else {
+                commonBookmarkRepository.deleteByUserAccount_UserId(userId);
+                commonBookmarkRepository.deleteByAdminBookmark_AdminAccount_UserId(userId);
+                adminBookmarkRepository.deleteByAdminAccount_UserId(userId);
+                adminHistoryRepository.deleteByAdminAccount_userId(userId);
+                sessionRepository.deleteByUserId(userId);
+                userBookmarkRepository.deleteByUserAccount_UserId(userId);
+                userGroupRepository.deleteByUserAccount_UserId(userId);
+                userHistoryRepository.deleteByUserAccount_UserId(userId);
+                tableOptionRepository.deleteByUserAccount_UserId(userId);
+            }
+            userAccountRepository.deleteByUserId(request.getParameter("userId"));
+        }
         ModelAndView modelAndView = new ModelAndView("admin_user_list");
 //        List<UserAccount> adminList = userAccountRepository.findAll();
         modelAndView.addObject("adminList", getUserAccountApis());
@@ -358,8 +349,12 @@ public class AdminController {
         } else {
             adminList = new ArrayList<UserAccount>();
         }
+        List<UserAccountApi> userAccountApis = new ArrayList<UserAccountApi>();
+        for (UserAccount userAccount : adminList) {
+            userAccountApis.add(getUserAccountApi(userAccount));
+        }
         ModelAndView modelAndView = new ModelAndView("admin_user_list");
-        modelAndView.addObject("adminList", adminList);
+        modelAndView.addObject("adminList", userAccountApis);
         return modelAndView;
     }
 

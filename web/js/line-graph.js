@@ -36,30 +36,30 @@ var GraphModule = (function () {
             nameList: [],
             interpolation: "monotone",
             colorSet: [
-                       '#3333FF',
-                       '#669933',
-                       '#FF3333',
-                       '#33CCFF',
-                       '#33FF33',
-                       '#FF33CC',
-                       '#CCFF33',
-                       '#CC33FF',
-                       '#663366',
-                       '#336699',
-                       '#CC33CC',
-                       '#336666',
-                       '#CCCC33',
-                       '#330066',
-                       '#993366',
-                       '#666633',
-                       '#006633',
-                       '#33CCCC',
-                       '#CC3333',
-                       '#663300',
-                       '#3333CC',
-                       '#336666',
-                       '#33CC33',
-                       '#000000'],
+                '#3333FF',
+                '#669933',
+                '#FF3333',
+                '#33CCFF',
+                '#33FF33',
+                '#FF33CC',
+                '#CCFF33',
+                '#CC33FF',
+                '#663366',
+                '#336699',
+                '#CC33CC',
+                '#336666',
+                '#CCCC33',
+                '#330066',
+                '#993366',
+                '#666633',
+                '#006633',
+                '#33CCCC',
+                '#CC3333',
+                '#663300',
+                '#3333CC',
+                '#336666',
+                '#33CC33',
+                '#000000'],
             totalData: [],
             graphOverall: true
         };
@@ -139,6 +139,10 @@ var GraphModule = (function () {
                 .rangePoints([0, width]);
 
             var n = parseInt(domain.length / 6);
+            if (domain.length <= 6) {
+                n = 1;
+            }
+
             var newDomain = [];
             var last;
             for (i = 0; i < domain.length; i += n) {

@@ -30,7 +30,7 @@
     <div class="panel panel-info">
         <div class="panel-heading">Search</div>
         <div class="panel-body">
-            <form action="/admin/admin-account/search" method="post" class="form-inline" role="form">
+            <form action="/admin/user/search" method="post" class="form-inline" role="form">
                 <div class="input-prepend input-append form-group">
                     <select name="searchFilter" class="form-control">
                         <option value="userId">사용자 계정</option>
@@ -78,7 +78,7 @@
                         <form action="/admin/user/modify" method="post">
                             <button class="btn btn-primary" name="userId" value="${admin.userId}">수정</button>
                         </form>
-                        <form action="/admin/user/delete" method="post">
+                        <form action="/admin/user/delete" method="post" onsubmit="return check();">
                             <button class="btn btn-danger" name="userId" value="${admin.userId}">삭제</button>
                         </form>
                     </td>
@@ -88,5 +88,17 @@
         </table>
     </div>
 </div>
+<script>
+    function check() {
+        if ($('#cssTable tbody tr').size() <= 1) {
+            alert("관리자 계정은 모두 삭제할 수 없습니다");
+            return false;
+        }
+        else {
+            return true;
+        }
+    }
+
+</script>
 </body>
 </html>
