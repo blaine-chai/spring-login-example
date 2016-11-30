@@ -20,9 +20,9 @@ public class SocketComm
 
 	private String userID = "1";
 	//private String ip = "127.0.0.1";
-	private String ip = "10.10.10.10";
+	private String ip = "10.10.10.1";
 
-	private int port = 30000;
+	private int port = 3000;
 	private DataOutputStream dos = null;
 	private DataInputStream dis = null;
 
@@ -455,11 +455,11 @@ public class SocketComm
 
 	public void reqNotice() throws IOException
 	{
-		System.out.println("msg = " + msg);
+		System.out.println("reqNoticemsg = " + msg);
 		String[] s = msg.split(">");
 
-		System.out.println("s[0] = " + s[0]);
-		System.out.println("s[1] = " + s[1]);
+		//System.out.println("s[0] = " + s[0]);
+		//System.out.println("s[1] = " + s[1]);
 
 		dos.writeUTF(s[0]);
 		dos.writeUTF(s[1]);
@@ -469,11 +469,11 @@ public class SocketComm
 
 	public void reqGetNotice() throws IOException
 	{
-		System.out.println("msg = " + msg);
+		System.out.println("reqGetNotice : msg = " + msg);
 		String[] s = msg.split(">");
 
-		System.out.println("s[0] = " + s[0]);
-		System.out.println("s[1] = " + s[1]);
+		//System.out.println("s[0] = " + s[0]);
+		//System.out.println("s[1] = " + s[1]);
 
 		dos.writeUTF(s[0]);
 		dos.writeUTF(s[1]);

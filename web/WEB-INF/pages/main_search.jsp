@@ -753,6 +753,8 @@
                             + sel2[1] + "' aria-valuemin='0' aria-valuemax='100' style='width: " + sel2[1] + "%;'>" + sel2[1] + "%</div>");			// 검색 률
 
                     console.log(sel2[0] + " : " + sel2[1]);
+					if((sel2[1] == 100)&&(sel2[0]==0)) alert("검색결과가 없습니다!!!");
+
                     if (tdata.jobOrder == "1") {
                         if (sel2[1] < 100)
                             setTime = setTimeout(function () {

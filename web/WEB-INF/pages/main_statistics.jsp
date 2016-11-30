@@ -622,6 +622,8 @@
         totalGraph.removeData();
         totalGraph.removeSvg();
 
+		var startTime = "2015/01/01 00:00:00";
+
         if (category == '일별') category = 'MSG_' + 'daily';
         else                  category = 'MSG_' + 'monthly';
         console.log(category);
@@ -630,7 +632,8 @@
             url: "/main/statistics/search-total-data",
             type: "post",
             data: {
-                "searchPeriod": category
+                "id": "stat1",
+                "searchPeriod": startTime + '-' + category
             },
             success: function (responseData) {
                 var resultData = JSON.parse(responseData);
@@ -652,6 +655,7 @@
         authorTotalGraph.removeData();
         authorTotalGraph.removeSvg();
 
+        var startTime = "2016/03/01 00:00:00";
         if (category == '일별') category = 'DB_' + 'daily';
         else                  category = 'DB_' + 'monthly';
 
@@ -660,8 +664,8 @@
             url: "/main/statistics/search-total-data",
             type: "post",
             data: {
-//                author: author,
-                searchPeriod: category
+                "id": "stat2",
+                "searchPeriod": startTime + '-' + category
             },
             success: function (responseData) {
 

@@ -259,41 +259,17 @@
         $(document).on('click', '.profile-result-relative-author-td', onRelativeTdClickHandler);
 //        $('.profile-result-relative-author-td').on('click', onRelativeTdClickHandler);
 
-        fetch_unix_timestamp = function () {     	//return parseInt(new Date().getTime().toString().substring(0, 10));
-            return Math.floor(new Date().getTime() / 1000);
-        };
-
         var timestamp = fetch_unix_timestamp();
-        // console.log(timestamp);
-
-
-        function timeConverter(UNIX_timestamp) {
-            var a = new Date(UNIX_timestamp * 1000);
-            //var months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-            //var month = months[a.getMonth()];
-            var year = a.getFullYear();
-            var month = a.getMonth();
-            var date = a.getDate();
-            var hour = a.getHours();
-            var min = a.getMinutes();
-            var sec = a.getSeconds();
-            //var time = date + ' ' + month + ' ' + year + ' ' + hour + ':' + min + ':' + sec ;
-            var time = a.getFullYear() + "/" + (a.getMonth() + 1) + "/" + a.getDate();
-            return time;
-        }
-
-        //console.log(timeConverter(timestamp-3600*24*50));
-
-        //var d = new Date();
-        //var ttt = d.getFullYear() + "/" + (d.getMonth()+1) + "/" + d.getDate();
-        var ttt = timeConverter(timestamp - 3600 * 24 * 1000);
+        timestamp = timeConverter(timestamp - 3600 * 24 * 1000);
 
         $('#datepicker1').datetimepicker({
-            value: ttt
+            format: 'Y/m/d',
+			value: timestamp
         });
 
         $('#datepicker2').datetimepicker({
-            value: new Date()
+            format: 'Y/m/d',
+			value: new Date()
         });
 
         $('label[name=dateOption]').click(function () {
@@ -311,6 +287,8 @@
             $('#nickname-result-container').hide();
             var keyword = $('#nickname-search-input').val();
             console.log(keyword);
+            if(keyword == "") return;
+
             idCNT++;
             callAjax("profile" + idCNT, keyword, "", 16, 0, keyword, "");
         });
@@ -329,7 +307,7 @@
 
             stop = false;
             if (setTime != 0) clearTimeout(setTime);
-            var period = tmpAuthor + '>' + $('#datepicker1').val() + "-" + $('#datepicker2').val() + ">" + $('label[name=dateOption]').text();
+            var period = tmpAuthor + '>' + $('#datepicker1').val() + " 00:00:00" + "-" + $('#datepicker2').val() + " 23:59:59" + ">" + $('label[name=dateOption]').text();
             callAjax("profile" + idCNT, period, "", 9, 0, "", "");
         });
         $('#nickname-result-container').show(300);
@@ -573,7 +551,7 @@
         }
 
         idCNT++;
-        var period = tmpAuthor + '>' + $('#datepicker1').val() + "-" + $('#datepicker2').val() + ">" + $('label[name=dateOption]').text();
+        var period = tmpAuthor + '>' + $('#datepicker1').val() + " 00:00:00" + "-" + $('#datepicker2').val() + " 23:59:59" + ">" + $('label[name=dateOption]').text();
         callAjax("profile" + idCNT, period, classId, 9, 1, "", "");
     }
 
@@ -836,7 +814,7 @@
             idCNT++;
             var author = nicNameOff($(element).parent().parent().parent().parent().find('.table-expanded-title').text());
             var relAuthor = nicNameOff($(element).find('td').eq(1).text());
-            var period = $('#datepicker1').val() + "-" + $('#datepicker2').val() + ">" + $('label[name=dateOption]').text();
+            var period = $('#datepicker1').val() + " 00:00:00" + "-" + $('#datepicker2').val() + " 23:59:59" + ">" + $('label[name=dateOption]').text();
             var id = "profile" + idCNT;
 
             callAjax(id, author + '>' + period, relAuthor, 1, 0, "", "");
@@ -951,7 +929,7 @@
              callAjaxLoop("author"+authorNUM, 8, row, 8, 8, tableData[row].eventNo+">f", "");
              */
 
-			var period = $('#datepicker1').val() + "-" + $('#datepicker2').val() + ">" +  $('label[name=dateOption]').text();
+			var period = $('#datepicker1').val() + " 00:00:00" + "-" + $('#datepicker2').val() + " 23:59:59" + ">" +  $('label[name=dateOption]').text();
             callAjax(id, "}}}}}}}>indexB^" + author + " & " + "indexB^" + relAuthor + ">완전일치>" + period, "", 8, 0, "", "");
         });
 
@@ -980,7 +958,7 @@
             idCNT++;
             var author = nicNameOff($(element).parent().parent().parent().parent().find('.table-expanded-title').text());
             var relAuthor = nicNameOff($(element).find('td').eq(1).text());
-            var period = $('#datepicker1').val() + "-" + $('#datepicker2').val() + ">" + $('label[name=dateOption]').text();
+            var period = $('#datepicker1').val() + " 00:00:00" + "-" + $('#datepicker2').val() + " 23:59:59" + ">" + $('label[name=dateOption]').text();
 
             var id = "profile" + idCNT;
 
@@ -1374,6 +1352,24 @@
         });
    }
 
+    function timeConverter(UNIX_timestamp) {
+        var a = new Date(UNIX_timestamp * 1000);
+        //var months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+        //var month = months[a.getMonth()];
+        var year = a.getFullYear();
+        var month = a.getMonth();
+        var date = a.getDate();
+        var hour = a.getHours();
+        var min = a.getMinutes();
+        var sec = a.getSeconds();
+        //var time = date + ' ' + month + ' ' + year + ' ' + hour + ':' + min + ':' + sec ;
+        var time = a.getFullYear() + "/" + (a.getMonth() + 1) + "/" + a.getDate();
+        return time;
+    }
+
+    fetch_unix_timestamp = function () {     	//return parseInt(new Date().getTime().toString().substring(0, 10));
+        return Math.floor(new Date().getTime() / 1000);
+    };
 
 </script>
 </body>

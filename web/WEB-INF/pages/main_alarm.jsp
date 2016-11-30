@@ -195,7 +195,7 @@
                 type: 'post',
                 data: {},
                 success: function (responseData) {
-                    console.log(responseData);
+                    //console.log(responseData);
                     var result = JSON.parse(responseData);
                     bookmarkModule.removeTableContent();
                     bookmarkModule.setData(result);
@@ -302,28 +302,6 @@
         adminBookmarkModule.init();
         adminBookmarkModule.generateTBody();
         setInterval(refreshAdminBookmark, 60000);
-        fetch_unix_timestamp = function () {     	//return parseInt(new Date().getTime().toString().substring(0, 10));
-            return Math.floor(new Date().getTime() / 1000);
-        };
-
-        var timestamp = fetch_unix_timestamp();
-        // console.log(timestamp);
-
-
-        function timeConverter(UNIX_timestamp) {
-            var a = new Date(UNIX_timestamp * 1000);
-            //var months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-            //var month = months[a.getMonth()];
-            var year = a.getFullYear();
-            var month = a.getMonth();
-            var date = a.getDate();
-            var hour = a.getHours();
-            var min = a.getMinutes();
-            var sec = a.getSeconds();
-            //var time = date + ' ' + month + ' ' + year + ' ' + hour + ':' + min + ':' + sec ;
-            var time = a.getFullYear() + "/" + (a.getMonth() + 1) + "/" + a.getDate();
-            return time;
-        }
 
         $(window).resize(function () {
             $('#content').height($(window).height() - 197);
@@ -591,7 +569,7 @@
         }
         str += ">" + tdata.typeInfo;
 //        str += ">" + tdata.fromDate + "-" + tdata.toDate;
-        str += ">" + tdata.dateOption;
+//        str += ">" + tdata.dateOption;
 
         return str;
     }
@@ -1011,6 +989,8 @@
                             + sel2[1] + "' aria-valuemin='0' aria-valuemax='100' style='width: " + sel2[1] + "%;'>" + sel2[1] + "%</div>");			// 검색 률
 
                     console.log(sel2[0] + " : " + sel2[1]);
+					if((sel2[1] == 100)&&(sel2[0]==0)) alert("검색결과가 없습니다!!!");
+
                     if (tdata.jobOrder == "1") {
                         if (sel2[1] < 100)
                             setTime = setTimeout(function () {
@@ -1094,7 +1074,7 @@
 
         //console.log(jobRun + " : id=" + userID + " : job=" + job + " jobOrder=" + jobOrder + " : sel=" + sel + " page=" + page + " repeatCnt=" + repeatCnt);
         if (sel == 0) {
-            console.log("id=" + userID + "  : job=" + job + " jobOrder=" + jobOrder + " repeatCnt=" + repeatCnt);
+            console.log("id=" + id + "  : job=" + job + " jobOrder=" + jobOrder + " repeatCnt=" + repeatCnt);
             if (setTime != 0) clearTimeout(setTime);
         }
         else  stop = true;
@@ -1188,7 +1168,7 @@
                         + lastQuery.fromDate + "-" + lastQuery.toDate + ">" + lastQuery.dateOption;
                 console.log(m);
                 //if ($('#book-table tbody').find('tr').eq(row).find('td').eq(col).find('span').hasClass( "glyphicon-ok"))
-                callAjaxLoop("author" + authorNUM, row, 1, 1, col, m, "");
+                callAjaxLoop(userID +"_author" + authorNUM, row, 1, 1, col, m, "");
                 //else
                 //	callAjaxLoop("author"+authorNUM, 8, row, 1, 0, m, tableData[row].eventNo);
 
@@ -1203,7 +1183,7 @@
                 stop = false;
                 //alert(priChange);
                 if (tableData[row].priority != $('#book-table tbody').find('tr').eq(row).find('select').val())
-                    callAjaxLoop("pri" + priNUM, 6, row, 6, 0, priChange, "");
+                    callAjaxLoop(userID +"_pri" + priNUM, 6, row, 6, 0, priChange, "");
                 tableData[row].priority = $('#book-table tbody').find('tr').eq(row).find('select').val();
                 priNUM = priNUM + 1;
             }
@@ -1561,11 +1541,39 @@
             }
         }
         str += ">" + tdata.typeInfo;
-        str += ">" + tdata.fromDate + "-" + tdata.toDate;
-        str += ">" + tdata.dateOption;
+        var timestamp = fetch_unix_timestamp();
+        str += ">" + timeConverter(timestamp - 3600 * 24 * 30) + "-" + timeConverter(timestamp);
+       	str += ">DB";
 
         return str;
     }
+
+    function timeConverter(UNIX_timestamp) {
+        var a = new Date(UNIX_timestamp * 1000);
+        //var months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+        //var month = months[a.getMonth()];
+
+        /*	console.log(tdata.fromDate + "-" + tdata.toDate);
+       	console.log(timeConverter(timestamp));
+		timestamp = timeConverter(timestamp - 3600 * 24 * 30);
+       	console.log(timestamp);
+       	*/
+        var year = a.getFullYear();
+        var month = a.getMonth();
+        var date = a.getDate();
+        var hour = a.getHours();
+        var min = a.getMinutes();
+        var sec = a.getSeconds();
+        //var time = date + ' ' + month + ' ' + year + ' ' + hour + ':' + min + ':' + sec ;
+        var time = a.getFullYear() + "/" + (a.getMonth() + 1) + "/" + a.getDate() + " "  + hour + ':' + min + ':' + sec ;
+        //var time = a.getFullYear() + "/" + (a.getMonth() + 1) + "/" + a.getDate() + " "  + hour + ':' + min + ':' + sec ;
+        return time;
+    }
+
+    fetch_unix_timestamp = function () {     	//return parseInt(new Date().getTime().toString().substring(0, 10));
+        return Math.floor(new Date().getTime() / 1000);
+    };
+
 </script>
 </body>
 </html>
