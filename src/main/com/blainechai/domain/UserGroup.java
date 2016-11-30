@@ -28,8 +28,8 @@ public class UserGroup {
     protected UserGroup() {
     }
 
-    public UserGroup(CommonGroupName groupName, UserAccount userAccount) {
-        this.groupName = groupName;
+    public UserGroup(CommonGroupName commonGroupName, UserAccount userAccount) {
+        this.groupName = commonGroupName;
         this.userAccount = userAccount;
     }
 

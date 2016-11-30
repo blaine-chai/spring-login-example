@@ -26,7 +26,7 @@ public class AdminBookmark implements Serializable {
 
     private long date;
 
-    @OneToMany(cascade = CascadeType.REMOVE, mappedBy = "adminBookmark")
+    @OneToMany(cascade = {CascadeType.REMOVE, CascadeType.REFRESH, CascadeType.MERGE}, mappedBy = "adminBookmark")
     private List<CommonBookmark> commonBookmarks = new ArrayList<CommonBookmark>();
 
     protected AdminBookmark() {

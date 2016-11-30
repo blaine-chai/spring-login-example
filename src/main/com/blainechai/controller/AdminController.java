@@ -488,24 +488,44 @@ public class AdminController {
     @RequestMapping(value = "/group-name/update")
     public String groupNameUpdate(HttpServletRequest request) {
         String groupName = request.getParameter("groupName");
-        CommonGroupName commonGroupName = groupNameRepository.findByGroupName(groupName).get(0);
-        commonGroupName.setGroupName(groupName);
-        groupNameRepository.save(commonGroupName);
+        String orgGroupName = request.getParameter("orgGroupName");
+        System.out.println(groupName+"@@@@@@@@@"+orgGroupName);
+        if (groupNameRepository.findByGroupName(groupName).size() <= 0) {
+            CommonGroupName commonGroupName = groupNameRepository.findByGroupName(orgGroupName).get(0);
+            List<UserGroup> userGroups = userGroupRepository.findByGroupName(commonGroupName);
+            commonGroupName.setGroupName(groupName);
+            commonGroupName = groupNameRepository.saveAndFlush(commonGroupName);
+//            groupNameRepository.flush();
+
+            System.out.println(commonGroupName.getGroupName());
+                System.out.println(userGroups.size()+"!!!!!!!!");
+            UserGroup userGroup;
+            for (int i = 0; i < userGroups.size(); i++) {
+                userGroups.get(i).getGroupName().setGroupName(groupName);
+                userGroup = userGroupRepository.saveAndFlush(userGroups.get(i));
+                System.out.println(userGroup.getGroupName().getGroupName());
+            }
+//            userGroupRepository.saveAndFlush();
+        }
         return "redirect:" + "/admin/group-name";
 
     }
 
     @RequestMapping(value = "/group-name/add")
     public ModelAndView groupNameAdd(HttpServletRequest request) {
-        groupNameRepository.save(new CommonGroupName(request.getParameter("groupName")));
+        String groupName = request.getParameter("groupName");
         ModelAndView modelAndView = new ModelAndView("admin_group_name_list");
-        modelAndView.addObject("groupList", groupNameRepository.findAll());
+        if (groupNameRepository.findByGroupName(groupName).size() <= 0) {
+            groupNameRepository.save(new CommonGroupName(groupName));
+            modelAndView.addObject("groupList", groupNameRepository.findAll());
+        }
         return modelAndView;
     }
 
 
     @RequestMapping(value = "/group-name/delete", method = RequestMethod.POST)
     public ModelAndView groupNameDelete(HttpServletRequest request) {
+        userGroupRepository.deleteByGroupName_GroupName(request.getParameter("groupName"));
         groupNameRepository.deleteByGroupName(request.getParameter("groupName"));
         ModelAndView modelAndView = new ModelAndView("admin_group_name_list");
         List<CommonGroupName> groupNames = groupNameRepository.findAll();

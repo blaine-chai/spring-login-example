@@ -377,7 +377,8 @@ public class MainPageController {
         modelAndView.addObject("colSize", tableOptionRepository.findByUserAccount_UserId(sessionRepository.findByJSessionId(request.getSession().getId()).get(0).getUserId()).get(0).getColSizes());
         modelAndView.addObject("userId", userId);
         modelAndView.addObject("userType", sessionRepository.findByJSessionId(sessionId).get(0).getType());
-
+        List<UserGroup> userGroups = userGroupRepository.findByUserAccount_UserId(userId);
+        modelAndView.addObject("userGroups", userGroups);
         return modelAndView;
     }
 
