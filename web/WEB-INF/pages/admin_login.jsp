@@ -1,4 +1,4 @@
-<%@ page contentType="text/html;charset=UTF-8" language="java" pageEncoding="UTF-8"%>
+<%@ page contentType="text/html;charset=UTF-8" language="java" pageEncoding="UTF-8" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
@@ -7,6 +7,7 @@
     <meta charset="utf-8">
     <title>Server Admin</title>
     <link href="/css/login.css" rel="stylesheet" type="text/css">
+    <script type="text/javascript" src="/js/jquery.min.js"></script>
 </head>
 <body>
 <div class="login">
@@ -62,7 +63,15 @@
                 </c:otherwise>
             </c:choose>
         </div>
+        ${loginFail}
     </div>
+    <c:if test="${loginFail.equals(\"true\")}">
+        <script>
+            $(document).ready(function () {
+                alert('아이디와 비밀번호를 다시 확인해 주세요.');
+            });
+        </script>
+    </c:if>
 </div>
 <script type="text/javascript" charset="UTF-8" src="/js/auto-logout.js"></script>
 </body>

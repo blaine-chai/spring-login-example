@@ -14,6 +14,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import org.springframework.web.servlet.support.RequestContextUtils;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.BufferedReader;
@@ -101,11 +103,19 @@ public class MainPageController {
     }
 
     @RequestMapping(value = {""})
-    public String login(HttpServletRequest request) {
+    public ModelAndView login(HttpServletRequest request) {
         if (sessionRepository.findByJSessionId(request.getSession().getId()).size() > 0) {
-            return "redirect:" + "/main";
+            return new ModelAndView("redirect:" + "/main");
         }
-        return "user_login";
+        Map<String, ?> fm = RequestContextUtils.getInputFlashMap(request);
+        if (fm != null) {
+            String message = (String) fm.get("loginFail");
+            return new ModelAndView("user_login").addObject("loginFail", message);
+        } else {
+            return new ModelAndView("user_login")
+                    .addObject("adminAccountSize", userAccountRepository.findByType(UserType.ADMIN).size())
+                    .addObject("loginFail", "false");
+        }
     }
 
     @RequestMapping(value = {"/main"})
@@ -808,7 +818,7 @@ public class MainPageController {
 //    }
 
     @RequestMapping(value = "/login", method = RequestMethod.POST)
-    public String userLogin(HttpServletRequest request) {
+    public String userLogin(HttpServletRequest request, RedirectAttributes redirectAttributes) {
         String userId = request.getParameter("userId");
         String password = request.getParameter("password");
         List<UserAccount> userAccountList = userAccountRepository.findByUserId(userId);
@@ -819,6 +829,7 @@ public class MainPageController {
             sessionRepository.save(new Session(request.getSession().getId(), userId, userAccountList.get(0).getType()));
             return "redirect:" + "/main";
         }
+        redirectAttributes.addFlashAttribute("loginFail", "true");
         return "redirect:" + "/";
     }
 

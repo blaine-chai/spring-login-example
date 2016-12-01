@@ -13,10 +13,14 @@ import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import org.springframework.web.servlet.support.RequestContextUtils;
+import org.springframework.web.servlet.view.RedirectView;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 @Controller
 @RequestMapping("/admin")
@@ -56,15 +60,22 @@ public class AdminController {
     private UserGroupRepository userGroupRepository;
 
     @RequestMapping(value = {""})
-    public String adminLogin(ModelMap model, HttpServletRequest request) {
-//        System.out.println(sessionRepository.findByJSessionId(request.getSession().getId()).size());
+    public ModelAndView adminLoginPage(HttpServletRequest request) {
+        Map<String, ?> fm = RequestContextUtils.getInputFlashMap(request);
         if (sessionRepository.findByJSessionId(request.getSession().getId()).size() > 0) {
             if (UserType.isAdminUser(sessionRepository.findByJSessionId(request.getSession().getId()).get(0).getType())) {
-                return "redirect:" + "/admin/main";
+                return new ModelAndView("redirect:" + "/admin/main");
             }
         }
-        model.addAttribute("adminAccountSize", userAccountRepository.findByType(UserType.ADMIN).size());
-        return "admin_login";
+        if (fm != null) {
+            String message = (String) fm.get("loginFail");
+            return new ModelAndView("admin_login").addObject("loginFail", message);
+        }else {
+            return new ModelAndView("admin_login")
+                    .addObject("adminAccountSize", userAccountRepository.findByType(UserType.ADMIN).size())
+                    .addObject("loginFail", "false");
+
+        }
     }
 
     @RequestMapping(value = "/join", method = RequestMethod.POST)
@@ -72,8 +83,6 @@ public class AdminController {
         String userId = request.getParameter("userId");
         String username = request.getParameter("username");
         String password = request.getParameter("password");
-//        String phone = request.getParameter("p")
-
         try {
             UserAccount adminAccount = new UserAccount(userId, username, password, "0", UserType.ADMIN);
             adminAccount = userAccountRepository.save(adminAccount);
@@ -89,19 +98,19 @@ public class AdminController {
     }
 
     @RequestMapping(value = "/login", method = RequestMethod.POST)
-    public String adminLogin(HttpServletRequest request) {
+    public String adminLogin(HttpServletRequest request, RedirectAttributes redirectAttributes) {
         String userId = request.getParameter("userId");
         String password = request.getParameter("password");
         List<UserAccount> adminAccountList = userAccountRepository.findByUserIdAndType(userId, UserType.ADMIN);
-//        for (int i = 0; i < adminAccountList.size(); i++) {
-//        UserAccount adminAccount = adminAccountList.get(i);
         if (adminAccountList.size() > 0 && adminAccountList.get(0).getUserId().equals(userId) && adminAccountList.get(0).getHash().equals(EncryptUtil.getSHA256(EncryptUtil.FIRST_KEY + userId + password + EncryptUtil.SECOND_KEY))) {
             request.getSession().setAttribute("userId", userId);
             sessionRepository.save(new Session(request.getSession().getId(), userId, UserType.ADMIN));
             return "redirect:" + "/admin/main";
         }
 //        }
-        return "redirect:" + "/error";
+        redirectAttributes.addFlashAttribute("loginFail", "true");
+
+        return "redirect:"+"/admin";
     }
 
     @RequestMapping(value = "/logout")
@@ -271,7 +280,7 @@ public class AdminController {
                 commonBookmarkRepository.save(new CommonBookmark(userAccount, adminBookmark, 0));
             }
         } else {
-            return "redirect:" + "/error";
+            return "redirect:" + "/admin/main";
         }
         return "redirect:" + "/admin/admin-account";
     }
