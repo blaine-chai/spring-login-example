@@ -74,8 +74,8 @@
             </ul>
         </div>
         <div class="col-sm-9" style="height:100%;">
-            <div class="container">
-                <h2>Admin User List</h2>
+            <div class="">
+                <h2>Admin List</h2>
                 <!-- Search Bar -->
                 <div class="panel panel-info">
                     <div class="panel-heading">Search</div>
@@ -122,10 +122,11 @@
                                 <td class="text-center">********</td>
                                 <td class="text-center">${admin.createDate}</td>
                                 <td class="text-center shrink">
-                                    <form action="/admin/admin-account/modify" method="post">
-                                        <button class="btn btn-primary" name="userId" value="${admin.userId}">수정
-                                        </button>
-                                    </form>
+                                        <%--<form action="/admin/admin-account/modify" method="post">--%>
+                                    <button class="btn btn-primary" name="userId" value="${admin.userId}"
+                                            onclick="modifyAdminUser(this);return false;">수정
+                                    </button>
+                                        <%--</form>--%>
                                     <form action="/admin/admin-account/delete" method="post" onsubmit="return check();">
                                         <button class="btn btn-danger" name="userId" value="${admin.userId}">삭제</button>
                                     </form>
@@ -139,6 +140,34 @@
         </div>
     </div>
 </div>
+<div class="modify-dialogue-container"
+     style="width: 100%;height: 100%;position: absolute;top:0;left:0;vertical-align: middle;text-align: center; background: rgba(100,100,100,0.6);display: none;">
+    <div style="position: relative;width: 300px;top: calc(50% - 300px);left: 50%;padding: 15px;margin: 0;"
+         class="panel panel-default">
+        <%--<form action="/admin/admin-account/update" method="post" class="form" role="form">--%>
+        <label>사용자 아이디</label>
+        <input class="form-control" value="" placeholder="사용자 이름"
+               name="userId" type="email" readOnly/><br>
+        <label>이름</label>
+        <input class="form-control" name="username" value="" type="text"/><br>
+        <label>비밀번호</label>
+        <%--<input class="form-control" value="**********" type="password" readOnly="true"/><br>--%>
+        <input class="form-control" value="********" type="password" name="password"/><br>
+        <label>가입일</label>
+        <input class="form-control" name="createDate" value="" type="text" readOnly/><br>
+        <br/>
+        <br/>
+        <div style="text-align: center;width: 100%;display: flex;">
+            <label class="btn btn-default col-xs-5" style="margin: 0 auto;"
+                   onclick="$('.modify-dialogue-container').hide();return false;">취소
+            </label>
+            <label class="btn btn-primary col-xs-5" style="margin: 0 auto;">
+                저장
+            </label>
+        </div>
+        <%--</form>--%>
+    </div>
+</div>
 <script>
     function check() {
         if ($('#cssTable tbody tr').size() <= 1) {
@@ -150,6 +179,15 @@
         }
     }
 
+    function modifyAdminUser(element) {
+        var el = $(element);
+        var tarTr = el.parent().parent();
+        $('.modify-dialogue-container input[name=userId]').val(tarTr.find('td').eq(0).text());
+        $('.modify-dialogue-container input[name=username]').val(tarTr.find('td').eq(1).text());
+        $('.modify-dialogue-container input[name=password]').val('********');
+        $('.modify-dialogue-container input[name=createDate]').val(tarTr.find('td').eq(3).text());
+        $('.modify-dialogue-container').show();
+    }
 </script>
 </body>
 </html>
