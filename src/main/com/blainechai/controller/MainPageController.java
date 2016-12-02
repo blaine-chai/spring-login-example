@@ -261,22 +261,6 @@ public class MainPageController {
                 send += msg;
                 bookInfoList.clear();
                 bookInfoList = sc.getR();
-                /*
-                for (BookInfo bookInfo : bookInfoList) {
-		            List<NicknameOption> nicknames = nicknameRepository.findByAuthor(bookInfo.getAuthor());
-		            //find in nickname table and if nickname exist, add to BookInfo
-		            if (nicknames.size() > 0) {
-		                bookInfo.setAuthNickname(nicknames.get(0).getNickname());
-		            }
-		        }
-		        for (BookInfo bookInfo : bookInfoList) {
-		            List<NicknameOption> nicknames = nicknameRepository.findByAuthor(bookInfo.getReferencedAuthor());
-		            //find in nickname table and if nickname exist, add to BookInfo
-		            if (nicknames.size() > 0) {
-		                bookInfo.setRefNickname(nicknames.get(0).getNickname());
-		            }
-		        }
-		        */
             } else if (selInt == 4) {
                 int progressPer = sc.getProPercent();
                 int cntTmp = sc.getCount();    // 카운트
@@ -440,6 +424,8 @@ public class MainPageController {
         c = Calendar.getInstance();
         if (dayMonth[1].equals("monthly")) c.add(c.MONTH, 1);
         else c.add(c.DATE, 1);
+        //if (dayMonth[1].equals("monthly")) c.add(c.MONTH, -19);
+        //else c.add(c.DATE, -560);
 
         String endTime = c.get(c.YEAR) + (String.format("%02d", c.get(c.MONTH) + 1)) + (String.format("%02d", c.get(c.DATE))) + "235959";
         String msg = startTime + "-" + endTime + ">" + dayMonth2[1];
@@ -598,9 +584,27 @@ public class MainPageController {
         String send = "";
         ArrayList<LinkedHashMap<String, String>> resultList = new ArrayList<LinkedHashMap<String, String>>();
 
+        // userId로 검색한 그룹의 리스트
+        List<UserGroup> userGroups = userGroupRepository.findByUserAccount_UserId(userId);
+
         if (selInt <= 1) {
             String msg = request.getParameter("msg");
             msg = wordParse(msg);
+
+            String[] s = msg.split(">");
+            String groupChecked = "";
+            if(!s[4].equals("ALL")) {
+                for(int j=0; j < userGroups.size(); j++) {
+                	if(userGroups.get(j).getGroupName().getGroupName().equals(s[4])) {
+                		groupChecked = "indexC^" + s[4];
+                		break;
+                	}
+                }
+            }
+            if(groupChecked.equals(""))
+            	msg = s[0] + ">" + s[1] + ">" +s[2] + ">" +s[3] + ">";
+            else
+            	msg = s[0] + " & " + groupChecked + ">" + s[1] + ">" +s[2] + ">" +s[3] + ">";
 
             sc = new SocketComm(userId + "@" + id, ip, port, 21, 0, msg);
             sc.runStart();
@@ -897,6 +901,21 @@ public class MainPageController {
         if (selInt < 100) {
             if (selInt <= 1) {
                 msg = wordParse(msg);
+                String[] s = msg.split(">");
+                String groupChecked = "";
+                if(!s[4].equals("ALL")) {
+                    for(int j=0; j < userGroups.size(); j++) {
+                    	if(userGroups.get(j).getGroupName().getGroupName().equals(s[4])) {
+                    		groupChecked = "indexC^" + s[4];
+                    		break;
+                    	}
+                    }
+                }
+                if(groupChecked.equals(""))
+                	msg = s[0] + ">" + s[1] + ">" +s[2] + ">" +s[3] + ">";
+                else
+                	msg = s[0] + " & " + groupChecked + ">" + s[1] + ">" +s[2] + ">" +s[3] + ">";
+
                 System.out.println("\tAAAA : msg = " + msg);
                 sc = new SocketComm(userId + "@" + id, ip, port, selInt, pageInt, msg);
             } else if ((selInt == 6) || (selInt == 8) || (selInt == 13)) {
@@ -908,8 +927,6 @@ public class MainPageController {
             sc.runStart();
             long time = System.currentTimeMillis();
             //int progress = 29;
-
-            //System.out.println("AAAAAAAAAAAAAAAAAAAA :: " + sc.beGetGood());
 
             if (sc.beGetGood() >= 0) {
                 if (selInt == 0) send += "OK";                    // query
@@ -931,8 +948,9 @@ public class MainPageController {
                             bookInfo.setRefNickname(nicknames.get(0).getNickname());
                         }
                     }
-                } else if (selInt == 3) send += sc.getKetSet();    // 연관문자
-                else if ((selInt == 4) || (selInt == 14)) {
+                }
+                else if (selInt == 3) send += sc.getKetSet();    // 연관문자
+                else if (selInt == 4){
                     int progressPer = sc.getProPercent();
                     int cntTmp = sc.getCount();    // 카운트
                     if ((cntTmp < 50) && (progressPer < 100)) send = "NotOK";
@@ -940,9 +958,18 @@ public class MainPageController {
                         if (progressPer < 100) send = cntTmp + "!@#$" + progressPer + "!@#$OK";
                         else send = cntTmp + "!@#$" + progressPer + "!@#$NOT";
                     }
-                } else if (selInt == 6) {
+                }
+                else if (selInt == 14) {
+                    int progressPer = sc.getProPercent();
+                    int cntTmp = sc.getCount();    // 카운트
+                    if (progressPer < 100) send = "NotOK";
+                    else
+                        send = cntTmp + "!@#$" + progressPer;
+                }
+                else if (selInt == 6) {
                     send += "OK";
-                } else send += "EXPORT";        // R
+                }
+                else send += "EXPORT";        // R
             } else if (sc.beGetGood() == -2) {
                 send = "NoData";
             } else {
@@ -1141,7 +1168,7 @@ public class MainPageController {
                 sc.runStart();
                 int result = sc.beGetGood();
 
-//                System.out.println("!!!!!! : " + result);
+                System.out.println("ALRAM96!!common!!!! msg : " + result);
                 commonBookmark.setCount(result);
                 commonBookmarkRepository.save(commonBookmark);
 
@@ -1175,11 +1202,11 @@ public class MainPageController {
                     sc = new SocketComm(userId + "@" + "ALRAM98", ip, port, 18, 0, msg);
                     sc.runStart();
                     int result = sc.beGetGood();
-                    System.out.println("AAAAA : " + i + " : " + msg + " => " + result);
+                    System.out.println("common-bookmark/get :: AAAAA : " + i + " : " + msg + "  => " + result + "  => " + commonBookmarks.get(i).getCount());
 
 
                     if (result > commonBookmarks.get(i).getCount()) {
-                        historyApis.add(new HistoryApi(commonBookmarks.get(i), true)); //date가 update된 경우
+                    	historyApis.add(new HistoryApi(commonBookmarks.get(i), true)); //date가 update된 경우
                     } else {
                         historyApis.add(new HistoryApi(commonBookmarks.get(i), false));
                     }
@@ -1222,8 +1249,11 @@ public class MainPageController {
                     for (UserAccount userAccount : allUsers) {
                         commonBookmarkRepository.save(new CommonBookmark(userAccount, tmpAdminBookmark, 0));
                     }
-                    //SocketComm sc = new SocketComm(userId + "@" + id, ip, port, 19, 0, msg);
-                    //sc.runStart();
+                    SocketComm sc = new SocketComm(adminId + "@" + "ALRAM94", ip, port, 19, 0, msg);
+                    sc.runStart();
+
+                    sc = new SocketComm(adminId + "@" + "ALRAM94", ip, port, 5, 0);
+                    sc.runStart();
                 }
             }
         }
@@ -1270,8 +1300,12 @@ public class MainPageController {
                 UserBookmark tmpBookmark = userBookmarkRepository.save(new UserBookmark(userHistory));
                 userHistory.setUserBookmark(tmpBookmark);
                 userHistoryRepository.save(userHistory);
-                //SocketComm sc = new SocketComm(userId + "@" + id, ip, port, 19, 0, msg);
-                //sc.runStart();
+
+                SocketComm sc = new SocketComm(userId + "@" + "ALRAM95", ip, port, 19, 0, msg);
+                sc.runStart();
+
+                sc = new SocketComm(userId + "@" + "ALRAM95", ip, port, 5, 0);
+                sc.runStart();
             }
         }
         return new ModelAndView("api").addObject("json", "");
@@ -1295,7 +1329,7 @@ public class MainPageController {
                 SocketComm sc = new SocketComm(userId + "@" + "ALRAM97", ip, port, 18, 0, msg);
                 sc.runStart();
                 int result = sc.beGetGood();
-//                System.out.println("!!!!!!");
+                System.out.println("ALRAM97!!user!!!! msg : " + result);
 
                 userBookmark.setCount(result);
                 userBookmarkRepository.save(userBookmark);
@@ -1327,7 +1361,7 @@ public class MainPageController {
                     sc = new SocketComm(userId + "@" + "ALRAM99", ip, port, 18, 0, msg);
                     sc.runStart();
                     int result = sc.beGetGood();
-                    System.out.println("AAAAA : " + i + " : " + msg + " => " + result);
+                    System.out.println("user-bookmark/get :: AAAAA : " + i + " : " + msg + " => " + result + "  => " + userBookmarks.get(i).getCount());
 
                     if (result > userBookmarks.get(i).getCount()) {
                         historyApis.add(new HistoryApi(userBookmarks.get(i), true)); //데이터가 업데이트 된 경우

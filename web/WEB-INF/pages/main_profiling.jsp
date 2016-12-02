@@ -216,6 +216,9 @@
     relStartPos.maxTop = 300;
     relStartPos.count = 0;
     var nicNameDB;
+    var isProfileSearch = true;
+
+
     var loadingRing = $('<img class="loading-ring" src="/imgs/ajax-loader.gif" style="position: absolute;right: 50px;">')
 
 
@@ -285,34 +288,40 @@
         nicNameUpdate();
 
         $('#nickname-search-btn').click(function (e) {
-            $('#nickname-result-table>tbody').children().remove();
-            $('#nickname-result-container').hide();
-            var keyword = $('#nickname-search-input').val();
-            console.log(keyword);
-            if(keyword == "") return;
+        	if(isProfileSearch) {
+        		isProfileSearch = false;
+	            $('#nickname-result-table>tbody').children().remove();
+	            $('#nickname-result-container').hide();
+	            var keyword = $('#nickname-search-input').val();
+	            console.log(keyword);
+	            if(keyword == "") return;
 
-            idCNT++;
-            callAjax("profile" + idCNT, keyword, "", 16, 0, keyword, "");
+	            callAjax("profileSearch", keyword, "", 16, 0, keyword, "");
+        	}
         });
 
         setNicknameModifyHandler();
     });
 
+
     function setAuthorResultClickHandler() {
         $('#nickname-result-table .nickname-search-td').click(function (e)
    		{
-            var tmpAuthor = nicNameOff($(this).parent().find('td').eq(1).text());
-            idCNT++;
+        	if(isProfileSearch) {
+        		isProfileSearch = false;
+				var tmpAuthor = nicNameOff($(this).parent().find('td').eq(1).text());
+	            idCNT++;
 
-            $('#profile-result-container').children().hide();
-            $('#profile-result-container').children().remove();
+	            $('#profile-result-container').children().hide();
+	            $('#profile-result-container').children().remove();
 
-            $(this).append(loadingRing);
+	            $(this).append(loadingRing);
 
-            stop = false;
-            if (setTime != 0) clearTimeout(setTime);
-            var period = tmpAuthor + '>' + $('#datepicker1').val() + " 00:00:00" + "-" + $('#datepicker2').val() + " 23:59:59" + ">" + $('label[name=dateOption]').text();
-            callAjax("profile" + idCNT, period, "", 9, 0, "", "");
+	            stop = false;
+	            if (setTime != 0) clearTimeout(setTime);
+	            var period = tmpAuthor + '>' + $('#datepicker1').val() + " 00:00:00" + "-" + $('#datepicker2').val() + " 23:59:59" + ">" + $('label[name=dateOption]').text();
+	            callAjax("profile" + idCNT, period, "", 9, 0, "", "");
+        	}
         });
         $('#nickname-result-container').show(300);
     }
@@ -412,7 +421,8 @@
                     setProfileResultTableSize();
                     parentContainer = "";
                 }
-            }
+                isProfileSearch = true;
+			}
             else if (data.sel == 16) {
                 stop = true;
                 callAjax(data.id, data.author, data.period, 15, data.page, "", "");
@@ -421,6 +431,8 @@
             else if (data.sel == 15) {
                 var result = JSON.parse(data.bookInfoList);
                 var tmpEl = "";
+                //console.log("::" +result[0]+ "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa" + result.length);
+
                 $.each(nicNameDB, function (i, nicDB) {
                     if (nicNameDB[i].nickname.indexOf(data.author) != -1) {  //if(str1.indexOf(str2) != -1){
                         //Nic = author + "(" + nicNameDB[i].nickname + ")";
@@ -432,22 +444,30 @@
                     }
                 });
 
-				$.each(result, function (i, nicDB) {
-                    //console.log(result[i]);
-                    if (result[i].indexOf(data.author) != -1) {  //if(str1.indexOf(str2) != -1){
-                        //console.log(result[i]);
-                        var nic = nicNameFindOnly(result[i]);
-                        tmpEl += '<tr>' +
-                             '<td style="text-align: center;"><input type="radio" class="nickname-radio" name="nickname-radio"></td>' +
-                             '<td class="nickname-search-td">' + result[i] + '</td>' +
-                             '<td class="nickname-search-td">' + (nic != '' ? '(' + nic + ')' : '') + '</td>' +
-                             '</tr>';
-                    }
-                });
+				if(result.length!=0) {
+					if((result.length==1)&&(result[0]=="")) {
+						alert("검색결과가 없습니다.");
+					}
+					else{
+						$.each(result, function (i, nicDB) {
+		                    //console.log(result[i]);
+		                    if (result[i].indexOf(data.author) != -1) {  //if(str1.indexOf(str2) != -1){
+		                        //console.log(result[i]);
+		                        var nic = nicNameFindOnly(result[i]);
+		                        tmpEl += '<tr>' +
+		                             '<td style="text-align: center;"><input type="radio" class="nickname-radio" name="nickname-radio"></td>' +
+		                             '<td class="nickname-search-td">' + result[i] + '</td>' +
+		                             '<td class="nickname-search-td">' + (nic != '' ? '(' + nic + ')' : '') + '</td>' +
+		                             '</tr>';
+		                    }
+		                });
 
-                $('#nickname-result-table').append($(tmpEl));
-                setAuthorResultClickHandler();
-
+		                $('#nickname-result-table').append($(tmpEl));
+		                setAuthorResultClickHandler();
+					}
+				}
+				else alert("검색결과가 없습니다.");
+                isProfileSearch = true;
             }
         }
     }

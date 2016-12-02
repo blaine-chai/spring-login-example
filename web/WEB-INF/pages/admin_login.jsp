@@ -63,7 +63,6 @@
                 </c:otherwise>
             </c:choose>
         </div>
-        ${loginFail}
     </div>
     <c:if test="${loginFail.equals(\"true\")}">
         <script>

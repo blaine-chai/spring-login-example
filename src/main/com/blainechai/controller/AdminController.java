@@ -164,17 +164,6 @@ public class AdminController {
         return modelAndView;
     }
 
-    @RequestMapping(value = "/admin-account/modify", method = RequestMethod.POST)
-    public ModelAndView modify(HttpServletRequest request) {
-        ModelAndView modelAndView = new ModelAndView("admin_administrator_modify");
-        try {
-            modelAndView.addObject("adminInfo", userAccountRepository.findByUserId(request.getParameter("userId")).get(0));
-        } catch (ArrayIndexOutOfBoundsException e) {
-            modelAndView = new ModelAndView("redirect:" + "/admin/admin-account");
-        }
-        return modelAndView;
-    }
-
     @RequestMapping(value = "/admin-account/delete", method = RequestMethod.POST)
     public ModelAndView adminAccountDelete(HttpServletRequest request) {
         String userId = request.getParameter("userId");
@@ -189,11 +178,11 @@ public class AdminController {
             userGroupRepository.deleteByUserAccount_UserId(userId);
             userHistoryRepository.deleteByUserAccount_UserId(userId);
             tableOptionRepository.deleteByUserAccount_UserId(userId);
-
             userAccountRepository.deleteByUserId(userId);
+            return new ModelAndView("api").addObject("json", true);
+        } else {
+            return new ModelAndView("api").addObject("json", false);
         }
-        ModelAndView modelAndView = new ModelAndView("admin_administrator_list");
-        return modelAndView;
     }
 
 
@@ -305,11 +294,6 @@ public class AdminController {
         return new ModelAndView("api").addObject("json", true); // 중복된 번호라고 언급해야함.
     }
 
-    @RequestMapping(value = "/admin-account/register")
-    public String adminRegisterPage(HttpServletRequest request) {
-        return "admin_administrator_join";
-    }
-
     @RequestMapping(value = "/admin-account/join", method = RequestMethod.POST)
     public ModelAndView adminAccountJoin(HttpServletRequest request) {
         Gson gson = new Gson();
@@ -403,19 +387,20 @@ public class AdminController {
         // user_group -> userId
         // user_search_history -> userId
         // user_table_option -> user Id
-        String userId = request.getParameter("userId");
-        if (userAccountRepository.findByUserId(userId).get(0).getType().equals(UserType.USER)) {
+        try {
+            String userId = request.getParameter("userId");
             commonBookmarkRepository.deleteByUserAccount_UserId(userId);
             sessionRepository.deleteByUserId(userId);
             userBookmarkRepository.deleteByUserAccount_UserId(userId);
             userGroupRepository.deleteByUserAccount_UserId(userId);
             userHistoryRepository.deleteByUserAccount_UserId(userId);
             tableOptionRepository.deleteByUserAccount_UserId(userId);
-        }
-        userAccountRepository.deleteByUserId(request.getParameter("userId"));
-        ModelAndView modelAndView = new ModelAndView("admin_user_list");
+            userAccountRepository.deleteByUserId(request.getParameter("userId"));
+            return new ModelAndView("api").addObject("json", true);
 //        List<UserAccount> adminList = userAccountRepository.findAll();
-        return modelAndView;
+        } catch (Exception e) {
+            return new ModelAndView("api").addObject("json", false);
+        }
     }
 
 
@@ -516,11 +501,6 @@ public class AdminController {
         return new ModelAndView("api").addObject("json", true);
     }
 
-    @RequestMapping(value = "/user/register")
-    public String registerPage(HttpServletRequest request) {
-        return "admin_user_join";
-    }
-
     @RequestMapping(value = "/user/join", method = RequestMethod.POST)
     public ModelAndView userJoin(HttpServletRequest request) {
         Gson gson = new Gson();
@@ -579,64 +559,57 @@ public class AdminController {
     }
 
 
-    @RequestMapping(value = "/group-name/modify")
-    public ModelAndView groupNameModify(HttpServletRequest request) {
-        ModelAndView modelAndView = new ModelAndView("admin_group_name_modify");
-        try {
-            modelAndView.addObject("groupInfo", groupNameRepository.findByGroupName(request.getParameter("groupName")).get(0));
-        } catch (ArrayIndexOutOfBoundsException e) {
-            modelAndView = new ModelAndView("redirect:" + "/admin/group-name");
-        }
-        return modelAndView;
-
-    }
-
-    @Transactional
     @RequestMapping(value = "/group-name/update")
-    public String groupNameUpdate(HttpServletRequest request) {
-        String groupName = request.getParameter("groupName");
-        String orgGroupName = request.getParameter("orgGroupName");
-        if (groupNameRepository.findByGroupName(groupName).size() <= 0) {
-            CommonGroupName commonGroupName = groupNameRepository.findByGroupName(orgGroupName).get(0);
-            List<UserGroup> userGroups = userGroupRepository.findByGroupName(commonGroupName);
-            commonGroupName.setGroupName(groupName);
-            commonGroupName = groupNameRepository.save(commonGroupName);
-            UserGroup userGroup;
-            for (int i = 0; i < userGroups.size(); i++) {
-                userGroups.get(i).getGroupName().setGroupName(groupName);
-                userGroup = userGroupRepository.save(userGroups.get(i));
-            }
-//            userGroupRepository.saveAndFlush();
+    public ModelAndView groupNameUpdate(HttpServletRequest request) {
+        try {
+            String groupName = request.getParameter("groupName");
+            String orgGroupName = request.getParameter("orgGroupName");
+            if (groupName.equals(orgGroupName)) {
+                return new ModelAndView("api").addObject("json", true);
+            } else if (groupNameRepository.findByGroupName(groupName).size() <= 0) {
+                CommonGroupName commonGroupName = groupNameRepository.findByGroupName(orgGroupName).get(0);
+                List<UserGroup> userGroups = userGroupRepository.findByGroupName(commonGroupName);
+                commonGroupName.setGroupName(groupName);
+                commonGroupName = groupNameRepository.save(commonGroupName);
+//                UserGroup userGroup;
+                for (int i = 0; i < userGroups.size(); i++) {
+                    userGroups.get(i).getGroupName().setGroupName(groupName);
+//                    userGroup = userGroupRepository.save(userGroups.get(i));
+                    userGroupRepository.save(userGroups.get(i));
+                }
+                return new ModelAndView("api").addObject("json", true);
+            } else return new ModelAndView("api").addObject("json", false);
+        } catch (Exception e) {
+            return new ModelAndView("api").addObject("json", false);
         }
-        return "redirect:" + "/admin/group-name";
-
     }
 
     @RequestMapping(value = "/group-name/add")
     public ModelAndView groupNameAdd(HttpServletRequest request) {
         String groupName = request.getParameter("groupName");
-        ModelAndView modelAndView = new ModelAndView("admin_group_name_list");
+        ModelAndView modelAndView = new ModelAndView("api");
         if (groupNameRepository.findByGroupName(groupName).size() <= 0) {
             groupNameRepository.save(new CommonGroupName(groupName));
-            modelAndView.addObject("groupList", groupNameRepository.findAll());
+//                modelAndView.addObject("groupList", groupNameRepository.findAll());
+            return new ModelAndView("api").addObject("json", true);
+        } else {
+            return new ModelAndView("api").addObject("json", false);
         }
-        return modelAndView;
     }
 
 
     @RequestMapping(value = "/group-name/delete", method = RequestMethod.POST)
     public ModelAndView groupNameDelete(HttpServletRequest request) {
-        userGroupRepository.deleteByGroupName_GroupName(request.getParameter("groupName"));
-        groupNameRepository.deleteByGroupName(request.getParameter("groupName"));
-        ModelAndView modelAndView = new ModelAndView("admin_group_name_list");
-        List<CommonGroupName> groupNames = groupNameRepository.findAll();
-        modelAndView.addObject("groupList", groupNames);
-        return modelAndView;
-    }
-
-    @RequestMapping(value = "/group-name/register")
-    public String groupNameRegister(HttpServletRequest request) {
-        return "admin_group_name_register";
+        try {
+            userGroupRepository.deleteByGroupName_GroupName(request.getParameter("groupName"));
+            groupNameRepository.deleteByGroupName(request.getParameter("groupName"));
+            ModelAndView modelAndView = new ModelAndView("admin_group_name_list");
+//        List<CommonGroupName> groupNames = groupNameRepository.findAll();
+//        modelAndView.addObject("groupList", groupNames);
+            return new ModelAndView("api").addObject("json", true);
+        } catch (Exception e) {
+            return new ModelAndView("api").addObject("json", false);
+        }
     }
 
     @RequestMapping(value = "/user-group/get")

@@ -21,8 +21,6 @@ public class AdminInterceptor extends HandlerInterceptorAdapter {
             if (list.size() > 0 && UserType.isAdminUser(list.get(0).getType())) {
                 return true;
             }
-//            System.out.println(request.getParameter("loginFail"));
-//            System.out.println(request.getAttribute("loginFail"));
             response.sendRedirect("/admin");
         } catch (Exception e) {
             e.printStackTrace();

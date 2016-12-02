@@ -230,7 +230,11 @@ public class SocketComm
 			String[] sss = msg.split(">");
 			System.out.println(sss.length + " : ");
 
-			sss[2] = getPeriod(sss[2]);
+			if(sss[3].equals("ALL")) {
+				sss[2] = getPeriod("-");
+				sss[3] = "MSG";
+			}
+			else 		sss[2] = getPeriod(sss[2]);
 
 			for (int i=0; i < k; i++) {
 				System.out.println("\tmsg333 : " + sss[i]);
@@ -302,7 +306,12 @@ public class SocketComm
 		System.out.println("msg = " + msg);
 		String[] s = msg.split(">");
 
-		s[3] = getPeriod(s[3]);
+		if(s[4].equals("ALL")) {
+			s[3] = getPeriod("-");
+			s[4] = "MSG";
+		}
+		else 		s[3] = getPeriod(s[3]);
+
 		msg = s[0] + ">" + s[1] + ">" + s[2] + ">" + s[3] + ">" + s[4];
 		System.out.println("msg = " + msg);
 
@@ -330,14 +339,19 @@ public class SocketComm
 
 	public void reqProfile() throws IOException
 	{
-		System.out.println("msg = " + msg);
+		System.out.println("reqProfile :: msg = " + msg);
 		String[] s = msg.split(">");
 		dos.writeUTF("indexB^" + s[0]);
 
-		s[1] = getPeriod(s[1]);
+		if(s[2].equals("ALL")) {
+			s[1] = getPeriod("-");
+			s[2] = "MSG";
+		}
+		else 		s[1] = getPeriod(s[1]);
+
 		dos.writeUTF(s[1]);
 
-		System.out.println("msg = " + msg + " :: " + s[1]);
+		System.out.println("reqProfile :: msg = " + msg + " :: " + s[1]);
 
 		//dos.writeBoolean(true);
 		good = 0;
@@ -423,7 +437,11 @@ public class SocketComm
 			dos.writeInt(k);
 
 			String[] sss = msg.split(">");
-			sss[2] = getPeriod(sss[2]);
+			if(sss[3].equals("ALL")) {
+				sss[2] = getPeriod("-");
+				sss[3] = "MSG";
+			}
+			else 		sss[2] = getPeriod(sss[2]);
 
 			for (int i=0; i < k; i++) {
 				System.out.println("\tStat2 : msg333 : " + sss[i]);

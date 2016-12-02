@@ -6,7 +6,7 @@
 <head>
     <meta charset="utf-8">
     <title>Server Admin</title>
-    <link href="../css/login.css" rel="stylesheet" type="text/css">
+    <link href="/css/login.css" rel="stylesheet" type="text/css">
     <script type="text/javascript" src="/js/jquery.min.js"></script>
 </head>
 <body>
@@ -35,7 +35,6 @@
                         <%--<a href="/register" type="button" class="btn btn-primary btn-large btn-block">register</a>--%>
                     <%--</div>--%>
                 </div>
-                ${loginFail}
             </form>
         </div>
     </div>

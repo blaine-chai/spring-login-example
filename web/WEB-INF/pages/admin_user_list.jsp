@@ -281,9 +281,10 @@
                     '<td class="text-center group-td"></td>' +
                     '<td class="text-center shrink">' +
                     '<button class="btn btn-primary" style="margin-right: 5px;" name="userId" value="" onclick="modifyUserClickHandler(this);return false;">수정</button>' +
-                    '<form action="/admin/user/delete" method="post" onsubmit="return userDeleteCheck();">' +
-                    '<button class="btn btn-danger" name="userId" value="">삭제</button>' +
-                    '</form></td></tr>');
+//                    '<form action="/admin/user/delete" method="post" onsubmit="return userDeleteCheck();">' +
+                    '<button class="btn btn-danger" name="userId" onclick="deleteClickListener(this);return false;" value="">삭제</button>' +
+//                    '</form>' +
+                    '</td></tr>');
             trEl.find('.user-id-td').text(d.userId);
             trEl.find('.username-td').text(d.username);
             trEl.find('.create-date-td').text(d.createDate);
@@ -295,6 +296,29 @@
             });
             tbody.append(trEl);
         });
+    }
+
+    function deleteClickListener(element) {
+        if (userDeleteCheck()) {
+            var el = $(element);
+            $.ajax({
+                url: '/admin/user/delete',
+                type: 'post',
+                data: {
+                    userId: el.val()
+                },
+                contentType: "application/x-www-form-urlencoded; charset=UTF-8",
+                success: function (responseData) {
+                    if (responseData == 'true') {
+//                        tarTr.find('.group-name-td').text(groupName);
+                        alert('삭제 되었습니다.');
+                        getUsers()
+                    } else {
+                        alert('삭제에 실패하였습니다. 다시 시도해 주세요.');
+                    }
+                }
+            });
+        }
     }
 
     function modifyUserClickHandler(element) {

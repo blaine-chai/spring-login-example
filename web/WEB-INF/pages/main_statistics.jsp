@@ -302,46 +302,65 @@
                                 <div class="author-datepicker-container"
                                      style="height: 30px;width: 100%">
                                     <div style="position: relative;height: 30px;text-align: center;margin: 0 auto;width: 200px;">
-                                        <div style="display: inline-block; text-align: center;">
-                                            <div class="btn-group" style="float:left;margin: auto;">
-                                                <button type="button"
-                                                        class="btn btn-default btn-sm dropdown-toggle author-dropdown"
-                                                        data-toggle="dropdown" aria-haspopup="true"
-                                                        aria-expanded="false" style="width: 100px">
-                                                    <span class="search-category-option">MSG</span>
-                                                    <div style="display: inline-block"><span class="caret"></span><span
-                                                            class="sr-only"></span>
-                                                    </div>
-                                                </button>
-                                                <ul class="dropdown-menu search-category-selector" role="menu"
-                                                    aria-labelledby="dropdownMenu1">
-                                                    <li><a role="author-dropdown" period="0" tabindex="-1"
-                                                           href="#">MSG</a>
-                                                    </li>
-                                                    <li><a role="author-dropdown" period="3" tabindex="-1"
-                                                           href="#">DB</a>
-                                                    </li>
-                                                </ul>
+                                        <div style="display: inline-block">
+                                            <div class="btn-group" style="display: inline-block; text-align: center;float: left;margin-right: 10px;">
+                                                <div class="btn-group" style="float:left;margin: auto;">
+                                                    <button type="button"
+                                                            class="btn btn-default btn-sm dropdown-toggle author-dropdown"
+                                                            data-toggle="dropdown" aria-haspopup="true"
+                                                            aria-expanded="false" style="width: 70px">
+                                                        <span class="search-category-option">MSG</span>
+                                                        <div style="display: inline-block"><span
+                                                                class="caret"></span><span
+                                                                class="sr-only"></span>
+                                                        </div>
+                                                    </button>
+                                                    <ul class="dropdown-menu search-category-selector" role="menu"
+                                                        aria-labelledby="dropdownMenu1">
+                                                        <li><a role="author-dropdown" period="0" tabindex="-1"
+                                                               href="#">MSG</a>
+                                                        </li>
+                                                        <li><a role="author-dropdown" period="3" tabindex="-1"
+                                                               href="#">DB</a>
+                                                        </li>
+                                                    </ul>
+                                                </div>
+                                                <div class="btn-group" style="float:left; margin: auto;">
+                                                    <button type="button"
+                                                            class="btn btn-default btn-sm dropdown-toggle author-dropdown"
+                                                            data-toggle="dropdown" aria-haspopup="true"
+                                                            aria-expanded="false" style="width: 70px">
+                                                        <span class="search-category-option">월별</span>
+                                                        <div style="display: inline-block"><span
+                                                                class="caret"></span><span
+                                                                class="sr-only"></span>
+                                                        </div>
+                                                    </button>
+                                                    <ul class="dropdown-menu search-category-selector" role="menu"
+                                                        aria-labelledby="dropdownMenu1">
+                                                        <li><a role="author-dropdown" period="2" tabindex="-1"
+                                                               href="#">일별</a>
+                                                        </li>
+                                                        <li><a role="author-dropdown" period="3" tabindex="-1"
+                                                               href="#">월별</a>
+                                                        </li>
+                                                    </ul>
+                                                </div>
                                             </div>
-                                            <div class="btn-group" style="float:left; margin: auto;">
+                                            <div class="btn-group" style="float: left;display: inline-block;position: relative">
                                                 <button type="button"
-                                                        class="btn btn-default btn-sm dropdown-toggle author-dropdown"
+                                                        class="btn btn-primary btn-sm dropdown-toggle author-dropdown"
                                                         data-toggle="dropdown" aria-haspopup="true"
-                                                        aria-expanded="false" style="width: 100px">
-                                                    <span class="search-category-option">월별</span>
-                                                    <div style="display: inline-block"><span class="caret"></span><span
-                                                            class="sr-only"></span>
-                                                    </div>
+                                                        aria-expanded="false" style="width:50px">
+                                                    <span class="search-category-option">그룹</span>
                                                 </button>
-                                                <ul class="dropdown-menu search-category-selector" role="menu"
-                                                    aria-labelledby="dropdownMenu1">
-                                                    <li><a role="author-dropdown" period="2" tabindex="-1"
-                                                           href="#">일별</a>
-                                                    </li>
-                                                    <li><a role="author-dropdown" period="3" tabindex="-1"
-                                                           href="#">월별</a>
-                                                    </li>
-                                                </ul>
+                                                <div class="dropdown-menu panel panel-default checkbox" style="position:absolute;width: 300px;min-height: 50px;background: rgba(255, 255, 255, 0.95);z-index: 10;left: -250px;top: 25px;overflow-y:auto;text-align: left;">
+                                                    <c:forEach items="${userGroups}" var="userGroup">
+                                                        <label style="margin-left: 2px;width:85px;font-size: 12px;max-width:85px;">
+                                                            <input style="width: 20px;" type="radio" name="groups" value="${userGroup.groupName.groupName}"
+                                                                   checked="checked" style="">${userGroup.groupName.groupName}</label>
+                                                    </c:forEach>
+                                                </div>
                                             </div>
                                         </div>
                                         <div style="width: 200px;text-align: center;display: flex;margin: auto;margin-top: 10px;">
@@ -411,6 +430,9 @@
         getSearchTotalData($('.search-category-option').eq(0).text());
         getAuthorTotalGraphData($('.search-category-option').eq(1).text());
 
+        $('.dropdown-menu.panel.panel-default.checkbox').on('click', function(event){
+            event.stopPropagation();
+        });
 //        $('.graph-overall').draggable({
 //            containment: '#author-graph-container'
 //        });
@@ -432,6 +454,19 @@
 //        authorGraph = GraphModule.graph();
 //        authorGraph.setGraphContainer('#author-graph-container');
 
+        //$("input:radio[name='groups']").removeAttr('checked');
+		$("input:radio[name='groups']").eq(0).prop("checked",true);
+		$("input:radio[name='groups']:radio[value='ALL']").prop("checked",true);
+
+		/*
+	            <div class="dropdown-menu panel panel-default checkbox" style="position:absolute;width: 300px;min-height: 50px;background: rgba(255, 255, 255, 0.95);z-index: 10;left: -250px;top: 25px;overflow-y:auto;text-align: left;">
+	                <c:forEach items="${userGroups}" var="userGroup">
+	                    <label style="margin-left: 10px;width:85px;font-size: 12px;max-width:85px;">
+	                        <input type="radio" name="groups" value="${userGroup.groupName.groupName}"
+	                               checked="checked" style="">${userGroup.groupName.groupName}</label>
+	                </c:forEach>
+	            </div>
+		*/
 
         $('#author-graph-add-btn').click(function (e) {		// 추가 버튼을 클릭할 때
         	if(authorList.length == 0) $('#author-graph-new-btn').click();
@@ -655,7 +690,7 @@
         authorTotalGraph.removeData();
         authorTotalGraph.removeSvg();
 
-        var startTime = "2016/03/01 00:00:00";
+        var startTime = "2016/11/01 00:00:00";
         if (category == '일별') category = 'DB_' + 'daily';
         else                  category = 'DB_' + 'monthly';
 
@@ -761,12 +796,13 @@
         }
 
         SearchWord += ">" + typeInfo;
-        SearchWord += ">" + $('#datepicker1').val() + " 00:00:00" + "-" + $('#datepicker2').val() + " 00:00:00";
+        SearchWord += ">" + $('#datepicker1').val() + " 00:00:00" + "-" + $('#datepicker2').val() + " 23:59:59";
         if (categoryEls.eq(5).text() == "일별")
             SearchWord += ">" + categoryEls.eq(4).text() + "_" + "daily";
         else
             SearchWord += ">" + categoryEls.eq(4).text() + "_" + "monthly";
 
+		SearchWord += ">" + $('input[name=groups]:checked').val() ;
 
         if (!isOK) SearchWord = "";
 ///

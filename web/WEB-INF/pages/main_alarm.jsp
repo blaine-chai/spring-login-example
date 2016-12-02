@@ -207,7 +207,7 @@
                                     //'<td style="vertical-align:middle;"><span class="user-bookmark-count-td">' + d.count + '</span></td>' +
                                     <c:choose>
                                     <c:when test="${userType.equals(\"admin\")}">
-                                    '<td class="user-history-remove-td"><label class="btn btn-default btn-sm close-search-option-btn">-</label></td></tr>'
+                                    '<td class="user-history-remove-td"><label class="btn btn-default btn-sm close-search-option-btn">-</label></td></tr>' +
                                     </c:when>
                                     <c:otherwise>
                                     (type == 'admin-bookmark' ? '' : '<td class="user-history-remove-td"><label class="btn btn-default btn-sm close-search-option-btn">-</label></td></tr>')
@@ -989,7 +989,7 @@
                             + sel2[1] + "' aria-valuemin='0' aria-valuemax='100' style='width: " + sel2[1] + "%;'>" + sel2[1] + "%</div>");			// 검색 률
 
                     console.log(sel2[0] + " : " + sel2[1]);
-					if((sel2[1] == 100)&&(sel2[0]==0)) alert("검색결과가 없습니다!!!");
+                    if ((sel2[1] == 100) && (sel2[0] == 0)) alert("검색결과가 없습니다!!!");
 
                     if (tdata.jobOrder == "1") {
                         if (sel2[1] < 100)
@@ -1168,7 +1168,7 @@
                         + lastQuery.fromDate + "-" + lastQuery.toDate + ">" + lastQuery.dateOption;
                 console.log(m);
                 //if ($('#book-table tbody').find('tr').eq(row).find('td').eq(col).find('span').hasClass( "glyphicon-ok"))
-                callAjaxLoop(userID +"_author" + authorNUM, row, 1, 1, col, m, "");
+                callAjaxLoop(userID + "_author" + authorNUM, row, 1, 1, col, m, "");
                 //else
                 //	callAjaxLoop("author"+authorNUM, 8, row, 1, 0, m, tableData[row].eventNo);
 
@@ -1183,7 +1183,7 @@
                 stop = false;
                 //alert(priChange);
                 if (tableData[row].priority != $('#book-table tbody').find('tr').eq(row).find('select').val())
-                    callAjaxLoop(userID +"_pri" + priNUM, 6, row, 6, 0, priChange, "");
+                    callAjaxLoop(userID + "_pri" + priNUM, 6, row, 6, 0, priChange, "");
                 tableData[row].priority = $('#book-table tbody').find('tr').eq(row).find('select').val();
                 priNUM = priNUM + 1;
             }
@@ -1543,7 +1543,7 @@
         str += ">" + tdata.typeInfo;
         var timestamp = fetch_unix_timestamp();
         str += ">" + timeConverter(timestamp - 3600 * 24 * 30) + "-" + timeConverter(timestamp);
-       	str += ">DB";
+        str += ">DB";
 
         return str;
     }
@@ -1554,10 +1554,10 @@
         //var month = months[a.getMonth()];
 
         /*	console.log(tdata.fromDate + "-" + tdata.toDate);
-       	console.log(timeConverter(timestamp));
-		timestamp = timeConverter(timestamp - 3600 * 24 * 30);
-       	console.log(timestamp);
-       	*/
+         console.log(timeConverter(timestamp));
+         timestamp = timeConverter(timestamp - 3600 * 24 * 30);
+         console.log(timestamp);
+         */
         var year = a.getFullYear();
         var month = a.getMonth();
         var date = a.getDate();
@@ -1565,7 +1565,7 @@
         var min = a.getMinutes();
         var sec = a.getSeconds();
         //var time = date + ' ' + month + ' ' + year + ' ' + hour + ':' + min + ':' + sec ;
-        var time = a.getFullYear() + "/" + (a.getMonth() + 1) + "/" + a.getDate() + " "  + hour + ':' + min + ':' + sec ;
+        var time = a.getFullYear() + "/" + (a.getMonth() + 1) + "/" + a.getDate() + " " + hour + ':' + min + ':' + sec;
         //var time = a.getFullYear() + "/" + (a.getMonth() + 1) + "/" + a.getDate() + " "  + hour + ':' + min + ':' + sec ;
         return time;
     }

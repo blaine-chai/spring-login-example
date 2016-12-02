@@ -139,7 +139,7 @@
                 </div>
                 <div style="margin-top: 10px;height: 30px;">
                     <div id="search-date-option-container" class="btn-group btn-group-justified">
-                        <label class="btn btn-default btn-sm" name="dateOption" style="padding: 4px;">MSG</label>
+                        <label class="btn btn-default btn-sm" name="dateOption" style="padding: 4px;">ALL</label>
                     </div>
                     <div style="float: left;margin-top: 3px;display: flex;width: calc(100% - 55px);">
                         <div class="" style="padding: 0; margin:0 auto; float: left;"><input id="datepicker1"
@@ -154,6 +154,14 @@
                                                                                  style="width: 113px; text-align:center; font-size:12px; float:left;">
                         </div>
                     </div>
+                </div>
+                <div class="panel panel-default checkbox"
+                     style="padding-top: 5px;padding-bottom:5px;margin-top:10px;margin-bottom: 0;">
+                    <c:forEach items="${userGroups}" var="userGroup">
+                        <label style="margin-left: 2px;width:85px;font-size: 12px;max-width:85px;">
+                            <input type="radio" name="groups" value="${userGroup.groupName.groupName}"
+                                   checked="checked" style="width: 20px;">${userGroup.groupName.groupName}</label>
+                    </c:forEach>
                 </div>
 
                 <div class="btn-group btn-group-justified" style="padding-top: 10px">
@@ -359,45 +367,6 @@
                     252 - $('#book-table').offset().top);
         });
 
-
-        fetch_unix_timestamp = function () {     	//return parseInt(new Date().getTime().toString().substring(0, 10));
-            return Math.floor(new Date().getTime() / 1000);
-        };
-
-        var timestamp = fetch_unix_timestamp();
-        // console.log(timestamp);
-
-
-        function timeConverter(UNIX_timestamp) {
-            var a = new Date(UNIX_timestamp * 1000);
-            //var months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-            //var month = months[a.getMonth()];
-            var year = a.getFullYear();
-            var month = a.getMonth();
-            var date = a.getDate();
-            var hour = a.getHours();
-            var min = a.getMinutes();
-            var sec = a.getSeconds();
-            //var time = date + ' ' + month + ' ' + year + ' ' + hour + ':' + min + ':' + sec ;
-            var time = a.getFullYear() + "/" + (a.getMonth() + 1) + "/" + a.getDate();
-            return time;
-        }
-
-        //console.log(timeConverter(timestamp-3600*24*50));
-
-        //var d = new Date();
-        //var ttt = d.getFullYear() + "/" + (d.getMonth()+1) + "/" + d.getDate();
-        var ttt = timeConverter(timestamp - 3600 * 24 * 50);
-
-        $('#datepicker1').datetimepicker({
-            value: ttt
-        });
-
-        $('#datepicker2').datetimepicker({
-            value: new Date()
-        });
-
-
         $('.expand-btn').click(function (e) {
             if ($(this).text() == "+" && $(this).parent().find('div>table>tbody>tr').length > 0) {
 //                $('.history').hide(300);
@@ -414,6 +383,16 @@
 
         getSearchHistory();
         getAdminHistory();
+        //$("input:radio[name='groups']").removeAttr('checked');
+		$("input:radio[name='groups']").eq(0).prop("checked",true);
+		$("input:radio[name='groups']:radio[value='ALL']").prop("checked",true);
+		/*
+                    <c:forEach items="${userGroups}" var="userGroup">
+                        <label style="margin-left: 1px;font-size: 12px;">
+                            <input type="radio" name="groups" value="${userGroup.groupName.groupName}"
+                                   checked="checked" style=""> ${userGroup.groupName.groupName}</label>
+                    </c:forEach>
+		*/
 
 
         $('.search-category-selector li a').click(function (e) {
@@ -425,13 +404,38 @@
             searchBTNclick();
         });
 
+        var timestamp = fetch_unix_timestamp();
+        var ttt = timeConverter(timestamp - 3600 * 24 * 50);
+        //$('#datepicker1').val("");
+        //$('#datepicker2').val("");
+
+
         $('label[name=dateOption]').click(function () {
-            if ($(this).text() == 'MSG') {
-                $(this).text('DB');
-            } else {
+            if ($(this).text() == 'ALL') {
                 $(this).text('MSG');
+                var timestamp = fetch_unix_timestamp();
+                var ttt = timeConverter(timestamp - 3600 * 24 * 50);
+
+                $('#datepicker1').datetimepicker({ value: ttt});
+                $('#datepicker2').datetimepicker({ value: new Date() });
             }
+            else if ($(this).text() == 'MSG') {
+                var timestamp = fetch_unix_timestamp();
+                var ttt = timeConverter(timestamp - 3600 * 24 * 50);
+
+                $('#datepicker1').datetimepicker({ value: ttt});
+                $('#datepicker2').datetimepicker({ value: new Date() });
+                $(this).text('DB');
+            }
+            else {
+                $(this).text('ALL');
+                $('#datepicker1').val("");
+                $('#datepicker2').val("");
+				$('#datepicker1').datetimepicker("destroy");
+                $('#datepicker2').datetimepicker("destroy");
+           }
         });
+
 
     });
 
@@ -449,7 +453,6 @@
         if (to > lastPage) {
             to = lastPage;
         }
-
         console.log("current = " + current + " : from = " + from + " : to = " + to + " : lastPage = " + lastPage);
         $('.pagination-main').children().remove();
         var pageEl = "";
@@ -809,7 +812,7 @@
                     else if ((tdata.jobOrder == "2") && (sel2[1] < 100)) {
                         setTime = setTimeout(function () {
                             callAjaxLoop(tdata.id, 0, 2, 14, tdata.page, sel2[0], "");
-                        }, 1000);
+                        }, 100);
                     }
                 }
                 else if (tdata.sel == "8") {
@@ -957,6 +960,19 @@
         SearchWord += data.fromDate + "-" + data.toDate;
         SearchWord += ">" + data.dateOption;
         console.log(data.typeInfo + " : " + data.fromDate + " : " + data.toDate);
+        /*
+        var groupEl = $('input[name=groups]:checked');
+        var searchWordTMP = "";
+        for (var iii = 0; iii < groupEl.size(); iii++) {
+        	//console.log(groupEl.eq(iii).val());
+            if(iii == 0) searchWordTMP += groupEl.eq(iii).val();
+            else searchWordTMP += " " + groupEl.eq(iii).val();
+        }
+
+        SearchWord += searchWordTMP + ">";
+		*/
+        SearchWord += ">" + $('input[name=groups]:checked').val();
+
 
         if (!isOK) SearchWord = "";
 ///
@@ -1928,6 +1944,21 @@
         return str.replace(specials, "\\$&");
     };
 
+	fetch_unix_timestamp = function () {  return Math.floor(new Date().getTime() / 1000); };
+	function timeConverter(UNIX_timestamp) {
+        var a = new Date(UNIX_timestamp * 1000);
+        //var months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+        //var month = months[a.getMonth()];
+        var year = a.getFullYear();
+        var month = a.getMonth();
+        var date = a.getDate();
+        var hour = a.getHours();
+        var min = a.getMinutes();
+        var sec = a.getSeconds();
+        //var time = date + ' ' + month + ' ' + year + ' ' + hour + ':' + min + ':' + sec ;
+        var time = a.getFullYear() + "/" + (a.getMonth() + 1) + "/" + a.getDate();
+        return time;
+    }
 
 </script>
 </body>
