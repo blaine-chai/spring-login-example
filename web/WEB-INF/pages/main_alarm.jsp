@@ -207,13 +207,13 @@
                                     //'<td style="vertical-align:middle;"><span class="user-bookmark-count-td">' + d.count + '</span></td>' +
                                     <c:choose>
                                     <c:when test="${userType.equals(\"admin\")}">
-                                    '<td class="user-history-remove-td"><label class="btn btn-default btn-sm close-search-option-btn">-</label></td></tr>' +
-                                    </c:when>
-                                    <c:otherwise>
-                                    (type == 'admin-bookmark' ? '' : '<td class="user-history-remove-td"><label class="btn btn-default btn-sm close-search-option-btn">-</label></td></tr>')
-                                    </c:otherwise>
-                                    </c:choose>
-                            );
+                                    '<td class="user-history-remove-td"><label class="btn btn-default btn-sm close-search-option-btn">-</label></td></tr>');
+                            </c:when>
+                            <c:otherwise>
+                            (type == 'admin-bookmark' ? '' : '<td class="user-history-remove-td"><label class="btn btn-default btn-sm close-search-option-btn">-</label></td></tr>');
+                            </c:otherwise>
+                            </c:choose>
+
                             if (tmp.find('.badge') == "") {
                                 tmp.find('.badge').hide();
                             }
