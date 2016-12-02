@@ -83,16 +83,18 @@ public class AdminController {
         String userId = request.getParameter("userId");
         String username = request.getParameter("username");
         String password = request.getParameter("password");
-        try {
-            UserAccount adminAccount = new UserAccount(userId, username, password, "0", UserType.ADMIN);
-            adminAccount = userAccountRepository.save(adminAccount);
-            tableOptionRepository.save(new UserTableOption(adminAccount, new int[]{50, 50, 50, 100, 100, 100, 100, 50, 50, 600, 50, 50}));
-            List<AdminBookmark> adminBookmarks = adminBookmarkRepository.findAll();
-            for (AdminBookmark adminBookmark : adminBookmarks) {
-                commonBookmarkRepository.save(new CommonBookmark(adminAccount, adminBookmark, 0));
+        if (userAccountRepository.findByType(UserType.ADMIN).size() <= 0) {
+            try {
+                UserAccount adminAccount = new UserAccount(userId, username, password, "0", UserType.ADMIN);
+                adminAccount = userAccountRepository.save(adminAccount);
+                tableOptionRepository.save(new UserTableOption(adminAccount, new int[]{50, 50, 50, 100, 100, 100, 100, 50, 50, 600, 50, 50}));
+                List<AdminBookmark> adminBookmarks = adminBookmarkRepository.findAll();
+                for (AdminBookmark adminBookmark : adminBookmarks) {
+                    commonBookmarkRepository.save(new CommonBookmark(adminAccount, adminBookmark, 0));
+                }
+            } catch (Exception e) {
+                return "redirect:" + "/error";
             }
-        } catch (Exception e) {
-            return "redirect:" + "/error";
         }
         return "redirect:" + "/admin";
     }
@@ -130,7 +132,7 @@ public class AdminController {
     public ModelAndView list() {
         List<UserAccount> adminList = userAccountRepository.findByType(UserType.ADMIN);
         ModelAndView modelAndView = new ModelAndView("admin_administrator_list");
-        modelAndView.addObject("adminList", adminList);
+//        modelAndView.addObject("adminList", adminList);
         return modelAndView;
     }
 
@@ -191,8 +193,6 @@ public class AdminController {
             userAccountRepository.deleteByUserId(userId);
         }
         ModelAndView modelAndView = new ModelAndView("admin_administrator_list");
-        List<UserAccount> adminList = userAccountRepository.findByType(UserType.ADMIN);
-        modelAndView.addObject("adminList", adminList);
         return modelAndView;
     }
 
@@ -240,6 +240,7 @@ public class AdminController {
         if (!password.equals("********")) {
             adminAccount.setPassword(password);
         }
+
         adminAccount = userAccountRepository.save(adminAccount);
 
         List<AdminBookmark> bookmarks = adminBookmarkRepository.findByAdminAccount_UserId(userId);
@@ -311,11 +312,13 @@ public class AdminController {
 
     @RequestMapping(value = "/admin-account/join", method = RequestMethod.POST)
     public ModelAndView adminAccountJoin(HttpServletRequest request) {
+        Gson gson = new Gson();
+        List<String> groupNames = gson.fromJson(request.getParameter("groupNames"), ArrayList.class);
+        List<String> uncheckedGroupNames = gson.fromJson(request.getParameter("uncheckedGroupNames"), ArrayList.class);
 
         String userId = request.getParameter("userId");
         String username = request.getParameter("username");
         String password = request.getParameter("password");
-
         if (userAccountRepository.findByUserId(userId).size() <= 0) {
             UserAccount userAccount = new UserAccount(userId, username, password, "0", UserType.ADMIN);
             userAccount = userAccountRepository.save(userAccount);
@@ -324,6 +327,14 @@ public class AdminController {
             for (AdminBookmark adminBookmark : adminBookmarks) {
                 commonBookmarkRepository.save(new CommonBookmark(userAccount, adminBookmark, 0));
             }
+
+            for (String groupNameStr : groupNames) {
+                if (userGroupRepository.findByUserAccount_UserIdAndGroupName_GroupName(userId, groupNameStr).size() <= 0) {
+                    CommonGroupName commonGroupName = groupNameRepository.findByGroupName(groupNameStr).get(0);
+                    userGroupRepository.save(new UserGroup(commonGroupName, userAccount));
+                }
+            }
+
         } else {
             return new ModelAndView("api").addObject("json", false);
         }
@@ -335,6 +346,34 @@ public class AdminController {
     public ModelAndView userList() {
         ModelAndView modelAndView = new ModelAndView("admin_user_list");
         modelAndView.addObject("adminList", getAllUserAccountApis());
+        return modelAndView;
+    }
+
+    @RequestMapping(value = "/user/get")
+    public ModelAndView userAccountGet(HttpServletRequest request) {
+        Gson gson = new Gson();
+        String searchFilter = request.getParameter("searchFilter");
+        String searchInput = request.getParameter("searchInput");
+        ModelAndView modelAndView = new ModelAndView("api");
+        List<UserAccount> userAccounts;
+        List<UserAccountApi> userAccountApis;
+        if (searchFilter == null || searchInput == null) {
+            userAccounts = userAccountRepository.findByType(UserType.USER);
+            userAccountApis = getUserAccountApis(userAccounts);
+            modelAndView.addObject("json", gson.toJson(userAccountApis));
+            return modelAndView;
+        }
+
+        if (searchFilter.equals("userId")) {
+            userAccounts = userAccountRepository.findByUserIdContainingAndType(searchInput, UserType.ADMIN);
+            userAccountApis = getUserAccountApis(userAccounts);
+        } else if (searchFilter.equals("username")) {
+            userAccounts = userAccountRepository.findByUsernameContainingAndType(searchInput, UserType.ADMIN);
+            userAccountApis = getUserAccountApis(userAccounts);
+        } else {
+            userAccountApis = new ArrayList<UserAccountApi>();
+        }
+        modelAndView.addObject("json", gson.toJson(userAccountApis));
         return modelAndView;
     }
 
@@ -365,30 +404,17 @@ public class AdminController {
         // user_search_history -> userId
         // user_table_option -> user Id
         String userId = request.getParameter("userId");
-        if (userAccountRepository.findByType(UserType.ADMIN).size() > 1) {
-            if (userAccountRepository.findByUserId(userId).get(0).getType().equals(UserType.USER)) {
-                commonBookmarkRepository.deleteByUserAccount_UserId(userId);
-                sessionRepository.deleteByUserId(userId);
-                userBookmarkRepository.deleteByUserAccount_UserId(userId);
-                userGroupRepository.deleteByUserAccount_UserId(userId);
-                userHistoryRepository.deleteByUserAccount_UserId(userId);
-                tableOptionRepository.deleteByUserAccount_UserId(userId);
-            } else {
-                commonBookmarkRepository.deleteByUserAccount_UserId(userId);
-                commonBookmarkRepository.deleteByAdminBookmark_AdminAccount_UserId(userId);
-                adminBookmarkRepository.deleteByAdminAccount_UserId(userId);
-                adminHistoryRepository.deleteByAdminAccount_userId(userId);
-                sessionRepository.deleteByUserId(userId);
-                userBookmarkRepository.deleteByUserAccount_UserId(userId);
-                userGroupRepository.deleteByUserAccount_UserId(userId);
-                userHistoryRepository.deleteByUserAccount_UserId(userId);
-                tableOptionRepository.deleteByUserAccount_UserId(userId);
-            }
-            userAccountRepository.deleteByUserId(request.getParameter("userId"));
+        if (userAccountRepository.findByUserId(userId).get(0).getType().equals(UserType.USER)) {
+            commonBookmarkRepository.deleteByUserAccount_UserId(userId);
+            sessionRepository.deleteByUserId(userId);
+            userBookmarkRepository.deleteByUserAccount_UserId(userId);
+            userGroupRepository.deleteByUserAccount_UserId(userId);
+            userHistoryRepository.deleteByUserAccount_UserId(userId);
+            tableOptionRepository.deleteByUserAccount_UserId(userId);
         }
+        userAccountRepository.deleteByUserId(request.getParameter("userId"));
         ModelAndView modelAndView = new ModelAndView("admin_user_list");
 //        List<UserAccount> adminList = userAccountRepository.findAll();
-        modelAndView.addObject("adminList", getAllUserAccountApis());
         return modelAndView;
     }
 
@@ -415,7 +441,7 @@ public class AdminController {
     }
 
     @RequestMapping(value = "/user/update", method = RequestMethod.POST)
-    public String userUpdate(HttpServletRequest request) {
+    public ModelAndView userUpdate(HttpServletRequest request) {
         Gson gson = new Gson();
         List<String> groupNames = gson.fromJson(request.getParameter("groupNames"), ArrayList.class);
         List<String> uncheckedGroupNames = gson.fromJson(request.getParameter("uncheckedGroupNames"), ArrayList.class);
@@ -487,7 +513,7 @@ public class AdminController {
             userGroupRepository.deleteByUserAccount_UserIdAndGroupName_GroupName(userId, groupNameStr);
         }
 
-        return "redirect:" + "/admin/user";
+        return new ModelAndView("api").addObject("json", true);
     }
 
     @RequestMapping(value = "/user/register")
@@ -496,23 +522,34 @@ public class AdminController {
     }
 
     @RequestMapping(value = "/user/join", method = RequestMethod.POST)
-    public String userJoin(HttpServletRequest request) {
+    public ModelAndView userJoin(HttpServletRequest request) {
+        Gson gson = new Gson();
+        List<String> groupNames = gson.fromJson(request.getParameter("groupNames"), ArrayList.class);
+        List<String> uncheckedGroupNames = gson.fromJson(request.getParameter("uncheckedGroupNames"), ArrayList.class);
+
         String userId = request.getParameter("userId");
         String username = request.getParameter("username");
         String password = request.getParameter("password");
-        String phone = request.getParameter("phone");
+//        String phone = request.getParameter("phone");
         if (userAccountRepository.findByUserId(userId).size() <= 0) {
-            UserAccount userAccount = new UserAccount(userId, username, password, phone, UserType.USER);
+            UserAccount userAccount = new UserAccount(userId, username, password, "0", UserType.USER);
             userAccount = userAccountRepository.save(userAccount);
             tableOptionRepository.save(new UserTableOption(userAccount, new int[]{50, 50, 50, 100, 100, 100, 100, 50, 50, 600, 50, 50}));
             List<AdminBookmark> adminBookmarks = adminBookmarkRepository.findAll();
             for (AdminBookmark adminBookmark : adminBookmarks) {
                 commonBookmarkRepository.save(new CommonBookmark(userAccount, adminBookmark, 0));
             }
+
+            for (String groupNameStr : groupNames) {
+                if (userGroupRepository.findByUserAccount_UserIdAndGroupName_GroupName(userId, groupNameStr).size() <= 0) {
+                    CommonGroupName commonGroupName = groupNameRepository.findByGroupName(groupNameStr).get(0);
+                    userGroupRepository.save(new UserGroup(commonGroupName, userAccount));
+                }
+            }
         } else {
-            return "redirect:" + "/error";
+            return new ModelAndView("api").addObject("json", false);
         }
-        return "redirect:" + "/admin/user";
+        return new ModelAndView("api").addObject("json", true);
     }
 
 
@@ -607,24 +644,32 @@ public class AdminController {
         String userId = request.getParameter("userId");
         Gson gson = new Gson();
         ModelAndView modelAndView = new ModelAndView("api");
+        List<CommonGroupName> commonGroupNames = groupNameRepository.findAll();
+        List<GroupApi> groupApis = new ArrayList<GroupApi>();
         try {
-            List<CommonGroupName> commonGroupNames = groupNameRepository.findAll();
-            UserAccountApi userAccountApi = getUserAccountApi(userAccountRepository.findByUserId(userId).get(0));
-            List<GroupApi> groupApis = new ArrayList<GroupApi>();
-
-            for (CommonGroupName commonGroupName : commonGroupNames) {
-                if (userAccountApi.hasGroupName(commonGroupName.getGroupName())) {
-                    groupApis.add(new GroupApi(commonGroupName.getGroupName(), true));
-                } else {
+            if (userId == null) {
+                for (CommonGroupName commonGroupName : commonGroupNames) {
                     groupApis.add(new GroupApi(commonGroupName.getGroupName(), false));
+                }
+            } else {
+                UserAccountApi userAccountApi = getUserAccountApi(userAccountRepository.findByUserId(userId).get(0));
+
+                for (CommonGroupName commonGroupName : commonGroupNames) {
+                    if (userAccountApi.hasGroupName(commonGroupName.getGroupName())) {
+                        groupApis.add(new GroupApi(commonGroupName.getGroupName(), true));
+                    } else {
+                        groupApis.add(new GroupApi(commonGroupName.getGroupName(), false));
+                    }
                 }
             }
             modelAndView.addObject("json", gson.toJson(groupApis));
         } catch (ArrayIndexOutOfBoundsException e) {
             modelAndView.addObject("json", false);
         }
+
         return modelAndView;
     }
+
 
     private List<UserAccountApi> getAllUserAccountApis() {
         List<UserAccount> adminList = userAccountRepository.findByType(UserType.USER);

@@ -30,6 +30,7 @@
             <mvc:mapping path="/admin/user/**"/>
             <mvc:mapping path="/admin/admin-account/**"/>
             <mvc:mapping path="/admin/group-name/**"/>
+            <mvc:mapping path="/admin/user-group/**"/>
             <bean class="com.blainechai.interceptor.AdminInterceptor"/>
         </mvc:interceptor>
 

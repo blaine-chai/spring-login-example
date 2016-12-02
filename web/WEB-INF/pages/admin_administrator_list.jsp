@@ -156,7 +156,7 @@
     <div style="position: relative;width: 300px;top: calc(50% - 300px);left: calc(50% - 150px);padding: 15px;margin: 0;text-align: left;"
          class="panel panel-default">
         <%--<form action="/admin/admin-account/update" method="post" class="form" role="form">--%>
-        <label>사용자 아이디</label>
+        <label>관리자 아이디</label>
         <input class="form-control" value="" placeholder="사용자 이름"
                name="userId" type="email" readOnly/><br>
         <label>이름</label>
@@ -194,6 +194,7 @@
         <label>비밀번호</label>
         <%--<input class="form-control" value="**********" type="password" readOnly="true"/><br>--%>
         <input class="form-control" value="" type="password" name="password"/><br>
+        <div class="checkbox"></div>
         <br/>
         <br/>
         <div class="btn-container" style="text-align: center;width: 100%;display: flex;">
@@ -330,8 +331,9 @@
                     $.each(userGroupData, function (i, d) {
 
                         var tmpEl = $('<label style="margin-right:10px;min-width: 80px;"><input type="checkbox" name="groups" value=""><span></span></label>')
+                        console.error(d.isChecked);
                         if (d.isChecked) {
-                            tmpEl.attr('checked', '');
+                            tmpEl.find('input').attr('checked', '');
                         }
                         tmpEl.find('input').val(d.groupName);
                         tmpEl.find('span').text(d.groupName);
@@ -345,11 +347,11 @@
 
                         var a = [];
                         var b = [];
-                        var checked = el.find('input[type=checkbox]:checked');
+                        var checked = modifyDialogueContainer.find('input[type=checkbox]:checked');
                         $.each(checked, function (i, data) {
                             a.push($(data).val());
                         });
-                        var unchecked = el.find('input[type=checkbox]:not(:checked)');
+                        var unchecked = modifyDialogueContainer.find('input[type=checkbox]:not(:checked)');
 
                         $.each(unchecked, function (i, data) {
                             b.push($(data).val());
@@ -374,6 +376,7 @@
                                         tarTr.find('.username-td').text(username);
                                         alert('저장 되었습니다.');
                                         $('.modify-dialogue-container').hide();
+                                        getAdminUsers();
                                     } else {
                                         alert('수정에 실패하였습니다. 다시 시도해 주세요.');
                                     }
@@ -403,34 +406,76 @@
         var tmpBtn = $('<label class="btn btn-primary col-xs-5 btn-join" style="margin: 0 auto;">저장</label>' +
                 '<label class="btn btn-default col-xs-5 btn-close" style="margin: 0 auto;" onclick="$(\'.join-dialogue-container\').hide();return false;">취소</label>');
         joinBtnContainer.append(tmpBtn);
-        joinBtnContainer.find('.btn-join').click(function () {
-            var userId = joinDialogueContainer.find('input[name=userId]').val();
-            var username = joinDialogueContainer.find('input[name=username]').val();
-            var password = joinDialogueContainer.find('input[name=password]').val();
-            $.ajax({
-                url: '/admin/admin-account/join',
-                type: 'post',
-                data: {
-                    userId: userId,
-                    username: username,
-                    password: password
+        var groupCheckbox = joinDialogueContainer.find('.checkbox');
+        groupCheckbox.children().remove();
+        $.ajax({
+            url: '/admin/user-group/get',
+            type: 'post',
+            data: {},
+            contentType: "application/x-www-form-urlencoded; charset=UTF-8",
+            success: function (responseData) {
+                if (responseData == 'false') {
+                    alert('정보를 불러오는데 실패하였습니다. 다시 시도해 주세요.');
+                } else {
+                    var userGroupData = JSON.parse(responseData);
+                    $.each(userGroupData, function (i, d) {
 
-                },
-                contentType: "application/x-www-form-urlencoded; charset=UTF-8",
-                success: function (responseData) {
-                    if (responseData == 'true') {
-                        getAdminUsers();
-                        alert('저장 되었습니다.');
-                        $('.join-dialogue-container').hide();
-                    } else {
-                        alert('이미 같은 아이디가 존재합니다.');
-                    }
+                        var tmpEl = $('<label style="margin-right:10px;min-width: 80px;"><input type="checkbox" name="groups" value=""><span></span></label>')
+                        console.error(d.isChecked);
+                        if (d.isChecked) {
+                            tmpEl.find('input').attr('checked', '');
+                        }
+                        tmpEl.find('input').val(d.groupName);
+                        tmpEl.find('span').text(d.groupName);
+                        groupCheckbox.append(tmpEl);
+                    });
+                    console.error(groupCheckbox);
+                    joinBtnContainer.find('.btn-join').click(function () {
+                        var userId = joinDialogueContainer.find('input[name=userId]').val();
+                        var username = joinDialogueContainer.find('input[name=username]').val();
+                        var password = joinDialogueContainer.find('input[name=password]').val();
+
+                        var a = [];
+                        var b = [];
+                        var checked = joinDialogueContainer.find('input[type=checkbox]:checked');
+                        $.each(checked, function (i, data) {
+                            a.push($(data).val());
+                        });
+                        var unchecked = joinDialogueContainer.find('input[type=checkbox]:not(:checked)');
+
+                        $.each(unchecked, function (i, data) {
+                            b.push($(data).val());
+                        });
+                        var checkedJson = JSON.stringify(a);
+                        var uncheckedJson = JSON.stringify(b);
+                        $.ajax({
+                            url: '/admin/admin-account/join',
+                            type: 'post',
+                            data: {
+                                userId: userId,
+                                username: username,
+                                password: password,
+                                groupNames: checkedJson,
+                                uncheckedGroupNames: uncheckedJson
+                            },
+                            contentType: "application/x-www-form-urlencoded; charset=UTF-8",
+                            success: function (responseData) {
+                                if (responseData == 'true') {
+                                    getAdminUsers();
+                                    alert('저장 되었습니다.');
+                                    $('.join-dialogue-container').hide();
+                                } else {
+                                    alert('이미 같은 아이디가 존재합니다.');
+                                }
+                            }
+                        });
+                    });
+                    console.error(tmpBtn);
+                    joinDialogueContainer.show();
+                    joinDialogueContainer.find('input[name=userId]').focus();
                 }
-            });
+            }
         });
-        console.error(tmpBtn);
-        joinDialogueContainer.show();
-        joinDialogueContainer.find('input[name=userId]').focus();
     }
 
     function initSearchInput() {
