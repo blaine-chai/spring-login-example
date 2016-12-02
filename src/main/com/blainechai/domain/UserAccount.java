@@ -29,7 +29,7 @@ public class UserAccount implements Serializable {
     public UserAccount(String userId, String username, String password, String phone, String type) {
         this.userId = userId;
         this.username = username;
-        this.hash = EncryptUtil.getSHA256(EncryptUtil.FIRST_KEY + username + password + EncryptUtil.SECOND_KEY);
+        this.hash = EncryptUtil.getSHA256(EncryptUtil.FIRST_KEY + userId + password + EncryptUtil.SECOND_KEY);
         this.phone = phone;
         this.createDate = new Date(new java.util.Date().getTime());
         this.type = type;
@@ -96,7 +96,7 @@ public class UserAccount implements Serializable {
     }
 
     public void setPassword(String password){
-        this.hash = EncryptUtil.getSHA256(EncryptUtil.FIRST_KEY + username + password + EncryptUtil.SECOND_KEY);
+        this.hash = EncryptUtil.getSHA256(EncryptUtil.FIRST_KEY + this.userId + password + EncryptUtil.SECOND_KEY);
     }
 
 

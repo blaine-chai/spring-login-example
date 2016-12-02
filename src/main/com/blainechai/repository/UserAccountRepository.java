@@ -27,7 +27,11 @@ public interface UserAccountRepository extends JpaRepository<UserAccount, Long> 
 
     List<UserAccount> findByUserIdAndType(String userId, String userType);
 
+    List<UserAccount> findByUserIdContainingAndType(String userId, String userType);
+
     List<UserAccount> findByUsernameAndType(String username, String userType);
+
+    List<UserAccount> findByUsernameContainingAndType(String username, String userType);
 
     @Transactional
     long deleteByUserId(String userId);

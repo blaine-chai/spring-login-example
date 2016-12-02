@@ -13,7 +13,7 @@ import java.util.List;
 public class UserAccountApi {
     private String userId;
     private String username;
-    private String hash;
+    //    private String hash;
     private String phone;
     private Date createDate;
     private String type;
@@ -37,6 +37,14 @@ public class UserAccountApi {
         this.userGroups = userGroup;
     }
 
+    public UserAccountApi(UserAccount userAccount) {
+        this.userId = userAccount.getUserId();
+        this.username = userAccount.getUsername();
+        this.phone = userAccount.getPhone();
+        this.createDate = userAccount.getCreateDate();
+        this.type = userAccount.getType();
+    }
+
     public String getUserId() {
         return userId;
     }
@@ -53,13 +61,13 @@ public class UserAccountApi {
         this.username = username;
     }
 
-    public String getHash() {
-        return hash;
-    }
-
-    public void setHash(String hash) {
-        this.hash = hash;
-    }
+//    public String getHash() {
+//        return hash;
+//    }
+//
+//    public void setHash(String hash) {
+//        this.hash = hash;
+//    }
 
     public String getPhone() {
         return phone;
