@@ -1584,13 +1584,25 @@ public class MainPageController {
 
     public String searchWordParse(String word) {
         String[] s = word.split("\":\"");
+        String[] t = null;
         String SearchWord = "";
+
+        t = s[s.length-1].split("\"");
+        String groups = t[0];		// 그룹명
+
         int k = 1;
         while (true) {
-            String[] t = s[k + 1].split("\"");
+            t = s[k + 1].split("\"");
             if (s[k].contains("내용")) SearchWord += "indexA^" + t[0];
-            else if (s[k].contains("저자")) SearchWord += "indexB^" + t[0];
-            else if (s[k].contains("참조")) SearchWord += "indexC^" + t[0];
+            else if (s[k].contains("저자")) {
+        		String[] str = t[0].split("_");
+        		if(str.length == 1) {
+        			t[0] = groups + "_" + t[0];
+        		}
+            	SearchWord += "indexB^" + t[0];
+            }
+
+            //else if (s[k].contains("참조")) SearchWord += "indexC^" + t[0];
             //System.out.println(SearchWord + " : " + s[k+2]);
 
             if (!s[k + 2].contains("SEL")) {
@@ -1601,7 +1613,7 @@ public class MainPageController {
         }
         k = k + 3;
         if (s[k].contains("문자포함")) SearchWord += ">문자포함";
-        else if (s[k].contains("완전일치")) SearchWord += ">완전일치";
+        else if (s[k].contains("형태소")) SearchWord += ">형태소";
         else if (s[k].contains("완전일치")) SearchWord += ">완전일치";
 
         //System.out.println(word + " => " + SearchWord);

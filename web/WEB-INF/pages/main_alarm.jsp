@@ -155,14 +155,14 @@
                         </table>
                     </div>
                 </div>
-                <div id="page-counter-wrapper">
-                    <nav aria-label="..." style="text-align: center;">
-                        <nav aria-label="..." style="text-align: center;">
+                <div style="display:flex">
+                    <div id="page-counter-wrapper" style="display:inline-block;margin: 0 auto;">
+                        <nav aria-label="..." style="text-align: center;float:left;">
                             <ul class="pagination pagination-sm pagination-main" style="margin: 0 auto;">
                             </ul>
                         </nav>
-                    </nav>
-                    <%--<div>하이라이팅<input id="highlight-checkbox" type="checkbox"></div>--%>
+                        <%--<div>하이라이팅<input id="highlight-checkbox" type="checkbox"></div>--%>
+                    </div>
                 </div>
             </div>
         </div>
@@ -435,6 +435,7 @@
 
         console.log("current = " + current + " : from = " + from + " : to = " + to + " : lastPage = " + lastPage);
         $('.pagination-main').children().remove();
+        $('.pageInput-container').remove();
         var pageEl = "";
         if (from == 1)
             pageEl += '<li><a href="#" aria-label="Previous" class="disabled"><span aria-hidden="true">«</span></a></li>';
@@ -451,9 +452,10 @@
         else
             pageEl += '<li><a href="#" aria-label="Next" class="disabled"><span aria-hidden="true">»</span></a></li>';
 
-        pageEl += '<li><div style="color:#4682B4;">  To : <input class="pageInput" type="number" onkeypress="onkeypressPage()" style=" border:1px solid #90a0a0; width:65px; text-align: center;">' +
-                ' <label> / ' + lastPageMain + ' pages</label></div></li>';
+        var tmpDiv = '<div class="pageInput-container" style="color:#4682B4;float:left;padding-left:15px;margin: 0 auto;">  To : <input class="pageInput" onkeypress="onkeypressPage(event);" style=" border:1px solid #90a0a0; width:65px; text-align: center;margin-top:2px;">' +
+                ' <label> / ' + lastPageMain + ' pages</label></div>';
         $('.pagination-main').append(pageEl);
+        $('#page-counter-wrapper').append(tmpDiv);
 
         //$(this).addClass("active");
     }
@@ -816,6 +818,18 @@
 
             if (obj.category == "내용") SearchWord += "indexA^" + tmp;
             else if (obj.category == "저자") SearchWord += "indexB^" + tmp;
+            else if (obj.category == "저자") {
+        		var str = tmp.split("_");
+        		if(str.length > 1){
+        			if(str[0] != $('input[name="groups"]:checked').val()) {
+        				alert("저자와 그룹이 일치하지 않습니다.");
+        				isOK = false;
+        			}
+        		} else {
+        			tmp = $('input[name="groups"]:checked').val() + '_' + tmp;
+        		}
+            	SearchWord += "indexB^" + tmp;
+            }
             //else if (obj.category == "참조") SearchWord += "indexC^" + tmp;
 
             if (obj.operator == "O R") SearchWord += " <OR> ";
@@ -994,6 +1008,10 @@
                     $("#search-progress").append("<div class='progress-bar progress-bar-striped active' role='progressbar' aria-valuenow='"
                             + sel2[1] + "' aria-valuemin='0' aria-valuemax='100' style='width: " + sel2[1] + "%;'>" + sel2[1] + "%</div>");			// 검색 률
 
+                    if (sel2[1] == 100){
+                        $('.progress-bar').removeClass('progress-bar-striped');
+                    }
+
                     console.log(sel2[0] + " : " + sel2[1]);
                     if ((sel2[1] == 100) && (sel2[0] == 0)) alert("검색결과가 없습니다!!!");
 
@@ -1121,7 +1139,7 @@
             var col = $(this).parent().children().index($(this));
             console.log($(this).parent().children().length);
             //console.log($('#page-counter-wrapper ul').find('li').eq(col).text());
-            if (col == (($(this).parent().children().length) - 1)) return;
+//            if (col == (($(this).parent().children().length) - 1)) return;
 
             var textPage = $('#page-counter-wrapper ul').find('li').eq(col).text();
             //var row = $(this).parent().parent().children().index($(this).parent());
@@ -1131,7 +1149,7 @@
             removeAllRelDiv();
             repeatCnt = 0;
             stop = false;
-            if ((col > 0) && (col < ($(this).parent().children().length) - 2))
+            if ((col > 0) && (col < ($(this).parent().children().length) - 1))
                 callAjaxLoop(userID, 2, 0, 2, textPage - 1, "", "");
             else {
 
@@ -1169,12 +1187,15 @@
                 stop = false;
                 console.log($('#book-table tbody').find('tr').eq(row).find('td').eq(col).find('span').hasClass("glyphicon-ok"));
 
-                var m = "indexB^" + tableData[row].author
+                var msg = "indexB^" + tableData[row].author
                         + " & " + tableData[row].referencedAuthor + ">완전일치>"
                         + lastQuery.fromDate + "-" + lastQuery.toDate + ">" + lastQuery.dateOption;
-                console.log(m);
+
+                msg += ">" + $('input[name="groups"]:checked').val();
+                console.log(msg);
+
                 //if ($('#book-table tbody').find('tr').eq(row).find('td').eq(col).find('span').hasClass( "glyphicon-ok"))
-                callAjaxLoop(userID + "_author" + authorNUM, row, 1, 1, col, m, "");
+                callAjaxLoop("author" + authorNUM, row, 1, 1, col,msg, "");
                 //else
                 //	callAjaxLoop("author"+authorNUM, 8, row, 1, 0, m, tableData[row].eventNo);
 
@@ -1533,14 +1554,28 @@
         lastQuery = tdata;
 
         var data = tdata.data;
-
         var str = "";
+        var isOK = true;
+		//console.log("tdata.groups = " + tdata.groups);
 
         for (var i = 0; i < data.length; i++) {
-            if (data[i].category == "내용") str += 'indexA^';
-            else if (data[i].category == "저자") str += 'indexB^';
-            else if (data[i].category == "참조") str += 'indexC^';
-            str += data[i].input;
+        	var tmp = data[i].input;
+            if (data[i].category == "내용") str += 'indexA^' + tmp;
+            //else if (data[i].category == "저자") str += 'indexB^';
+			//else if (data[i].category == "참조") str += 'indexC^' + tmp;
+			else if (data[i].category == "저자") {
+        		var str2 = tmp.split("_");
+        		if(str2.length > 1){
+        			if(str2[0] != tdata.groups) {
+        				alert("저자와 그룹이 일치하지 않습니다.");
+        				isOK = false;
+        			}
+        		} else {
+        			tmp = tdata.groups + '_' + tmp;
+        		}
+        		str += "indexB^" + tmp;
+            }
+
             if (i < data.length - 1) {
                 if (data[i].operator == "O R") str += " <OR> ";
                 else str += " <AND> ";
@@ -1550,6 +1585,13 @@
         var timestamp = fetch_unix_timestamp();
         str += ">" + timeConverter(timestamp - 3600 * 24 * 30) + "-" + timeConverter(timestamp);
         str += ">DB";
+        str += ">" + tdata.groups;
+
+        lastQuery.fromDate = timeConverter(timestamp - 3600 * 24 * 30);
+        lastQuery.toDate = timeConverter(timestamp);
+        lastQuery.dateOption = "DB";
+        //console.log("str = " + str);
+        if (!isOK) str = "";
 
         return str;
     }

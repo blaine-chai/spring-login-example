@@ -113,7 +113,7 @@
                                 </ul>
                             </div>
                         </div>
-                        <input type="text" class="form-control col-xs-4 search-input" placeholder="검색어를 입력해주세요.">
+                        <input type="text" class="form-control col-xs-4 search-input" onkeypress="onkeypressClick(event)" placeholder="검색어를 입력해주세요.">
                         <div class="dropdown input-group-btn">
                             <div class="btn-group">
                                 <button type="button" class="btn btn-default btn-sm dropdown-toggle"
@@ -316,34 +316,7 @@
     function handleOperatorSelect(element) {
         var list = $(element).parent().parent().parent().parent().parent();
         if ($('#search-input-wrapper>div').length - 1 == $('#search-input-wrapper>div').index(list) && $(element).text() != "SEL") {
-            $('#search-input-wrapper').append('<div class="input-group input-group-sm search-input-group">' +
-                    '<div class="dropdown input-group-btn">' +
-                    '<div class="btn-group">' +
-                    '<button type="button" class="btn btn-default btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="width: 72px">' +
-                    '<span class="search-category-option">내용</span>' +
-                    '<div style="display: inline-block">' +
-                    '<span class="caret"></span>' +
-                    '<span class="sr-only"></span>' +
-                    '</div></button>' +
-                    '<ul class="dropdown-menu search-category-selector" role="menu" aria-labelledby="dropdownMenu1">' +
-                    '<li role="presentation"><a role="menuitem" tabindex="-1" href="#">내용</a></li>' +
-                    '<li role="presentation"><a role="menuitem" tabindex="-1" href="#">저자</a></li>' +
-                    '</ul></div></div>' +
-                    '<input type="text" class="form-control col-xs-4 search-input" onkeypress="onkeypressClick()" placeholder="검색어를 입력해주세요.">' +
-                    '<div class="dropdown input-group-btn">' +
-                    '<div class="btn-group">' +
-                    '<button type="button" class="btn btn-default btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="width: 55px">' +
-                    '<span class="search-operator-option">SEL</span>' +
-                    '<div style="display: inline-block">' +
-                    '<span class="caret"></span>' +
-                    '<span class="sr-only"></span>' +
-                    '</div></button>' +
-                    '<ul id="operator-selector" class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu1">' +
-                    '<li role="presentation"><a role="menuitem" tabindex="1" href="#">SEL</a></li>' +
-                    '<li role="presentation"><a role="menuitem" tabindex="2" href="#" onclick="handleOperatorSelect(this);return false;">AND</a></li>' +
-                    '<li role="presentation"><a role="menuitem" tabindex="3" href="#" onclick="handleOperatorSelect(this);return false;">O R</a></li>' +
-                    '</ul></div>' +
-                    '<label class="btn btn-default btn-sm close-search-option-btn">-</label></div></div>');
+            $('#search-input-wrapper').append('<div class="input-group input-group-sm search-input-group"><div class="dropdown input-group-btn"><div class="btn-group"><button type="button" class="btn btn-default btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="width: 72px"><span class="search-category-option">내용</span>\n<div style="display: inline-block"><span class="caret"></span><span class="sr-only"></span></div></button><ul class="dropdown-menu search-category-selector" role="menu" aria-labelledby="dropdownMenu1"><li role="presentation"><a role="menuitem" tabindex="-1" href="#">내용</a></li><li role="presentation"><a role="menuitem" tabindex="-1" href="#">저자</a></li></ul></div></div><input type="text" class="form-control col-xs-4 search-input" onkeypress="onkeypressClick(event)" placeholder="검색어를 입력해주세요."><div class="dropdown input-group-btn"><div class="btn-group"><button type="button" class="btn btn-default btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="width: 55px"><span class="search-operator-option">SEL</span>\n<div style="display: inline-block"><span class="caret"></span><span class="sr-only"></span></div></button><ul id="operator-selector" class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu1"><li role="presentation"><a role="menuitem" tabindex="1" href="#">SEL</a></li><li role="presentation"><a role="menuitem" tabindex="2" href="#" onclick="handleOperatorSelect(this);return false;">AND</a></li><li role="presentation"><a role="menuitem" tabindex="3" href="#" onclick="handleOperatorSelect(this);return false;">O R</a></li></ul></div><label class="btn btn-default btn-sm close-search-option-btn">-</label></div></div>');
             $('.close-search-option-btn').click(function (e) {
                 $(this).parent().parent().remove();
                 $('#search-input-wrapper>div').eq($('#search-input-wrapper>div').length - 1).find('.search-operator-option').text('SEL');
@@ -508,7 +481,7 @@
         //$(this).addClass("active");
     }
 
-    function onkeypressClick() {
+    function onkeypressClick(event) {
         //$('#search-input-wrapper .search-input').keypress(onkeypressClick());
         //console.log();
         if (event.keyCode == 13) {
@@ -581,9 +554,9 @@
             startTime = new Date();
 
             var col = $(this).parent().children().index($(this));
-            console.log($(this).parent().children().length);
+            console.log("length = " + $(this).parent().children().length + " ::: col = " + col);
             //console.log($('#page-counter-wrapper ul').find('li').eq(col).text());
-            if (col == (($(this).parent().children().length) - 1)) return;
+            //if (col == (($(this).parent().children().length) - 1)) return;
 
             var textPage = $('#page-counter-wrapper ul').find('li').eq(col).text();
             //var row = $(this).parent().parent().children().index($(this).parent());
@@ -593,7 +566,7 @@
             removeAllRelDiv();
             repeatCnt = 0;
             stop = false;
-            if ((col > 0) && (col < ($(this).parent().children().length) - 2))
+            if ((col > 0) && (col < ($(this).parent().children().length) - 1))
                 callAjaxLoop(userID, 2, 0, 2, textPage - 1, "", "");
             else {
 
@@ -1338,19 +1311,20 @@
         var data = tdata.data;
 
         var str = "";
+		var isOK = true;
 
         for (var i = 0; i < data.length; i++) {
         	var tmp = data[i].input;
             if (data[i].category == "내용") str += 'indexA^' + tmp;
             else if (data[i].category == "저자") {
-        		var str = tmp.split("_");
+        		var str2 = tmp.split("_");
         		if(str.length > 1){
-        			if(str[0] != $('input[name="groups"]:checked').val()) {
+        			if(str2[0] != tdata.groups) {
         				alert("저자와 그룹이 일치하지 않습니다.");
         				isOK = false;
         			}
         		} else {
-        			tmp = $('input[name="groups"]:checked').val() + '_' + tmp;
+        			tmp = tdata.groups + '_' + tmp;
         		}
         		str += "indexB^" + tmp;
             }
@@ -1365,7 +1339,9 @@
         str += ">" + tdata.fromDate + "-" + tdata.toDate;
         str += ">" + tdata.dateOption;
         console.log("dataParsing : " + tdata.groups);
-        str += ">" + tdata.groups;
+        str += ">그룹 :" + tdata.groups;
+
+        //if(!isOK) str = "";
 
         return str;
     }
@@ -1415,7 +1391,7 @@
 		$('input:radio[name="groups"]:radio[value="' + a.groups + '"]').prop("checked",true);
 
         $.each(a.data, function (i) {
-            var newDiv = $('<div class="input-group input-group-sm search-input-group"><div class="dropdown input-group-btn"><div class="btn-group"><button type="button" class="btn btn-default btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="width: 72px"><span class="search-category-option">내용</span><div style="display: inline-block"><span class="caret"></span><span class="sr-only"></span></div></button><ul class="dropdown-menu search-category-selector" role="menu" aria-labelledby="dropdownMenu1"><li role="presentation"><a role="menuitem" tabindex="-1" href="#">내용</a></li><li role="presentation"><a role="menuitem" tabindex="-1" href="#">저자</a></li></ul></div></div><input type="text" class="form-control col-xs-4 search-input" onkeypress="onkeypressClick()" placeholder="검색어를 입력해주세요."><div class="dropdown input-group-btn"><div class="btn-group"><button type="button" class="btn btn-default btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="width: 55px"><span class="search-operator-option">SEL</span>\n<div style="display: inline-block"><span class="caret"></span><span class="sr-only"></span></div></button><ul id="operator-selector" class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu1"><li role="presentation"><a role="menuitem" tabindex="1" href="#">SEL</a></li><li role="presentation"><a role="menuitem" tabindex="2" href="#" onclick="handleOperatorSelect(this);return false;">AND</a></li><li role="presentation"><a role="menuitem" tabindex="3" href="#" onclick="handleOperatorSelect(this);return false;">O R</a></li></ul></div><label class="btn btn-default btn-sm close-search-option-btn">-</label></div></div>');
+            var newDiv = $('<div class="input-group input-group-sm search-input-group"><div class="dropdown input-group-btn"><div class="btn-group"><button type="button" class="btn btn-default btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="width: 72px"><span class="search-category-option">내용</span><div style="display: inline-block"><span class="caret"></span><span class="sr-only"></span></div></button><ul class="dropdown-menu search-category-selector" role="menu" aria-labelledby="dropdownMenu1"><li role="presentation"><a role="menuitem" tabindex="-1" href="#">내용</a></li><li role="presentation"><a role="menuitem" tabindex="-1" href="#">저자</a></li></ul></div></div><input type="text" class="form-control col-xs-4 search-input" onkeypress="onkeypressClick(event)" placeholder="검색어를 입력해주세요."><div class="dropdown input-group-btn"><div class="btn-group"><button type="button" class="btn btn-default btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="width: 55px"><span class="search-operator-option">SEL</span>\n<div style="display: inline-block"><span class="caret"></span><span class="sr-only"></span></div></button><ul id="operator-selector" class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu1"><li role="presentation"><a role="menuitem" tabindex="1" href="#">SEL</a></li><li role="presentation"><a role="menuitem" tabindex="2" href="#" onclick="handleOperatorSelect(this);return false;">AND</a></li><li role="presentation"><a role="menuitem" tabindex="3" href="#" onclick="handleOperatorSelect(this);return false;">O R</a></li></ul></div><label class="btn btn-default btn-sm close-search-option-btn">-</label></div></div>');
             if (i == 0) {
                 newDiv.find('.close-search-option-btn').attr('disabled', '');
             }

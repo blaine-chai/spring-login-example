@@ -309,11 +309,6 @@ var GraphModule = (function () {
             setYAxis();
             drawGraph();
             if (option.graphOverall) {
-                graphContainer.find('.graph-overall-container').remove();
-                var graphOverall = $('<div class="panel panel-default graph-overall-container" style="position: absolute;width: 130px;top: 15px;left:75px;padding: 5px;margin-bottom: 0;">' +
-                    '<div class="panel panel-default graph-overall" style="padding: 5px;margin-bottom: 0;"></div></div>');
-                graphOverall.draggable({containment: option.containerSelector});
-                graphContainer.append(graphOverall);
                 setGraphOverall();
             }
         };
@@ -363,13 +358,21 @@ var GraphModule = (function () {
 
         var setGraphOverall = function (boolean) {
             if (option.graphOverall) {
+                graphContainer.find('.graph-overall-container').remove();
+
+                var graphOverallContainer = $('<div class="panel panel-default graph-overall-container" style="position: absolute;width: 130px;top: 15px;left:75px;padding: 5px;margin-bottom: 0;">' +
+                    '<div class="panel panel-default graph-overall" style="padding: 5px;margin-bottom: 0;"></div></div>');
+                graphOverallContainer.draggable({containment: option.containerSelector});
+                graphContainer.append(graphOverallContainer);
+
                 var graphOverall = graphContainer.find('.graph-overall');
-                graphOverall.children().remove();
+
                 $.each(option.nameList, function (i, name) {
                     var tmp = $('<div class="graph-overall-item" style="font-size: 11px;padding-left: 5px;"></div>');
                     tmp.append(name + '<span style="position: absolute;right: 15px;height: 3px;width: 30px;vertical-align: middle;margin-top: 6px;"></span>');
                     tmp.find('span').css('background-color', option.colorSet[i]);
                     graphOverall.append(tmp);
+
                     tmp.click(function () {
                         var relativeTitle = name;
                         var tmpHtml = $('<div class="alert bg-white alert-dismissible fade in border-gray relative-table-wrapper" style="position: absolute; z-index: 10; width: 250px;' +
@@ -404,7 +407,7 @@ var GraphModule = (function () {
 
                         $.each(option.data, function (i, d) {
                             var tmpEl = $('<tr><td>' + d.index + '</td>' +
-                                '<td style="text-align: right; font-size: 12px;padding-right: 10px;">'+ d[name].format() + '</td>' +
+                                '<td style="text-align: right; font-size: 12px;padding-right: 10px;">' + d[name].format() + '</td>' +
                                 '</tr>');
                             tmpHtml.find('tbody').append(tmpEl);
                         });
@@ -481,6 +484,7 @@ var GraphModule = (function () {
             removeSvg: function () {
                 if (svg != undefined) {
                     svg.remove();
+                    graphContainer.find('.graph-overall-container').remove();
                 }
             },
 
@@ -507,6 +511,7 @@ var GraphModule = (function () {
             refresh: function () {
                 if (svg != undefined) {
                     svg.remove();
+                    // graphContainer.find('.graph-overall-container').remove();
                     setOption();
                     setGraphContainer();
                     setWidth();
@@ -528,6 +533,9 @@ var GraphModule = (function () {
             },
             getNameList: function () {
                 return option.nameList;
+            },
+            deleteGraphOverall: function () {
+                graphContainer.find('.graph-overall-container').remove();
             },
             init: init
         }

@@ -909,9 +909,20 @@
 
         var category = categoryEls.eq(2).text();
         if (category == "내용") SearchWord += "indexA^" + input;
-        else if (category == "저자") SearchWord += "indexB^" + input;
+        //else if (category == "저자") SearchWord += "indexB^" + input;
         //else if (category == "참조") SearchWord += "indexC^" + input;
-
+        else if (category == "저자") {
+    		var str = input.split("_");
+    		if(str.length > 1){
+    			if(str[0] != $('input[name="groups"]:checked').val()) {
+    				alert("저자와 그룹이 일치하지 않습니다.");
+    				isOK = false;
+    			}
+    		} else {
+    			input = $('input[name="groups"]:checked').val() + '_' + input;
+    		}
+        	SearchWord += "indexB^" + input;
+        }
 
         var operator = operatorEls.eq(0).text();
         if (operator != "SEL") {
@@ -923,7 +934,19 @@
 
             var category = categoryEls.eq(3).text();
             if (category == "내용") SearchWord += "indexA^" + input;
-            else if (category == "저자") SearchWord += "indexB^" + input;
+            //else if (category == "저자") SearchWord += "indexB^" + input;
+            else if (category == "저자") {
+        		var str = input.split("_");
+        		if(str.length > 1){
+        			if(str[0] != $('input[name="groups"]:checked').val()) {
+        				alert("저자와 그룹이 일치하지 않습니다.");
+        				isOK = false;
+        			}
+        		} else {
+        			input = $('input[name="groups"]:checked').val() + '_' + input;
+        		}
+            	SearchWord += "indexB^" + input;
+            }
             //else if (category == "참조") SearchWord += "indexC^" + input;
         }
 
@@ -934,7 +957,7 @@
         else
             SearchWord += ">" + categoryEls.eq(4).text() + "_" + "monthly";
 
-        SearchWord += ">" + $('input[name=groups]:checked').val();
+		SearchWord += ">" + $('input[name=groups]:checked').val() ;
 
         if (!isOK) SearchWord = "";
 ///
