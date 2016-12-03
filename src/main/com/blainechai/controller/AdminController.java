@@ -22,6 +22,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import static com.blainechai.util.LoggerUtil.*;
+
 @Controller
 @RequestMapping("/admin")
 public class AdminController {
@@ -83,6 +85,9 @@ public class AdminController {
         String userId = request.getParameter("userId");
         String username = request.getParameter("username");
         String password = request.getParameter("password");
+
+        log("Admin Id 최초 생성 - ID : " + userId);
+
         if (userAccountRepository.findByType(UserType.ADMIN).size() <= 0) {
             try {
                 UserAccount adminAccount = new UserAccount(userId, username, password, "0", UserType.ADMIN);
@@ -107,7 +112,8 @@ public class AdminController {
         if (adminAccountList.size() > 0 && adminAccountList.get(0).getUserId().equals(userId) && adminAccountList.get(0).getHash().equals(EncryptUtil.getSHA256(EncryptUtil.FIRST_KEY + userId + password + EncryptUtil.SECOND_KEY))) {
             request.getSession().setAttribute("userId", userId);
             sessionRepository.save(new Session(request.getSession().getId(), userId, UserType.ADMIN));
-            return "redirect:" + "/admin/main";
+            log(userId, "로그인");
+            return "redirect:" + "/admin/admin-account";
         }
 //        }
         redirectAttributes.addFlashAttribute("loginFail", "true");
@@ -124,8 +130,8 @@ public class AdminController {
 
     @RequestMapping(value = "/main")
     public String adminMain(HttpServletRequest request, ModelMap model) {
-        model.addAttribute("userId", request.getSession().getAttribute("userId").toString());
-        return "admin_main";
+//        model.addAttribute("userId", request.getSession().getAttribute("userId").toString());
+        return "redirect:" + "/admin/admin-account";
     }
 
     @RequestMapping(value = "/admin-account")
@@ -167,8 +173,12 @@ public class AdminController {
     @RequestMapping(value = "/admin-account/delete", method = RequestMethod.POST)
     public ModelAndView adminAccountDelete(HttpServletRequest request) {
         String userId = request.getParameter("userId");
-        System.out.println(userId);
-        if (userAccountRepository.findByType(UserType.ADMIN).size() > 1) {
+//        System.out.println(userId);
+        String selfId = sessionRepository.findByJSessionId(request.getSession().getId()).get(0).getUserId();
+        if (selfId.equals(userId)) {
+            return new ModelAndView("api").addObject("json", "self");
+        } else if (userAccountRepository.findByType(UserType.ADMIN).size() > 1) {
+            log(selfId, "관리자 계정 삭제 - ID: " + userId);
             commonBookmarkRepository.deleteByUserAccount_UserId(userId);
             commonBookmarkRepository.deleteByAdminBookmark_AdminAccount_UserId(userId);
             adminBookmarkRepository.deleteByAdminAccount_UserId(userId);
@@ -349,10 +359,10 @@ public class AdminController {
         }
 
         if (searchFilter.equals("userId")) {
-            userAccounts = userAccountRepository.findByUserIdContainingAndType(searchInput, UserType.ADMIN);
+            userAccounts = userAccountRepository.findByUserIdContainingAndType(searchInput, UserType.USER);
             userAccountApis = getUserAccountApis(userAccounts);
         } else if (searchFilter.equals("username")) {
-            userAccounts = userAccountRepository.findByUsernameContainingAndType(searchInput, UserType.ADMIN);
+            userAccounts = userAccountRepository.findByUsernameContainingAndType(searchInput, UserType.USER);
             userAccountApis = getUserAccountApis(userAccounts);
         } else {
             userAccountApis = new ArrayList<UserAccountApi>();

@@ -33,7 +33,7 @@
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
             </button>
-            <a class="navbar-brand" href="/admin/main">관리자 페이지</a>
+            <a class="navbar-brand" href="/admin/main">사용자 관리</a>
         </div>
         <div class="navbar-collapse collapse">
             <ul class="nav navbar-nav navbar-right">
@@ -55,7 +55,7 @@
         <div class="col-sm-3">
 
             <ul class="nav nav-stacked">
-                <li class="nav-header"><a href="#" data-toggle="collapse" data-target="#user-menu">Settings <i
+                <li class="nav-header"><a href="#"  data-target="#user-menu">메뉴 <i
                         class="glyphicon glyphicon-chevron-down"></i></a>
                     <ul class="nav nav-stacked collapse in" id="user-menu">
                         <%--<li><a href="#" content="/admin/admin-account" onclick="setIframe(this);return false;"><i--%>
@@ -83,7 +83,7 @@
                         <%--<form action="/admin/admin-account/search" method="post" class="form-inline" role="form">--%>
                         <div class="input-group" style="width: 100%;">
                             <select name="searchFilter" class="form-control"
-                                    style="width: 100px; border-top-right-radius: 0;border-bottom-right-radius: 0;">
+                                    style="width: 140px; border-top-right-radius: 0;border-bottom-right-radius: 0;">
                                 <option value="userId">관리자 계정</option>
                                 <option value="username">관리자 이름</option>
                                 <%--<option value="password">비밀번호</option>--%>
@@ -96,9 +96,9 @@
                             <button class="btn btn-primary" style="width: 80px;"
                                     onclick="searchAdminUsers();return false;">검색
                             </button>
-                            <button class="btn btn-default" style="width: 80px;"
-                                    onclick="getAdminUsers();return false;">초기화
-                            </button>
+                            <%--<button class="btn btn-default" style="width: 80px;"--%>
+                            <%--onclick="getAdminUsers();return false;">초기화--%>
+                            <%--</button>--%>
                             <%--</div>--%>
                         </div>
                         <%--</form>--%>
@@ -314,6 +314,8 @@
 //                        tarTr.find('.group-name-td').text(groupName);
                         alert('삭제 되었습니다.');
                         getAdminUsers()
+                    } else if (responseData == 'self') {
+                        alert('자기 자신은 삭제할 수 없습니다.');
                     } else {
                         alert('삭제에 실패하였습니다. 다시 시도해 주세요.');
                     }

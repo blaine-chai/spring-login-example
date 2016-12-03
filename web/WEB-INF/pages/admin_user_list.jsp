@@ -33,9 +33,9 @@
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
             </button>
-            <a class="navbar-brand" href="/admin/main">관리자 페이지</a>
+            <a class="navbar-brand" href="/admin/main">사용자 관리</a>
         </div>
-        <div class="navbar-collapse collapse">
+        <%--<div class="navbar-collapse collapse">--%>
             <ul class="nav navbar-nav navbar-right">
                 <li><a href="/"><i class="glyphicon glyphicon-home"></i> home</a></li>
                 <li class="dropdown">
@@ -43,7 +43,7 @@
                 </li>
                 <li><a href="/admin/logout"><i class="glyphicon glyphicon-lock"></i> Logout</a></li>
             </ul>
-        </div>
+        <%--</div>--%>
     </div>
     <!-- /container -->
 </div>
@@ -55,11 +55,11 @@
         <div class="col-sm-3">
 
             <ul class="nav nav-stacked">
-                <li class="nav-header"><a href="#" data-toggle="collapse" data-target="#user-menu">Settings <i
+                <li class="nav-header"><a href="#"  data-target="#user-menu">메뉴 <i
                         class="glyphicon glyphicon-chevron-down"></i></a>
                     <ul class="nav nav-stacked collapse in" id="user-menu">
                         <%--<li><a href="#" content="/admin/admin-account" onclick="setIframe(this);return false;"><i--%>
-                        <li class="active"><a href="/admin/admin-account" content="/admin/admin-account"><i
+                        <li><a href="/admin/admin-account" content="/admin/admin-account"><i
                                 class="glyphicon glyphicon-user"></i> Admin
                             List</a></li>
                         <%--<li><a href="#" content="/admin/user" onclick="setIframe(this);return false;"><i--%>
@@ -83,7 +83,7 @@
                         <%--<form action="/admin/admin-account/search" method="post" class="form-inline" role="form">--%>
                         <div class="input-group" style="width: 100%;">
                             <select name="searchFilter" class="form-control"
-                                    style="width: 100px; border-top-right-radius: 0;border-bottom-right-radius: 0;">
+                                    style="width: 140px; border-top-right-radius: 0;border-bottom-right-radius: 0;">
                                 <option value="userId">사용자 계정</option>
                                 <option value="username">사용자 이름</option>
                                 <%--<option value="password">비밀번호</option>--%>
@@ -96,9 +96,9 @@
                             <button class="btn btn-primary" style="width: 80px;"
                                     onclick="searchUsers();return false;">검색
                             </button>
-                            <button class="btn btn-default" style="width: 80px;"
-                                    onclick="getUsers();return false;">초기화
-                            </button>
+                            <%--<button class="btn btn-default" style="width: 80px;"--%>
+                            <%--onclick="getAdminUsers();return false;">초기화--%>
+                            <%--</button>--%>
                             <%--</div>--%>
                         </div>
                         <%--</form>--%>
@@ -112,8 +112,8 @@
                     <table class="table table-condensed table-hover list-table" id="user-list-table">
                         <thead>
                         <tr>
-                            <th width="20%" class="text-center">관리자 계정</th>
-                            <th width="20%" class="text-center">관리자 이름</th>
+                            <th width="20%" class="text-center">사용자 계정</th>
+                            <th width="20%" class="text-center">사용자 이름</th>
                             <th width="20%" class="text-center">비밀번호</th>
                             <th width="20%" class="text-center">생성일</th>
                             <th width="20%" class="text-center">그룹</th>

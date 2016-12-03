@@ -36,6 +36,8 @@ import java.util.Map;
 import java.util.Random;
 import java.util.Set;
 
+import static com.blainechai.util.LoggerUtil.*;
+
 /**
  * Created by blainechai on 2016. 9. 5..
  */
@@ -130,16 +132,70 @@ public class MainPageController {
         return modelAndView;
     }
 
+
+//
+//    @RequestMapping(value = "/join", method = RequestMethod.POST)
+//    public String userJoin(HttpServletRequest request) {
+//        String userId = request.getParameter("userId");
+//        String username = request.getParameter("username");
+//        String password = request.getParameter("password");
+//        String phone = request.getParameter("phone");
+//        try {
+//            if (userAccountRepository.findByUserId(userId).size() <= 0) {
+//                UserAccount userAccount = new UserAccount(userId, username, password, phone, UserType.USER);
+//                userAccount = userAccountRepository.save(userAccount);
+//                tableOptionRepository.save(new UserTableOption(userAccount, new int[]{50, 50, 50, 100, 100, 100, 100, 50, 50, 600, 50, 50}));
+//                List<AdminBookmark> adminBookmarks = adminBookmarkRepository.findAll();
+//                for (AdminBookmark adminBookmark : adminBookmarks) {
+//                    commonBookmarkRepository.save(new CommonBookmark(userAccount, adminBookmark, 0));
+//                }
+//            } else {
+//                return "redirect:" + "/error";
+//            }
+//        } catch (Exception e) {
+//            return "redirect:" + "/error";
+//        }
+//        return "redirect:" + "/";
+//    }
+
+//    @RequestMapping(value = "/register")
+//    public String registerPage(HttpServletRequest request) {
+//        return "user_join";
+//    }
+
+    @RequestMapping(value = "/login", method = RequestMethod.POST)
+    public String userLogin(HttpServletRequest request, RedirectAttributes redirectAttributes) {
+        String userId = request.getParameter("userId");
+        String password = request.getParameter("password");
+        List<UserAccount> userAccountList = userAccountRepository.findByUserId(userId);
+
+//        System.out.println(EncryptUtil.getSHA256(EncryptUtil.FIRST_KEY + userId + password + EncryptUtil.SECOND_KEY));
+        if (userAccountList.size() > 0 && userAccountList.get(0).getUserId().equals(userId) && userAccountList.get(0).getHash().equals(EncryptUtil.getSHA256(EncryptUtil.FIRST_KEY + userId + password + EncryptUtil.SECOND_KEY))) {
+            request.getSession().setAttribute("userId", userId);
+            sessionRepository.save(new Session(request.getSession().getId(), userId, userAccountList.get(0).getType()));
+            log(userId, "로그인");
+            return "redirect:" + "/main";
+        }
+        redirectAttributes.addFlashAttribute("loginFail", "true");
+        return "redirect:" + "/";
+    }
+
+    @RequestMapping(value = "/logout")
+    public String userLogout(HttpServletRequest request) {
+        request.getSession().invalidate();
+        return "redirect:" + "/";
+    }
+
     //    @RequestMapping(value = {"/main/alarm/search-user-bookmark"})
 //    public String getUserBookmark() {
 //        return "main_alarm";
 //    }
-    static int updateCount = 0;
+//    static int updateCount = 0;
 
-    @RequestMapping(value = {"/main/alarm/get-alarm-count"})
-    public ModelAndView getAlarm(HttpServletRequest request) {
-        updateCount++;
-        ModelAndView modelAndView = new ModelAndView("api").addObject("json", String.valueOf(updateCount));
+//    @RequestMapping(value = {"/main/alarm/get-alarm-count"})
+//    public ModelAndView getAlarm(HttpServletRequest request) {
+//        updateCount++;
+//        ModelAndView modelAndView = new ModelAndView("api").addObject("json", String.valueOf(updateCount));
         /**
          * 아래 주석부분이 실제 코드이므로 해제하고 개발하시면 됩니다.
          */
@@ -166,8 +222,8 @@ public class MainPageController {
 //
 //        ModelAndView modelAndView = new ModelAndView("api").addObject("json", String.valueOf(updateCount));
 //
-        return modelAndView;
-    }
+//        return modelAndView;
+//    }
 
     @RequestMapping(value = {"/main/profile"})
     public ModelAndView profilePage(HttpServletRequest request) {
@@ -244,7 +300,8 @@ public class MainPageController {
 
             sc = new SocketComm(userId + "@" + id, ip, port, selInt, pageInt, strQuery);
         } else if (selInt == 16) {
-            String strQuery = "indexB^" + msg;
+        	String[] s = msg.split(">");
+            String strQuery = "indexB^" + s[0];
             sc = new SocketComm(userId + "@" + id, ip, port, selInt, pageInt, strQuery);
         } else {
             sc = new SocketComm(userId + "@" + id, ip, port, selInt, pageInt, author);
@@ -279,7 +336,12 @@ public class MainPageController {
                  */
                 send = "OK";
             } else if (selInt == 15) {
+            	String key = author.split(">")[1];
                 from = sc.getFrom();
+            	for(int i=0; i < from.length; i++) {
+            		if(!from[i].split("_")[0].equals(key))
+            			;//from.slice(i,1);
+            	}
                 send = "OK";
             } else send = "OK";
         }
@@ -593,7 +655,7 @@ public class MainPageController {
 
             String[] s = msg.split(">");
             String groupChecked = "";
-            if(!s[4].equals("ALL")) {
+            if(!s[4].equals("전부")) {
                 for(int j=0; j < userGroups.size(); j++) {
                 	if(userGroups.get(j).getGroupName().getGroupName().equals(s[4])) {
                 		groupChecked = "indexC^" + s[4];
@@ -791,58 +853,6 @@ public class MainPageController {
 //        return "main_system_status";
 //    }
 
-
-    @RequestMapping(value = "/join", method = RequestMethod.POST)
-    public String userJoin(HttpServletRequest request) {
-        String userId = request.getParameter("userId");
-        String username = request.getParameter("username");
-        String password = request.getParameter("password");
-        String phone = request.getParameter("phone");
-        try {
-            if (userAccountRepository.findByUserId(userId).size() <= 0) {
-                UserAccount userAccount = new UserAccount(userId, username, password, phone, UserType.USER);
-                userAccount = userAccountRepository.save(userAccount);
-                tableOptionRepository.save(new UserTableOption(userAccount, new int[]{50, 50, 50, 100, 100, 100, 100, 50, 50, 600, 50, 50}));
-                List<AdminBookmark> adminBookmarks = adminBookmarkRepository.findAll();
-                for (AdminBookmark adminBookmark : adminBookmarks) {
-                    commonBookmarkRepository.save(new CommonBookmark(userAccount, adminBookmark, 0));
-                }
-            } else {
-                return "redirect:" + "/error";
-            }
-        } catch (Exception e) {
-            return "redirect:" + "/error";
-        }
-        return "redirect:" + "/";
-    }
-
-//    @RequestMapping(value = "/register")
-//    public String registerPage(HttpServletRequest request) {
-//        return "user_join";
-//    }
-
-    @RequestMapping(value = "/login", method = RequestMethod.POST)
-    public String userLogin(HttpServletRequest request, RedirectAttributes redirectAttributes) {
-        String userId = request.getParameter("userId");
-        String password = request.getParameter("password");
-        List<UserAccount> userAccountList = userAccountRepository.findByUserId(userId);
-
-//        System.out.println(EncryptUtil.getSHA256(EncryptUtil.FIRST_KEY + userId + password + EncryptUtil.SECOND_KEY));
-        if (userAccountList.size() > 0 && userAccountList.get(0).getUserId().equals(userId) && userAccountList.get(0).getHash().equals(EncryptUtil.getSHA256(EncryptUtil.FIRST_KEY + userId + password + EncryptUtil.SECOND_KEY))) {
-            request.getSession().setAttribute("userId", userId);
-            sessionRepository.save(new Session(request.getSession().getId(), userId, userAccountList.get(0).getType()));
-            return "redirect:" + "/main";
-        }
-        redirectAttributes.addFlashAttribute("loginFail", "true");
-        return "redirect:" + "/";
-    }
-
-    @RequestMapping(value = "/logout")
-    public String userLogout(HttpServletRequest request) {
-        request.getSession().invalidate();
-        return "redirect:" + "/";
-    }
-
     @RequestMapping(value = "/main/history/add")
     public ModelAndView addHistory(HttpServletRequest request) {
         String sessionId = request.getSession().getId();
@@ -903,7 +913,7 @@ public class MainPageController {
                 msg = wordParse(msg);
                 String[] s = msg.split(">");
                 String groupChecked = "";
-                if(!s[4].equals("ALL")) {
+                if(!s[4].equals("전부")) {
                     for(int j=0; j < userGroups.size(); j++) {
                     	if(userGroups.get(j).getGroupName().getGroupName().equals(s[4])) {
                     		groupChecked = "indexC^" + s[4];

@@ -30,13 +30,7 @@ public class HashTest {
 
     @Test
     public void test2(){
-//        BookInfo bookInfo = new BookInfo("id",)
-        List<UserGroup> userGroups= new ArrayList<UserGroup>();
-        userGroups.add(new UserGroup(new CommonGroupName("a"), null));
-        userGroups.add(new UserGroup(new CommonGroupName("b"), null));
-        userGroups.add(new UserGroup(new CommonGroupName("c"), null));
-        userGroups.add(new UserGroup(new CommonGroupName("d"), null));
-        userGroups.add(new UserGroup(new CommonGroupName("e"), null));
+        System.out.println(getClass().getClassLoader().getResource("/logback.xml"));
 
     }
 }

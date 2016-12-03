@@ -16,6 +16,12 @@
     <!-- 합쳐지고 최소화된 최신 자바스크립트 -->
     <script src="/js/bootstrap.min.js"></script>
     <style type="text/css">
+        @media screen and (max-width: 1080px) {
+            .datepicker-container {
+                display: none;
+            }
+        }
+
         svg {
             background-color: #fff;
             border-radius: 4px;
@@ -91,7 +97,9 @@
     <div id="nav">
         <a href="/main">
             <div class="header-button btn">
-                <div class="glyphicon glyphicon-bell"><span class="badge alarm-badge" style="position:absolute;vertical-align: middle;font-family:'Helvetica Neue', Helvetica, Arial, sans-serif;"></span></div>
+                <div class="glyphicon glyphicon-bell"><span class="badge alarm-badge"
+                                                            style="position:absolute;vertical-align: middle;font-family:'Helvetica Neue', Helvetica, Arial, sans-serif;"></span>
+                </div>
                 <div>알림</div>
             </div>
         </a>
@@ -122,13 +130,29 @@
 <div id="content" class="col-xs-12" style="background: #efefef;">
     <div id="content-wrapper" style="margin-top: 15px; height: 100%;">
         <%--<div id="total-graph-container" class="col-md-6" style="margin-top: 15px; height: 100%;">--%>
-        <div id="total-graph-group" class="col-xs-5" style="height: 100%;">
+        <div id="total-book-graph-group" class="col-xs-5" style="height: 100%;">
             <div class="panel panel-default"
                  style="position: relative;height: calc(50% - 45px);background: #f8f8f8;margin: 10px;margin-top: 15px;margin-bottom: 30px;">
                 <div class="panel panel-default"
                      style="position: relative;height: 40px;margin-bottom: 0;margin-left: 15px;margin-right: 15px;margin-top: 15px;">
                     <div class="graph-title-text"
-                         style="height: 40px;line-height: 40px;vertical-align: middle;margin-left: 20px;">events
+                         style="height: 40px;line-height: 40px;vertical-align: middle;margin-left: 20px;float: left"
+                         title="total" onclick="titleClickListener(this);return false;">
+                        events
+                    </div>
+                    <div class="datepicker-container"
+                         style="width: 200px;text-align: center;margin: auto;float: left;position:absolute;right:80px;bottom:7px;">
+                        <div class="" style="padding: 0; margin:0 auto; float: left;"><input
+                                id="total-book-graph-datepicker-1" data-provide="datepicker"
+                                style="width: 90px;text-align: center;font-size: 12px;float: left;">
+                        </div>
+                        <div style="float:left; width: 20px; font-size:11px;text-align: center; padding:0;vertical-align: middle;line-height: 23px;">
+                            ~
+                        </div>
+                        <div style="padding:0;margin:0 auto;float: left;"><input id="total-book-graph-datepicker-2"
+                                                                                 data-provide="datepicker"
+                                                                                 style="width: 90px;text-align: center;font-size: 12px;float: left;">
+                        </div>
                     </div>
                     <div class="btn-group" style="position:absolute;right:10px;bottom:4px;">
                         <button type="button" class="btn btn-default btn-sm dropdown-toggle total-book-dropdown"
@@ -156,7 +180,23 @@
                 <div class="panel panel-default"
                      style="position: relative;height: 40px;margin-bottom: 0;margin-left: 15px;margin-right: 15px;margin-top: 15px;">
                     <div class="graph-title-text"
-                         style="height: 40px;line-height: 40px;vertical-align: middle;margin-left: 20px;">events
+                         style="height: 40px;line-height: 40px;vertical-align: middle;margin-left: 20px;"
+                         title="author-total"
+                         onclick="titleClickListener(this);return false;">events
+                    </div>
+                    <div class="datepicker-container"
+                         style="width: 200px;text-align: center;margin: auto;float: left;position:absolute;right:80px;bottom:7px;">
+                        <div class="" style="padding: 0; margin:0 auto; float: left;"><input
+                                id="total-author-graph-datepicker-1" data-provide="datepicker"
+                                style="width: 90px;text-align: center;font-size: 12px;float: left;">
+                        </div>
+                        <div style="float:left; width: 20px; font-size:11px;text-align: center; padding:0;vertical-align: middle;line-height: 23px;">
+                            ~
+                        </div>
+                        <div style="padding:0;margin:0 auto;float: left;"><input id="total-author-graph-datepicker-2"
+                                                                                 data-provide="datepicker"
+                                                                                 style="width: 90px;text-align: center;font-size: 12px;float: left;">
+                        </div>
                     </div>
                     <div class="btn-group" style="position:absolute;right:10px;bottom:4px;">
                         <button type="button" class="btn btn-default btn-sm dropdown-toggle total-book-dropdown"
@@ -218,14 +258,10 @@
                                                 <ul class="dropdown-menu search-category-selector" role="menu"
                                                     aria-labelledby="dropdownMenu1">
                                                     <li role="presentation"><a role="menuitem" tabindex="-1"
-                                                                               href="#">내용</a>
-                                                    </li>
+                                                                               href="#">내용</a></li>
                                                     <li role="presentation"><a role="menuitem" tabindex="-1"
-                                                                               href="#">저자</a>
-                                                    </li>
-                                                    <li role="presentation"><a role="menuitem" tabindex="-1"
-                                                                               href="#">참조</a>
-                                                    </li>
+                                                                               href="#">저자</a></li>
+                                                    <%--<li role="presentation"><a role="menuitem" tabindex="-1"href="#">참조</a></li>--%>
                                                 </ul>
                                             </div>
                                         </div>
@@ -271,14 +307,10 @@
                                                 <ul class="dropdown-menu search-category-selector" role="menu"
                                                     aria-labelledby="dropdownMenu1">
                                                     <li role="presentation"><a role="menuitem" tabindex="-1"
-                                                                               href="#">내용</a>
-                                                    </li>
+                                                                               href="#">내용</a></li>
                                                     <li role="presentation"><a role="menuitem" tabindex="-1"
-                                                                               href="#">저자</a>
-                                                    </li>
-                                                    <li role="presentation"><a role="menuitem" tabindex="-1"
-                                                                               href="#">참조</a>
-                                                    </li>
+                                                                               href="#">저자</a></li>
+                                                    <%--<li role="presentation"><a role="menuitem" tabindex="-1"href="#">참조</a></li>--%>
                                                 </ul>
                                             </div>
                                         </div>
@@ -303,7 +335,8 @@
                                      style="height: 30px;width: 100%">
                                     <div style="position: relative;height: 30px;text-align: center;margin: 0 auto;width: 200px;">
                                         <div style="display: inline-block">
-                                            <div class="btn-group" style="display: inline-block; text-align: center;float: left;margin-right: 10px;">
+                                            <div class="btn-group"
+                                                 style="display: inline-block; text-align: center;float: left;margin-right: 10px;">
                                                 <div class="btn-group" style="float:left;margin: auto;">
                                                     <button type="button"
                                                             class="btn btn-default btn-sm dropdown-toggle author-dropdown"
@@ -347,18 +380,22 @@
                                                     </ul>
                                                 </div>
                                             </div>
-                                            <div class="btn-group" style="float: left;display: inline-block;position: relative">
+                                            <div class="btn-group"
+                                                 style="float: left;display: inline-block;position: relative">
                                                 <button type="button"
                                                         class="btn btn-primary btn-sm dropdown-toggle author-dropdown"
                                                         data-toggle="dropdown" aria-haspopup="true"
                                                         aria-expanded="false" style="width:50px">
                                                     <span class="search-category-option">그룹</span>
                                                 </button>
-                                                <div class="dropdown-menu panel panel-default checkbox" style="position:absolute;width: 300px;min-height: 50px;background: rgba(255, 255, 255, 0.95);z-index: 10;left: -250px;top: 25px;overflow-y:auto;text-align: left;">
+                                                <div class="dropdown-menu panel panel-default checkbox"
+                                                     style="position:absolute;width: 300px;min-height: 50px;background: rgba(255, 255, 255, 0.95);z-index: 10;left: -250px;top: 25px;overflow-y:auto;text-align: left;">
                                                     <c:forEach items="${userGroups}" var="userGroup">
                                                         <label style="margin-left: 2px;width:85px;font-size: 12px;max-width:85px;">
-                                                            <input style="width: 20px;" type="radio" name="groups" value="${userGroup.groupName.groupName}"
-                                                                   checked="checked" style="">${userGroup.groupName.groupName}</label>
+                                                            <input style="width: 20px;" type="radio" name="groups"
+                                                                   value="${userGroup.groupName.groupName}"
+                                                                   checked="checked"
+                                                                   style="">${userGroup.groupName.groupName}</label>
                                                     </c:forEach>
                                                 </div>
                                             </div>
@@ -417,6 +454,66 @@
     var authorTotalGraph;
     var graphCount = 0;
 
+    function setRelTablePos() {
+        if (relStartPos.top < relStartPos.maxTop) {
+            relStartPos.left += 15;
+            relStartPos.top += 15;
+        } else {
+            relStartPos.count++;
+            relStartPos.left = relStartPos.iLeft + (relStartPos.count * 15);
+            relStartPos.top = relStartPos.iTop;
+        }
+    }
+
+    function titleClickListener(element) {
+        var el = $(element);
+//        $('.graph-title-text').click(function(){
+
+        var graphModule;
+        if (el.attr('title') == 'total') {
+            graphModule = totalGraph;
+        } else {
+            graphModule = authorTotalGraph;
+        }
+//        console.error(graphModule.getData());
+//
+//        var tmpData = JSON.parse(responseData);
+        var result = graphModule.getData();
+//        var thArr = graphModule.getNameList();
+        var relativeTitle = el.text();
+        var tmpHtml = $('<div class="alert bg-white alert-dismissible fade in border-gray relative-table-wrapper" style="position: absolute; z-index: 10; width: 700px;' +
+                ' left:' + relStartPos.left + 'px;top:' + relStartPos.top + 'px;" role="alert">' +
+                '<button type="button" class="close" data-dismiss="alert" aria-label="Close">' +
+                '<span aria-hidden="true">×</span>' +
+                '</button>' +
+                '<div class="relative-title">' + relativeTitle + '</div>' +
+                '<div style="font-size: 10px;margin-top: 10px;margin-bottom: 10px;position: relative;left: 450px;">' +
+//                            '<span class="relative-author-from-date">' + lastQuery.fromDate + '</span>' + (lastQuery.fromDate == '' && lastQuery.toDate == '' ? '' : '</span><span> ~ </span><span class="relative-author-to-date">' + lastQuery.toDate + '</span>') +
+                '</div>' +
+                '<div class="draggable-content-container"><div style="overflow: scroll;height: 300px;">' +
+                '<table class="table table-hover table-fixed table-bordered table-striped table-condensed" style="font-size: 11px; margin-bottom: 0;">' +
+                '<thead></thead>' +
+                '<tbody></tbody></table></div>' +
+                '</div>');
+        setRelTablePos();
+
+        var thEl = $('<tr>' +
+                '<th>날짜</th>' +
+                '<th>개수</th>' +
+                '</tr>');
+        tmpHtml.find('thead').append(thEl);
+
+        $.each(result, function (i, mResult) {
+            var tmpEl = $('<tr><td>' + mResult.index + '</td>' +
+                    '<td>' + mResult.total + '</td>' +
+                    '</tr>');
+            tmpHtml.find('tbody').append(tmpEl);
+        });
+
+        $('body').append(tmpHtml);
+        tmpHtml.draggable({cancel: '.draggable-content-container'});
+//        })
+    }
 
     $(document).ready(function () {
         $(document).ajaxComplete(function (e, xhr, settings) {
@@ -430,7 +527,7 @@
         getSearchTotalData($('.search-category-option').eq(0).text());
         getAuthorTotalGraphData($('.search-category-option').eq(1).text());
 
-        $('.dropdown-menu.panel.panel-default.checkbox').on('click', function(event){
+        $('.dropdown-menu.panel.panel-default.checkbox').on('click', function (event) {
             event.stopPropagation();
         });
 //        $('.graph-overall').draggable({
@@ -455,22 +552,22 @@
 //        authorGraph.setGraphContainer('#author-graph-container');
 
         //$("input:radio[name='groups']").removeAttr('checked');
-		$("input:radio[name='groups']").eq(0).prop("checked",true);
-		$("input:radio[name='groups']:radio[value='ALL']").prop("checked",true);
+        $("input:radio[name='groups']").eq(0).prop("checked", true);
+        $("input:radio[name='groups']:radio[value='ALL']").prop("checked", true);
 
-		/*
-	            <div class="dropdown-menu panel panel-default checkbox" style="position:absolute;width: 300px;min-height: 50px;background: rgba(255, 255, 255, 0.95);z-index: 10;left: -250px;top: 25px;overflow-y:auto;text-align: left;">
-	                <c:forEach items="${userGroups}" var="userGroup">
-	                    <label style="margin-left: 10px;width:85px;font-size: 12px;max-width:85px;">
-	                        <input type="radio" name="groups" value="${userGroup.groupName.groupName}"
-	                               checked="checked" style="">${userGroup.groupName.groupName}</label>
-	                </c:forEach>
-	            </div>
-		*/
+        <%--/*--%>
+        <%--<div class="dropdown-menu panel panel-default checkbox" style="position:absolute;width: 300px;min-height: 50px;background: rgba(255, 255, 255, 0.95);z-index: 10;left: -250px;top: 25px;overflow-y:auto;text-align: left;">--%>
+        <%--<c:forEach items="${userGroups}" var="userGroup">--%>
+        <%--<label style="margin-left: 10px;width:85px;font-size: 12px;max-width:85px;">--%>
+        <%--<input type="radio" name="groups" value="${userGroup.groupName.groupName}"--%>
+        <%--checked="checked" style="">${userGroup.groupName.groupName}</label>--%>
+        <%--</c:forEach>--%>
+        <%--</div>--%>
+        <%--*/--%>
 
         $('#author-graph-add-btn').click(function (e) {		// 추가 버튼을 클릭할 때
-        	if(authorList.length == 0) $('#author-graph-new-btn').click();
-        	else 			addAuthorGraphData();
+            if (authorList.length == 0) $('#author-graph-new-btn').click();
+            else            addAuthorGraphData();
         });
 
         $('#author-graph-new-btn').click(function (e) {		// 신규 버튼을 클릭할 때
@@ -508,7 +605,7 @@
 
         //var d = new Date();
         //var ttt = d.getFullYear() + "/" + (d.getMonth()+1) + "/" + d.getDate();
-        var ttt = timeConverter(timestamp - 3600 * 24 * 700);
+        var ttt = timeConverter(timestamp - 3600 * 24 * 710);
 
         $('#datepicker1').datetimepicker({
             format: 'Y/m/d',
@@ -546,6 +643,8 @@
         else
             keyword = $('.search-input').eq(0).val() + "|" + $('.search-input').eq(1).val();
 
+        keyword += "@" + $('input[name=groups]:checked').val();
+
         aList = "";
         var id = "stat3";
         var sel = 0;
@@ -568,6 +667,7 @@
         else
             keyword = $('.search-input').eq(0).val() + "|" + $('.search-input').eq(1).val();
 
+        keyword += "@" + $('input[name=groups]:checked').val();
         var beGood = false;
 //        console.log(keyword + " : " + authorList[i] + " : " + beGood);
         for (var i = 0; i < authorList.length; i++) {
@@ -608,7 +708,7 @@
                 if (tdata.contents != "OK") {
                     setTime = setTimeout(function () {
                         callAjax(tdata.id, tdata.sel, aList, tdata.keyword, searchWord);
-                    }, 100);
+                    }, 1000);
                 }
                 else {
                     if (sel == 0) {
@@ -657,7 +757,7 @@
         totalGraph.removeData();
         totalGraph.removeSvg();
 
-		var startTime = "2015/01/01 00:00:00";
+        var startTime = "2015/01/01 00:00:00";
 
         if (category == '일별') category = 'MSG_' + 'daily';
         else                  category = 'MSG_' + 'monthly';
@@ -778,7 +878,7 @@
         var category = categoryEls.eq(2).text();
         if (category == "내용") SearchWord += "indexA^" + input;
         else if (category == "저자") SearchWord += "indexB^" + input;
-        else if (category == "참조") SearchWord += "indexC^" + input;
+        //else if (category == "참조") SearchWord += "indexC^" + input;
 
 
         var operator = operatorEls.eq(0).text();
@@ -792,7 +892,7 @@
             var category = categoryEls.eq(3).text();
             if (category == "내용") SearchWord += "indexA^" + input;
             else if (category == "저자") SearchWord += "indexB^" + input;
-            else if (category == "참조") SearchWord += "indexC^" + input;
+            //else if (category == "참조") SearchWord += "indexC^" + input;
         }
 
         SearchWord += ">" + typeInfo;
@@ -802,7 +902,7 @@
         else
             SearchWord += ">" + categoryEls.eq(4).text() + "_" + "monthly";
 
-		SearchWord += ">" + $('input[name=groups]:checked').val() ;
+        SearchWord += ">" + $('input[name=groups]:checked').val();
 
         if (!isOK) SearchWord = "";
 ///

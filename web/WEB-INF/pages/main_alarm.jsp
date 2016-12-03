@@ -210,7 +210,7 @@
                                     '<td class="user-history-remove-td"><label class="btn btn-default btn-sm close-search-option-btn">-</label></td></tr>');
                             </c:when>
                             <c:otherwise>
-                            (type == 'admin-bookmark' ? '' : '<td class="user-history-remove-td"><label class="btn btn-default btn-sm close-search-option-btn">-</label></td></tr>');
+                            (type == 'admin-bookmark' ? '' : '<td class="user-history-remove-td"><label class="btn btn-default btn-sm close-search-option-btn">-</label></td></tr>'));
                             </c:otherwise>
                             </c:choose>
 

@@ -98,7 +98,7 @@
                 <div>
                     <div class="author-datepicker-container" style="height: 25px;margin-top: 10px;">
                         <div id="search-date-option-container" class="btn-group btn-group-justified">
-                            <label class="btn btn-default btn-sm" name="dateOption" style="padding: 4px;">MSG</label>
+                            <label class="btn btn-default btn-sm" name="dateOption" style="padding: 4px;">ALL</label>
                         </div>
                         <div style="float: left;margin-top: 3px;display: flex;width: calc(100% - 55px);">
                             <div class="" style="padding: 0; margin:0 auto; float: left;"><input id="datepicker1"
@@ -114,6 +114,14 @@
                             </div>
                         </div>
                     </div>
+	                <div class="panel panel-default checkbox"
+	                     style="padding-top: 5px;padding-bottom:5px;margin-top:10px;margin-bottom: 0;">
+	                    <c:forEach items="${userGroups}" var="userGroup">
+	                        <label style="margin-left: 2px;width:85px;font-size: 12px;max-width:85px;">
+	                            <input type="radio" name="groups" value="${userGroup.groupName.groupName}"
+	                                   checked="checked" style="width: 20px;">${userGroup.groupName.groupName}</label>
+	                    </c:forEach>
+	                </div>
                     <div class="input-group input-group-sm" style="width: 100%; margin-top:10px;">
                         <input id="nickname-search-input" type="text" class="form-control"
                                placeholder="검색어를 입력해주세요."
@@ -257,6 +265,9 @@
 //        $('#profile-result-container>div').height($('#result-table-wrapper').height());
         setProfileResultTableSize();
 
+		$("input:radio[name='groups']").eq(0).prop("checked",true);
+		$("input:radio[name='groups']:radio[value='ALL']").prop("checked",true);
+
 //            $('#result-table-wrapper').scroll(function () {
 //                $('#book-table-header').css("top",
 //                        252 - $('#book-table').offset().top);
@@ -264,25 +275,33 @@
         $(document).on('click', '.profile-result-relative-author-td', onRelativeTdClickHandler);
 //        $('.profile-result-relative-author-td').on('click', onRelativeTdClickHandler);
 
-        var timestamp = fetch_unix_timestamp();
-        timestamp = timeConverter(timestamp - 3600 * 24 * 1000);
-
-        $('#datepicker1').datetimepicker({
-            format: 'Y/m/d',
-			value: timestamp
-        });
-
-        $('#datepicker2').datetimepicker({
-            format: 'Y/m/d',
-			value: new Date()
-        });
+        $('#datepicker1').val("").attr("disabled", true);
+        $('#datepicker2').val("").attr("disabled", true);
 
         $('label[name=dateOption]').click(function () {
-            if ($(this).text() == 'MSG') {
-                $(this).text('DB');
-            } else {
+            if ($(this).text() == 'ALL') {
                 $(this).text('MSG');
+                var timestamp = fetch_unix_timestamp();
+                timestamp = timeConverter(timestamp - 3600 * 24 * 50);
+
+                $('#datepicker1').datetimepicker({ format: 'Y/m/d', value: timestamp}).removeAttr('disabled');
+                $('#datepicker2').datetimepicker({ value: new Date() }).removeAttr('disabled');
             }
+            else if ($(this).text() == 'MSG') {
+                var timestamp = fetch_unix_timestamp();
+                timestamp = timeConverter(timestamp - 3600 * 24 * 50);
+
+                $('#datepicker1').datetimepicker({ format: 'Y/m/d', value: timestamp}).removeAttr('disabled');
+                $('#datepicker2').datetimepicker({ value: new Date() }).removeAttr('disabled');
+                $(this).text('DB');
+            }
+            else {
+                $(this).text('ALL');
+                $('#datepicker1').val("");
+                $('#datepicker2').val("");
+				$('#datepicker1').datetimepicker("destroy").attr("disabled", true);
+                $('#datepicker2').datetimepicker("destroy").attr("disabled", true);
+           }
         });
 
         nicNameUpdate();
@@ -293,6 +312,8 @@
 	            $('#nickname-result-table>tbody').children().remove();
 	            $('#nickname-result-container').hide();
 	            var keyword = $('#nickname-search-input').val();
+
+	            keyword += ">" + $('input[name="groups"]:checked').val();
 	            console.log(keyword);
 	            if(keyword == "") return;
 
@@ -431,16 +452,20 @@
             else if (data.sel == 15) {
                 var result = JSON.parse(data.bookInfoList);
                 var tmpEl = "";
+                var key = data.author.split(">")[0];
+                var group = data.author.split(">")[1];
                 //console.log("::" +result[0]+ "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa" + result.length);
 
                 $.each(nicNameDB, function (i, nicDB) {
-                    if (nicNameDB[i].nickname.indexOf(data.author) != -1) {  //if(str1.indexOf(str2) != -1){
+                    if (nicNameDB[i].nickname.indexOf(key) != -1) {  //  if(str1.indexOf(str2) != -1){
                         //Nic = author + "(" + nicNameDB[i].nickname + ")";
-                        tmpEl += '<tr>' +
-                        '<td style="text-align: center;"><input type="radio" class="nickname-radio" name="nickname-radio"></td>' +
-                        '<td class="nickname-search-td">' + nicDB.author + '</td>' +
-                        '<td class="nickname-search-td">' + (nicNameDB[i].nickname != '' ? '(' + nicNameDB[i].nickname + ')' : '') + '</td>' +
-                        '</tr>';
+                        if((group == "전부") || (nicDB.author.split(">")[0] == group)) {
+	                        tmpEl += '<tr>' +
+	                        '<td style="text-align: center;"><input type="radio" class="nickname-radio" name="nickname-radio"></td>' +
+	                        '<td class="nickname-search-td">' + nicDB.author + '</td>' +
+	                        '<td class="nickname-search-td">' + (nicNameDB[i].nickname != '' ? '(' + nicNameDB[i].nickname + ')' : '') + '</td>' +
+	                        '</tr>';
+                    	}
                     }
                 });
 
@@ -451,7 +476,7 @@
 					else{
 						$.each(result, function (i, nicDB) {
 		                    //console.log(result[i]);
-		                    if (result[i].indexOf(data.author) != -1) {  //if(str1.indexOf(str2) != -1){
+		                    if (result[i].indexOf(key) != -1) {  //if(str1.indexOf(str2) != -1){
 		                        //console.log(result[i]);
 		                        var nic = nicNameFindOnly(result[i]);
 		                        tmpEl += '<tr>' +
@@ -1006,8 +1031,8 @@
                     "id": id
                 },
                 success: function (responseData) {
-                    var tmpadta = JSON.parse(responseData);
-                    var result = JSON.parse(tmpadta.bookInfoList);
+                    var tmpData = JSON.parse(responseData);
+                    var result = JSON.parse(tmpData.bookInfoList);
                     var tmpHtml = $('<div class="alert bg-white alert-dismissible fade in border-gray relative-table-wrapper" style="position: absolute; z-index: 10; width: 700px; left:' + relStartPos.left + 'px;top:' + relStartPos.top + 'px;" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span></button>' +
                             '<div class="relative-title">' + $(element).parent().parent().parent().parent().find('.table-expanded-title').text() + ' - ' + $(element).find('td').eq(1).text() + '</div>' +
                             '<div style="font-size: 10px;margin-top: 10px;margin-bottom: 10px;position: relative;left: 450px;">' +
@@ -1051,7 +1076,7 @@
 
                     $('body').append(tmpHtml);
                     tmpHtml.draggable({cancel: '.draggable-content-container'});
-                    var tarEl = $(this);
+//                    var tarEl = $(this);
                 }
             });
         });

@@ -34,7 +34,7 @@
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
             </button>
-            <a class="navbar-brand" href="/admin/main">관리자 페이지</a>
+            <a class="navbar-brand" href="/admin/main">사용자 관리</a>
         </div>
         <div class="navbar-collapse collapse">
             <ul class="nav navbar-nav navbar-right">
@@ -56,7 +56,7 @@
         <div class="col-sm-3">
 
             <ul class="nav nav-stacked">
-                <li class="nav-header"><a href="#" data-toggle="collapse" data-target="#user-menu">Settings <i
+                <li class="nav-header"><a href="#"  data-target="#user-menu">메뉴 <i
                         class="glyphicon glyphicon-chevron-down"></i></a>
                     <ul class="nav nav-stacked collapse in" id="user-menu">
                         <%--<li><a href="#" content="/admin/admin-account" onclick="setIframe(this);return false;"><i--%>

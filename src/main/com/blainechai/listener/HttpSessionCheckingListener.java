@@ -2,6 +2,7 @@ package com.blainechai.listener;
 
 import com.blainechai.domain.Session;
 import com.blainechai.repository.SessionRepository;
+import com.blainechai.util.LoggerUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +16,8 @@ import javax.servlet.http.HttpSessionEvent;
 import javax.servlet.http.HttpSessionListener;
 import java.util.List;
 
+import static com.blainechai.util.LoggerUtil.*;
+
 /**
  * Created by blainechai on 2016. 9. 7..
  */
@@ -24,25 +27,23 @@ public class HttpSessionCheckingListener implements HttpSessionListener {
     //    @Autowired
     private SessionRepository sessionRepository;
 
-    private Logger logger = LoggerFactory.getLogger(this.getClass());
 
     @Override
     public void sessionCreated(HttpSessionEvent event) {
 //        if (logger.isDebugEnabled()) {
-        logger.info("Session ID".concat(event.getSession().getId()).concat(" created at ").concat(new java.util.Date().toString()));
+//        log("Session ID".concat(event.getSession().getId()).concat(" created at ").concat(new java.util.Date().toString()));
 //        }
     }
 
     @Override
     public void sessionDestroyed(HttpSessionEvent event) {
-//        if (logger.isDebugEnabled()) {
 
         HttpSession session = event.getSession();
-        logger.info("Session ID".concat(event.getSession().getId()).concat(" destroyed at ").concat(new java.util.Date().toString()));
-//        }
         WebApplicationContext context = WebApplicationContextUtils.getWebApplicationContext(session.getServletContext());
-        sessionRepository = (SessionRepository) context.getBean("sessionRepository", SessionRepository.class);
+        sessionRepository = context.getBean("sessionRepository", SessionRepository.class);
         if (sessionRepository.findByJSessionId(event.getSession().getId()).size() > 0) {
+            String userId = sessionRepository.findByJSessionId(event.getSession().getId()).get(0).getUserId();
+            log("ID: " + userId + " - 로그아웃");
             sessionRepository.deleteByJSessionId(event.getSession().getId());
         }
     }
