@@ -22,6 +22,13 @@
             }
         }
 
+        .graph-overall-item {
+            cursor: pointer;
+        }
+        .graph-overall-item:hover {
+            background:rgba(100,100,100,0.1)
+        }
+
         svg {
             background-color: #fff;
             border-radius: 4px;
@@ -180,7 +187,7 @@
                 <div class="panel panel-default"
                      style="position: relative;height: 40px;margin-bottom: 0;margin-left: 15px;margin-right: 15px;margin-top: 15px;">
                     <div class="graph-title-text"
-                         style="height: 40px;line-height: 40px;vertical-align: middle;margin-left: 20px;"
+                         style="height: 40px;line-height: 40px;vertical-align: middle;margin-left: 20px;float: left;"
                          title="author-total"
                          onclick="titleClickListener(this);return false;">events
                     </div>
@@ -481,12 +488,13 @@
         var result = graphModule.getData();
 //        var thArr = graphModule.getNameList();
         var relativeTitle = el.text();
-        var tmpHtml = $('<div class="alert bg-white alert-dismissible fade in border-gray relative-table-wrapper" style="position: absolute; z-index: 10; width: 700px;' +
+        var tmpHtml = $('<div class="alert bg-white alert-dismissible fade in border-gray relative-table-wrapper" style="position: absolute; z-index: 10; width: 250px;' +
                 ' left:' + relStartPos.left + 'px;top:' + relStartPos.top + 'px;" role="alert">' +
                 '<button type="button" class="close" data-dismiss="alert" aria-label="Close">' +
                 '<span aria-hidden="true">×</span>' +
                 '</button>' +
                 '<div class="relative-title">' + relativeTitle + '</div>' +
+                '<div class="total-number" style="width: 100%;text-align: right;margin-top: 5px;font-size: 12px;">Total : ' + graphModule.getTotalData()[graphModule.getTotalData().length - 1]['total'].format() + '</div>' +
                 '<div style="font-size: 10px;margin-top: 10px;margin-bottom: 10px;position: relative;left: 450px;">' +
 //                            '<span class="relative-author-from-date">' + lastQuery.fromDate + '</span>' + (lastQuery.fromDate == '' && lastQuery.toDate == '' ? '' : '</span><span> ~ </span><span class="relative-author-to-date">' + lastQuery.toDate + '</span>') +
                 '</div>' +
@@ -505,7 +513,7 @@
 
         $.each(result, function (i, mResult) {
             var tmpEl = $('<tr><td>' + mResult.index + '</td>' +
-                    '<td>' + mResult.total + '</td>' +
+                    '<td style="text-align: right;padding-right: 10px;">' + mResult.total.format() + '</td>' +
                     '</tr>');
             tmpHtml.find('tbody').append(tmpEl);
         });
@@ -617,6 +625,26 @@
             value: new Date()
         });
 
+        $('#total-book-graph-datepicker-1').datetimepicker({
+            format: 'Y/m/d',
+            value: ttt
+        });
+
+        $('#total-book-graph-datepicker-2').datetimepicker({
+            format: 'Y/m/d',
+            value: new Date()
+        });
+
+        $('#total-author-graph-datepicker-1').datetimepicker({
+            format: 'Y/m/d',
+            value: ttt
+        });
+
+        $('#total-author-graph-datepicker-2').datetimepicker({
+            format: 'Y/m/d',
+            value: new Date()
+        });
+
         $('label[name=dateOption]').click(function () {
             if ($(this).text() == 'MSG') {
                 $(this).text('DB');
@@ -705,10 +733,14 @@
             },
             success: function (responseData) {
                 var tdata = JSON.parse(responseData);
-                if (tdata.contents != "OK") {
+                console.log(tdata.id + " : " + tdata.sel + " : " + tdata.contents);
+                if (tdata.contents == "NotOK") {
                     setTime = setTimeout(function () {
                         callAjax(tdata.id, tdata.sel, aList, tdata.keyword, searchWord);
                     }, 1000);
+                }
+                else if (tdata.contents == "NoData") {
+                    alert("데이터베이스에 저장된 자료가 없습니다!!!");
                 }
                 else {
                     if (sel == 0) {
@@ -835,13 +867,13 @@
 
         tmp = word.split("&\|");
         if (tmp.length > 1) {
-            alert("입력 ERROR : " + word1);
+            alert("검색어를 다시 입력해주세요.");
             return "";
         }
 
         tmp = word.split("\|&");
         if (tmp.length > 1) {
-            alert("입력 ERROR : " + word1);
+            alert("검색어를 다시 입력해주세요.");
             return "";
         }
 
@@ -852,7 +884,7 @@
         word = word.replace(/<AND>/g, " & ");
         //console.log(word);
         if (word == "") {
-            alert("입력 ERROR : " + word1);
+            alert("검색어를 다시 입력해주세요.");
             //isOK = false;
             return "";
         }

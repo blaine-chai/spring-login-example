@@ -51,7 +51,9 @@
     <div id="nav">
         <a href="/main">
             <div class="header-button btn">
-                <div class="glyphicon glyphicon-bell"><span class="badge alarm-badge" style="position:absolute;vertical-align: middle;font-family:'Helvetica Neue', Helvetica, Arial, sans-serif;"></span></div>
+                <div class="glyphicon glyphicon-bell"><span class="badge alarm-badge"
+                                                            style="position:absolute;vertical-align: middle;font-family:'Helvetica Neue', Helvetica, Arial, sans-serif;"></span>
+                </div>
                 <div>알림</div>
             </div>
         </a>
@@ -278,12 +280,14 @@
                         </table>
                     </div>
                 </div>
-                <div id="page-counter-wrapper">
-                    <nav aria-label="..." style="text-align: center;">
-                        <ul class="pagination pagination-sm pagination-main" style="margin: 0 auto;">
-                        </ul>
-                    </nav>
-                    <%--<div>하이라이팅<input id="highlight-checkbox" type="checkbox"></div>--%>
+                <div style="display:flex">
+                    <div id="page-counter-wrapper" style="display:inline-block;margin: 0 auto;">
+                        <nav aria-label="..." style="text-align: center;float:left;">
+                            <ul class="pagination pagination-sm pagination-main" style="margin: 0 auto;">
+                            </ul>
+                        </nav>
+                        <%--<div>하이라이팅<input id="highlight-checkbox" type="checkbox"></div>--%>
+                    </div>
                 </div>
             </div>
         </div>
@@ -411,15 +415,15 @@
         getSearchHistory();
         getAdminHistory();
         //$("input:radio[name='groups']").removeAttr('checked');
-		$('input:radio[name="groups"]').eq(0).prop("checked",true);
-		$('input:radio[name="groups"]:radio[value="ALL"]').prop("checked",true);
-		<%--/*--%>
-                    <%--<c:forEach items="${userGroups}" var="userGroup">--%>
-                        <%--<label style="margin-left: 1px;font-size: 12px;">--%>
-                            <%--<input type="radio" name="groups" value="${userGroup.groupName.groupName}"--%>
-                                   <%--checked="checked" style=""> ${userGroup.groupName.groupName}</label>--%>
-                    <%--</c:forEach>--%>
-		<%--*/--%>
+        $('input:radio[name="groups"]').eq(0).prop("checked", true);
+        $('input:radio[name="groups"]:radio[value="ALL"]').prop("checked", true);
+        <%--/*--%>
+        <%--<c:forEach items="${userGroups}" var="userGroup">--%>
+        <%--<label style="margin-left: 1px;font-size: 12px;">--%>
+        <%--<input type="radio" name="groups" value="${userGroup.groupName.groupName}"--%>
+        <%--checked="checked" style=""> ${userGroup.groupName.groupName}</label>--%>
+        <%--</c:forEach>--%>
+        <%--*/--%>
 
 
         $('.search-category-selector li a').click(function (e) {
@@ -440,24 +444,24 @@
                 var timestamp = fetch_unix_timestamp();
                 var ttt = timeConverter(timestamp - 3600 * 24 * 50);
 
-                $('#datepicker1').datetimepicker({ value: ttt}).removeAttr('disabled');
-                $('#datepicker2').datetimepicker({ value: new Date() }).removeAttr('disabled');
+                $('#datepicker1').datetimepicker({value: ttt}).removeAttr('disabled');
+                $('#datepicker2').datetimepicker({value: new Date()}).removeAttr('disabled');
             }
             else if ($(this).text() == 'MSG') {
                 var timestamp = fetch_unix_timestamp();
                 var ttt = timeConverter(timestamp - 3600 * 24 * 50);
 
-                $('#datepicker1').datetimepicker({ value: ttt}).removeAttr('disabled');
-                $('#datepicker2').datetimepicker({ value: new Date() }).removeAttr('disabled');
+                $('#datepicker1').datetimepicker({value: ttt}).removeAttr('disabled');
+                $('#datepicker2').datetimepicker({value: new Date()}).removeAttr('disabled');
                 $(this).text('DB');
             }
             else {
                 $(this).text('ALL');
                 $('#datepicker1').val("");
                 $('#datepicker2').val("");
-				$('#datepicker1').datetimepicker("destroy").attr("disabled", true);
+                $('#datepicker1').datetimepicker("destroy").attr("disabled", true);
                 $('#datepicker2').datetimepicker("destroy").attr("disabled", true);
-           }
+            }
         });
 
 
@@ -479,6 +483,7 @@
         }
         console.log("current = " + current + " : from = " + from + " : to = " + to + " : lastPage = " + lastPage);
         $('.pagination-main').children().remove();
+        $('.pageInput-container').remove();
         var pageEl = "";
         if (from == 1)
             pageEl += '<li><a href="#" aria-label="Previous" class="disabled"><span aria-hidden="true">«</span></a></li>';
@@ -495,9 +500,10 @@
         else
             pageEl += '<li><a href="#" aria-label="Next" class="disabled"><span aria-hidden="true">»</span></a></li>';
 
-        pageEl += '<li><div style="color:#4682B4;">  To : <input class="pageInput" type="number" onkeypress="onkeypressPage()" style=" border:1px solid #90a0a0; width:65px; text-align: center;">' +
-                ' <label> / ' + lastPageMain + ' pages</label></div></li>';
+        var tmpDiv = '<div class="pageInput-container" style="color:#4682B4;float:left;padding-left:15px;margin: 0 auto;">  To : <input class="pageInput" onkeypress="onkeypressPage(event);" style=" border:1px solid #90a0a0; width:65px; text-align: center;margin-top:2px;">' +
+                ' <label> / ' + lastPageMain + ' pages</label></div>';
         $('.pagination-main').append(pageEl);
+        $('#page-counter-wrapper').append(tmpDiv);
 
         //$(this).addClass("active");
     }
@@ -511,18 +517,18 @@
         }
     }
 
-    function onkeypressPage() {
+    function onkeypressPage(event) {
         if (event.keyCode == 13) {
             //console.log($('.pageInput').val());
 
             if ($('.pageInput').val() == "")
-                alert("숫자 입력 ERROR!!!");
+                alert("숫자를 다시 입력해주세요.");
             else {
                 var jumpPage = $('.pageInput').val();
                 if ((jumpPage > 0) && (jumpPage <= lastPageMain))
                     callAjaxLoop(userID, 2, 0, 2, jumpPage - 1, "", "");
                 else
-                    alert("숫자 입력 ERROR : " + jumpPage);
+                    alert("숫자를 다시 입력해주세요.");
             }
 
             return false;
@@ -633,7 +639,7 @@
                 console.log(msg);
 
                 //if ($('#book-table tbody').find('tr').eq(row).find('td').eq(col).find('span').hasClass( "glyphicon-ok"))
-                callAjaxLoop("author" + authorNUM, row, 1, 1, col,msg, "");
+                callAjaxLoop("author" + authorNUM, row, 1, 1, col, msg, "");
                 //else
                 //	callAjaxLoop("author"+authorNUM, 8, row, 1, 0, m, tableData[row].eventNo);
 
@@ -745,7 +751,7 @@
                 }
             }
             else if (tdata.contents == "NoData") {
-                alert("No data, No Database !!!");
+                alert("데이터베이스에 저장된 자료가 없습니다!!!");
             }
             else {
                 if (tdata.sel == "0") {
@@ -780,6 +786,10 @@
                     $("#search-progress").empty();
                     $("#search-progress").append("<div class='progress-bar progress-bar-striped active' role='progressbar' aria-valuenow='"
                             + sel2[1] + "' aria-valuemin='0' aria-valuemax='100' style='width: " + sel2[1] + "%;'>" + sel2[1] + "%</div>");			// 검색 률
+
+					if (sel2[1] == 100){
+						$('.progress-bar').removeClass('progress-bar-striped');
+					}
 
                     console.log(sel2[0] + " : " + sel2[1]);
 					if((sel2[1] == 100)&&(sel2[0]==0)) alert("검색결과가 없습니다!!!");
@@ -910,13 +920,13 @@
 
         tmp = word.split("&\|");
         if (tmp.length > 1) {
-            alert("입력 ERROR : " + word1);
+            alert("검색어를 다시 입력해주세요.");
             return "";
         }
 
         tmp = word.split("\|&");
         if (tmp.length > 1) {
-            alert("입력 ERROR : " + word1);
+            alert("검색어를 다시 입력해주세요.");
             return "";
         }
 
@@ -927,7 +937,7 @@
         word = word.replace(/<AND>/g, " & ");
         console.log(word);
         if (word == "") {
-            alert("입력 ERROR : " + word1);
+            alert("검색어를 다시 입력해주세요.");
             //isOK = false;
             return "";
         }
@@ -958,7 +968,18 @@
             obj.input = tmp;
 
             if (obj.category == "내용") SearchWord += "indexA^" + tmp;
-            else if (obj.category == "저자") SearchWord += "indexB^" + tmp;
+            else if (obj.category == "저자") {
+        		var str = tmp.split("_");
+        		if(str.length > 1){
+        			if(str[0] != $('input[name="groups"]:checked').val()) {
+        				alert("저자와 그룹이 일치하지 않습니다.");
+        				isOK = false;
+        			}
+        		} else {
+        			tmp = $('input[name="groups"]:checked').val() + '_' + tmp;
+        		}
+            	SearchWord += "indexB^" + tmp;
+            }
             //else if (obj.category == "참조") SearchWord += "indexC^" + tmp;
 
             if (obj.operator == "O R") SearchWord += " <OR> ";
@@ -976,9 +997,11 @@
         if ((data.fromDate != "") && (data.toDate != "")) {
             if (data.fromDate > data.toDate) {
                 isOK = false;
-                alert("입력 날짜 ERROR");
+                alert("입력 날짜를 다시 입력해주세요.");
             }
         }
+        data.groups = $('input[name="groups"]:checked').val();
+
         lastQuery = data;
 
 ///
@@ -987,23 +1010,23 @@
         SearchWord += data.fromDate + "-" + data.toDate;
         SearchWord += ">" + data.dateOption;
         console.log(data.typeInfo + " : " + data.fromDate + " : " + data.toDate);
-        /*
-        var groupEl = $('input[name=groups]:checked');
-        var searchWordTMP = "";
-        for (var iii = 0; iii < groupEl.size(); iii++) {
-        	//console.log(groupEl.eq(iii).val());
-            if(iii == 0) searchWordTMP += groupEl.eq(iii).val();
-            else searchWordTMP += " " + groupEl.eq(iii).val();
-        }
-
-        SearchWord += searchWordTMP + ">";
-		*/
         SearchWord += ">" + $('input[name="groups"]:checked').val();
-
 
         if (!isOK) SearchWord = "";
 ///
         return JSON.stringify(data);
+    }
+
+    function groupCheck(tmp) {
+		var str = tmp.split("_");
+		if(str.length > 1) {
+			if(str[0] != $('input[name="groups"]:checked').val())
+				alert("저자와 그룹이 일치하지 않습니다.");
+		}
+		else {
+			str = $('input[name="groups"]:checked').val() + '_' + tmp;
+		}
+		return str;
     }
 
     function setQuery(responseData, page) {
@@ -1126,9 +1149,10 @@
                 data = userHistory = JSON.parse(responseData);
                 $('#user-history>table>tbody>tr').remove();
                 $.each(data, function (i, d) {
-                    var tmpEl = $('<tr><td class="user-history-bookmark-td"><img class="bookmark-btn" style="width: 26px;height: 26px;"></td><td>' + changeHistory(data[i].word) + '</td><td class="user-history-remove-td"><label class="btn btn-default btn-sm close-search-option-btn">-</label></td></tr>');
+                    var tmpEl = $('<tr><td class="user-history-bookmark-td"><img class="bookmark-btn" style="width: 26px;height: 26px;" src="/imgs/bookmark-empty-star.png"></td><td>' + changeHistory(data[i].word) + '</td><td class="user-history-remove-td"><label class="btn btn-default btn-sm close-search-option-btn">-</label></td></tr>');
                     if (d.isBookmarked) {
                         tmpEl.find('img').addClass('bookmark-btn-active');
+                        tmpEl.find('img').attr('src','/imgs/bookmark-empty-star-active.png');
                     }
                     $('#user-history>table>tbody').prepend(tmpEl);
                     tmpEl.find('.close-search-option-btn').click(function (e) {
@@ -1158,6 +1182,7 @@
                             contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
                             success: function (responseData) {
                                 icon.toggleClass('bookmark-btn-active');
+                                icon.attr('src', '/imgs/bookmark-empty-star.png');
                             }
                         });
                     } else {
@@ -1173,6 +1198,7 @@
                             contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
                             success: function (responseData) {
                                 icon.toggleClass('bookmark-btn-active');
+                                icon.attr('src','/imgs/bookmark-empty-star-active.png');
                             }
                         });
                     }
@@ -1195,6 +1221,7 @@
         str += ">" + tdata.typeInfo;
         str += ">" + tdata.fromDate + "-" + tdata.toDate;
         str += ">" + tdata.dateOption;
+        str += ">" + tdata.groups;
 
         return str;
     }
@@ -1246,9 +1273,10 @@
                 console.error(responseData);
                 $('#admin-history>table>tbody>tr').remove();
                 $.each(data, function (i, d) {
-                    var tmpEl = $('<tr><td class="user-history-bookmark-td"><img class="bookmark-btn" style="width: 26px;height: 26px;"></td><td>' + changeHistory(data[i].word) + '</td><td class="user-history-remove-td"><label class="btn btn-default btn-sm close-search-option-btn">-</label></td></tr>');
+                    var tmpEl = $('<tr><td class="user-history-bookmark-td"><img class="bookmark-btn" style="width: 26px;height: 26px;" src="/imgs/bookmark-empty-star.png"></td><td>' + changeHistory(data[i].word) + '</td><td class="user-history-remove-td"><label class="btn btn-default btn-sm close-search-option-btn">-</label></td></tr>');
                     if (d.isBookmarked) {
                         tmpEl.find('img').addClass('bookmark-btn-active');
+                        tmpEl.find('img').attr('src','/imgs/bookmark-empty-star-active.png');
                     }
                     $('#admin-history>table>tbody').prepend(tmpEl);
                     tmpEl.find('.close-search-option-btn').click(function (e) {
@@ -1278,6 +1306,7 @@
                             success: function (responseData) {
 //                                console.error(responseData);
                                 icon.toggleClass('bookmark-btn-active');
+                                icon.attr('src', '/imgs/bookmark-empty-star.png')
                             }
                         });
                     } else {
@@ -1294,6 +1323,7 @@
                             success: function (responseData) {
 //                                console.error(responseData);
                                 icon.toggleClass('bookmark-btn-active');
+                                icon.attr('src', '/imgs/bookmark-empty-star-active.png')
                             }
                         });
                     }
@@ -1310,10 +1340,22 @@
         var str = "";
 
         for (var i = 0; i < data.length; i++) {
-            if (data[i].category == "내용") str += 'indexA^';
-            else if (data[i].category == "저자") str += 'indexB^';
+        	var tmp = data[i].input;
+            if (data[i].category == "내용") str += 'indexA^' + tmp;
+            else if (data[i].category == "저자") {
+        		var str = tmp.split("_");
+        		if(str.length > 1){
+        			if(str[0] != $('input[name="groups"]:checked').val()) {
+        				alert("저자와 그룹이 일치하지 않습니다.");
+        				isOK = false;
+        			}
+        		} else {
+        			tmp = $('input[name="groups"]:checked').val() + '_' + tmp;
+        		}
+        		str += "indexB^" + tmp;
+            }
             //else if (data[i].category == "참조") str += 'indexC^';
-            str += data[i].input;
+
             if (i < data.length - 1) {
                 if (data[i].operator == "O R") str += " <OR> ";
                 else str += " <AND> ";
@@ -1322,6 +1364,8 @@
         str += ">" + tdata.typeInfo;
         str += ">" + tdata.fromDate + "-" + tdata.toDate;
         str += ">" + tdata.dateOption;
+        console.log("dataParsing : " + tdata.groups);
+        str += ">" + tdata.groups;
 
         return str;
     }
@@ -1340,11 +1384,11 @@
         });
     }
 
-//    function getAdminHistory(json) {
-//    }
-//
-//    function deleteAdminHistory(element, id) {
-//    }
+    //    function getAdminHistory(json) {
+    //    }
+    //
+    //    function deleteAdminHistory(element, id) {
+    //    }
 
     function addSearchInfo(a) {
         $('.search-input-group').remove();
@@ -1357,11 +1401,18 @@
         }
 
         $('label[name=dateOption]').text(a.dateOption);
-//        if (a.dateOption == 'MSG') {
-//            $('input[name=dateOption][value="MSG"]').click();
-//        } else {
-//            $('input[name=dateOption][value="DB"]').click();
-//        }
+        if (a.dateOption == 'ALL') {
+		    $('#datepicker1').val("");
+		    $('#datepicker2').val("");
+			$('#datepicker1').datetimepicker("destroy").attr("disabled", true);
+		    $('#datepicker2').datetimepicker("destroy").attr("disabled", true);
+		}
+		else {
+		    $('#datepicker1').removeAttr('disabled');
+		    $('#datepicker2').removeAttr('disabled');
+		}
+		//$('input:radio[name="groups"]').eq(0).prop("checked",true);
+		$('input:radio[name="groups"]:radio[value="' + a.groups + '"]').prop("checked",true);
 
         $.each(a.data, function (i) {
             var newDiv = $('<div class="input-group input-group-sm search-input-group"><div class="dropdown input-group-btn"><div class="btn-group"><button type="button" class="btn btn-default btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="width: 72px"><span class="search-category-option">내용</span><div style="display: inline-block"><span class="caret"></span><span class="sr-only"></span></div></button><ul class="dropdown-menu search-category-selector" role="menu" aria-labelledby="dropdownMenu1"><li role="presentation"><a role="menuitem" tabindex="-1" href="#">내용</a></li><li role="presentation"><a role="menuitem" tabindex="-1" href="#">저자</a></li></ul></div></div><input type="text" class="form-control col-xs-4 search-input" onkeypress="onkeypressClick()" placeholder="검색어를 입력해주세요."><div class="dropdown input-group-btn"><div class="btn-group"><button type="button" class="btn btn-default btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="width: 55px"><span class="search-operator-option">SEL</span>\n<div style="display: inline-block"><span class="caret"></span><span class="sr-only"></span></div></button><ul id="operator-selector" class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu1"><li role="presentation"><a role="menuitem" tabindex="1" href="#">SEL</a></li><li role="presentation"><a role="menuitem" tabindex="2" href="#" onclick="handleOperatorSelect(this);return false;">AND</a></li><li role="presentation"><a role="menuitem" tabindex="3" href="#" onclick="handleOperatorSelect(this);return false;">O R</a></li></ul></div><label class="btn btn-default btn-sm close-search-option-btn">-</label></div></div>');

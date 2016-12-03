@@ -7,6 +7,27 @@ var timePeriodOption = {
 
 var GraphModule = (function () {
 
+    var relStartPos = new Object();
+    relStartPos.left = 100;
+    relStartPos.top = 200;
+    relStartPos.iLeft = 100;
+    relStartPos.iTop = 200;
+    relStartPos.maxLeft = 300;
+    relStartPos.maxTop = 300;
+    relStartPos.count = 0;
+
+    function setRelTablePos() {
+        if (relStartPos.top < relStartPos.maxTop) {
+            relStartPos.left += 15;
+            relStartPos.top += 15;
+        } else {
+            relStartPos.count++;
+            relStartPos.left = relStartPos.iLeft + (relStartPos.count * 15);
+            relStartPos.top = relStartPos.iTop;
+        }
+    }
+
+
     Number.prototype.format = function () {
         if (this == 0) return 0;
 
@@ -345,10 +366,51 @@ var GraphModule = (function () {
                 var graphOverall = graphContainer.find('.graph-overall');
                 graphOverall.children().remove();
                 $.each(option.nameList, function (i, name) {
-                    var tmp = $('<div style="font-size: 11px;margin-left: 5px;"></div>');
-                    tmp.append(name + '<span style="position: absolute;right: 15px;"><b>────</b></span>');
-                    tmp.find('span').css('color', option.colorSet[i]);
+                    var tmp = $('<div class="graph-overall-item" style="font-size: 11px;padding-left: 5px;"></div>');
+                    tmp.append(name + '<span style="position: absolute;right: 15px;height: 3px;width: 30px;vertical-align: middle;margin-top: 6px;"></span>');
+                    tmp.find('span').css('background-color', option.colorSet[i]);
                     graphOverall.append(tmp);
+                    tmp.click(function () {
+                        var relativeTitle = name;
+                        var tmpHtml = $('<div class="alert bg-white alert-dismissible fade in border-gray relative-table-wrapper" style="position: absolute; z-index: 10; width: 250px;' +
+                            ' left:' + relStartPos.left + 'px;top:' + relStartPos.top + 'px;" role="alert">' +
+                            '<button type="button" class="close" data-dismiss="alert" aria-label="Close">' +
+                            '<span aria-hidden="true">×</span>' +
+                            '</button>' +
+                            '<div class="relative-title">' + relativeTitle + '</div>' +
+                            '<div class="total-number" style="width: 100%;text-align: right;margin-top: 5px;font-size: 12px;">Total : ' + option.totalData[option.totalData.length - 1][name].format() + '</div>' +
+                            '<div style="font-size: 10px;margin-top: 10px;margin-bottom: 10px;position: relative;left: 450px;">' +
+//                            '<span class="relative-author-from-date">' + lastQuery.fromDate + '</span>' + (lastQuery.fromDate == '' && lastQuery.toDate == '' ? '' : '</span><span> ~ </span><span class="relative-author-to-date">' + lastQuery.toDate + '</span>') +
+                            '</div>' +
+                            '<div class="draggable-content-container"><div style="overflow: scroll;height: 300px;">' +
+                            '<table class="table table-hover table-fixed table-bordered table-striped table-condensed" style="font-size: 11px; margin-bottom: 0;">' +
+                            '<thead></thead>' +
+                            '<tbody></tbody></table></div>' +
+                            '</div>');
+                        setRelTablePos();
+
+                        var thEl = $('<tr>' +
+                            '<th>날짜</th>' +
+                            '<th>개수</th>' +
+                            '</tr>');
+                        tmpHtml.find('thead').append(thEl);
+
+                        // $.each(result, function (i, mResult) {
+                        //     var tmpEl = $('<tr><td>' + mResult.index + '</td>' +
+                        //         '<td>' + mResult.total + '</td>' +
+                        //         '</tr>');
+                        //     tmpHtml.find('tbody').append(tmpEl);
+                        // });
+
+                        $.each(option.data, function (i, d) {
+                            var tmpEl = $('<tr><td>' + d.index + '</td>' +
+                                '<td style="text-align: right; font-size: 12px;padding-right: 10px;">'+ d[name].format() + '</td>' +
+                                '</tr>');
+                            tmpHtml.find('tbody').append(tmpEl);
+                        });
+                        $('body').append(tmpHtml);
+                        tmpHtml.draggable({cancel: '.draggable-content-container'});
+                    });
                 });
             }
         };

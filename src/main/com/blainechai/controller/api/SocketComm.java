@@ -37,7 +37,7 @@ public class SocketComm
 	private int viewCount = -1;
 	private ArrayList<String> keySet = new ArrayList<String>();
 	private String[][] r = null;
-	private String[] from = null;
+	private ArrayList<String> from = new ArrayList<String>();
 	private String[] statTime = null;
 	private int[] stat = null;
 
@@ -168,9 +168,23 @@ public class SocketComm
 		return html;
 	}
 
-	public String[] getFrom() 				// priority
+	public String[] getFrom(String key)
 	{
-		return from;
+		if(!key.equals("전부")) {
+			for(int i=from.size()-1; i >= 0; i--) {
+				String[] tmp = from.get(i).split("_");
+				if(tmp.length < 2) continue;
+				//System.out.println(from.get(i) + " :AAAAAAAAAA: " + key);
+				if(!tmp[0].equals(key)) from.remove(i);
+				//System.out.println(tmp[0] + " :BBBBBBBB: " + from.size());
+			}
+		}
+		//System.out.println(key + " :AAAAAAAAAA: " + from.size());
+
+		String[] from1 = new String[from.size()];
+		for(int i=0; i < from.size(); i++) from1[i] = from.get(i);
+
+		return from1;
 	}
 
 	public int beGetGood() { return good; }
@@ -386,9 +400,8 @@ public class SocketComm
 		int cnt = dis.readInt();
 
 		if (cnt >= 0) {	// 검색내용 수신
-			from = new String[cnt];
-			for (int i=0; i < from.length; i++) {
-				from[i] = dis.readUTF();
+			for (int i=0; i < cnt; i++) {
+				from.add(dis.readUTF());
 			}
 		}
 		good = cnt;

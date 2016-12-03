@@ -313,11 +313,13 @@
 	            $('#nickname-result-container').hide();
 	            var keyword = $('#nickname-search-input').val();
 
-	            keyword += ">" + $('input[name="groups"]:checked').val();
 	            console.log(keyword);
-	            if(keyword == "") return;
-
-	            callAjax("profileSearch", keyword, "", 16, 0, keyword, "");
+	            if(keyword == "") {
+	            	alert("검색어를 입력해주세요.");
+	        		isProfileSearch = true;
+	            }
+	            else
+	            	callAjax("profileSearch", keyword+ ">" + $('input[name="groups"]:checked').val(), "", 16, 0, keyword, "");
         	}
         });
 
@@ -380,7 +382,7 @@
             }
         }
         else if (data.contents == "NoData")
-            alert("No Data!!!");
+            alert("데이터베이스에 저장된 자료가 없습니다!!!");
         else {
             if (data.sel == 1) {
                 //var result = JSON.parse(data.bookInfoList);
@@ -455,7 +457,7 @@
                 var key = data.author.split(">")[0];
                 var group = data.author.split(">")[1];
                 //console.log("::" +result[0]+ "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa" + result.length);
-
+				var cnt = 0;
                 $.each(nicNameDB, function (i, nicDB) {
                     if (nicNameDB[i].nickname.indexOf(key) != -1) {  //  if(str1.indexOf(str2) != -1){
                         //Nic = author + "(" + nicNameDB[i].nickname + ")";
@@ -465,18 +467,17 @@
 	                        '<td class="nickname-search-td">' + nicDB.author + '</td>' +
 	                        '<td class="nickname-search-td">' + (nicNameDB[i].nickname != '' ? '(' + nicNameDB[i].nickname + ')' : '') + '</td>' +
 	                        '</tr>';
+	                        cnt++;
                     	}
                     }
                 });
 
 				if(result.length!=0) {
-					if((result.length==1)&&(result[0]=="")) {
-						alert("검색결과가 없습니다.");
-					}
-					else{
-						$.each(result, function (i, nicDB) {
-		                    //console.log(result[i]);
-		                    if (result[i].indexOf(key) != -1) {  //if(str1.indexOf(str2) != -1){
+					$.each(result, function (i, nicDB) {
+	                    //console.log(result[i]);
+	                    var tmp = result[i].split("_");
+	                    if (tmp.length > 1) {
+		                    if (tmp[1].indexOf(key) != -1) {  //if(str1.indexOf(str2) != -1){
 		                        //console.log(result[i]);
 		                        var nic = nicNameFindOnly(result[i]);
 		                        tmpEl += '<tr>' +
@@ -484,12 +485,17 @@
 		                             '<td class="nickname-search-td">' + result[i] + '</td>' +
 		                             '<td class="nickname-search-td">' + (nic != '' ? '(' + nic + ')' : '') + '</td>' +
 		                             '</tr>';
+		                         cnt++;
 		                    }
-		                });
+	                    }
+	                });
 
+	                if(cnt == 0) alert("검색결과가 없습니다.");
+	                else {
 		                $('#nickname-result-table').append($(tmpEl));
 		                setAuthorResultClickHandler();
-					}
+	                }
+
 				}
 				else alert("검색결과가 없습니다.");
                 isProfileSearch = true;
@@ -873,7 +879,17 @@
             idCNT++;
             var author = nicNameOff($(element).parent().parent().parent().parent().find('.table-expanded-title').text());
             var relAuthor = nicNameOff($(element).find('td').eq(1).text());
-            var period = $('#datepicker1').val() + " 00:00:00" + "-" + $('#datepicker2').val() + " 23:59:59" + ">" + $('label[name=dateOption]').text();
+
+            var fromTime = $('#datepicker1').val();
+            if(fromTime != "") fromTime += " 00:00:00";
+            var toTime = $('#datepicker1').val();
+            if(toTime != "") toTime += " 23:59:59";
+
+            if((fromTime == "")&& (toTime == "")) fromTime = "";
+            else   			 fromTime = fromTime + "-" + toTime;
+
+            var period = fromTime + ">" + $('label[name=dateOption]').text();
+
             var id = "profile" + idCNT;
 
             callAjax(id, author + '>' + period, relAuthor, 1, 0, "", "");

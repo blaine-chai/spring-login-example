@@ -570,6 +570,7 @@
         str += ">" + tdata.typeInfo;
 //        str += ">" + tdata.fromDate + "-" + tdata.toDate;
 //        str += ">" + tdata.dateOption;
+        str += ">그룹 : " + tdata.groups;
 
         return str;
     }
@@ -815,7 +816,7 @@
 
             if (obj.category == "내용") SearchWord += "indexA^" + tmp;
             else if (obj.category == "저자") SearchWord += "indexB^" + tmp;
-            else if (obj.category == "참조") SearchWord += "indexC^" + tmp;
+            //else if (obj.category == "참조") SearchWord += "indexC^" + tmp;
 
             if (obj.operator == "O R") SearchWord += " <OR> ";
             else if (obj.operator == "AND") SearchWord += " <AND> ";
@@ -835,14 +836,19 @@
                 alert("입력 날짜 ERROR");
             }
         }
+        data.toDate = $('#datepicker2').val();
+        data.groups = $('input[name="groups"]:checked').val();
+
         //lastQuery = data;
 
 ///
+        SearchWord += ">";
         SearchWord += typeInfo;
         SearchWord += ">";
         SearchWord += data.fromDate + "-" + data.toDate;
         SearchWord += ">" + data.dateOption;
-        console.log(data.typeInfo + " : " + data.fromDate + " : " + data.toDate);
+        SearchWord += ">" + data.groups;
+        console.log("jsonSearchInfo ::: " + data.typeInfo + " : " + data.fromDate + " : " + data.toDate);
 
         if (!isOK) SearchWord = "";
 ///
@@ -952,7 +958,7 @@
                 }
             }
             else if (tdata.contents == "NoData") {
-                alert("No data, No Database !!!");
+                alert("데이터베이스에 저장된 자료가 없습니다!!!");
             }
             else {
                 if (tdata.sel == "0") {

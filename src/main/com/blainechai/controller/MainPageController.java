@@ -301,8 +301,13 @@ public class MainPageController {
             sc = new SocketComm(userId + "@" + id, ip, port, selInt, pageInt, strQuery);
         } else if (selInt == 16) {
         	String[] s = msg.split(">");
-            String strQuery = "indexB^" + s[0];
+            /*
+        	String strQuery = "";
+            if (s[1].equals("전부")) strQuery = "indexB^" + s[0];
+            else 	strQuery = "indexB^" + s[0] + " & indexC^" + s[1];
             sc = new SocketComm(userId + "@" + id, ip, port, selInt, pageInt, strQuery);
+            */
+            sc = new SocketComm(userId + "@" + id, ip, port, selInt, pageInt, "indexB^" + s[0]);
         } else {
             sc = new SocketComm(userId + "@" + id, ip, port, selInt, pageInt, author);
         }
@@ -336,12 +341,7 @@ public class MainPageController {
                  */
                 send = "OK";
             } else if (selInt == 15) {
-            	String key = author.split(">")[1];
-                from = sc.getFrom();
-            	for(int i=0; i < from.length; i++) {
-            		if(!from[i].split("_")[0].equals(key))
-            			;//from.slice(i,1);
-            	}
+                from = sc.getFrom(author.split(">")[1]);
                 send = "OK";
             } else send = "OK";
         }
@@ -658,15 +658,12 @@ public class MainPageController {
             if(!s[4].equals("전부")) {
                 for(int j=0; j < userGroups.size(); j++) {
                 	if(userGroups.get(j).getGroupName().getGroupName().equals(s[4])) {
-                		groupChecked = "indexC^" + s[4];
+                		groupChecked = " & indexC^" + s[4];
                 		break;
                 	}
                 }
             }
-            if(groupChecked.equals(""))
-            	msg = s[0] + ">" + s[1] + ">" +s[2] + ">" +s[3] + ">";
-            else
-            	msg = s[0] + " & " + groupChecked + ">" + s[1] + ">" +s[2] + ">" +s[3] + ">";
+        	msg = s[0] + groupChecked + ">" + s[1] + ">" +s[2] + ">" +s[3];
 
             sc = new SocketComm(userId + "@" + id, ip, port, 21, 0, msg);
             sc.runStart();
@@ -721,7 +718,8 @@ public class MainPageController {
                 ArrayList<LinkedHashMap<String, String>> authorJsonTmp
                         = (ArrayList<LinkedHashMap<String, String>>) gson.fromJson(authorJson, ArrayList.class);
                 resultList = getGraphDataByAuthorsAndPeriod(authorJsonTmp, keyword, hMap);
-            } else send = "NotOK";
+            } else if (sc.beGetGood() == -1) send = "NotOK";
+            else send = "NoData";
         }
 
         SendInfo si = new SendInfo(id, sel, send, keyword, gson.toJson(resultList));
