@@ -1624,7 +1624,10 @@ public class MainPageController {
         String author = "";
 
         String[] t = name.split(">", 2);
-        String nickname = t[0];
+        String[] t1 = t[0].split("_", 2);
+        String nickname = t1[1];
+
+        System.out.println("ZZZZ :" + name + " : " + nickname + " : " + t.length);
 
         List<NicknameOption> nicknameOptions = nicknameRepository.findByNickname(nickname);
         if (nicknameOptions.size() > 0) {
@@ -1635,6 +1638,7 @@ public class MainPageController {
         else {
             if (t.length > 1) author = author + ">" + t[1];
         }
+        System.out.println("ZZZZ :" + author);
 
         return author;
     }
