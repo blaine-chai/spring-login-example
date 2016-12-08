@@ -96,7 +96,7 @@
              style="height: calc(100% - 30px); margin-bottom: 0;width: 72%;">
             <div id="relative-table-container" style="position: absolute; z-index: 10;"></div>
             <div id="menu-wrapper" style="background: rgba(224, 234, 244, 1);">
-                <div class="alert alert-info">
+                <div class="alert alert-info"><%-- @@@@@@@수정 --%>
                     <div id="search-result-number">검색결과 :
                     </div>
                     <div id="search-progress" class="progress">
@@ -104,6 +104,9 @@
                              aria-valuemin="0" aria-valuemax="100" style="width: 0%;">
                             0%
                         </div>
+                    </div>
+                    <div id="search-result-export-container" style="position: absolute;right: 30px;top: 12px;">
+                        <button class="btn btn-default btn-sm">내보내기</button>
                     </div>
                 </div>
                 <div id="result-table-wrapper" class="panel panel-default"
@@ -169,7 +172,7 @@
         <%--</div>--%>
     </div>
 </div>
-<script type="text/javascript" charset="UTF-8" src="/js/alarm-update.js"></script>
+<%--<script type="text/javascript" charset="UTF-8" src="/js/alarm-update.js"></script>--%>
 <script type="text/javascript" charset="UTF-8" src="/js/auto-logout.js"></script>
 <script type="text/javascript" charset="UTF-8">
     var relStartPos = new Object();
@@ -202,82 +205,87 @@
                     if (bookmarkModule.getData().length > 0) {
                         $.each(bookmarkModule.getData(), function (i, d) {
                             var tmp = $('<tr data-index="' + i + '">' +
-                                    '<td class="user-bookmark-alarm-td" onclick="$(this).parent().find(\'.user-bookmark-search-word-td\').click();">' + '<span class="badge">' + (d.hasNewData ? 'N' : '') + '</span></td>' +
+                                    '<td class="user-bookmark-alarm-td" onclick="$(this).parent().find(\'.user-bookmark-search-word-td\').click();">' + '<span class="badge">N</span></td>' +
                                     '<td class="user-bookmark-search-word-td" style="vertical-align:middle;">' + changeHistory(d.word) + '</td>' +
-                                    //'<td style="vertical-align:middle;"><span class="user-bookmark-count-td">' + d.count + '</span></td>' +
                                     <c:choose>
                                     <c:when test="${userType.equals(\"admin\")}">
                                     '<td class="user-history-remove-td"><label class="btn btn-default btn-sm close-search-option-btn">-</label></td></tr>');
                             </c:when>
                             <c:otherwise>
-                            (type == 'admin-bookmark' ? '' : '<td class="user-history-remove-td"><label class="btn btn-default btn-sm close-search-option-btn">-</label></td></tr>'));
-                            </c:otherwise>
-                            </c:choose>
+                            (type == 'admin-bookmark' ? '' : '<td class="user-history-remove-td"><label class="btn btn-default btn-sm close-search-option-btn">-</label></td></tr>')
+                            );
+                        </c:otherwise>
+                        </c:choose>
 
-                            if (tmp.find('.badge') == "") {
-                                tmp.find('.badge').hide();
-                            }
-                            tmp.find('.close-search-option-btn').click(function (e) {
-                                var col = $(this).parent().parent().parent().children().index($(this).parent().parent());
-                                var data = (type == 'admin-bookmark' ? adminBookmarkModule.getData()[col].word : userBookmarkModule.getData()[col].word);
-                                $.ajax({
-                                    url: '/main/' + type + '/delete',
-                                    type: 'post',
-                                    data: {data: data},
-                                    success: function (responseData) {
-                                        console.error(col);
-                                        console.error(data);
-                                        console.error(type);
+                        if (!d.hasNewData) {
+                            tmp.find('.badge').addClass('badge-no-alarm');
+                        }
+                        tmp.find('.close-search-option-btn').click(function (e) {
+                            var col = $(this).parent().parent().parent().children().index($(this).parent().parent());
+                            var data = (type == 'admin-bookmark' ? adminBookmarkModule.getData()[col].word : userBookmarkModule.getData()[col].word);
+                            $.ajax({
+                                url: '/main/' + type + '/delete',
+                                type: 'post',
+                                data: {data: data},
+                                success: function (responseData) {
+                                    console.error(col);
+                                    console.error(data);
+                                    console.error(type);
 //                                        var result = JSON.parse(responseData);
-                                        console.error(bookmarkModule.getData());
-                                        bookmarkModule.generateTBody(type, bookmarkModule);
-                                    }
-                                });
-                                $(this).parent().parent().remove();
-                            });
-                            bookmarkModule.getContainer().find('tbody').append(tmp);
-                            tmp.find('.user-bookmark-search-word-td').click(function () {
-                                var el = $(this).parent();
-                                lastQuery = JSON.parse(bookmarkModule.getData()[parseInt(el.attr('data-index'))].word);
-                                var data = jsonSearchInfo(bookmarkModule.getData()[parseInt(el.attr('data-index'))]);
-                                console.error(data);
-                                SearchWord = dataParsing(bookmarkModule.getData()[parseInt(el.attr('data-index'))].word);
-                                if (SearchWord != "") {
-                                    //$('#book-table').empty();
-                                    $("#search-result-number").html("검색결과 : 0");		// 검색 건수
-                                    $("#search-progress").empty();
-                                    $("#search-progress").append("<div class='progress-bar progress-bar-striped active' role='progressbar' aria-valuenow='0' aria-valuemin='0' aria-valuemax='100' style='width: 0%;'>0%</div>");			// 검색 률
-
-                                    el.find('.badge').hide(function () {
-                                        $.ajax({
-                                            url: '/main/' + (type == 'admin-bookmark' ? 'common-bookmark' : type) + '/count/update',
-                                            type: 'post',
-                                            data: {'id': JSON.parse(data).id},
-                                            contentType: "application/x-www-form-urlencoded; charset=UTF-8",
-                                            success: function (responseData) {
-                                            }
-                                        });
-                                    });
-
-//                                    addHistory(data);
-                                    removeAllRelDiv();
-                                    startTime = new Date();
-                                    jobRun = true;
-                                    repeatCnt = 0;
-                                    stop = false;
-
-                                    callAjaxLoop(userID, 0, 1, 0, 0, SearchWord, data);
+                                    console.error(bookmarkModule.getData());
+                                    bookmarkModule.generateTBody(type, bookmarkModule);
                                 }
                             });
+                            $(this).parent().parent().remove();
                         });
-                    } else {
-                        var tmp = $('<tr style="height: 100%;"><td style="border: 0;">등록된 북마크가 없습니다.</td></tr>');
                         bookmarkModule.getContainer().find('tbody').append(tmp);
+                        tmp.find('.user-bookmark-search-word-td').click(function () {
+                            var el = $(this).parent();
+                            lastQuery = JSON.parse(bookmarkModule.getData()[parseInt(el.attr('data-index'))].word);
+                            var data = jsonSearchInfo(bookmarkModule.getData()[parseInt(el.attr('data-index'))]);
+                            console.error(data);
+                            SearchWord = dataParsing(bookmarkModule.getData()[parseInt(el.attr('data-index'))].word);
+                            if (SearchWord != "") {
+                                //$('#book-table').empty();
+                                $("#search-result-number").html("검색결과 : 0");		// 검색 건수
+                                $("#search-progress").empty();
+                                $("#search-progress").append("<div class='progress-bar progress-bar-striped active' role='progressbar' aria-valuenow='0' aria-valuemin='0' aria-valuemax='100' style='width: 0%;'>0%</div>");			// 검색 률
+
+                                $.ajax({
+                                    url: '/main/' + (type == 'admin-bookmark' ? 'common-bookmark' : type) + '/count/update',
+                                    type: 'post',
+                                    data: {'id': JSON.parse(data).id},
+                                    contentType: "application/x-www-form-urlencoded; charset=UTF-8",
+                                    success: function (responseData) {
+                                        el.find('.badge').addClass('badge-no-alarm');
+                                    }
+                                });
+
+//                                    addHistory(data);
+                                removeAllRelDiv();
+                                startTime = new Date();
+                                jobRun = true;
+                                repeatCnt = 0;
+                                stop = false;
+
+                                callAjaxLoop(userID, 0, 1, 0, 0, SearchWord, data);
+                            }
+                        });
                     }
-                }
-            });
-        });
-    };
+                    );
+        }
+        else
+        {
+            var tmp = $('<tr style="height: 100%;"><td style="border: 0;">등록된 북마크가 없습니다.</td></tr>');
+            bookmarkModule.getContainer().find('tbody').append(tmp);
+        }
+    }
+    })
+    ;
+    })
+    ;
+    }
+    ;
 
     var refreshUserBookmark = function () {
         userBookmarkModule.generateTBody();
@@ -819,16 +827,16 @@
             if (obj.category == "내용") SearchWord += "indexA^" + tmp;
             else if (obj.category == "저자") SearchWord += "indexB^" + tmp;
             else if (obj.category == "저자") {
-        		var str = tmp.split("_");
-        		if(str.length > 1){
-        			if(str[0] != $('input[name="groups"]:checked').val()) {
-        				alert("저자와 그룹이 일치하지 않습니다.");
-        				isOK = false;
-        			}
-        		} else {
-        			tmp = $('input[name="groups"]:checked').val() + '_' + tmp;
-        		}
-            	SearchWord += "indexB^" + tmp;
+                var str = tmp.split("_");
+                if (str.length > 1) {
+                    if (str[0] != $('input[name="groups"]:checked').val()) {
+                        alert("저자와 그룹이 일치하지 않습니다.");
+                        isOK = false;
+                    }
+                } else {
+                    tmp = $('input[name="groups"]:checked').val() + '_' + tmp;
+                }
+                SearchWord += "indexB^" + tmp;
             }
             //else if (obj.category == "참조") SearchWord += "indexC^" + tmp;
 
@@ -862,7 +870,8 @@
         SearchWord += data.fromDate + "-" + data.toDate;
         SearchWord += ">" + data.dateOption;
         SearchWord += ">" + data.groups;
-        console.log("jsonSearchInfo ::: " + data.typeInfo + " : " + data.fromDate + " : " + data.toDate);
+        if (data.groups)
+            console.log("jsonSearchInfo ::: " + data.typeInfo + " : " + data.fromDate + " : " + data.toDate);
 
         if (!isOK) SearchWord = "";
 ///
@@ -976,9 +985,12 @@
             }
             else {
                 if (tdata.sel == "0") {
-                    setTime = setTimeout(function () {
-                        callAjaxLoop(tdata.id, tdata.job, 1, 4, 0, 0, "");
-                    }, 100);
+                    if (tdata.contents != "NotGroup") {
+                        setTime = setTimeout(function () {
+                            callAjaxLoop(tdata.id, tdata.job, 1, 4, 0, 0, "");
+                        }, 100);
+                    }
+                    else alert("허용된 사용자 그룹이 아닙니다.");
                 }
                 else if (tdata.sel == "1") {
                     setTime = setTimeout(function () {
@@ -1008,7 +1020,7 @@
                     $("#search-progress").append("<div class='progress-bar progress-bar-striped active' role='progressbar' aria-valuenow='"
                             + sel2[1] + "' aria-valuemin='0' aria-valuemax='100' style='width: " + sel2[1] + "%;'>" + sel2[1] + "%</div>");			// 검색 률
 
-                    if (sel2[1] == 100){
+                    if (sel2[1] == 100) {
                         $('.progress-bar').removeClass('progress-bar-striped');
                     }
 
@@ -1195,7 +1207,7 @@
                 console.log(msg);
 
                 //if ($('#book-table tbody').find('tr').eq(row).find('td').eq(col).find('span').hasClass( "glyphicon-ok"))
-                callAjaxLoop("author" + authorNUM, row, 1, 1, col,msg, "");
+                callAjaxLoop("author" + authorNUM, row, 1, 1, col, msg, "");
                 //else
                 //	callAjaxLoop("author"+authorNUM, 8, row, 1, 0, m, tableData[row].eventNo);
 
@@ -1556,24 +1568,24 @@
         var data = tdata.data;
         var str = "";
         var isOK = true;
-		//console.log("tdata.groups = " + tdata.groups);
+        //console.log("tdata.groups = " + tdata.groups);
 
         for (var i = 0; i < data.length; i++) {
-        	var tmp = data[i].input;
+            var tmp = data[i].input;
             if (data[i].category == "내용") str += 'indexA^' + tmp;
             //else if (data[i].category == "저자") str += 'indexB^';
-			//else if (data[i].category == "참조") str += 'indexC^' + tmp;
-			else if (data[i].category == "저자") {
-        		var str2 = tmp.split("_");
-        		if(str2.length > 1){
-        			if(str2[0] != tdata.groups) {
-        				alert("저자와 그룹이 일치하지 않습니다.");
-        				isOK = false;
-        			}
-        		} else {
-        			tmp = tdata.groups + '_' + tmp;
-        		}
-        		str += "indexB^" + tmp;
+            //else if (data[i].category == "참조") str += 'indexC^' + tmp;
+            else if (data[i].category == "저자") {
+                var str2 = tmp.split("_");
+                if (str2.length > 1) {
+                    if (str2[0] != tdata.groups) {
+                        alert("저자와 그룹이 일치하지 않습니다.");
+                        isOK = false;
+                    }
+                } else {
+                    tmp = tdata.groups + '_' + tmp;
+                }
+                str += "indexB^" + tmp;
             }
 
             if (i < data.length - 1) {

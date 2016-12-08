@@ -112,7 +112,7 @@
 
 /*****jsp의 style을 옮김 */
 #search-progress {
-    /***** width:70%;  조정*/
+    width: calc(100% - 254px); /*@@@@@@@수정*/
     margin-bottom: 0;
 }
 
@@ -131,7 +131,6 @@
     /*****overflow: scroll; 조정*/
     overflow-y: auto; /***** 신규 */
     overflow-x: hidden; /***** 신규 */
-    height: 100%;
 }
 
 #content {
@@ -343,6 +342,10 @@ body {
 
 .badge {
     background: rgba(252, 73, 55, 0.9);
+}
+
+.badge-no-alarm {
+    background: rgba(200, 200, 200, 1);
 }
 
 .user-bookmark-remove-td {

@@ -27,6 +27,49 @@ var GraphModule = (function () {
         }
     }
 
+    function exportTableToCSV($table, filename) {
+
+        var $rows = $table.find('tr:has(td),tr:has(th)'),
+
+            // Temporary delimiter characters unlikely to be typed by keyboard
+            // This is to avoid accidentally splitting the actual contents
+            tmpColDelim = String.fromCharCode(11), // vertical tab character
+            tmpRowDelim = String.fromCharCode(0), // null character
+
+            // actual delimiter characters for CSV format
+            colDelim = '","',
+            rowDelim = '"\r\n"',
+
+            // Grab text from table into CSV formatted string
+            csv = '"' + $rows.map(function (i, row) {
+                    var $row = $(row), $cols = $row.find('td,th');
+
+                    return $cols.map(function (j, col) {
+                        var $col = $(col), text = $col.text();
+
+                        return text.replace(/"/g, '""'); // escape double quotes
+
+                    }).get().join(tmpColDelim);
+
+                }).get().join(tmpRowDelim)
+                    .split(tmpRowDelim).join(rowDelim)
+                    .split(tmpColDelim).join(colDelim) + '"',
+
+
+
+            // Data URI
+            csvData = 'data:application/csv;charset=utf-8,' + encodeURIComponent(csv);
+
+        console.log(csv);
+
+        if (window.navigator.msSaveBlob) { // IE 10+
+            //alert('IE' + csv);
+            window.navigator.msSaveOrOpenBlob(new Blob([csv], {type: "text/plain;charset=utf-8;"}), filename)
+        }
+        else {
+            $(this).attr({ 'download': filename, 'href': csvData, 'target': '_blank' });
+        }
+    }
 
     Number.prototype.format = function () {
         if (this == 0) return 0;
@@ -260,7 +303,7 @@ var GraphModule = (function () {
                     .datum(option.data)
                     .attr("class", "line")
                     .attr("d", line)
-                    .style('stroke', option.colorSet[i]);
+                    .style('stroke', option.colorSet[i]).style('fill','none');
             });
 
             $.each(option.nameList, function (i, name) {
@@ -274,7 +317,7 @@ var GraphModule = (function () {
                     .datum(option.totalData)
                     .attr("class", "line total")
                     .attr("d", line)
-                    .style('stroke', option.colorSet[i]);
+                    .style('stroke', option.colorSet[i]).style('fill','none');
 
                 svg.select('.total-y')
                     .append('g')
@@ -381,11 +424,11 @@ var GraphModule = (function () {
                             '<span aria-hidden="true">×</span>' +
                             '</button>' +
                             '<div class="relative-title">' + relativeTitle + '</div>' +
-                            '<div class="total-number" style="width: 100%;text-align: right;margin-top: 5px;font-size: 12px;">Total : ' + option.totalData[option.totalData.length - 1][name].format() + '</div>' +
-                            '<div style="font-size: 10px;margin-top: 10px;margin-bottom: 10px;position: relative;left: 450px;">' +
-//                            '<span class="relative-author-from-date">' + lastQuery.fromDate + '</span>' + (lastQuery.fromDate == '' && lastQuery.toDate == '' ? '' : '</span><span> ~ </span><span class="relative-author-to-date">' + lastQuery.toDate + '</span>') +
-                            '</div>' +
-                            '<div class="draggable-content-container"><div style="overflow: scroll;height: 300px;">' +
+                            '<div class="draggable-content-container" style="margin-top: 5px;">' +
+                            '<div id="search-result-export-container" style="position: relative;height: 35px;">' +
+                            '<div class="total-number" style="position:absolute; text-align: right;font-size: 12px;line-height: 30px;vertical-align: middle;">Total : ' + option.totalData[option.totalData.length - 1][name].format() + '</div>' +
+                            '<a class="btn btn-default btn-sm btn-export" style="right: 0;position: absolute;">내보내기</a></div>' +
+                            '<div style="overflow: scroll;height: 300px;">' +
                             '<table class="table table-hover table-fixed table-bordered table-striped table-condensed" style="font-size: 11px; margin-bottom: 0;">' +
                             '<thead></thead>' +
                             '<tbody></tbody></table></div>' +
@@ -411,8 +454,15 @@ var GraphModule = (function () {
                                 '</tr>');
                             tmpHtml.find('tbody').append(tmpEl);
                         });
+
                         $('body').append(tmpHtml);
+
                         tmpHtml.draggable({cancel: '.draggable-content-container'});
+
+                        tmpHtml.find('.btn-export').click(function (event) {
+
+                            exportTableToCSV.apply(this, [$(tmpHtml.find('table')), 'export.csv']);
+                        });
                     });
                 });
             }

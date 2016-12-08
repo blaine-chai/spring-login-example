@@ -209,7 +209,7 @@
         </div>
     </div>
 </div>
-<script type="text/javascript" charset="UTF-8" src="/js/alarm-update.js"></script>
+<%--<script type="text/javascript" charset="UTF-8" src="/js/alarm-update.js"></script>--%>
 <script type="text/javascript" charset="UTF-8" src="/js/auto-logout.js"></script>
 <script type="text/javascript" charset="UTF-8">
     var userHistory = [];
@@ -227,7 +227,7 @@
     var isProfileSearch = true;
 
 
-    var loadingRing = $('<img class="loading-ring" src="/imgs/ajax-loader.gif" style="position: absolute;right: 50px;">')
+    var loadingRing = $('<img class="loading-ring" src="/imgs/ajax-loader.gif" style="position: absolute;right: 50px;">');
 
 
     $(document).ready(function () {
@@ -266,7 +266,7 @@
         setProfileResultTableSize();
 
 		$("input:radio[name='groups']").eq(0).prop("checked",true);
-		$("input:radio[name='groups']:radio[value='ALL']").prop("checked",true);
+		$("input:radio[name='groups']:radio[value='전부']").prop("checked",true);
 
 //            $('#result-table-wrapper').scroll(function () {
 //                $('#book-table-header').css("top",
@@ -285,14 +285,14 @@
                 timestamp = timeConverter(timestamp - 3600 * 24 * 50);
 
                 $('#datepicker1').datetimepicker({ format: 'Y/m/d', value: timestamp}).removeAttr('disabled');
-                $('#datepicker2').datetimepicker({ value: new Date() }).removeAttr('disabled');
+                $('#datepicker2').datetimepicker({ format: 'Y/m/d', value: new Date() }).removeAttr('disabled');
             }
             else if ($(this).text() == 'MSG') {
                 var timestamp = fetch_unix_timestamp();
                 timestamp = timeConverter(timestamp - 3600 * 24 * 50);
 
                 $('#datepicker1').datetimepicker({ format: 'Y/m/d', value: timestamp}).removeAttr('disabled');
-                $('#datepicker2').datetimepicker({ value: new Date() }).removeAttr('disabled');
+                $('#datepicker2').datetimepicker({ format: 'Y/m/d', value: new Date() }).removeAttr('disabled');
                 $(this).text('DB');
             }
             else {

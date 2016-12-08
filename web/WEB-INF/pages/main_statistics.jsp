@@ -25,8 +25,9 @@
         .graph-overall-item {
             cursor: pointer;
         }
+
         .graph-overall-item:hover {
-            background:rgba(100,100,100,0.1)
+            background: rgba(100, 100, 100, 0.1)
         }
 
         svg {
@@ -144,8 +145,7 @@
                      style="position: relative;height: 40px;margin-bottom: 0;margin-left: 15px;margin-right: 15px;margin-top: 15px;">
                     <div class="graph-title-text"
                          style="height: 40px;line-height: 40px;vertical-align: middle;margin-left: 20px;float: left"
-                         title="total" onclick="titleClickListener(this);return false;">
-                        events
+                         title="total" onclick="titleClickListener(this);return false;">EVENTS(MSG)
                     </div>
                     <div class="datepicker-container"
                          style="width: 200px;text-align: center;margin: auto;float: left;position:absolute;right:80px;bottom:7px;">
@@ -189,7 +189,7 @@
                     <div class="graph-title-text"
                          style="height: 40px;line-height: 40px;vertical-align: middle;margin-left: 20px;float: left;"
                          title="author-total"
-                         onclick="titleClickListener(this);return false;">events
+                         onclick="titleClickListener(this);return false;">EVENTS(DB)
                     </div>
                     <div class="datepicker-container"
                          style="width: 200px;text-align: center;margin: auto;float: left;position:absolute;right:80px;bottom:7px;">
@@ -446,7 +446,8 @@
     </div>
 </div>
 <script type="text/javascript" charset="UTF-8" src="/js/line-graph.js"></script>
-<script type="text/javascript" charset="UTF-8" src="/js/alarm-update.js"></script>
+<%--<script type="text/javascript" charset="UTF-8" src="/js/alarm-update.js"></script>--%>
+<script type="text/javascript" charset="UTF-8" src="/js/auto-logout.js"></script>
 <script type="text/javascript" charset="UTF-8">
     var relStartPos = new Object();
     relStartPos.left = 100;
@@ -494,11 +495,11 @@
                 '<span aria-hidden="true">×</span>' +
                 '</button>' +
                 '<div class="relative-title">' + relativeTitle + '</div>' +
-                '<div class="total-number" style="width: 100%;text-align: right;margin-top: 5px;font-size: 12px;">Total : ' + graphModule.getTotalData()[graphModule.getTotalData().length - 1]['total'].format() + '</div>' +
-                '<div style="font-size: 10px;margin-top: 10px;margin-bottom: 10px;position: relative;left: 450px;">' +
-//                            '<span class="relative-author-from-date">' + lastQuery.fromDate + '</span>' + (lastQuery.fromDate == '' && lastQuery.toDate == '' ? '' : '</span><span> ~ </span><span class="relative-author-to-date">' + lastQuery.toDate + '</span>') +
-                '</div>' +
-                '<div class="draggable-content-container"><div style="overflow: scroll;height: 300px;">' +
+                '<div class="draggable-content-container" style="margin-top: 5px;">' +
+                '<div id="search-result-export-container" style="position: relative;height: 35px;">' +
+                '<div class="total-number" style="position:absolute; text-align: right;font-size: 12px;line-height: 30px;vertical-align: middle;">Total : ' + graphModule.getTotalData()[graphModule.getTotalData().length - 1]['total'].format() + '</div>' +
+                '<a class="btn btn-default btn-sm btn-export" style="right: 0;position: absolute;">내보내기</a></div>' +
+                '<div style="overflow: scroll;height: 300px;">' +
                 '<table class="table table-hover table-fixed table-bordered table-striped table-condensed" style="font-size: 11px; margin-bottom: 0;">' +
                 '<thead></thead>' +
                 '<tbody></tbody></table></div>' +
@@ -521,6 +522,29 @@
         $('body').append(tmpHtml);
         tmpHtml.draggable({cancel: '.draggable-content-container'});
 //        })
+
+        tmpHtml.find('.btn-export').click(function (event) {
+
+            exportTableToCSV.apply(this, [$(tmpHtml.find('table')), 'export.csv']);
+
+//            console.error(this);
+            // IF CSV, don't do event.preventDefault() or return false
+            // We actually need this to be a typical hyperlink
+        });
+
+//        $(".btn-export").on('click', function (event) {
+//
+//            exportTableToCSV.apply(this, [$('#xx'), 'export.csv']);
+//            exportTableToCSV.apply(this, [$('#projectSpreadsheet'), 'export.csv']);
+//
+//             IF CSV, don't do event.preventDefault() or return false
+//             We actually need this to be a typical hyperlink
+//        });
+
+//        tmpHtml.find('.btn-export').click(function () {
+//            tmpHtml.find('table').tableToCSV();
+//
+//        });
     }
 
     $(document).ready(function () {
@@ -532,8 +556,6 @@
 
         authorTotalGraph = GraphModule.graph({graphOverall: false});
         totalGraph = GraphModule.graph({graphOverall: false});
-        getSearchTotalData($('.search-category-option').eq(0).text());
-        getAuthorTotalGraphData($('.search-category-option').eq(1).text());
 
         $('.dropdown-menu.panel.panel-default.checkbox').on('click', function (event) {
             event.stopPropagation();
@@ -561,7 +583,7 @@
 
         //$("input:radio[name='groups']").removeAttr('checked');
         $("input:radio[name='groups']").eq(0).prop("checked", true);
-        $("input:radio[name='groups']:radio[value='ALL']").prop("checked", true);
+        $("input:radio[name='groups']:radio[value='전부']").prop("checked", true);
 
         <%--/*--%>
         <%--<div class="dropdown-menu panel panel-default checkbox" style="position:absolute;width: 300px;min-height: 50px;background: rgba(255, 255, 255, 0.95);z-index: 10;left: -250px;top: 25px;overflow-y:auto;text-align: left;">--%>
@@ -644,6 +666,9 @@
             format: 'Y/m/d',
             value: new Date()
         });
+
+        getSearchTotalData($('.search-category-option').eq(0).text());
+        getAuthorTotalGraphData($('.search-category-option').eq(1).text());
 
         $('label[name=dateOption]').click(function () {
             if ($(this).text() == 'MSG') {
@@ -788,8 +813,11 @@
         totalGraph.removeNameList();
         totalGraph.removeData();
         totalGraph.removeSvg();
+        console.log($('#total-book-graph-datepicker-1').val());
+        console.log($('#total-book-graph-datepicker-2').val());
 
-        var startTime = "2015/01/01 00:00:00";
+        //var startTime = "2015/01/01 00:00:00";
+        var startTime = $('#total-book-graph-datepicker-1').val() + " 00:00:00" + "-" + $('#total-book-graph-datepicker-2').val() + " 23:59:59";
 
         if (category == '일별') category = 'MSG_' + 'daily';
         else                  category = 'MSG_' + 'monthly';
@@ -821,8 +849,11 @@
         authorTotalGraph.removeNameList();
         authorTotalGraph.removeData();
         authorTotalGraph.removeSvg();
+        console.log($('#total-author-graph-datepicker-1').val());
+        console.log($('#total-author-graph-datepicker-2').val());
+        var startTime = $('#total-author-graph-datepicker-1').val() + " 00:00:00" + "-" + $('#total-author-graph-datepicker-2').val() + " 23:59:59";
 
-        var startTime = "2016/11/01 00:00:00";
+        //var startTime = "2016/11/01 00:00:00";
         if (category == '일별') category = 'DB_' + 'daily';
         else                  category = 'DB_' + 'monthly';
 
@@ -909,20 +940,8 @@
 
         var category = categoryEls.eq(2).text();
         if (category == "내용") SearchWord += "indexA^" + input;
-        //else if (category == "저자") SearchWord += "indexB^" + input;
+        else if (category == "저자") SearchWord += "indexB^" + input;
         //else if (category == "참조") SearchWord += "indexC^" + input;
-        else if (category == "저자") {
-    		var str = input.split("_");
-    		if(str.length > 1){
-    			if(str[0] != $('input[name="groups"]:checked').val()) {
-    				alert("저자와 그룹이 일치하지 않습니다.");
-    				isOK = false;
-    			}
-    		} else {
-    			input = $('input[name="groups"]:checked').val() + '_' + input;
-    		}
-        	SearchWord += "indexB^" + input;
-        }
 
         var operator = operatorEls.eq(0).text();
         if (operator != "SEL") {
@@ -934,19 +953,7 @@
 
             var category = categoryEls.eq(3).text();
             if (category == "내용") SearchWord += "indexA^" + input;
-            //else if (category == "저자") SearchWord += "indexB^" + input;
-            else if (category == "저자") {
-        		var str = input.split("_");
-        		if(str.length > 1){
-        			if(str[0] != $('input[name="groups"]:checked').val()) {
-        				alert("저자와 그룹이 일치하지 않습니다.");
-        				isOK = false;
-        			}
-        		} else {
-        			input = $('input[name="groups"]:checked').val() + '_' + input;
-        		}
-            	SearchWord += "indexB^" + input;
-            }
+            else if (category == "저자") SearchWord += "indexB^" + input;
             //else if (category == "참조") SearchWord += "indexC^" + input;
         }
 
@@ -957,12 +964,115 @@
         else
             SearchWord += ">" + categoryEls.eq(4).text() + "_" + "monthly";
 
-		SearchWord += ">" + $('input[name=groups]:checked').val() ;
+        SearchWord += ">" + $('input[name=groups]:checked').val();
 
         if (!isOK) SearchWord = "";
 ///
         return SearchWord;
     }
+
+    function binaryblob(selector) {
+        var byteString = atob(document.querySelector(selector).toDataURL().replace(/^data:image\/(png|jpg);base64,/, ""));
+        var ia = new Uint8Array(ab);
+        for (var i = 0; i < byteString.length; i++) {
+            ia[i] = byteString.charCodeAt(i);
+        }
+        var dataView = new DataView(ab);
+        var blob = new Blob([dataView], {type: "image/png"});
+        var DOMURL = self.URL || self.webkitURL || self;
+        var newurl = DOMURL.createObjectURL(blob);
+
+        var img = '<img src="' + newurl + '">';
+        d3.select("#img").html(img);
+    }
+    var w = 1200, // or whatever your svg width is
+            h = 700;
+
+    function svgToCanvas() {
+        // Select the first svg element
+        var svg = d3.select('svg')[0][0],
+                img = new Image(),
+                serializer = new XMLSerializer(),
+                svgStr = serializer.serializeToString(svg);
+
+        img.src = 'data:image/svg+xml;base64,' + window.btoa(svgStr);
+
+        // You could also use the actual string without base64 encoding it:
+        //img.src = "data:image/svg+xml;utf8," + svgStr;
+
+
+        var canvas = document.createElement("canvas");
+        document.body.appendChild(canvas);
+
+        canvas.width = w;
+        canvas.height = h;
+        canvas.getContext("2d").drawImage(img, 0, 0, w, h);
+        // Now save as png or whatever
+
+        $('body').append('<a download="hihi" href="' + canvas.toDataURL() + '">dd</a>');
+    }
+
+
+    jQuery.fn.tableToCSV = function () {
+
+        var clean_text = function (text) {
+            text = text.replace(/"/g, '""');
+            return '"' + text + '"';
+        };
+
+        $(this).each(function () {
+            var table = $(this);
+            var caption = $(this).find('caption').text();
+            var title = [];
+            var rows = [];
+
+            $(this).find('tr').each(function () {
+                var data = [];
+                $(this).find('th').each(function () {
+                    var text = clean_text($(this).text());
+                    title.push(text);
+                });
+                $(this).find('td').each(function () {
+                    var text = clean_text($(this).text());
+                    data.push(text);
+                });
+                data = data.join(",");
+                rows.push(data);
+            });
+            title = title.join(",");
+            rows = rows.join("\n");
+
+            var csv = title + rows;
+            var uri = 'data:text/csv;charset=utf-8,' + encodeURIComponent(csv);
+            var download_link = document.createElement('a');
+            download_link.href = uri;
+            var ts = new Date().getTime();
+            if (caption == "") {
+                download_link.download = ts + ".csv";
+            } else {
+                download_link.download = caption + "-" + ts + ".csv";
+            }
+            download_link = $(download_link);
+            console.error(download_link);
+//            document.body.appendChild(download_link);
+            download_link.text('a');
+            download_link.attr('download', ts + ".csv");
+            download_link.html('<span>a</span>');
+            console.error($('body').append(download_link));
+            download_link.find('span').click();
+            console.error(download_link.click());
+
+
+        });
+
+    };
+
+
+
+    // This must be a hyperlink
+
+
+
 
 </script>
 </body>

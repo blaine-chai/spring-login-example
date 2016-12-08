@@ -196,22 +196,22 @@ public class AdminController {
     }
 
 
-    @RequestMapping(value = "/admin-account/search")
-    public ModelAndView adminAccountSearch(HttpServletRequest request) {
-        String searchFilter = request.getParameter("searchFilter");
-        String searchInput = request.getParameter("searchInput");
-        List<UserAccount> adminList = null;
-        if (searchFilter.equals("userId")) {
-            adminList = userAccountRepository.findByUserIdAndType(searchInput, UserType.ADMIN);
-        } else if (searchFilter.equals("username")) {
-            adminList = userAccountRepository.findByUsernameAndType(searchInput, UserType.ADMIN);
-        } else {
-            adminList = new ArrayList<UserAccount>();
-        }
-        ModelAndView modelAndView = new ModelAndView("admin_administrator_list");
-        modelAndView.addObject("adminList", adminList);
-        return modelAndView;
-    }
+//    @RequestMapping(value = "/admin-account/search")
+//    public ModelAndView adminAccountSearch(HttpServletRequest request) {
+//        String searchFilter = request.getParameter("searchFilter");
+//        String searchInput = request.getParameter("searchInput");
+//        List<UserAccount> adminList = null;
+//        if (searchFilter.equals("userId")) {
+//            adminList = userAccountRepository.findByUserIdAndType(searchInput, UserType.ADMIN);
+//        } else if (searchFilter.equals("username")) {
+//            adminList = userAccountRepository.findByUsernameAndType(searchInput, UserType.ADMIN);
+//        } else {
+//            adminList = new ArrayList<UserAccount>();
+//        }
+//        ModelAndView modelAndView = new ModelAndView("admin_administrator_list");
+//        modelAndView.addObject("adminList", adminList);
+//        return modelAndView;
+//    }
 
     @RequestMapping(value = "/admin-account/update", method = RequestMethod.POST)
     public ModelAndView updateAdminUser(HttpServletRequest request) {
@@ -371,23 +371,6 @@ public class AdminController {
         return modelAndView;
     }
 
-    @RequestMapping(value = "/user/modify", method = RequestMethod.POST)
-    public ModelAndView userModify(HttpServletRequest request) {
-        String userId = request.getParameter("userId");
-        ModelAndView modelAndView = new ModelAndView("api");
-        try {
-            UserAccount userAccount = userAccountRepository.findByUserId(request.getParameter("userId")).get(0);
-//            List<UserGroup> userGroups = userGroupRepository.findByUserAccount_UserId(userAccount.getUserId());
-//            UserAccountApi userAccountApi = new UserAccountApi(userAccount, userGroups);
-            List<CommonGroupName> groupNames = groupNameRepository.findAll();
-            modelAndView.addObject("adminInfo", getUserAccountApi(userAccount));
-            modelAndView.addObject("groupNames", groupNames);
-        } catch (ArrayIndexOutOfBoundsException e) {
-            modelAndView = new ModelAndView("redirect:" + "/admin/user");
-        }
-        return modelAndView;
-    }
-
     @RequestMapping(value = "/user/delete", method = RequestMethod.POST)
     public ModelAndView userDelete(HttpServletRequest request) {
 
@@ -414,26 +397,26 @@ public class AdminController {
     }
 
 
-    @RequestMapping(value = "/user/search")
-    public ModelAndView userSearch(HttpServletRequest request) {
-        String searchFilter = request.getParameter("searchFilter");
-        String searchInput = request.getParameter("searchInput");
-        List<UserAccount> adminList = null;
-        if (searchFilter.equals("userId")) {
-            adminList = userAccountRepository.findByUserId(searchInput);
-        } else if (searchFilter.equals("username")) {
-            adminList = userAccountRepository.findByUsername(searchInput);
-        } else {
-            adminList = new ArrayList<UserAccount>();
-        }
-        List<UserAccountApi> userAccountApis = new ArrayList<UserAccountApi>();
-        for (UserAccount userAccount : adminList) {
-            userAccountApis.add(getUserAccountApi(userAccount));
-        }
-        ModelAndView modelAndView = new ModelAndView("admin_user_list");
-        modelAndView.addObject("adminList", userAccountApis);
-        return modelAndView;
-    }
+//    @RequestMapping(value = "/user/search")
+//    public ModelAndView userSearch(HttpServletRequest request) {
+//        String searchFilter = request.getParameter("searchFilter");
+//        String searchInput = request.getParameter("searchInput");
+//        List<UserAccount> adminList = null;
+//        if (searchFilter.equals("userId")) {
+//            adminList = userAccountRepository.findByUserId(searchInput);
+//        } else if (searchFilter.equals("username")) {
+//            adminList = userAccountRepository.findByUsername(searchInput);
+//        } else {
+//            adminList = new ArrayList<UserAccount>();
+//        }
+//        List<UserAccountApi> userAccountApis = new ArrayList<UserAccountApi>();
+//        for (UserAccount userAccount : adminList) {
+//            userAccountApis.add(getUserAccountApi(userAccount));
+//        }
+//        ModelAndView modelAndView = new ModelAndView("admin_user_list");
+//        modelAndView.addObject("adminList", userAccountApis);
+//        return modelAndView;
+//    }
 
     @RequestMapping(value = "/user/update", method = RequestMethod.POST)
     public ModelAndView userUpdate(HttpServletRequest request) {

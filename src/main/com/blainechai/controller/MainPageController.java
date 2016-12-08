@@ -470,27 +470,28 @@ public class MainPageController {
         if (sessionRepository.findByJSessionId(sessionId).size() > 0) {
             userId = sessionRepository.findByJSessionId(sessionId).get(0).getUserId();
         }
+        System.out.println("ZZZZZZZZZZ: timeE = " +searchPeriod);
+
         String[] dayMonth2 = searchPeriod.split("-");
-        String[] dayMonth = dayMonth2[1].split("_");
+        String[] dayMonth = dayMonth2[2].split("_");
 
         SimpleDateFormat formatter = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
 
+        System.out.println("ZZZZZZZZZZ: timeE = " + dayMonth2[0] + " :1: timeNow = " + dayMonth2[1]);
+
         Calendar c = Calendar.getInstance();
-        try {
-            c.setTime(formatter.parse(dayMonth2[0]));
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
+        try { c.setTime(formatter.parse(dayMonth2[0])); } catch (ParseException e) { e.printStackTrace();  }
         String startTime = c.get(c.YEAR) + (String.format("%02d", c.get(c.MONTH) + 1)) + (String.format("%02d", c.get(c.DATE))) + "000000";
 
         c = Calendar.getInstance();
-        if (dayMonth[1].equals("monthly")) c.add(c.MONTH, 1);
-        else c.add(c.DATE, 1);
+        try { c.setTime(formatter.parse(dayMonth2[1])); } catch (ParseException e) { e.printStackTrace();  }
+        //if (dayMonth[1].equals("monthly")) c.add(c.MONTH, 1);
+        //else c.add(c.DATE, 1);
         //if (dayMonth[1].equals("monthly")) c.add(c.MONTH, -19);
         //else c.add(c.DATE, -560);
 
         String endTime = c.get(c.YEAR) + (String.format("%02d", c.get(c.MONTH) + 1)) + (String.format("%02d", c.get(c.DATE))) + "235959";
-        String msg = startTime + "-" + endTime + ">" + dayMonth2[1];
+        String msg = startTime + "-" + endTime + ">" + dayMonth2[2];
 
         SocketComm sc = new SocketComm(userId + "@" + id, ip, port, 23, 0, msg);
         sc.runStart();
@@ -906,6 +907,7 @@ public class MainPageController {
         String send = "";
 
         SocketComm sc = null;
+        boolean isGroup = false;
         if (selInt < 100) {
             if (selInt <= 1) {
                 msg = wordParse(msg);
@@ -918,6 +920,13 @@ public class MainPageController {
                     		break;
                     	}
                     }
+                }
+                for(int j=0; j < userGroups.size(); j++) {
+                	if(userGroups.get(j).getGroupName().getGroupName().equals(s[4])) {
+                		isGroup = true;
+                	}
+                	if(userGroups.get(j).getGroupName().getGroupName().equals("전부"))
+                		isGroup = true;
                 }
                 if(groupChecked.equals(""))
                 	msg = s[0] + ">" + s[1] + ">" +s[2] + ">" +s[3] + ">";
@@ -937,8 +946,10 @@ public class MainPageController {
             //int progress = 29;
 
             if (sc.beGetGood() >= 0) {
-                if (selInt == 0) send += "OK";                    // query
-                else if (selInt == 1) send += "OK";            // query
+                if (selInt <= 1) {
+                	if(isGroup) send += "OK";                    // query
+                	else 	send += "NotGroup";
+                }
                 else if ((selInt == 2) || (selInt == 12)) {
                     send += msg;
                     bookInfoList = sc.getR();
@@ -1172,16 +1183,14 @@ public class MainPageController {
                 CommonBookmark commonBookmark = commonBookmarks.get(0);
                 String msg = wordParse(searchWordParse(commonBookmark.getAdminBookmark().getWord()));
 
-                SocketComm sc = new SocketComm(userId + "@" + "ALRAM96", ip, port, 18, 0, msg);
+                SocketComm sc = new SocketComm(userId + "@" + "A_" + System.currentTimeMillis(), ip, port, 18, 0, msg);
                 sc.runStart();
                 int result = sc.beGetGood();
 
-                System.out.println("ALRAM96!!common!!!! msg : " + result);
+                //System.out.println("ALRAM96!!common!!!! msg : " + result);
                 commonBookmark.setCount(result);
                 commonBookmarkRepository.save(commonBookmark);
 
-                sc = new SocketComm(userId + "@" + "ALRAM96", ip, port, 5, 0);
-                sc.runStart();
             }
         }
         return new ModelAndView("api").addObject("json", "");
@@ -1207,7 +1216,7 @@ public class MainPageController {
 
                     String msg = wordParse(searchWordParse(commonBookmarks.get(i).getAdminBookmark().getWord()));
 
-                    sc = new SocketComm(userId + "@" + "ALRAM98", ip, port, 18, 0, msg);
+                    sc = new SocketComm(userId + "@" + "A_" + System.currentTimeMillis(), ip, port, 18, 0, msg);
                     sc.runStart();
                     int result = sc.beGetGood();
                     System.out.println("common-bookmark/get :: AAAAA : " + i + " : " + msg + "  => " + result + "  => " + commonBookmarks.get(i).getCount());
@@ -1218,10 +1227,6 @@ public class MainPageController {
                     } else {
                         historyApis.add(new HistoryApi(commonBookmarks.get(i), false));
                     }
-                }
-                if (commonBookmarks.size() > 0) {
-                    sc = new SocketComm(userId + "@" + "ALRAM98", ip, port, 5, 0);
-                    sc.runStart();
                 }
             }
         }
@@ -1239,10 +1244,11 @@ public class MainPageController {
 
         String id = request.getParameter("id");
         String msg = request.getParameter("msg");
-        msg = wordParse(msg);
+        String word = request.getParameter("data");
+
+        msg = wordParse(searchWordParse(word));
         System.out.println("userBookmarkAdd : id = " + id + " : msg = " + msg);
 
-        String word = request.getParameter("data");
         if (sessionRepository.findByJSessionId(sessionId).size() > 0) {
             adminId = sessionRepository.findByJSessionId(sessionId).get(0).getUserId();
             List<UserAccount> adminAccounts = userAccountRepository.findByUserId(adminId);
@@ -1257,10 +1263,7 @@ public class MainPageController {
                     for (UserAccount userAccount : allUsers) {
                         commonBookmarkRepository.save(new CommonBookmark(userAccount, tmpAdminBookmark, 0));
                     }
-                    SocketComm sc = new SocketComm(adminId + "@" + "ALRAM94", ip, port, 19, 0, msg);
-                    sc.runStart();
-
-                    sc = new SocketComm(adminId + "@" + "ALRAM94", ip, port, 5, 0);
+                    SocketComm sc = new SocketComm(adminId + "@" + "A_" + System.currentTimeMillis(), ip, port, 19, 0, msg);
                     sc.runStart();
                 }
             }
@@ -1296,10 +1299,11 @@ public class MainPageController {
 
         String id = request.getParameter("id");
         String msg = request.getParameter("msg");
-        msg = wordParse(msg);
-        System.out.println("userBookmarkAdd : id = " + id + " : msg = " + msg);
-
         String word = request.getParameter("data");
+
+        msg = wordParse(searchWordParse(word));
+        //System.out.println("userBookmarkAdd : id = " + id + " : msg = " + msg);
+
         if (sessionRepository.findByJSessionId(sessionId).size() > 0) {
             userId = sessionRepository.findByJSessionId(sessionId).get(0).getUserId();
             List<UserHistory> userHistories = userHistoryRepository.findByUserAccount_UserIdAndWord(userId, word);
@@ -1309,10 +1313,7 @@ public class MainPageController {
                 userHistory.setUserBookmark(tmpBookmark);
                 userHistoryRepository.save(userHistory);
 
-                SocketComm sc = new SocketComm(userId + "@" + "ALRAM95", ip, port, 19, 0, msg);
-                sc.runStart();
-
-                sc = new SocketComm(userId + "@" + "ALRAM95", ip, port, 5, 0);
+                SocketComm sc = new SocketComm(userId + "@" + "A_" + System.currentTimeMillis(), ip, port, 19, 0, msg);
                 sc.runStart();
             }
         }
@@ -1331,18 +1332,18 @@ public class MainPageController {
             List<UserBookmark> userBookmarks = userBookmarkRepository.findById(Long.parseLong(id));
 //            System.out.println("@@@@@");
             if (userBookmarks.size() > 0) {
-                UserBookmark userBookmark = userBookmarks.get(0);
-                String msg = wordParse(searchWordParse(userBookmark.getWord()));
 
-                SocketComm sc = new SocketComm(userId + "@" + "ALRAM97", ip, port, 18, 0, msg);
+            	UserBookmark userBookmark = userBookmarks.get(0);
+
+            	String msg = wordParse(searchWordParse(userBookmark.getWord()));
+
+                SocketComm sc = new SocketComm(userId + "@" + "A_" + System.currentTimeMillis(), ip, port, 18, 0, msg);
                 sc.runStart();
                 int result = sc.beGetGood();
                 System.out.println("ALRAM97!!user!!!! msg : " + result);
 
                 userBookmark.setCount(result);
                 userBookmarkRepository.save(userBookmark);
-                sc = new SocketComm(userId + "@" + "ALRAM97", ip, port, 5, 0);
-                sc.runStart();
             }
         }
         return new ModelAndView("api").addObject("json", "");
@@ -1366,7 +1367,7 @@ public class MainPageController {
 //                    historyApis.add(new HistoryApi(userBookmarks.get(i), false));
 
                     String msg = wordParse(searchWordParse(userBookmarks.get(i).getWord()));
-                    sc = new SocketComm(userId + "@" + "ALRAM99", ip, port, 18, 0, msg);
+                    sc = new SocketComm(userId + "@" + "A_" + System.currentTimeMillis(), ip, port, 18, 0, msg);
                     sc.runStart();
                     int result = sc.beGetGood();
                     System.out.println("user-bookmark/get :: AAAAA : " + i + " : " + msg + " => " + result + "  => " + userBookmarks.get(i).getCount());
@@ -1378,8 +1379,8 @@ public class MainPageController {
                     }
                 }
                 if (userBookmarks.size() > 0) {
-                    sc = new SocketComm(userId + "@" + "ALRAM99", ip, port, 5, 0);
-                    sc.runStart();
+                    //sc = new SocketComm(userId + "@" + "A_" + System.currentTimeMillis(), ip, port, 5, 0);
+                    //sc.runStart();
                 }
 
             }
@@ -1520,21 +1521,25 @@ public class MainPageController {
     }
 
     public String wordParse(String str) {
+        String[] s = str.split(">");
+        String groups = s[s.length-1];
+
         String first = " <AND> ";
         String second = " <OR> ";
         String firstAdd = " & ";
         String secondAdd = " | ";
-        String[] s = str.split(first);
+
+        s = str.split(first);
         String word = "";
 
         for (int i = 0; i < s.length; i++) {
             String[] s1 = s[i].split(second);
             if (s1.length > 1) {
                 for (int j = 0; j < s1.length; j++) {
-                    word += wordParse2(s1[j]);
+                    word += wordParse2(s1[j], groups);
                     if (j != s1.length - 1) word += secondAdd;
                 }
-            } else word += wordParse2(s[i]);
+            } else word += wordParse2(s[i], groups);
 
             if (i != s.length - 1) word += firstAdd;
         }
@@ -1543,7 +1548,7 @@ public class MainPageController {
         return word;
     }
 
-    public String wordParse2(String str2) {
+    public String wordParse2(String str2, String groups) {
         String word = "";
         String basic = "\\^";
 
@@ -1563,15 +1568,17 @@ public class MainPageController {
             if (s1.length > 1) {
                 for (int j = 0; j < s1.length; j++) {
                     if (!str[0].equals("indexB")) word += str[0] + "^" + s1[j];
-                    else word += str[0] + "^" + getAuthorByNickname(s1[j]);
+                    else word += str[0] + "^" + getAuthorByNickname(s1[j], groups);
 
                     //System.out.println("BBBBBBBBBB : word : " + str[0] + "^" + s1[j]);
                     if (j != s1.length - 1) word += secondAdd;
                 }
             } else {
+                //System.out.println("CCCCCCCCCCCCC : word : " + str[0] + " : " + s[i]);
                 if (!str[0].equals("indexB")) word += str[0] + "^" + s[i];
-                else word += str[0] + "^" + getAuthorByNickname(s[i]);
-
+                else {
+                	word += str[0] + "^" + getAuthorByNickname(s[i], groups);
+                }
                 //System.out.println("CCCCCCCCCCCCC : word : " + str[0] + "^" + s[i]);
             }
 
@@ -1594,13 +1601,7 @@ public class MainPageController {
         while (true) {
             t = s[k + 1].split("\"");
             if (s[k].contains("내용")) SearchWord += "indexA^" + t[0];
-            else if (s[k].contains("저자")) {
-        		String[] str = t[0].split("_");
-        		if(str.length == 1) {
-        			t[0] = groups + "_" + t[0];
-        		}
-            	SearchWord += "indexB^" + t[0];
-            }
+            else if (s[k].contains("저자")) SearchWord += "indexB^" + t[0];
 
             //else if (s[k].contains("참조")) SearchWord += "indexC^" + t[0];
             //System.out.println(SearchWord + " : " + s[k+2]);
@@ -1612,33 +1613,38 @@ public class MainPageController {
             } else break;
         }
         k = k + 3;
+        if(!groups.equals("전부"))
+        	SearchWord += " <AND> indexC^" + groups;
+
         if (s[k].contains("문자포함")) SearchWord += ">문자포함";
         else if (s[k].contains("형태소")) SearchWord += ">형태소";
         else if (s[k].contains("완전일치")) SearchWord += ">완전일치";
+        SearchWord += ">" + groups;
 
         //System.out.println(word + " => " + SearchWord);
         return SearchWord;
     }
 
-    private String getAuthorByNickname(String name) {
+    private String getAuthorByNickname(String name, String groups) {
         String author = "";
 
         String[] t = name.split(">", 2);
         String[] t1 = t[0].split("_", 2);
-        String nickname = t1[1];
+        if(t1.length >= 2)return name;
 
-        System.out.println("ZZZZ :" + name + " : " + nickname + " : " + t.length);
+        String nickname = t[0];
+
+        //System.out.println("ZZZZ :" + name + " : " + nickname + " : " + t.length);
 
         List<NicknameOption> nicknameOptions = nicknameRepository.findByNickname(nickname);
         if (nicknameOptions.size() > 0) {
             author = nicknameOptions.get(0).getAuthor();
         }
 
-        if (author.equals("")) author = name;
-        else {
-            if (t.length > 1) author = author + ">" + t[1];
-        }
-        System.out.println("ZZZZ :" + author);
+        if (author.equals("")) author = groups + "_"+ name ;
+
+        if (t.length > 1) author = author + ">" + t[1];
+        //System.out.println("ZZZZ :" + author);
 
         return author;
     }

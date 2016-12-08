@@ -230,6 +230,7 @@
                             0%
                         </div>
                     </div>
+                    <div id="search-result-export-container" style="position: absolute;right: 30px;top: 12px;"><button class="btn btn-default btn-sm">내보내기</button></div>
                 </div>
                 <div id="result-table-wrapper" class="panel panel-default"
                      style="margin: 15px; overflow: auto; height: calc(100% - 200px); font-size: 11px">
@@ -293,7 +294,7 @@
         </div>
     </div>
 </div>
-<script type="text/javascript" charset="UTF-8" src="/js/alarm-update.js"></script>
+<%--<script type="text/javascript" charset="UTF-8" src="/js/alarm-update.js"></script>--%>
 <script type="text/javascript" charset="UTF-8" src="/js/auto-logout.js"></script>
 <script type="text/javascript" charset="UTF-8">
     //var userHistory;
@@ -312,6 +313,7 @@
     relStartPos.maxLeft = 300;
     relStartPos.maxTop = 300;
     relStartPos.count = 0;
+    var loadingRing = $('<img class="loading-ring" src="/imgs/ajax-loader.gif" style="">');
 
     function handleOperatorSelect(element) {
         var list = $(element).parent().parent().parent().parent().parent();
@@ -389,7 +391,7 @@
         getAdminHistory();
         //$("input:radio[name='groups']").removeAttr('checked');
         $('input:radio[name="groups"]').eq(0).prop("checked", true);
-        $('input:radio[name="groups"]:radio[value="ALL"]').prop("checked", true);
+        $('input:radio[name="groups"]:radio[value="전부"]').prop("checked", true);
         <%--/*--%>
         <%--<c:forEach items="${userGroups}" var="userGroup">--%>
         <%--<label style="margin-left: 1px;font-size: 12px;">--%>
@@ -603,6 +605,7 @@
                 repeatCnt = 0;
                 stop = false;
                 console.log($('#book-table tbody').find('tr').eq(row).find('td').eq(col).find('span').hasClass("glyphicon-ok"));
+//                $('#book-table tbody').find('tr').eq(row).find('td').eq(col).append(loadingRing);
 
                 var msg = "indexB^" + tableData[row].author
                         + " & " + tableData[row].referencedAuthor + ">완전일치>"
@@ -941,18 +944,7 @@
             obj.input = tmp;
 
             if (obj.category == "내용") SearchWord += "indexA^" + tmp;
-            else if (obj.category == "저자") {
-        		var str = tmp.split("_");
-        		if(str.length > 1){
-        			if(str[0] != $('input[name="groups"]:checked').val()) {
-        				alert("저자와 그룹이 일치하지 않습니다.");
-        				isOK = false;
-        			}
-        		} else {
-        			tmp = $('input[name="groups"]:checked').val() + '_' + tmp;
-        		}
-            	SearchWord += "indexB^" + tmp;
-            }
+            else if (obj.category == "저자") SearchWord += "indexB^" + tmp;
             //else if (obj.category == "참조") SearchWord += "indexC^" + tmp;
 
             if (obj.operator == "O R") SearchWord += " <OR> ";
@@ -988,18 +980,6 @@
         if (!isOK) SearchWord = "";
 ///
         return JSON.stringify(data);
-    }
-
-    function groupCheck(tmp) {
-		var str = tmp.split("_");
-		if(str.length > 1) {
-			if(str[0] != $('input[name="groups"]:checked').val())
-				alert("저자와 그룹이 일치하지 않습니다.");
-		}
-		else {
-			str = $('input[name="groups"]:checked').val() + '_' + tmp;
-		}
-		return str;
     }
 
     function setQuery(responseData, page) {
@@ -1316,18 +1296,7 @@
         for (var i = 0; i < data.length; i++) {
         	var tmp = data[i].input;
             if (data[i].category == "내용") str += 'indexA^' + tmp;
-            else if (data[i].category == "저자") {
-        		var str2 = tmp.split("_");
-        		if(str.length > 1){
-        			if(str2[0] != tdata.groups) {
-        				alert("저자와 그룹이 일치하지 않습니다.");
-        				isOK = false;
-        			}
-        		} else {
-        			tmp = tdata.groups + '_' + tmp;
-        		}
-        		str += "indexB^" + tmp;
-            }
+            else if (data[i].category == "저자") str += "indexB^" + tmp;
             //else if (data[i].category == "참조") str += 'indexC^';
 
             if (i < data.length - 1) {
@@ -1339,7 +1308,7 @@
         str += ">" + tdata.fromDate + "-" + tdata.toDate;
         str += ">" + tdata.dateOption;
         console.log("dataParsing : " + tdata.groups);
-        str += ">그룹 :" + tdata.groups;
+        str += ">" + tdata.groups;
 
         //if(!isOK) str = "";
 
