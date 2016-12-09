@@ -31,44 +31,44 @@
         }
 
         svg {
-            background-color: #fff;
+            /*background-color: #fff;*/
             border-radius: 4px;
             /*fill: gray;*/
         }
 
         svg g path.line {
-            stroke-width: 2px;
-            stroke-opacity: 0.5;
-            fill: none;
+            /*stroke-width: 2px;*/
+            /*stroke-opacity: 0.5;*/
+            /*fill: none;*/
         }
 
         svg g path.line.total {
-            stroke-dasharray: 3;
-            stroke-width: 2px;
-            stroke-opacity: 0.7;
-            fill: none;
+            /*stroke-dasharray: 3;*/
+            /*stroke-width: 2px;*/
+            /*stroke-opacity: 0.7;*/
+            /*fill: none;*/
         }
 
         svg g circle {
-            fill: #1db34f;
-            stroke: #16873c;
-            stroke-width: 2px;
+            /*fill: #1db34f;*/
+            /*stroke: #16873c;*/
+            /*stroke-width: 2px;*/
         }
 
         .axis path,
         .axis line {
-            fill: none;
-            stroke: grey;
-            stroke-width: 1;
-            shape-rendering: crispEdges;
+            /*fill: none;*/
+            /*stroke: grey;*/
+            /*stroke-width: 1;*/
+            /*shape-rendering: crispEdges;*/
         }
 
         .y.axis text {
-            font-size: 10px;
+            /*font-size: 10px;*/
         }
 
         .x.axis text {
-            font-size: 10px;
+            /*font-size: 10px;*/
         }
     </style>
 
@@ -448,6 +448,7 @@
 <script type="text/javascript" charset="UTF-8" src="/js/line-graph.js"></script>
 <%--<script type="text/javascript" charset="UTF-8" src="/js/alarm-update.js"></script>--%>
 <script type="text/javascript" charset="UTF-8" src="/js/auto-logout.js"></script>
+<script type="text/javascript" charset="UTF-8" src="/js/table-to-csv.js"></script>
 <script type="text/javascript" charset="UTF-8">
     var relStartPos = new Object();
     relStartPos.left = 100;
@@ -524,12 +525,7 @@
 //        })
 
         tmpHtml.find('.btn-export').click(function (event) {
-
             exportTableToCSV.apply(this, [$(tmpHtml.find('table')), 'export.csv']);
-
-//            console.error(this);
-            // IF CSV, don't do event.preventDefault() or return false
-            // We actually need this to be a typical hyperlink
         });
 
 //        $(".btn-export").on('click', function (event) {
@@ -985,7 +981,7 @@
         var img = '<img src="' + newurl + '">';
         d3.select("#img").html(img);
     }
-    var w = 1200, // or whatever your svg width is
+    var w = 1400, // or whatever your svg width is
             h = 700;
 
     function svgToCanvas() {
@@ -1009,7 +1005,20 @@
         canvas.getContext("2d").drawImage(img, 0, 0, w, h);
         // Now save as png or whatever
 
-        $('body').append('<a download="hihi" href="' + canvas.toDataURL() + '">dd</a>');
+        $('body').append('<a download="graph.png" href="' + canvas.toDataURL() + '"></a>');
+        var tar = $('<a></a>');
+        var filename = "hi.png";
+        if (window.navigator.msSaveBlob) { // IE 10+
+            //alert('IE' + csv);
+            window.navigator.msSaveOrOpenBlob(new Blob([csv], {type: "text/plain;charset=utf-8;"}), filename)
+        }
+        else {
+            tar.attr({'download': filename, 'href': canvas.toDataURL().replace('data:image', 'data:application'), 'target': '_blank'});
+            $('body').append(tar);
+            tar[0].click();
+            console.error('tar');
+
+        }
     }
 
 
@@ -1066,12 +1075,7 @@
         });
 
     };
-
-
-
     // This must be a hyperlink
-
-
 
 
 </script>

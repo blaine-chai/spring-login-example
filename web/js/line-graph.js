@@ -56,7 +56,6 @@ var GraphModule = (function () {
                     .split(tmpColDelim).join(colDelim) + '"',
 
 
-
             // Data URI
             csvData = 'data:application/csv;charset=utf-8,' + encodeURIComponent(csv);
 
@@ -67,7 +66,7 @@ var GraphModule = (function () {
             window.navigator.msSaveOrOpenBlob(new Blob([csv], {type: "text/plain;charset=utf-8;"}), filename)
         }
         else {
-            $(this).attr({ 'download': filename, 'href': csvData, 'target': '_blank' });
+            $(this).attr({'download': filename, 'href': csvData, 'target': '_blank'});
         }
     }
 
@@ -92,7 +91,7 @@ var GraphModule = (function () {
 
     var graph = (function (opt) {
         var defaults = {
-            margin: {top: 20, right: 60, bottom: 30, left: 60},
+            margin: {top: 20, right: 70, bottom: 30, left: 70},
             containerSelector: '#main-graph-container',
             data: [],
             // xRange: [],
@@ -188,6 +187,7 @@ var GraphModule = (function () {
             svg = d3.select(option.containerSelector).append("svg");
             svg.attr("width", width + m.left + m.right)
                 .attr("height", height + m.top + m.bottom)
+                .style("background-color", "#fff")
                 .append("g")
                 .attr("transform", "translate(" + m.left + "," + m.top + ")");
         });
@@ -274,23 +274,38 @@ var GraphModule = (function () {
             //     .attr('transform', 'translate(0, ' + height + ')')
             //     .call(xAxis);
 
+            // svg.select('g').append('g')
+            //     .attr('class', 'x axis')
+            //     .attr('transform', 'translate(0, ' + height + ')')
 
             svg.select('g').append('g')
                 .attr('class', 'x axis total-x')
                 .attr('transform', 'translate(0, ' + height + ')')
                 .call(totalXAxis);
 
+            svg.selectAll('.x.axis text')
+                .style('font-size', '10px');
+
             svg.select('g').append("g")
                 .attr("class", "y axis")
                 .call(yAxis);
+
 
             svg.select('g').append("g")
                 .attr("class", "y axis total-y")
                 .attr("transform", "translate(" + width + " ,0)")
                 .call(totalYAxis);
 
+            svg.selectAll('.y.axis text')
+                .style('font-size', '10px');
 
             // setColor();
+
+            svg.selectAll('.axis path, .axis line')
+                .style('fill', 'none')
+                .style('stroke', 'grey')
+                .style('stroke-width', '1')
+                .style('shape-rendering', 'crispEdges')
 
             $.each(option.nameList, function (i, name) {
                 var line = d3.svg.line().x(function (d) {
@@ -303,7 +318,11 @@ var GraphModule = (function () {
                     .datum(option.data)
                     .attr("class", "line")
                     .attr("d", line)
-                    .style('stroke', option.colorSet[i]).style('fill','none');
+                    .style('stroke-width','2px')
+                    .style('stroke-opacity','0.5')
+                    .style('fill', 'none')
+                    .style('stroke', option.colorSet[i])
+                    .style('fill', 'none');
             });
 
             $.each(option.nameList, function (i, name) {
@@ -317,7 +336,11 @@ var GraphModule = (function () {
                     .datum(option.totalData)
                     .attr("class", "line total")
                     .attr("d", line)
-                    .style('stroke', option.colorSet[i]).style('fill','none');
+                    .style('stroke-dasharray','3')
+                    .style('stroke-width', '2px')
+                    .style('stroke-opacity', '0.7')
+                    .style('stroke', option.colorSet[i])
+                    .style('fill', 'none');
 
                 svg.select('.total-y')
                     .append('g')
@@ -326,6 +349,8 @@ var GraphModule = (function () {
                     .attr('transform', 'translate(0,' + totalY(option.totalData[option.totalData.length - 1][name]) + ')')
                     .append('text')
                     .text(option.totalData[option.totalData.length - 1][name].format());
+
+
                 var text = graphContainer.find('.sum text').eq(i);
                 text.css('stroke', option.colorSet[i]);
                 text.css('opacity', 0.8);

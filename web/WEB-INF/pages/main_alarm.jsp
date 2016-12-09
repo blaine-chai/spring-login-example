@@ -106,7 +106,7 @@
                         </div>
                     </div>
                     <div id="search-result-export-container" style="position: absolute;right: 30px;top: 12px;">
-                        <button class="btn btn-default btn-sm">내보내기</button>
+                        <a class="btn btn-default btn-sm btn-export">내보내기</a>
                     </div>
                 </div>
                 <div id="result-table-wrapper" class="panel panel-default"
@@ -174,6 +174,7 @@
 </div>
 <%--<script type="text/javascript" charset="UTF-8" src="/js/alarm-update.js"></script>--%>
 <script type="text/javascript" charset="UTF-8" src="/js/auto-logout.js"></script>
+<script type="text/javascript" charset="UTF-8" src="/js/table-to-csv.js"></script>
 <script type="text/javascript" charset="UTF-8">
     var relStartPos = new Object();
     var lastPageMain = 0;
@@ -271,15 +272,12 @@
                                 callAjaxLoop(userID, 0, 1, 0, 0, SearchWord, data);
                             }
                         });
-                    }
-                    );
-        }
-        else
-        {
+                    });
+        }else{
             var tmp = $('<tr style="height: 100%;"><td style="border: 0;">등록된 북마크가 없습니다.</td></tr>');
             bookmarkModule.getContainer().find('tbody').append(tmp);
         }
-    }
+                }
     })
     ;
     })
@@ -351,6 +349,10 @@
         $('#result-table-wrapper').scroll(function () {
             $('#book-table-header').css("top",
                     252 - $('#book-table').offset().top);
+        });
+
+        $('.btn-export').click(function () {
+            exportTableToCSV.apply(this, [$('#book-table'), 'export.csv']);
         });
     });
 

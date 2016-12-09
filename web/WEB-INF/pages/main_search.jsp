@@ -113,7 +113,8 @@
                                 </ul>
                             </div>
                         </div>
-                        <input type="text" class="form-control col-xs-4 search-input" onkeypress="onkeypressClick(event)" placeholder="검색어를 입력해주세요.">
+                        <input type="text" class="form-control col-xs-4 search-input"
+                               onkeypress="onkeypressClick(event)" placeholder="검색어를 입력해주세요.">
                         <div class="dropdown input-group-btn">
                             <div class="btn-group">
                                 <button type="button" class="btn btn-default btn-sm dropdown-toggle"
@@ -230,7 +231,8 @@
                             0%
                         </div>
                     </div>
-                    <div id="search-result-export-container" style="position: absolute;right: 30px;top: 12px;"><button class="btn btn-default btn-sm">내보내기</button></div>
+                    <div id="search-result-export-container" style="position: absolute;right: 30px;top: 12px;"><a
+                            class="btn btn-default btn-sm btn-export">내보내기</a></div>
                 </div>
                 <div id="result-table-wrapper" class="panel panel-default"
                      style="margin: 15px; overflow: auto; height: calc(100% - 200px); font-size: 11px">
@@ -296,6 +298,7 @@
 </div>
 <%--<script type="text/javascript" charset="UTF-8" src="/js/alarm-update.js"></script>--%>
 <script type="text/javascript" charset="UTF-8" src="/js/auto-logout.js"></script>
+<script type="text/javascript" charset="UTF-8" src="/js/table-to-csv.js"></script>
 <script type="text/javascript" charset="UTF-8">
     //var userHistory;
     var userHistory = [];
@@ -385,6 +388,11 @@
 //                    $(this).parent().find('div').remove();
                 });
             }
+        });
+
+
+        $('.btn-export').click(function () {
+            exportTableToCSV.apply(this, [$('#book-table'), 'export.csv']);
         });
 
         getSearchHistory();
@@ -763,12 +771,12 @@
                     $("#search-progress").append("<div class='progress-bar progress-bar-striped active' role='progressbar' aria-valuenow='"
                             + sel2[1] + "' aria-valuemin='0' aria-valuemax='100' style='width: " + sel2[1] + "%;'>" + sel2[1] + "%</div>");			// 검색 률
 
-					if (sel2[1] == 100){
-						$('.progress-bar').removeClass('progress-bar-striped');
-					}
+                    if (sel2[1] == 100) {
+                        $('.progress-bar').removeClass('progress-bar-striped');
+                    }
 
                     console.log(sel2[0] + " : " + sel2[1]);
-					if((sel2[1] == 100)&&(sel2[0]==0)) alert("검색결과가 없습니다!!!");
+                    if ((sel2[1] == 100) && (sel2[0] == 0)) alert("검색결과가 없습니다!!!");
 
                     if (tdata.jobOrder == "1") {
                         if (sel2[1] < 100)
@@ -1105,7 +1113,7 @@
                     var tmpEl = $('<tr><td class="user-history-bookmark-td"><img class="bookmark-btn" style="width: 26px;height: 26px;" src="/imgs/bookmark-empty-star.png"></td><td>' + changeHistory(data[i].word) + '</td><td class="user-history-remove-td"><label class="btn btn-default btn-sm close-search-option-btn">-</label></td></tr>');
                     if (d.isBookmarked) {
                         tmpEl.find('img').addClass('bookmark-btn-active');
-                        tmpEl.find('img').attr('src','/imgs/bookmark-empty-star-active.png');
+                        tmpEl.find('img').attr('src', '/imgs/bookmark-empty-star-active.png');
                     }
                     $('#user-history>table>tbody').prepend(tmpEl);
                     tmpEl.find('.close-search-option-btn').click(function (e) {
@@ -1151,7 +1159,7 @@
                             contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
                             success: function (responseData) {
                                 icon.toggleClass('bookmark-btn-active');
-                                icon.attr('src','/imgs/bookmark-empty-star-active.png');
+                                icon.attr('src', '/imgs/bookmark-empty-star-active.png');
                             }
                         });
                     }
@@ -1229,7 +1237,7 @@
                     var tmpEl = $('<tr><td class="user-history-bookmark-td"><img class="bookmark-btn" style="width: 26px;height: 26px;" src="/imgs/bookmark-empty-star.png"></td><td>' + changeHistory(data[i].word) + '</td><td class="user-history-remove-td"><label class="btn btn-default btn-sm close-search-option-btn">-</label></td></tr>');
                     if (d.isBookmarked) {
                         tmpEl.find('img').addClass('bookmark-btn-active');
-                        tmpEl.find('img').attr('src','/imgs/bookmark-empty-star-active.png');
+                        tmpEl.find('img').attr('src', '/imgs/bookmark-empty-star-active.png');
                     }
                     $('#admin-history>table>tbody').prepend(tmpEl);
                     tmpEl.find('.close-search-option-btn').click(function (e) {
@@ -1291,10 +1299,10 @@
         var data = tdata.data;
 
         var str = "";
-		var isOK = true;
+        var isOK = true;
 
         for (var i = 0; i < data.length; i++) {
-        	var tmp = data[i].input;
+            var tmp = data[i].input;
             if (data[i].category == "내용") str += 'indexA^' + tmp;
             else if (data[i].category == "저자") str += "indexB^" + tmp;
             //else if (data[i].category == "참조") str += 'indexC^';
@@ -1347,17 +1355,17 @@
 
         $('label[name=dateOption]').text(a.dateOption);
         if (a.dateOption == 'ALL') {
-		    $('#datepicker1').val("");
-		    $('#datepicker2').val("");
-			$('#datepicker1').datetimepicker("destroy").attr("disabled", true);
-		    $('#datepicker2').datetimepicker("destroy").attr("disabled", true);
-		}
-		else {
-		    $('#datepicker1').removeAttr('disabled');
-		    $('#datepicker2').removeAttr('disabled');
-		}
-		//$('input:radio[name="groups"]').eq(0).prop("checked",true);
-		$('input:radio[name="groups"]:radio[value="' + a.groups + '"]').prop("checked",true);
+            $('#datepicker1').val("");
+            $('#datepicker2').val("");
+            $('#datepicker1').datetimepicker("destroy").attr("disabled", true);
+            $('#datepicker2').datetimepicker("destroy").attr("disabled", true);
+        }
+        else {
+            $('#datepicker1').removeAttr('disabled');
+            $('#datepicker2').removeAttr('disabled');
+        }
+        //$('input:radio[name="groups"]').eq(0).prop("checked",true);
+        $('input:radio[name="groups"]:radio[value="' + a.groups + '"]').prop("checked", true);
 
         $.each(a.data, function (i) {
             var newDiv = $('<div class="input-group input-group-sm search-input-group"><div class="dropdown input-group-btn"><div class="btn-group"><button type="button" class="btn btn-default btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="width: 72px"><span class="search-category-option">내용</span><div style="display: inline-block"><span class="caret"></span><span class="sr-only"></span></div></button><ul class="dropdown-menu search-category-selector" role="menu" aria-labelledby="dropdownMenu1"><li role="presentation"><a role="menuitem" tabindex="-1" href="#">내용</a></li><li role="presentation"><a role="menuitem" tabindex="-1" href="#">저자</a></li></ul></div></div><input type="text" class="form-control col-xs-4 search-input" onkeypress="onkeypressClick(event)" placeholder="검색어를 입력해주세요."><div class="dropdown input-group-btn"><div class="btn-group"><button type="button" class="btn btn-default btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="width: 55px"><span class="search-operator-option">SEL</span>\n<div style="display: inline-block"><span class="caret"></span><span class="sr-only"></span></div></button><ul id="operator-selector" class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu1"><li role="presentation"><a role="menuitem" tabindex="1" href="#">SEL</a></li><li role="presentation"><a role="menuitem" tabindex="2" href="#" onclick="handleOperatorSelect(this);return false;">AND</a></li><li role="presentation"><a role="menuitem" tabindex="3" href="#" onclick="handleOperatorSelect(this);return false;">O R</a></li></ul></div><label class="btn btn-default btn-sm close-search-option-btn">-</label></div></div>');
@@ -1967,8 +1975,10 @@
         return str.replace(specials, "\\$&");
     };
 
-	fetch_unix_timestamp = function () {  return Math.floor(new Date().getTime() / 1000); };
-	function timeConverter(UNIX_timestamp) {
+    fetch_unix_timestamp = function () {
+        return Math.floor(new Date().getTime() / 1000);
+    };
+    function timeConverter(UNIX_timestamp) {
         var a = new Date(UNIX_timestamp * 1000);
         //var months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
         //var month = months[a.getMonth()];
