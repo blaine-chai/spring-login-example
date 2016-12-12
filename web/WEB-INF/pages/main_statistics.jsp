@@ -91,7 +91,7 @@
 </head>
 <body>
 <div id="header-wrapper">
-    <h1>REMOS</h1>
+    <img src="/imgs/logo.png" style="margin: 0 auto;">
     <div id="user-info-container" class=""
          style="position: absolute;top:50%;right: 20px;padding-right: 5px;color:#646464;"><span
             style="padding-right: 15px; padding-left:5px;">${userId}</span><c:if test="${userType.equals(\"admin\")}"><a
@@ -981,44 +981,51 @@
         var img = '<img src="' + newurl + '">';
         d3.select("#img").html(img);
     }
+
     var w = 1400, // or whatever your svg width is
             h = 700;
 
     function svgToCanvas() {
         // Select the first svg element
+        console.error('aa');
         var svg = d3.select('svg')[0][0],
                 img = new Image(),
                 serializer = new XMLSerializer(),
                 svgStr = serializer.serializeToString(svg);
-
+        console.error('bb');
         img.src = 'data:image/svg+xml;base64,' + window.btoa(svgStr);
-
+        console.error('cc');
+        console.error(window.btoa(svgStr));
         // You could also use the actual string without base64 encoding it:
-        //img.src = "data:image/svg+xml;utf8," + svgStr;
+//        img.src = "data:image/svg+xml;utf8," + svgStr;
 
 
         var canvas = document.createElement("canvas");
         document.body.appendChild(canvas);
+        console.error('dd');
 
         canvas.width = w;
         canvas.height = h;
-        canvas.getContext("2d").drawImage(img, 0, 0, w, h);
+        console.error('ee');
+//        canvas.getContext('2d').drawImage(img, 0, 0, w, h);
         // Now save as png or whatever
 
-        $('body').append('<a download="graph.png" href="' + canvas.toDataURL() + '"></a>');
-        var tar = $('<a></a>');
-        var filename = "hi.png";
-        if (window.navigator.msSaveBlob) { // IE 10+
-            //alert('IE' + csv);
-            window.navigator.msSaveOrOpenBlob(new Blob([csv], {type: "text/plain;charset=utf-8;"}), filename)
-        }
-        else {
-            tar.attr({'download': filename, 'href': canvas.toDataURL().replace('data:image', 'data:application'), 'target': '_blank'});
-            $('body').append(tar);
-            tar[0].click();
-            console.error('tar');
+        console.error($('canvas')[0].toDataURL());
+        $('body').append($('<a download="graph.png" href="' + $('canvas')[0].toDataURL() + '">aaaaaaaaaaaaa</a>'));
+        console.error('ff');
+//        var tar = $('<a>b</a>');
+//        var filename = "hi.png";
+//        if (window.navigator.msSaveBlob) { // IE 10+
+//            alert('IE' + csv);
+//            window.navigator.msSaveOrOpenBlob(new Blob([csv], {type: "text/plain;charset=utf-8;"}), filename)
+//        }
+//        else {
+//            tar.attr({'download': filename, 'href': canvas.toDataURL().replace('data:image', 'data:application'), 'target': '_blank'});
+//            $('body').append(tar);
+//            tar[0].click();
+//            console.error('tar');
 
-        }
+//        }
     }
 
 

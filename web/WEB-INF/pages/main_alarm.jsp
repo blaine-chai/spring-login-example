@@ -37,14 +37,14 @@
 </head>
 <body>
 <div id="header-wrapper">
-    <h1>REMOS</h1>
+    <img src="/imgs/logo.png" style="margin: 0 auto;">
     <div id="user-info-container" class=""
          style="position: absolute;top:50%;right: 20px;padding-right: 5px;color:#646464;"><span
             style="padding-right: 15px; padding-left:5px;">${userId}</span><c:if test="${userType.equals(\"admin\")}"><a
-            href="/admin" style="margin-right: 5px;"><label class="btn badge logout-btn" style="">admin<span
-            class="glyphicon glyphicon-cog" style="padding-left: 10px;"></span></label></a></c:if><a
-            href="/logout"><label class="btn badge logout-btn" style="">로그아웃<span class="glyphicon glyphicon-log-out"
-                                                                                  style="padding-left: 10px;"></span></label></a>
+            href="/admin" style="margin-right: 5px;" class="btn badge logout-btn">admin<span
+            class="glyphicon glyphicon-cog" style="padding-left: 10px;"></span></a></c:if><a
+            href="/logout" class="btn badge logout-btn" style="">로그아웃<span class="glyphicon glyphicon-log-out"
+                                                                           style="padding-left: 10px;"></span></a>
     </div>
 </div>
 <div id="nav-wrapper">
@@ -174,6 +174,7 @@
 </div>
 <%--<script type="text/javascript" charset="UTF-8" src="/js/alarm-update.js"></script>--%>
 <script type="text/javascript" charset="UTF-8" src="/js/auto-logout.js"></script>
+<script type="text/javascript" charset="UTF-8" src="/js/common.js"></script>
 <script type="text/javascript" charset="UTF-8" src="/js/table-to-csv.js"></script>
 <script type="text/javascript" charset="UTF-8">
     var relStartPos = new Object();
@@ -213,77 +214,73 @@
                                     '<td class="user-history-remove-td"><label class="btn btn-default btn-sm close-search-option-btn">-</label></td></tr>');
                             </c:when>
                             <c:otherwise>
-                            (type == 'admin-bookmark' ? '' : '<td class="user-history-remove-td"><label class="btn btn-default btn-sm close-search-option-btn">-</label></td></tr>')
-                            );
-                        </c:otherwise>
-                        </c:choose>
+                            (type == 'admin-bookmark' ? '' : '<td class="user-history-remove-td"><label class="btn btn-default btn-sm close-search-option-btn">-</label></td></tr>'));
+                            </c:otherwise>
+                            </c:choose>
 
-                        if (!d.hasNewData) {
-                            tmp.find('.badge').addClass('badge-no-alarm');
-                        }
-                        tmp.find('.close-search-option-btn').click(function (e) {
-                            var col = $(this).parent().parent().parent().children().index($(this).parent().parent());
-                            var data = (type == 'admin-bookmark' ? adminBookmarkModule.getData()[col].word : userBookmarkModule.getData()[col].word);
-                            $.ajax({
-                                url: '/main/' + type + '/delete',
-                                type: 'post',
-                                data: {data: data},
-                                success: function (responseData) {
-                                    console.error(col);
-                                    console.error(data);
-                                    console.error(type);
-//                                        var result = JSON.parse(responseData);
-                                    console.error(bookmarkModule.getData());
-                                    bookmarkModule.generateTBody(type, bookmarkModule);
-                                }
-                            });
-                            $(this).parent().parent().remove();
-                        });
-                        bookmarkModule.getContainer().find('tbody').append(tmp);
-                        tmp.find('.user-bookmark-search-word-td').click(function () {
-                            var el = $(this).parent();
-                            lastQuery = JSON.parse(bookmarkModule.getData()[parseInt(el.attr('data-index'))].word);
-                            var data = jsonSearchInfo(bookmarkModule.getData()[parseInt(el.attr('data-index'))]);
-                            console.error(data);
-                            SearchWord = dataParsing(bookmarkModule.getData()[parseInt(el.attr('data-index'))].word);
-                            if (SearchWord != "") {
-                                //$('#book-table').empty();
-                                $("#search-result-number").html("검색결과 : 0");		// 검색 건수
-                                $("#search-progress").empty();
-                                $("#search-progress").append("<div class='progress-bar progress-bar-striped active' role='progressbar' aria-valuenow='0' aria-valuemin='0' aria-valuemax='100' style='width: 0%;'>0%</div>");			// 검색 률
-
+                            if (!d.hasNewData) {
+                                tmp.find('.badge').addClass('badge-no-alarm');
+                            }
+                            tmp.find('.close-search-option-btn').click(function (e) {
+                                var col = $(this).parent().parent().parent().children().index($(this).parent().parent());
+                                var data = (type == 'admin-bookmark' ? adminBookmarkModule.getData()[col].word : userBookmarkModule.getData()[col].word);
                                 $.ajax({
-                                    url: '/main/' + (type == 'admin-bookmark' ? 'common-bookmark' : type) + '/count/update',
+                                    url: '/main/' + type + '/delete',
                                     type: 'post',
-                                    data: {'id': JSON.parse(data).id},
-                                    contentType: "application/x-www-form-urlencoded; charset=UTF-8",
+                                    data: {data: data},
                                     success: function (responseData) {
-                                        el.find('.badge').addClass('badge-no-alarm');
+                                        console.error(col);
+                                        console.error(data);
+                                        console.error(type);
+//                                        var result = JSON.parse(responseData);
+                                        console.error(bookmarkModule.getData());
+                                        bookmarkModule.generateTBody(type, bookmarkModule);
                                     }
                                 });
+                                $(this).parent().parent().remove();
+                            });
+                            bookmarkModule.getContainer().find('tbody').append(tmp);
+                            tmp.find('.user-bookmark-search-word-td').click(function () {
+                                var el = $(this).parent();
+                                lastQuery = JSON.parse(bookmarkModule.getData()[parseInt(el.attr('data-index'))].word);
+                                var data = jsonSearchInfo(bookmarkModule.getData()[parseInt(el.attr('data-index'))]);
+                                console.error(data);
+                                SearchWord = dataParsing(bookmarkModule.getData()[parseInt(el.attr('data-index'))].word);
+                                if (SearchWord != "") {
+                                    //$('#book-table').empty();
+                                    $("#search-result-number").html("검색결과 : 0");		// 검색 건수
+                                    $("#search-progress").empty();
+                                    $("#search-progress").append("<div class='progress-bar progress-bar-striped active' role='progressbar' aria-valuenow='0' aria-valuemin='0' aria-valuemax='100' style='width: 0%;'>0%</div>");			// 검색 률
+
+                                    $.ajax({
+                                        url: '/main/' + (type == 'admin-bookmark' ? 'common-bookmark' : type) + '/count/update',
+                                        type: 'post',
+                                        data: {'id': JSON.parse(data).id},
+                                        contentType: "application/x-www-form-urlencoded; charset=UTF-8",
+                                        success: function (responseData) {
+                                            el.find('.badge').addClass('badge-no-alarm');
+                                        }
+                                    });
 
 //                                    addHistory(data);
-                                removeAllRelDiv();
-                                startTime = new Date();
-                                jobRun = true;
-                                repeatCnt = 0;
-                                stop = false;
+                                    removeAllRelDiv();
+                                    startTime = new Date();
+                                    jobRun = true;
+                                    repeatCnt = 0;
+                                    stop = false;
 
-                                callAjaxLoop(userID, 0, 1, 0, 0, SearchWord, data);
-                            }
+                                    callAjaxLoop(userID, 0, 1, 0, 0, SearchWord, data);
+                                }
+                            });
                         });
-                    });
-        }else{
-            var tmp = $('<tr style="height: 100%;"><td style="border: 0;">등록된 북마크가 없습니다.</td></tr>');
-            bookmarkModule.getContainer().find('tbody').append(tmp);
-        }
+                    } else {
+                        var tmp = $('<tr style="height: 100%;"><td style="border: 0;">등록된 북마크가 없습니다.</td></tr>');
+                        bookmarkModule.getContainer().find('tbody').append(tmp);
+                    }
                 }
-    })
-    ;
-    })
-    ;
-    }
-    ;
+            });
+        });
+    };
 
     var refreshUserBookmark = function () {
         userBookmarkModule.generateTBody();
@@ -595,7 +592,7 @@
                 '<button type="button" class="close" onclick="$(this).parent().remove(); return false;" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span></button>' +
                 '<div class="relative-title" style="font-size: 13px;">' + tableData[row].author + ' - ' + tableData[row].referencedAuthor + '<span>  : ' + count + ' 건</span></div>' +
                 //' <div id="checkR-result-number">검색결과 : 00000000</div>' +
-                '<div style="font-size: 11px;position: relative;left: 450px;">' +
+                '<div class="relative-content-container"><div style="font-size: 11px;position: relative;left: 450px;">' +
                 //'<span class="relative-author-from-date">' + lastQuery.fromDate + '</span>' + (lastQuery.fromDate == '' && lastQuery.toDate == '' ? '' : '</span><span> ~ </span><span class="relative-author-to-date">' + lastQuery.toDate + '</span>') +
                 '<span class="relative-author-from-date">' + lastQuery.fromDate + '</span>' + (lastQuery.fromDate == '' && lastQuery.toDate == '' ? '' : '</span><span> ~ </span><span class="relative-author-to-date">' + lastQuery.toDate + '(' + lastQuery.dateOption + ')' + '</span>') +
                 '</div>' +
@@ -611,7 +608,7 @@
             if (j == 4) break;
         }
         tmpEl += '<li><a href="#" aria-label="Next"><span aria-hidden="true">»</span></a></li></ul></nav></div>' +
-                '<label class="btn btn-primary btn-export" style="position: absolute;right: 15px;bottom: 15px;font-size: 11px;">export</label></div>';
+                '<label class="btn btn-primary btn-export" style="position: absolute;right: 15px;bottom: 15px;font-size: 11px;">export</label></div></div>';
 
         tmpEl = $(tmpEl);
         setRelTablePos();
@@ -631,7 +628,7 @@
 
         $('body').append(tmpEl);
         var tarEl = $(this);
-        tmpEl.draggable();
+        tmpEl.draggable({cancel: '.relative-content-container'});
 
         $('.pagination-' + id + ' .active').css("background-color", "#4682B4").css("color", "white");
         $('.pagination-' + id + ' li').eq(1).addClass('active');
@@ -1013,7 +1010,10 @@
                 else if (tdata.sel == "4") {
                     console.log(tdata.contents);
                     var sel2 = tdata.contents.split("!@#$");
-                    $("#search-result-number").html("검색결과 : " + sel2[0]);		// 검색 건수
+                    var commaNum = numberWithCommas(sel2[0]);
+                    console.log("AAAAA : " + commaNum);
+
+                    $("#search-result-number").html("검색결과 : " + commaNum);		// 검색 건수
 
                     lastPageMain = ((sel2[0] - 1) - (sel2[0] - 1) % 50) / 50 + 1;
                     $('.pagination-main label').text(' / ' + lastPageMain + ' pages');		// 검색 건수
@@ -1097,6 +1097,10 @@
                 repeatCnt = 0;
             }
         });
+    }
+
+    function numberWithCommas(x) {
+        return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
     }
 
     var startTime = "";
@@ -1312,6 +1316,10 @@
                 } else {
                     if ($('.btn-identity-check').attr('disabled') != undefined) {
                         var nicname = $('.popover-input-nickname').val();
+                        if (!stringCheck(nicname)) {
+                            alert('별명을 입력해주세요.');
+                            return;
+                        }
                         var author = $('.popover-input-author').val();
                         $.ajax({
                             url: "/main/nickname/update",
@@ -1375,12 +1383,20 @@
 //                    console.error(responseData);
                     $('.popover-input-nickname').val(result.nickname);
                     $('.popover-input-modified-time').val(result.lastModifiedDate);
-                    $('.popover-input-priority').val(result.priority);
+                    if (result.priority == undefined) {
+                        $('.popover-input-priority').val('9');
+                    } else {
+                        $('.popover-input-priority').val(result.priority);
+                    }
                     $('.popover-input-note').val(result.note);
                 }
             });
 
             $('.popover .btn-identity-check').click(function (e) {
+                if (!stringCheck($('.popover-input-nickname').val())) {
+                    alert('별명을 입력 후 다시 시도해주세요.');
+                    return;
+                }
                 $.ajax({
                     url: "/main/nickname/check",
                     type: "post",
@@ -1467,6 +1483,10 @@
                     $(this).toggleClass('btn-primary').text('저장');
                 } else {
                     var nicname = $('.popover-input-nickname').val();
+                    if (!stringCheck(nicname)) {
+                        alert('별명을 입력해주세요.');
+                        return;
+                    }
                     var author = $('.popover-input-author').val();
                     if ($('.btn-identity-check').attr('disabled') != undefined) {
                         $.ajax({
@@ -1495,7 +1515,6 @@
                                             html = author + '<span>(' + nicname + ')</span>';
                                             $('#book-table tbody').find('tr').eq(k).find('td').eq(6).html(html);
                                         }
-
                                         //console.log("BBBBBB : " + $('#book-table tbody').find('tr').eq(k).find('td').eq(5).text());
                                     }
                                     highLightResult();
@@ -1529,12 +1548,20 @@
 //                    console.error(responseData);
                     $('.popover-input-nickname').val(result.nickname);
                     $('.popover-input-modified-time').val(result.lastModifiedDate);
-                    $('.popover-input-priority').val(result.priority);
+                    if (result.priority == undefined) {
+                        $('.popover-input-priority').val('9');
+                    } else {
+                        $('.popover-input-priority').val(result.priority);
+                    }
                     $('.popover-input-note').val(result.note);
                 }
             });
 
             $('.popover .btn-identity-check').click(function (e) {
+                if (!stringCheck($('.popover-input-nickname').val())) {
+                    alert('별명을 입력 후 다시 시도해주세요.');
+                    return;
+                }
                 $.ajax({
                     url: "/main/nickname/check",
                     type: "post",

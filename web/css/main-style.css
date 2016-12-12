@@ -11,6 +11,7 @@
     white-space: nowrap; /***** 신규 */
     background: #f3f3f3; /***** 신규 */
     position: relative;
+    text-align: center;
 }
 
 .logout-btn {

@@ -51,8 +51,8 @@ public class BookInfo{
         this.groupName = str[1];
         this.publishedDate = str[2];
         this.savedDate = str[3];
-        this.author = str[5];
-        this.referencedAuthor = str[6];
+        this.author = str[5].split("_")[1];
+        this.referencedAuthor = str[6].split("_")[1];
         this.r = str[7];
         this.e = str[8];
         this.contents = str[9];

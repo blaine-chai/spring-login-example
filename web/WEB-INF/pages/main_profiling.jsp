@@ -37,21 +37,23 @@
 </head>
 <body>
 <div id="header-wrapper">
-    <h1>REMOS</h1>
+    <img src="/imgs/logo.png" style="margin: 0 auto;">
     <div id="user-info-container" class=""
          style="position: absolute;top:50%;right: 20px;padding-right: 5px;color:#646464;"><span
             style="padding-right: 15px; padding-left:5px;">${userId}</span><c:if test="${userType.equals(\"admin\")}"><a
-            href="/admin" style="margin-right: 5px;"><label class="btn badge logout-btn" style="">admin<span
-            class="glyphicon glyphicon-cog" style="padding-left: 10px;"></span></label></a></c:if><a
-            href="/logout"><label class="btn badge logout-btn" style="">로그아웃<span class="glyphicon glyphicon-log-out"
-                                                                                  style="padding-left: 10px;"></span></label></a>
+            href="/admin" style="margin-right: 5px;" class="btn badge logout-btn">admin<span
+            class="glyphicon glyphicon-cog" style="padding-left: 10px;"></span></a></c:if><a
+            href="/logout" class="btn badge logout-btn" style="">로그아웃<span class="glyphicon glyphicon-log-out"
+                                                                           style="padding-left: 10px;"></span></a>
     </div>
 </div>
 <div id="nav-wrapper">
     <div id="nav">
         <a href="/main">
             <div class="header-button btn">
-                <div class="glyphicon glyphicon-bell"><span class="badge alarm-badge" style="position:absolute;vertical-align: middle;font-family:'Helvetica Neue', Helvetica, Arial, sans-serif;"></span></div>
+                <div class="glyphicon glyphicon-bell"><span class="badge alarm-badge"
+                                                            style="position:absolute;vertical-align: middle;font-family:'Helvetica Neue', Helvetica, Arial, sans-serif;"></span>
+                </div>
                 <div>알림</div>
             </div>
         </a>
@@ -114,14 +116,14 @@
                             </div>
                         </div>
                     </div>
-	                <div class="panel panel-default checkbox"
-	                     style="padding-top: 5px;padding-bottom:5px;margin-top:10px;margin-bottom: 0;">
-	                    <c:forEach items="${userGroups}" var="userGroup">
-	                        <label style="margin-left: 2px;width:85px;font-size: 12px;max-width:85px;">
-	                            <input type="radio" name="groups" value="${userGroup.groupName.groupName}"
-	                                   checked="checked" style="width: 20px;">${userGroup.groupName.groupName}</label>
-	                    </c:forEach>
-	                </div>
+                    <div class="panel panel-default checkbox"
+                         style="padding-top: 5px;padding-bottom:5px;margin-top:10px;margin-bottom: 0;">
+                        <c:forEach items="${userGroups}" var="userGroup">
+                            <label style="margin-left: 2px;width:85px;font-size: 12px;max-width:85px;">
+                                <input type="radio" name="groups" value="${userGroup.groupName.groupName}"
+                                       checked="checked" style="width: 20px;">${userGroup.groupName.groupName}</label>
+                        </c:forEach>
+                    </div>
                     <div class="input-group input-group-sm" style="width: 100%; margin-top:10px;">
                         <input id="nickname-search-input" type="text" class="form-control"
                                placeholder="검색어를 입력해주세요."
@@ -265,8 +267,8 @@
 //        $('#profile-result-container>div').height($('#result-table-wrapper').height());
         setProfileResultTableSize();
 
-		$("input:radio[name='groups']").eq(0).prop("checked",true);
-		$("input:radio[name='groups']:radio[value='전부']").prop("checked",true);
+        $("input:radio[name='groups']").eq(0).prop("checked", true);
+        $("input:radio[name='groups']:radio[value='전부']").prop("checked", true);
 
 //            $('#result-table-wrapper').scroll(function () {
 //                $('#book-table-header').css("top",
@@ -284,43 +286,43 @@
                 var timestamp = fetch_unix_timestamp();
                 timestamp = timeConverter(timestamp - 3600 * 24 * 50);
 
-                $('#datepicker1').datetimepicker({ format: 'Y/m/d', value: timestamp}).removeAttr('disabled');
-                $('#datepicker2').datetimepicker({ format: 'Y/m/d', value: new Date() }).removeAttr('disabled');
+                $('#datepicker1').datetimepicker({format: 'Y/m/d', value: timestamp}).removeAttr('disabled');
+                $('#datepicker2').datetimepicker({format: 'Y/m/d', value: new Date()}).removeAttr('disabled');
             }
             else if ($(this).text() == 'MSG') {
                 var timestamp = fetch_unix_timestamp();
                 timestamp = timeConverter(timestamp - 3600 * 24 * 50);
 
-                $('#datepicker1').datetimepicker({ format: 'Y/m/d', value: timestamp}).removeAttr('disabled');
-                $('#datepicker2').datetimepicker({ format: 'Y/m/d', value: new Date() }).removeAttr('disabled');
+                $('#datepicker1').datetimepicker({format: 'Y/m/d', value: timestamp}).removeAttr('disabled');
+                $('#datepicker2').datetimepicker({format: 'Y/m/d', value: new Date()}).removeAttr('disabled');
                 $(this).text('DB');
             }
             else {
                 $(this).text('ALL');
                 $('#datepicker1').val("");
                 $('#datepicker2').val("");
-				$('#datepicker1').datetimepicker("destroy").attr("disabled", true);
+                $('#datepicker1').datetimepicker("destroy").attr("disabled", true);
                 $('#datepicker2').datetimepicker("destroy").attr("disabled", true);
-           }
+            }
         });
 
         nicNameUpdate();
 
         $('#nickname-search-btn').click(function (e) {
-        	if(isProfileSearch) {
-        		isProfileSearch = false;
-	            $('#nickname-result-table>tbody').children().remove();
-	            $('#nickname-result-container').hide();
-	            var keyword = $('#nickname-search-input').val();
+            if (isProfileSearch) {
+                isProfileSearch = false;
+                $('#nickname-result-table>tbody').children().remove();
+                $('#nickname-result-container').hide();
+                var keyword = $('#nickname-search-input').val();
 
-	            console.log(keyword);
-	            if(keyword == "") {
-	            	alert("검색어를 입력해주세요.");
-	        		isProfileSearch = true;
-	            }
-	            else
-	            	callAjax("profileSearch", keyword+ ">" + $('input[name="groups"]:checked').val(), "", 16, 0, keyword, "");
-        	}
+                console.log(keyword);
+                if (keyword == "") {
+                    alert("검색어를 입력해주세요.");
+                    isProfileSearch = true;
+                }
+                else
+                    callAjax("profileSearch", keyword + ">" + $('input[name="groups"]:checked').val(), "", 16, 0, keyword, "");
+            }
         });
 
         setNicknameModifyHandler();
@@ -328,23 +330,22 @@
 
 
     function setAuthorResultClickHandler() {
-        $('#nickname-result-table .nickname-search-td').click(function (e)
-   		{
-        	if(isProfileSearch) {
-        		isProfileSearch = false;
-				var tmpAuthor = nicNameOff($(this).parent().find('td').eq(1).text());
-	            idCNT++;
+        $('#nickname-result-table .nickname-search-td').click(function (e) {
+            if (isProfileSearch) {
+                isProfileSearch = false;
+                var tmpAuthor = nicNameOff($(this).parent().find('td').eq(1).text());
+                idCNT++;
 
-	            $('#profile-result-container').children().hide();
-	            $('#profile-result-container').children().remove();
+                $('#profile-result-container').children().hide();
+                $('#profile-result-container').children().remove();
 
-	            $(this).append(loadingRing);
+                $(this).append(loadingRing);
 
-	            stop = false;
-	            if (setTime != 0) clearTimeout(setTime);
-	            var period = tmpAuthor + '>' + $('#datepicker1').val() + " 00:00:00" + "-" + $('#datepicker2').val() + " 23:59:59" + ">" + $('label[name=dateOption]').text();
-	            callAjax("profile" + idCNT, period, "", 9, 0, "", "");
-        	}
+                stop = false;
+                if (setTime != 0) clearTimeout(setTime);
+                var period = tmpAuthor + '>' + $('#datepicker1').val() + " 00:00:00" + "-" + $('#datepicker2').val() + " 23:59:59" + ">" + $('label[name=dateOption]').text();
+                callAjax("profile" + idCNT, period, "", 9, 0, "", "");
+            }
         });
         $('#nickname-result-container').show(300);
     }
@@ -381,8 +382,11 @@
                 }, 1000);
             }
         }
-        else if (data.contents == "NoData")
-            alert("데이터베이스에 저장된 자료가 없습니다!!!");
+        else if (data.contents == "NoData") {
+            alert("데이터베이스에 저장된 자료가 없습니다!!!(처리시간을 조정하세요.)");
+        	$('.loading-ring').remove();
+            isProfileSearch = true;
+        }
         else {
             if (data.sel == 1) {
                 //var result = JSON.parse(data.bookInfoList);
@@ -445,7 +449,7 @@
                     parentContainer = "";
                 }
                 isProfileSearch = true;
-			}
+            }
             else if (data.sel == 16) {
                 stop = true;
                 callAjax(data.id, data.author, data.period, 15, data.page, "", "");
@@ -457,47 +461,47 @@
                 var key = data.author.split(">")[0];
                 var group = data.author.split(">")[1];
                 //console.log("::" +result[0]+ "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa" + result.length);
-				var cnt = 0;
+                var cnt = 0;
                 $.each(nicNameDB, function (i, nicDB) {
                     if (nicNameDB[i].nickname.indexOf(key) != -1) {  //  if(str1.indexOf(str2) != -1){
                         //Nic = author + "(" + nicNameDB[i].nickname + ")";
-                        if((group == "전부") || (nicDB.author.split(">")[0] == group)) {
-	                        tmpEl += '<tr>' +
-	                        '<td style="text-align: center;"><input type="radio" class="nickname-radio" name="nickname-radio"></td>' +
-	                        '<td class="nickname-search-td">' + nicDB.author + '</td>' +
-	                        '<td class="nickname-search-td">' + (nicNameDB[i].nickname != '' ? '(' + nicNameDB[i].nickname + ')' : '') + '</td>' +
-	                        '</tr>';
-	                        cnt++;
-                    	}
+                        if ((group == "전부") || (nicDB.author.split(">")[0] == group)) {
+                            tmpEl += '<tr>' +
+                                    '<td style="text-align: center;"><input type="radio" class="nickname-radio" name="nickname-radio"></td>' +
+                                    '<td class="nickname-search-td">' + nicDB.author + '</td>' +
+                                    '<td class="nickname-search-td">' + (nicNameDB[i].nickname != '' ? '(' + nicNameDB[i].nickname + ')' : '') + '</td>' +
+                                    '</tr>';
+                            cnt++;
+                        }
                     }
                 });
 
-				if(result.length!=0) {
-					$.each(result, function (i, nicDB) {
-	                    //console.log(result[i]);
-	                    var tmp = result[i].split("_");
-	                    if (tmp.length > 1) {
-		                    if (tmp[1].indexOf(key) != -1) {  //if(str1.indexOf(str2) != -1){
-		                        //console.log(result[i]);
-		                        var nic = nicNameFindOnly(result[i]);
-		                        tmpEl += '<tr>' +
-		                             '<td style="text-align: center;"><input type="radio" class="nickname-radio" name="nickname-radio"></td>' +
-		                             '<td class="nickname-search-td">' + result[i] + '</td>' +
-		                             '<td class="nickname-search-td">' + (nic != '' ? '(' + nic + ')' : '') + '</td>' +
-		                             '</tr>';
-		                         cnt++;
-		                    }
-	                    }
-	                });
+                if (result.length != 0) {
+                    $.each(result, function (i, nicDB) {
+                        //console.log(result[i]);
+                        var tmp = result[i].split("_");
+                        if (tmp.length > 1) {
+                            if (tmp[1].indexOf(key) != -1) {  //if(str1.indexOf(str2) != -1){
+                                //console.log(result[i]);
+                                var nic = nicNameFindOnly(result[i]);
+                                tmpEl += '<tr>' +
+                                        '<td style="text-align: center;"><input type="radio" class="nickname-radio" name="nickname-radio"></td>' +
+                                        '<td class="nickname-search-td">' + result[i] + '</td>' +
+                                        '<td class="nickname-search-td">' + (nic != '' ? '(' + nic + ')' : '') + '</td>' +
+                                        '</tr>';
+                                cnt++;
+                            }
+                        }
+                    });
 
-	                if(cnt == 0) alert("검색결과가 없습니다.");
-	                else {
-		                $('#nickname-result-table').append($(tmpEl));
-		                setAuthorResultClickHandler();
-	                }
+                    if (cnt == 0) alert("검색결과가 없습니다.");
+                    else {
+                        $('#nickname-result-table').append($(tmpEl));
+                        setAuthorResultClickHandler();
+                    }
 
-				}
-				else alert("검색결과가 없습니다.");
+                }
+                else alert("검색결과가 없습니다.");
                 isProfileSearch = true;
             }
         }
@@ -691,7 +695,7 @@
                 }
             });
 
-            $('#nickname-form .btn-delete-nickname').click(function(){
+            $('#nickname-form .btn-delete-nickname').click(function () {
                 $.ajax({
                     url: "/main/nickname/delete",
                     type: "post",
@@ -881,12 +885,12 @@
             var relAuthor = nicNameOff($(element).find('td').eq(1).text());
 
             var fromTime = $('#datepicker1').val();
-            if(fromTime != "") fromTime += " 00:00:00";
+            if (fromTime != "") fromTime += " 00:00:00";
             var toTime = $('#datepicker1').val();
-            if(toTime != "") toTime += " 23:59:59";
+            if (toTime != "") toTime += " 23:59:59";
 
-            if((fromTime == "")&& (toTime == "")) fromTime = "";
-            else   			 fromTime = fromTime + "-" + toTime;
+            if ((fromTime == "") && (toTime == "")) fromTime = "";
+            else             fromTime = fromTime + "-" + toTime;
 
             var period = fromTime + ">" + $('label[name=dateOption]').text();
 
@@ -1004,7 +1008,7 @@
              callAjaxLoop("author"+authorNUM, 8, row, 8, 8, tableData[row].eventNo+">f", "");
              */
 
-			var period = $('#datepicker1').val() + " 00:00:00" + "-" + $('#datepicker2').val() + " 23:59:59" + ">" +  $('label[name=dateOption]').text();
+            var period = $('#datepicker1').val() + " 00:00:00" + "-" + $('#datepicker2').val() + " 23:59:59" + ">" + $('label[name=dateOption]').text();
             callAjax(id, "}}}}}}}>indexB^" + author + " & " + "indexB^" + relAuthor + ">완전일치>" + period, "", 8, 0, "", "");
         });
 
@@ -1425,7 +1429,7 @@
     }
 
     function nicNameUpdate() {
-   	 $.ajax({
+        $.ajax({
             url: "/main/profile/search-author",
             type: "post",
             data: {
@@ -1433,10 +1437,10 @@
             },
             success: function (responseData) {
                 var result = JSON.parse(responseData);
-            	nicNameDB = result;
+                nicNameDB = result;
             }
         });
-   }
+    }
 
     function timeConverter(UNIX_timestamp) {
         var a = new Date(UNIX_timestamp * 1000);

@@ -37,14 +37,14 @@
 </head>
 <body>
 <div id="header-wrapper">
-    <h1>REMOS</h1>
+    <img src="/imgs/logo.png" style="margin: 0 auto;">
     <div id="user-info-container" class=""
          style="position: absolute;top:50%;right: 20px;padding-right: 5px;color:#646464;"><span
             style="padding-right: 15px; padding-left:5px;">${userId}</span><c:if test="${userType.equals(\"admin\")}"><a
-            href="/admin" style="margin-right: 5px;"><label class="btn badge logout-btn" style="">admin<span
-            class="glyphicon glyphicon-cog" style="padding-left: 10px;"></span></label></a></c:if><a
-            href="/logout"><label class="btn badge logout-btn" style="">로그아웃<span class="glyphicon glyphicon-log-out"
-                                                                                  style="padding-left: 10px;"></span></label></a>
+            href="/admin" style="margin-right: 5px;" class="btn badge logout-btn">admin<span
+            class="glyphicon glyphicon-cog" style="padding-left: 10px;"></span></a></c:if><a
+            href="/logout" class="btn badge logout-btn" style="">로그아웃<span class="glyphicon glyphicon-log-out"
+                                                                           style="padding-left: 10px;"></span></a>
     </div>
 </div>
 <div id="nav-wrapper">
@@ -298,6 +298,7 @@
 </div>
 <%--<script type="text/javascript" charset="UTF-8" src="/js/alarm-update.js"></script>--%>
 <script type="text/javascript" charset="UTF-8" src="/js/auto-logout.js"></script>
+<script type="text/javascript" charset="UTF-8" src="/js/common.js"></script>
 <script type="text/javascript" charset="UTF-8" src="/js/table-to-csv.js"></script>
 <script type="text/javascript" charset="UTF-8">
     //var userHistory;
@@ -613,7 +614,7 @@
                 repeatCnt = 0;
                 stop = false;
                 console.log($('#book-table tbody').find('tr').eq(row).find('td').eq(col).find('span').hasClass("glyphicon-ok"));
-//                $('#book-table tbody').find('tr').eq(row).find('td').eq(col).append(loadingRing);
+                $('#book-table tbody').find('tr').eq(row).find('td').eq(col).append(loadingRing);
 
                 var msg = "indexB^" + tableData[row].author
                         + " & " + tableData[row].referencedAuthor + ">완전일치>"
@@ -1399,7 +1400,7 @@
                 '<button type="button" class="close" onclick="$(this).parent().remove(); return false;" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span></button>' +
                 '<div class="relative-title" style="font-size: 13px;">' + tableData[row].author + ' - ' + tableData[row].referencedAuthor + '<span>  : ' + count + ' 건</span></div>' +
                 //' <div id="checkR-result-number">검색결과 : 00000000</div>' +
-                '<div style="font-size: 11px;position: relative;left: 450px;">' +
+                '<div class="relative-content-container"><div style="font-size: 11px;position: relative;left: 450px;">' +
                 //'<span class="relative-author-from-date">' + lastQuery.fromDate + '</span>' + (lastQuery.fromDate == '' && lastQuery.toDate == '' ? '' : '</span><span> ~ </span><span class="relative-author-to-date">' + lastQuery.toDate + '</span>') +
                 '<span class="relative-author-from-date">' + lastQuery.fromDate + '</span>' + (lastQuery.fromDate == '' && lastQuery.toDate == '' ? '' : '</span><span> ~ </span><span class="relative-author-to-date">' + lastQuery.toDate + '(' + lastQuery.dateOption + ')' + '</span>') +
                 '</div>' +
@@ -1415,7 +1416,7 @@
             if (j == 4) break;
         }
         tmpEl += '<li><a href="#" aria-label="Next"><span aria-hidden="true">»</span></a></li></ul></nav></div>' +
-                '<label class="btn btn-primary btn-export" style="position: absolute;right: 15px;bottom: 15px;font-size: 11px;">export</label></div>';
+                '<label class="btn btn-primary btn-export" style="position: absolute;right: 15px;bottom: 15px;font-size: 11px;">export</label></div></div>';
 
         tmpEl = $(tmpEl);
         setRelTablePos();
@@ -1435,7 +1436,7 @@
 
         $('body').append(tmpEl);
         var tarEl = $(this);
-        tmpEl.draggable();
+        tmpEl.draggable({cancel:'.relative-content-container'});
 
         $('.pagination-' + id + ' .active').css("background-color", "#4682B4").css("color", "white");
         $('.pagination-' + id + ' li').eq(1).addClass('active');
@@ -1601,6 +1602,10 @@
                 } else {
                     if ($('.btn-identity-check').attr('disabled') != undefined) {
                         var nicname = $('.popover-input-nickname').val();
+                        if(stringCheck(nicname)){
+                            alert('별명을 입력해주세요.');
+                            return;
+                        }
                         var author = $('.popover-input-author').val();
                         $.ajax({
                             url: "/main/nickname/update",
@@ -1664,12 +1669,20 @@
 //                    console.error(responseData);
                     $('.popover-input-nickname').val(result.nickname);
                     $('.popover-input-modified-time').val(result.lastModifiedDate);
-                    $('.popover-input-priority').val(result.priority);
+                    if (result.priority==undefined) {
+                        $('.popover-input-priority').val('9');
+                    }else{
+                        $('.popover-input-priority').val(result.priority);
+                    }
                     $('.popover-input-note').val(result.note);
                 }
             });
 
             $('.popover .btn-identity-check').click(function (e) {
+                if (!stringCheck($('.popover-input-nickname').val())) {
+                    alert('별명을 입력 후 다시 시도해주세요.');
+                    return;
+                }
                 $.ajax({
                     url: "/main/nickname/check",
                     type: "post",
@@ -1756,6 +1769,10 @@
                     $(this).toggleClass('btn-primary').text('저장');
                 } else {
                     var nicname = $('.popover-input-nickname').val();
+                    if(!stringCheck(nicname)){
+                        alert('별명을 입력해주세요.');
+                        return;
+                    }
                     var author = $('.popover-input-author').val();
                     if ($('.btn-identity-check').attr('disabled') != undefined) {
                         $.ajax({
@@ -1816,7 +1833,11 @@
 //                    console.error(responseData);
                     $('.popover-input-nickname').val(result.nickname);
                     $('.popover-input-modified-time').val(result.lastModifiedDate);
-                    $('.popover-input-priority').val(result.priority);
+                    if (result.priority==undefined) {
+                        $('.popover-input-priority').val('9');
+                    } else {
+                        $('.popover-input-priority').val(result.priority);
+                    }
                     $('.popover-input-note').val(result.note);
                 }
             });
@@ -1830,6 +1851,10 @@
                         "author": $('.popover-input-author').val()
                     },
                     success: function (responseData) {
+                        if (!stringCheck($('.popover-input-nickname').val())) {
+                            alert('별명을 입력 후 다시 시도해주세요.');
+                            return;
+                        }
                         if (responseData == 'true') {
                             $('.popover .btn-identity-check').attr('disabled', '');
                             $('.popover .btn-identity-check').append('<span class="glyphicon glyphicon-ok" style="color:#3ce63d;"></span>');

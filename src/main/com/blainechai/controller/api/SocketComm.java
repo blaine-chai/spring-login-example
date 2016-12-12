@@ -189,40 +189,6 @@ public class SocketComm
 
 	public int beGetGood() { return good; }
 
-	public String formattedDate	(String date)
-	{
-		String[] s = date.split(" ");
-		date = s[0] + " " + s[1];
-		String fromFormatString = "yyyy/MM/dd HH:mm";
-		String toFormatString = "yyyyMMddHHmmss";
-		SimpleDateFormat fromFormat =
-				new SimpleDateFormat(fromFormatString);
-		SimpleDateFormat toFormat =
-				new SimpleDateFormat(toFormatString);
-		Date fromDate = null;
-
-		try { fromDate = fromFormat.parse(date); } catch(ParseException e) {fromDate = new Date();}
-
-		return toFormat.format(fromDate);
-	}
-
-	public String formattedDate2(String date)
-	{
-		String[] s = date.split(" ");
-		date = s[0] + " " + s[1];
-		String fromFormatString = "yyyy/MM/dd HH:mm:ss";
-		String toFormatString = "yyyyMMddHHmmss";
-		SimpleDateFormat fromFormat =
-				new SimpleDateFormat(fromFormatString);
-		SimpleDateFormat toFormat =
-				new SimpleDateFormat(toFormatString);
-		Date fromDate = null;
-
-		try { fromDate = fromFormat.parse(date); } catch(ParseException e) {fromDate = new Date();}
-
-		return toFormat.format(fromDate);
-	}
-
 	public String formattedDate	(long unixTime)
 	{
 		String toFormatString = "yyyyMMddHHmmss";
@@ -361,9 +327,12 @@ public class SocketComm
 			s[1] = getPeriod("-");
 			s[2] = "MSG";
 		}
-		else 		s[1] = getPeriod(s[1]);
+		else
+			s[1] = getPeriod(s[1]);
+		//s[1] = getPeriod("-");
 
 		dos.writeUTF(s[1]);
+		dos.writeUTF(s[2]);
 
 		System.out.println("reqProfile :: msg = " + msg + " :: " + s[1]);
 
@@ -650,6 +619,8 @@ public class SocketComm
 		String fromDate = "";
 		String toDate = "";
 
+		System.out.println("ZZZZZZZ :" + t + " : " + ss.length);
+
 		if(ss.length == 0) {
 			fromDate = "19900101000000";;
 			toDate = formattedDate(unixtime+365*24*3600*10000L);
@@ -657,6 +628,7 @@ public class SocketComm
 		else if(ss.length == 1){
 			if(ss[0].length() == 16) fromDate = formattedDate(ss[0]);
 			else if(ss[0].length() == 19) fromDate = formattedDate2(ss[0]);
+			else if(ss[0].length() == 10) fromDate = formattedDate2(ss[0]) + "000000";
 			else 		fromDate = "19900101000000";;
 
 			toDate = formattedDate(unixtime+365*24*3600*10000L);
@@ -664,14 +636,69 @@ public class SocketComm
 		else {
 			if(ss[0].length() == 16) fromDate = formattedDate(ss[0]);
 			else if(ss[0].length() == 19) fromDate = formattedDate2(ss[0]);
+			else if(ss[0].length() == 10) fromDate = formattedDate3(ss[0]) + "000000";
 			else 		fromDate = "19900101000000";
 
+			//System.out.println("ZZZZZZZ :" + ss[1] + " : " + ss[1].length());
 			if(ss[1].length() == 16) toDate = formattedDate(ss[1]);
 			else if(ss[1].length() == 19) toDate = formattedDate2(ss[1]);
+			else if(ss[1].length() == 10) toDate = formattedDate2(ss[1]) + "235959";
 			else toDate = formattedDate(unixtime+365*24*3600*10000L);
 		}
 
 		return fromDate + "-" + toDate;
 	}
+	public String formattedDate	(String date)
+	{
+		String[] s = date.split(" ");
+		date = s[0] + " " + s[1];
+		String fromFormatString = "yyyy/MM/dd HH:mm";
+		String toFormatString = "yyyyMMddHHmmss";
+		SimpleDateFormat fromFormat =
+				new SimpleDateFormat(fromFormatString);
+		SimpleDateFormat toFormat =
+				new SimpleDateFormat(toFormatString);
+		Date fromDate = null;
+
+		try { fromDate = fromFormat.parse(date); } catch(ParseException e) {fromDate = new Date();}
+
+		return toFormat.format(fromDate);
+	}
+
+	public String formattedDate2(String date)
+	{
+		String[] s = date.split(" ");
+		date = s[0] + " " + s[1];
+		String fromFormatString = "yyyy/MM/dd HH:mm:ss";
+		String toFormatString = "yyyyMMddHHmmss";
+		SimpleDateFormat fromFormat =
+				new SimpleDateFormat(fromFormatString);
+		SimpleDateFormat toFormat =
+				new SimpleDateFormat(toFormatString);
+		Date fromDate = null;
+
+		try { fromDate = fromFormat.parse(date); } catch(ParseException e) {fromDate = new Date();}
+
+		return toFormat.format(fromDate);
+	}
+
+
+	public String formattedDate3(String date)
+	{
+		String[] s = date.split(" ");
+		date = s[0] + " " + s[1];
+		String fromFormatString = "yyyy/MM/dd";
+		String toFormatString = "yyyyMMdd";
+		SimpleDateFormat fromFormat =
+				new SimpleDateFormat(fromFormatString);
+		SimpleDateFormat toFormat =
+				new SimpleDateFormat(toFormatString);
+		Date fromDate = null;
+
+		try { fromDate = fromFormat.parse(date); } catch(ParseException e) {fromDate = new Date();}
+
+		return toFormat.format(fromDate);
+	}
+
 
 }

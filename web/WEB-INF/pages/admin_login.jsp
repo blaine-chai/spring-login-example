@@ -67,7 +67,7 @@
     <c:if test="${loginFail.equals(\"true\")}">
         <script>
             $(document).ready(function () {
-                alert('아이디와 비밀번호를 다시 확인해 주세요.');
+                alert('관리자 계정이 아닙니다. 아이디와 비밀번호를 확인해 주세요.');
             });
         </script>
     </c:if>
