@@ -225,6 +225,10 @@ body {
     border: 2px solid #efefef;
 }
 
+.relative-content-container{
+	position:relative;
+}
+
 .relative-table-wrapper {
     padding: 15px;
 }

@@ -43,7 +43,7 @@
             style="padding-right: 15px; padding-left:5px;">${userId}</span><c:if test="${userType.equals(\"admin\")}"><a
             href="/admin" style="margin-right: 5px;" class="btn badge logout-btn">admin<span
             class="glyphicon glyphicon-cog" style="padding-left: 10px;"></span></a></c:if><a
-            href="/logout" class="btn badge logout-btn" style="">로그아웃<span class="glyphicon glyphicon-log-out"
+            href="/logout" class="btn badge logout-btn">로그아웃<span class="glyphicon glyphicon-log-out"
                                                                            style="padding-left: 10px;"></span></a>
     </div>
 </div>
@@ -213,6 +213,7 @@
 </div>
 <%--<script type="text/javascript" charset="UTF-8" src="/js/alarm-update.js"></script>--%>
 <script type="text/javascript" charset="UTF-8" src="/js/auto-logout.js"></script>
+<script type="text/javascript" charset="UTF-8" src="/js/common.js"></script>
 <script type="text/javascript" charset="UTF-8">
     var userHistory = [];
     var tableData;
@@ -309,20 +310,20 @@
         nicNameUpdate();
 
         $('#nickname-search-btn').click(function (e) {
-            if (isProfileSearch) {
-                isProfileSearch = false;
-                $('#nickname-result-table>tbody').children().remove();
-                $('#nickname-result-container').hide();
-                var keyword = $('#nickname-search-input').val();
+        	if(isProfileSearch) {
+        		isProfileSearch = false;
+	            $('#nickname-result-table>tbody').children().remove();
+	            $('#nickname-result-container').hide();
+	            var keyword = $('#nickname-search-input').val();
 
-                console.log(keyword);
-                if (keyword == "") {
-                    alert("검색어를 입력해주세요.");
-                    isProfileSearch = true;
-                }
-                else
-                    callAjax("profileSearch", keyword + ">" + $('input[name="groups"]:checked').val(), "", 16, 0, keyword, "");
-            }
+	            console.log(keyword);
+	            if(keyword == "") {
+	            	alert("검색어를 입력해주세요.");
+	        		isProfileSearch = true;
+	            }
+	            else
+	            	callAjax("profileSearch", keyword+ ">" + $('input[name="groups"]:checked').val(), "", 16, 0, keyword, "");
+        	}
         });
 
         setNicknameModifyHandler();
@@ -330,22 +331,23 @@
 
 
     function setAuthorResultClickHandler() {
-        $('#nickname-result-table .nickname-search-td').click(function (e) {
-            if (isProfileSearch) {
-                isProfileSearch = false;
-                var tmpAuthor = nicNameOff($(this).parent().find('td').eq(1).text());
-                idCNT++;
+        $('#nickname-result-table .nickname-search-td').click(function (e)
+   		{
+        	if(isProfileSearch) {
+        		isProfileSearch = false;
+				var tmpAuthor = nicNameOff($(this).parent().find('td').eq(1).text());
+	            idCNT++;
 
-                $('#profile-result-container').children().hide();
-                $('#profile-result-container').children().remove();
+	            $('#profile-result-container').children().hide();
+	            $('#profile-result-container').children().remove();
 
-                $(this).append(loadingRing);
+	            $(this).append(loadingRing);
 
-                stop = false;
-                if (setTime != 0) clearTimeout(setTime);
-                var period = tmpAuthor + '>' + $('#datepicker1').val() + " 00:00:00" + "-" + $('#datepicker2').val() + " 23:59:59" + ">" + $('label[name=dateOption]').text();
-                callAjax("profile" + idCNT, period, "", 9, 0, "", "");
-            }
+	            stop = false;
+	            if (setTime != 0) clearTimeout(setTime);
+	            var period = tmpAuthor + '>' + $('#datepicker1').val() + " 00:00:00" + "-" + $('#datepicker2').val() + " 23:59:59" + ">" + $('label[name=dateOption]').text();
+	            callAjax("profile" + idCNT, period, "", 9, 0, "", "");
+        	}
         });
         $('#nickname-result-container').show(300);
     }
@@ -383,8 +385,8 @@
             }
         }
         else if (data.contents == "NoData") {
-            alert("데이터베이스에 저장된 자료가 없습니다!!!(처리시간을 조정하세요.)");
-        	$('.loading-ring').remove();
+            alert("처리시간을 조정하여 다시 한번 검색해 주세요.동일한 결과가 반복될 경우에는 데이터베이스에 저장된 자료가 없을 수 있습니다!!!");
+			$('.loading-ring').remove();
             isProfileSearch = true;
         }
         else {
@@ -463,45 +465,46 @@
                 //console.log("::" +result[0]+ "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa" + result.length);
                 var cnt = 0;
                 $.each(nicNameDB, function (i, nicDB) {
-                    if (nicNameDB[i].nickname.indexOf(key) != -1) {  //  if(str1.indexOf(str2) != -1){
+					//console.log("::" + nicNameDB[i].nickname+ " :: " + nicNameDB[i].nickname.indexOf(key));
+					if (nicNameDB[i].nickname.indexOf(key) != -1) {  //  if(str1.indexOf(str2) != -1){
                         //Nic = author + "(" + nicNameDB[i].nickname + ")";
-                        if ((group == "전부") || (nicDB.author.split(">")[0] == group)) {
-                            tmpEl += '<tr>' +
-                                    '<td style="text-align: center;"><input type="radio" class="nickname-radio" name="nickname-radio"></td>' +
-                                    '<td class="nickname-search-td">' + nicDB.author + '</td>' +
-                                    '<td class="nickname-search-td">' + (nicNameDB[i].nickname != '' ? '(' + nicNameDB[i].nickname + ')' : '') + '</td>' +
-                                    '</tr>';
-                            cnt++;
-                        }
+                        //if((group == "전부") || (nicDB.author.split(">")[0] == group)) {
+	                        tmpEl += '<tr>' +
+	                        '<td style="text-align: center;"><input type="radio" class="nickname-radio" name="nickname-radio"></td>' +
+	                        '<td class="nickname-search-td">' + nicDB.author + '</td>' +
+	                        '<td class="nickname-search-td">' + (nicNameDB[i].nickname != '' ? '(' + nicNameDB[i].nickname + ')' : '') + '</td>' +
+	                        '</tr>';
+	                        cnt++;
+                    	//}
                     }
                 });
 
-                if (result.length != 0) {
-                    $.each(result, function (i, nicDB) {
-                        //console.log(result[i]);
-                        var tmp = result[i].split("_");
-                        if (tmp.length > 1) {
-                            if (tmp[1].indexOf(key) != -1) {  //if(str1.indexOf(str2) != -1){
-                                //console.log(result[i]);
-                                var nic = nicNameFindOnly(result[i]);
-                                tmpEl += '<tr>' +
-                                        '<td style="text-align: center;"><input type="radio" class="nickname-radio" name="nickname-radio"></td>' +
-                                        '<td class="nickname-search-td">' + result[i] + '</td>' +
-                                        '<td class="nickname-search-td">' + (nic != '' ? '(' + nic + ')' : '') + '</td>' +
-                                        '</tr>';
-                                cnt++;
-                            }
-                        }
-                    });
+				if(result.length!=0) {
+					$.each(result, function (i, nicDB) {
+	                    //console.log(result[i]);
+	                    var tmp = result[i].split("_");
+	                    if (tmp.length > 1) {
+		                    if (tmp[1].indexOf(key) != -1) {  //if(str1.indexOf(str2) != -1){
+		                        //console.log(result[i]);
+		                        var nic = nicNameFindOnly(result[i]);
+		                        tmpEl += '<tr>' +
+		                             '<td style="text-align: center;"><input type="radio" class="nickname-radio" name="nickname-radio"></td>' +
+		                             '<td class="nickname-search-td">' + result[i] + '</td>' +
+		                             '<td class="nickname-search-td">' + (nic != '' ? '(' + nic + ')' : '') + '</td>' +
+		                             '</tr>';
+		                         cnt++;
+		                    }
+	                    }
+	                });
 
-                    if (cnt == 0) alert("검색결과가 없습니다.");
-                    else {
-                        $('#nickname-result-table').append($(tmpEl));
-                        setAuthorResultClickHandler();
-                    }
+	                if(cnt == 0) alert("검색결과가 없습니다.");
+	                else {
+		                $('#nickname-result-table').append($(tmpEl));
+		                setAuthorResultClickHandler();
+	                }
 
-                }
-                else alert("검색결과가 없습니다.");
+				}
+				else alert("검색결과가 없습니다.");
                 isProfileSearch = true;
             }
         }
@@ -678,12 +681,9 @@
                         },
                         success: function (responseData) {
                             if (responseData == 'true') {
-                                $('#nickname-form .btn-identity-check').attr('disabled', '');
-//                                $('#nickname-form .btn-modify-nickname').toggleClass('btn-primary').text('편집');
-//                                    clickedTd.find('.nickname-td').text('(' + $('.popover-input-nickname').val() + ')');
-//                                    $('nickname-form').remove();
-                                $('.nickname-input').attr('disabled', '');
-                                alert('저장이 완료되었습니다.');
+                            	nicknameForm.children().remove();
+                            	nicknameForm.hide();
+                            	alert('저장이 완료되었습니다.');
                             } else {
                                 //when nickname not checked
                                 alert('에러가 발생했습니다. 다시 시도해 주세요.');
@@ -695,7 +695,7 @@
                 }
             });
 
-            $('#nickname-form .btn-delete-nickname').click(function () {
+            $('#nickname-form .btn-delete-nickname').click(function(){
                 $.ajax({
                     url: "/main/nickname/delete",
                     type: "post",
@@ -727,12 +727,20 @@
                     $('.nickname-form-input-author').val($('input[name=nickname-radio]:checked').parent().parent().find('td').eq(1).text());
                     $('.nickname-form-input-nickname').val(result.nickname);
                     $('.nickname-form-input-modified-time').val(result.lastModifiedDate);
-                    $('.nickname-form-input-priority').val(result.priority);
+                    if (result.priority == undefined) {
+                    	$('.nickname-form-input-priority').val('9');
+                    } else {
+                    	$('.nickname-form-input-priority').val(result.priority);
+                    }
                     $('.nickname-form-input-note').val(result.note);
                 }
             });
 
             $('#nickname-form .btn-identity-check').click(function (e) {
+            	if (!stringCheck($('.nickname-form-input-nickname').val())){
+            		alert('별명을 입력 후 다시 시도해주세요.');
+            		return;
+            	}
                 $.ajax({
                     url: "/main/nickname/check",
                     type: "post",
@@ -885,12 +893,12 @@
             var relAuthor = nicNameOff($(element).find('td').eq(1).text());
 
             var fromTime = $('#datepicker1').val();
-            if (fromTime != "") fromTime += " 00:00:00";
-            var toTime = $('#datepicker1').val();
-            if (toTime != "") toTime += " 23:59:59";
+            if(fromTime != "") fromTime += " 00:00:00";
+            var toTime = $('#datepicker2').val();
+            if(toTime != "") toTime += " 23:59:59";
 
-            if ((fromTime == "") && (toTime == "")) fromTime = "";
-            else             fromTime = fromTime + "-" + toTime;
+            if((fromTime == "")&& (toTime == "")) fromTime = "";
+            else   			 fromTime = fromTime + "-" + toTime;
 
             var period = fromTime + ">" + $('label[name=dateOption]').text();
 
@@ -939,7 +947,8 @@
             tmpEl.find('tbody').append('<tr>' +
                     '<td>' + tdata.publishedDate + '</td>' +
                     '<td class="author-td author' + i + '" title="' + tdata.author + '" href="#">' + nicNameFind(tdata.author) + '</td>' +
-                    '<td class="relation-td relation' + i + '" title="' + tdata.referencedAuthor + '" href="#">' + nicNameFind(tdata.referencedAuthor)
+                    '<td class="relation-td relation' + i + '" title="' + tdata.
+                    referencedAuthor + '" href="#">' + nicNameFind(tdata.referencedAuthor)
                     + '</td>' +
                     '<td style="word-break: break-all">' + tdata.contents + '</td>' +
                     '</tr>');
@@ -1008,7 +1017,7 @@
              callAjaxLoop("author"+authorNUM, 8, row, 8, 8, tableData[row].eventNo+">f", "");
              */
 
-            var period = $('#datepicker1').val() + " 00:00:00" + "-" + $('#datepicker2').val() + " 23:59:59" + ">" + $('label[name=dateOption]').text();
+			var period = $('#datepicker1').val() + " 00:00:00" + "-" + $('#datepicker2').val() + " 23:59:59" + ">" +  $('label[name=dateOption]').text();
             callAjax(id, "}}}}}}}>indexB^" + author + " & " + "indexB^" + relAuthor + ">완전일치>" + period, "", 8, 0, "", "");
         });
 

@@ -113,8 +113,7 @@
                                 </ul>
                             </div>
                         </div>
-                        <input type="text" class="form-control col-xs-4 search-input"
-                               onkeypress="onkeypressClick(event)" placeholder="검색어를 입력해주세요.">
+                        <input type="text" class="form-control col-xs-4 search-input" onkeypress="onkeypressClick(event)" placeholder="검색어를 입력해주세요.">
                         <div class="dropdown input-group-btn">
                             <div class="btn-group">
                                 <button type="button" class="btn btn-default btn-sm dropdown-toggle"
@@ -620,7 +619,7 @@
                         + " & " + tableData[row].referencedAuthor + ">완전일치>"
                         + lastQuery.fromDate + "-" + lastQuery.toDate + ">" + lastQuery.dateOption;
 
-                msg += ">" + $('input[name="groups"]:checked').val();
+                msg += ">" + tableData[row].groupName;
                 console.log(msg);
 
                 //if ($('#book-table tbody').find('tr').eq(row).find('td').eq(col).find('span').hasClass( "glyphicon-ok"))
@@ -736,7 +735,7 @@
                 }
             }
             else if (tdata.contents == "NoData") {
-                alert("데이터베이스에 저장된 자료가 없습니다!!!");
+                alert("다시 한번 검색해 주세요. 동일한 결과가 반복될 경우에는 데이터베이스에 저장된 자료가 없을 수 있습니다!!!");
             }
             else {
                 if (tdata.sel == "0") {
@@ -763,7 +762,10 @@
                 else if (tdata.sel == "4") {
                     console.log(tdata.contents);
                     var sel2 = tdata.contents.split("!@#$");
-                    $("#search-result-number").html("검색결과 : " + sel2[0]);		// 검색 건수
+                    var commaNum = numberWithCommas(sel2[0]);
+                    console.log("AAAAA : " + commaNum);
+
+                    $("#search-result-number").html("검색결과 : " + commaNum);		// 검색 건수
 
                     lastPageMain = ((sel2[0] - 1) - (sel2[0] - 1) % 50) / 50 + 1;
                     $('.pagination-main label').text(' / ' + lastPageMain + ' pages');		// 검색 건수
@@ -847,6 +849,10 @@
                 repeatCnt = 0;
             }
         });
+    }
+
+    function numberWithCommas(x) {
+        return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
     }
 
     var nicNameDB = [];
@@ -1060,8 +1066,8 @@
             html.show(0, function () {
 
                 $.each(data, function (i, tdata) {
-                    addAuthorClickListener(i, tdata.author);
-                    addRefAuthorClickListener(i, tdata.referencedAuthor);
+                    addAuthorClickListener(i, tdata.groupName + "_" +tdata.author);
+                    addRefAuthorClickListener(i, tdata.groupName + "_" +tdata.referencedAuthor);
                     //addContentTdClickListener(i, tdata.contents);
                     //addCheckRBtnListener(i);
                 });
@@ -1397,26 +1403,26 @@
         authInfoJson = data;
 
         var tmpEl = '<div class="alert bg-white alert-dismissible fade in border-gray relative-table-wrapper" style="position: absolute; z-index: 10; width: 700px; left:' + relStartPos.left + 'px;top:' + relStartPos.top + 'px;" role="alert">' +
-                '<button type="button" class="close" onclick="$(this).parent().remove(); return false;" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span></button>' +
-                '<div class="relative-title" style="font-size: 13px;">' + tableData[row].author + ' - ' + tableData[row].referencedAuthor + '<span>  : ' + count + ' 건</span></div>' +
-                //' <div id="checkR-result-number">검색결과 : 00000000</div>' +
-                '<div class="relative-content-container"><div style="font-size: 11px;position: relative;left: 450px;">' +
-                //'<span class="relative-author-from-date">' + lastQuery.fromDate + '</span>' + (lastQuery.fromDate == '' && lastQuery.toDate == '' ? '' : '</span><span> ~ </span><span class="relative-author-to-date">' + lastQuery.toDate + '</span>') +
-                '<span class="relative-author-from-date">' + lastQuery.fromDate + '</span>' + (lastQuery.fromDate == '' && lastQuery.toDate == '' ? '' : '</span><span> ~ </span><span class="relative-author-to-date">' + lastQuery.toDate + '(' + lastQuery.dateOption + ')' + '</span>') +
-                '</div>' +
-                '<div><div style="overflow:auto; height: 300px;">' +
-                '<table class="table table-hover table-fixed table-bordered table-striped table-condensed" style="font-size: 11px; margin-bottom: 0;">' +
-                '<thead><tr><th width="120px">시간</th><th width="70px">저자</th><th width="70px">참조</th><th>내용</th></tr></thead>' +
-                '<tbody></tbody></table></div><div><nav aria-label="..." style="text-align: center; margin-top:10px;">';
-        tmpEl += '<ul class="pagination pagination-sm pagination-' + id + '" style="margin: 0 auto;">';
-        tmpEl += '<li><a href="#" aria-label="Previous" class="disabled"><span aria-hidden="true">«</span></a></li>';
+        '<button type="button" class="close" onclick="$(this).parent().remove(); return false;" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span></button>' +
+        '<div class="relative-title" style="font-size: 13px;">' + tableData[row].author + ' - ' + tableData[row].referencedAuthor + '<span>  : ' + count + ' 건</span></div>' +
+        //' <div id="checkR-result-number">검색결과 : 00000000</div>' +
+        '<div class="relative-content-container"><div style="font-size: 11px;position: absolute;right: 0;">' +
+        //'<span class="relative-author-from-date">' + lastQuery.fromDate + '</span>' + (lastQuery.fromDate == '' && lastQuery.toDate == '' ? '' : '</span><span> ~ </span><span class="relative-author-to-date">' + lastQuery.toDate + '</span>') +
+        '<span class="relative-author-from-date">' + lastQuery.fromDate + '</span>' + (lastQuery.fromDate == '' && lastQuery.toDate == '' ? '' : '</span><span> ~ </span><span class="relative-author-to-date">' + lastQuery.toDate + '(' + lastQuery.dateOption + ')' + '</span>') +
+        '</div>' +
+        '<div style="padding-top: 15px;"><div style="overflow:auto; height: 300px;">' +
+        '<table class="table table-hover table-fixed table-bordered table-striped table-condensed" style="font-size: 11px; margin-bottom: 0;">' +
+        '<thead><tr><th width="120px">시간</th><th width="70px">저자</th><th width="70px">참조</th><th>내용</th></tr></thead>' +
+        '<tbody></tbody></table></div><div><nav aria-label="..." style="text-align: center; margin-top:10px;">';
+    tmpEl += '<ul class="pagination pagination-sm pagination-' + id + '" style="margin: 0 auto;">';
+    tmpEl += '<li><a href="#" aria-label="Previous" class="disabled"><span aria-hidden="true">«</span></a></li>';
         for (var j = 0; j * 50 < count; j++) {
             if (j != page) tmpEl += '<li><a href="#">' + (j + 1) + '</a></li>';
             else tmpEl += '<li><a href="#">' + (j + 1) + '</a></li>';
             if (j == 4) break;
         }
         tmpEl += '<li><a href="#" aria-label="Next"><span aria-hidden="true">»</span></a></li></ul></nav></div>' +
-                '<label class="btn btn-primary btn-export" style="position: absolute;right: 15px;bottom: 15px;font-size: 11px;">export</label></div></div>';
+                '<label class="btn btn-primary btn-export" style="position: absolute;right: 15px;bottom: 0;font-size: 11px;">export</label></div></div>';
 
         tmpEl = $(tmpEl);
         setRelTablePos();
@@ -1497,8 +1503,8 @@
              else
              callAjaxLoop("author"+authorNUM, 8, row, 8, 8, tableData[row].eventNo+">f", "");
              */
-            callAjaxLoop("author" + authorNUM, 8, row, 8, 8, tableData[row].eventNo + ">" + "indexB^" + tableData[row].author + " & "
-                    + "indexB^" + tableData[row].referencedAuthor + ">완전일치>" + lastQuery.fromDate + "-" + lastQuery.toDate + '>' + lastQuery.dateOption, "");
+            callAjaxLoop("author" + authorNUM, 8, row, 8, 8, tableData[row].eventNo + ">" + "indexB^" + tableData[row].groupName + "_" + tableData[row].author + " & "
+                    + "indexB^" + tableData[row].groupName + "_" + tableData[row].referencedAuthor + ">완전일치>" + lastQuery.fromDate + "-" + lastQuery.toDate + '>' + lastQuery.dateOption, "");
         });
     }
 
@@ -1602,7 +1608,7 @@
                 } else {
                     if ($('.btn-identity-check').attr('disabled') != undefined) {
                         var nicname = $('.popover-input-nickname').val();
-                        if(stringCheck(nicname)){
+                        if(!stringCheck(nicname)){
                             alert('별명을 입력해주세요.');
                             return;
                         }
@@ -1621,17 +1627,19 @@
                                 if (responseData == 'true') {
 
                                     for (var k = 0; k < $('#book-table tbody').find('tr').length; k++) {
-                                        var nicTmp = $('#book-table tbody').find('tr').eq(k).find('td').eq(5).text();
+                                        var nicTmp = $('#book-table tbody').find('tr').eq(k).find('td').eq(2).text()
+                                        	+"_"+$('#book-table tbody').find('tr').eq(k).find('td').eq(5).text();
                                         var html = '';
                                         if (nicTmp == author) {
-                                            html = author + '<span>(' + nicname + ')</span>';
+                                            html = $('#book-table tbody').find('tr').eq(k).find('td').eq(5).text() + '<span>(' + nicname + ')</span>';
                                             $('#book-table tbody').find('tr').eq(k).find('td').eq(5).html(html);
                                         }
 
-                                        nicTmp = $('#book-table tbody').find('tr').eq(k).find('td').eq(6).text();
+                                        nicTmp = $('#book-table tbody').find('tr').eq(k).find('td').eq(2).text()
+                                    		+"_"+$('#book-table tbody').find('tr').eq(k).find('td').eq(6).text();
                                         html = '';
-                                        if (nicTmp == $('.popover-input-author').val()) {
-                                            html = author + '<span>(' + nicname + ')</span>';
+                                        if (nicTmp == author) {
+                                            html = $('#book-table tbody').find('tr').eq(k).find('td').eq(6).text() + '<span>(' + nicname + ')</span>';
                                             $('#book-table tbody').find('tr').eq(k).find('td').eq(6).html(html);
                                         }
 
@@ -1788,17 +1796,20 @@
                             success: function (responseData) {
                                 if (responseData == 'true') {
                                     for (var k = 0; k < $('#book-table tbody').find('tr').length; k++) {
-                                        var nicTmp = $('#book-table tbody').find('tr').eq(k).find('td').eq(5).text();
+                                        var nicTmp = $('#book-table tbody').find('tr').eq(k).find('td').eq(2).text()
+                                    		+"_"+$('#book-table tbody').find('tr').eq(k).find('td').eq(5).text();
                                         var html = '';
+                                    	console.log(nicTmp + " : " + author);
                                         if (nicTmp == author) {
-                                            html = author + '<span>(' + nicname + ')</span>';
+                                            html = $('#book-table tbody').find('tr').eq(k).find('td').eq(5).text() + '<span>(' + nicname + ')</span>';
                                             $('#book-table tbody').find('tr').eq(k).find('td').eq(5).html(html);
                                         }
 
-                                        nicTmp = $('#book-table tbody').find('tr').eq(k).find('td').eq(6).text();
+                                        nicTmp = $('#book-table tbody').find('tr').eq(k).find('td').eq(2).text()
+                                    		+"_"+$('#book-table tbody').find('tr').eq(k).find('td').eq(6).text();
                                         html = '';
-                                        if (nicTmp == $('.popover-input-author').val()) {
-                                            html = author + '<span>(' + nicname + ')</span>';
+                                        if (nicTmp == author) {
+                                            html = $('#book-table tbody').find('tr').eq(k).find('td').eq(6).text() + '<span>(' + nicname + ')</span>';
                                             $('#book-table tbody').find('tr').eq(k).find('td').eq(6).html(html);
                                         }
                                         //console.log("BBBBBB : " + $('#book-table tbody').find('tr').eq(k).find('td').eq(5).text());
@@ -2000,10 +2011,8 @@
         return str.replace(specials, "\\$&");
     };
 
-    fetch_unix_timestamp = function () {
-        return Math.floor(new Date().getTime() / 1000);
-    };
-    function timeConverter(UNIX_timestamp) {
+	fetch_unix_timestamp = function () {  return Math.floor(new Date().getTime() / 1000); };
+	function timeConverter(UNIX_timestamp) {
         var a = new Date(UNIX_timestamp * 1000);
         //var months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
         //var month = months[a.getMonth()];

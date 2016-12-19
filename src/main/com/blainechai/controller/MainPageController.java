@@ -244,15 +244,44 @@ public class MainPageController {
     @RequestMapping(value = {"/main/profile/search-author"})
     public ModelAndView searchAuthor(HttpServletRequest request) {
         // 클라이언트로 부터 받아온 search keyword
+        String userId = "";
+        String sessionId = request.getSession().getId();
+        if (sessionRepository.findByJSessionId(sessionId).size() > 0) {
+            userId = sessionRepository.findByJSessionId(sessionId).get(0).getUserId();
+        }
+
+        List<UserGroup> userGroups = userGroupRepository.findByUserAccount_UserId(userId);
 
         List<NicknameOption> nicknames = nicknameRepository.findAll();
-        for (int i = 0; i < nicknames.size(); i++) {
-            System.out.println(i + "  : NicknameOption : author = " + nicknames.get(i).getAuthor() + " : nickname =" + nicknames.get(i).getNickname());
+        List<NicknameOption> nicknames2 = new ArrayList<NicknameOption>();
+    	boolean b = false;
+        for(int j=0; j < userGroups.size(); j++) {
+			if(userGroups.get(j).getGroupName().getGroupName().equals("전부")) {
+				b = true; break;
+			}
         }
+        if(!b) {
+	        for (int i = 0; i < nicknames.size(); i++) {
+	        	//System.out.println(i + "  : NicknameOption : author = " + nicknames.get(i).getAuthor() + " : nickname =" + nicknames.get(i).getNickname());
+	        	b = false;
+	        	String tmp = nicknames.get(i).getAuthor().split("_")[0];
+				for(int j=0; j < userGroups.size(); j++) {
+					if(userGroups.get(j).getGroupName().getGroupName().equals(tmp)) {
+						b = true; break;
+					}
+				}
+				//System.out.println(i + " : " + tmp + " : " + b);
+				if(b) {
+					nicknames2.add(nicknames.get(i));
+				}
+				//System.out.println(i + " : " + tmp + " : " + nicknames2.size());
+	        }
+        }
+        else nicknames2.addAll(nicknames);
 
         Gson gson = new Gson();
         ModelAndView modelAndView = new ModelAndView("api");
-        modelAndView.addObject("json", gson.toJson(nicknames));
+        modelAndView.addObject("json", gson.toJson(nicknames2));
         return modelAndView;
     }
 
@@ -910,7 +939,9 @@ public class MainPageController {
         boolean isGroup = false;
         if (selInt < 100) {
             if (selInt <= 1) {
+                System.out.println("\tAAAA : msg = " + msg);
                 msg = wordParse(msg);
+                System.out.println("\tAAAA : msg = " + msg);
                 String[] s = msg.split(">");
                 String groupChecked = "";
                 if(!s[4].equals("전부")) {
@@ -954,14 +985,14 @@ public class MainPageController {
                     send += msg;
                     bookInfoList = sc.getR();
                     for (BookInfo bookInfo : bookInfoList) {
-                        List<NicknameOption> nicknames = nicknameRepository.findByAuthor(bookInfo.getAuthor());
+                        List<NicknameOption> nicknames = nicknameRepository.findByAuthor(bookInfo.getGroupName()+"_"+bookInfo.getAuthor());
                         //find in nickname table and if nickname exist, add to BookInfo
                         if (nicknames.size() > 0) {
                             bookInfo.setAuthNickname(nicknames.get(0).getNickname());
                         }
                     }
                     for (BookInfo bookInfo : bookInfoList) {
-                        List<NicknameOption> nicknames = nicknameRepository.findByAuthor(bookInfo.getReferencedAuthor());
+                        List<NicknameOption> nicknames = nicknameRepository.findByAuthor(bookInfo.getGroupName()+"_"+bookInfo.getReferencedAuthor());
                         //find in nickname table and if nickname exist, add to BookInfo
                         if (nicknames.size() > 0) {
                             bookInfo.setRefNickname(nicknames.get(0).getNickname());

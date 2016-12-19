@@ -446,6 +446,8 @@ public class SocketComm
 			for (int i=0; i < stat.length; i++) {
 				statTime[i] = dis.readUTF();
 				stat[i] = dis.readInt();
+
+				//System.out.println("statTime = " + statTime[i] + "  stat = " + stat[i]);
 			}
 		}
 		good = cnt;

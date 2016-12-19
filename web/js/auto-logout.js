@@ -21,7 +21,7 @@ var LogOutTimer = function () {
     return S;
 }();
 
-LogOutTimer.limit = 1000 * 60 * 60 * 10;
+LogOutTimer.limit = 1000 * 60 * 60 * 8;
 
 LogOutTimer.fnc = function () {
     window.location.replace('/logout');

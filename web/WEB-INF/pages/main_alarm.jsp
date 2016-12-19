@@ -38,12 +38,12 @@
 <body>
 <div id="header-wrapper">
     <img src="/imgs/logo.png" style="margin: 0 auto;">
-    <div id="user-info-container" class=""
+    <div id="user-info-container"
          style="position: absolute;top:50%;right: 20px;padding-right: 5px;color:#646464;"><span
             style="padding-right: 15px; padding-left:5px;">${userId}</span><c:if test="${userType.equals(\"admin\")}"><a
             href="/admin" style="margin-right: 5px;" class="btn badge logout-btn">admin<span
             class="glyphicon glyphicon-cog" style="padding-left: 10px;"></span></a></c:if><a
-            href="/logout" class="btn badge logout-btn" style="">로그아웃<span class="glyphicon glyphicon-log-out"
+            href="/logout" class="btn badge logout-btn">로그아웃<span class="glyphicon glyphicon-log-out"
                                                                            style="padding-left: 10px;"></span></a>
     </div>
 </div>
@@ -96,7 +96,7 @@
              style="height: calc(100% - 30px); margin-bottom: 0;width: 72%;">
             <div id="relative-table-container" style="position: absolute; z-index: 10;"></div>
             <div id="menu-wrapper" style="background: rgba(224, 234, 244, 1);">
-                <div class="alert alert-info"><%-- @@@@@@@수정 --%>
+                <div class="alert alert-info">
                     <div id="search-result-number">검색결과 :
                     </div>
                     <div id="search-progress" class="progress">
@@ -589,17 +589,17 @@
         authInfoJson = data;
 
         var tmpEl = '<div class="alert bg-white alert-dismissible fade in border-gray relative-table-wrapper" style="position: absolute; z-index: 10; width: 700px; left:' + relStartPos.left + 'px;top:' + relStartPos.top + 'px;" role="alert">' +
-                '<button type="button" class="close" onclick="$(this).parent().remove(); return false;" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span></button>' +
-                '<div class="relative-title" style="font-size: 13px;">' + tableData[row].author + ' - ' + tableData[row].referencedAuthor + '<span>  : ' + count + ' 건</span></div>' +
-                //' <div id="checkR-result-number">검색결과 : 00000000</div>' +
-                '<div class="relative-content-container"><div style="font-size: 11px;position: relative;left: 450px;">' +
-                //'<span class="relative-author-from-date">' + lastQuery.fromDate + '</span>' + (lastQuery.fromDate == '' && lastQuery.toDate == '' ? '' : '</span><span> ~ </span><span class="relative-author-to-date">' + lastQuery.toDate + '</span>') +
-                '<span class="relative-author-from-date">' + lastQuery.fromDate + '</span>' + (lastQuery.fromDate == '' && lastQuery.toDate == '' ? '' : '</span><span> ~ </span><span class="relative-author-to-date">' + lastQuery.toDate + '(' + lastQuery.dateOption + ')' + '</span>') +
-                '</div>' +
-                '<div><div style="overflow:auto; height: 300px;">' +
-                '<table class="table table-hover table-fixed table-bordered table-striped table-condensed" style="font-size: 11px; margin-bottom: 0;">' +
-                '<thead><tr><th width="120px">시간</th><th width="70px">저자</th><th width="70px">참조</th><th>내용</th></tr></thead>' +
-                '<tbody></tbody></table></div><div><nav aria-label="..." style="text-align: center; margin-top:10px;">';
+	        '<button type="button" class="close" onclick="$(this).parent().remove(); return false;" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span></button>' +
+	        '<div class="relative-title" style="font-size: 13px;">' + tableData[row].author + ' - ' + tableData[row].referencedAuthor + '<span>  : ' + count + ' 건</span></div>' +
+	        //' <div id="checkR-result-number">검색결과 : 00000000</div>' +
+	        '<div class="relative-content-container"><div style="font-size: 11px;position: absolute;right: 0;">' +
+	        //'<span class="relative-author-from-date">' + lastQuery.fromDate + '</span>' + (lastQuery.fromDate == '' && lastQuery.toDate == '' ? '' : '</span><span> ~ </span><span class="relative-author-to-date">' + lastQuery.toDate + '</span>') +
+	        '<span class="relative-author-from-date">' + lastQuery.fromDate + '</span>' + (lastQuery.fromDate == '' && lastQuery.toDate == '' ? '' : '</span><span> ~ </span><span class="relative-author-to-date">' + lastQuery.toDate + '(' + lastQuery.dateOption + ')' + '</span>') +
+	        '</div>' +
+	        '<div style="padding-top: 15px;"><div style="overflow:auto; height: 300px;">' +
+	        '<table class="table table-hover table-fixed table-bordered table-striped table-condensed" style="font-size: 11px; margin-bottom: 0;">' +
+	        '<thead><tr><th width="120px">시간</th><th width="70px">저자</th><th width="70px">참조</th><th>내용</th></tr></thead>' +
+	        '<tbody></tbody></table></div><div><nav aria-label="..." style="text-align: center; margin-top:10px;">';
         tmpEl += '<ul class="pagination pagination-sm pagination-' + id + '" style="margin: 0 auto;">';
         tmpEl += '<li><a href="#" aria-label="Previous" class="disabled"><span aria-hidden="true">«</span></a></li>';
         for (var j = 0; j * 50 < count; j++) {
@@ -608,7 +608,7 @@
             if (j == 4) break;
         }
         tmpEl += '<li><a href="#" aria-label="Next"><span aria-hidden="true">»</span></a></li></ul></nav></div>' +
-                '<label class="btn btn-primary btn-export" style="position: absolute;right: 15px;bottom: 15px;font-size: 11px;">export</label></div></div>';
+        '<label class="btn btn-primary btn-export" style="position: absolute;right: 15px;bottom: 0;font-size: 11px;">export</label></div></div>';
 
         tmpEl = $(tmpEl);
         setRelTablePos();
@@ -689,8 +689,8 @@
              else
              callAjaxLoop("author"+authorNUM, 8, row, 8, 8, tableData[row].eventNo+">f", "");
              */
-            callAjaxLoop("author" + authorNUM, 8, row, 8, 8, tableData[row].eventNo + ">" + "indexB^" + tableData[row].author + " & "
-                    + "indexB^" + tableData[row].referencedAuthor + ">완전일치>" + lastQuery.fromDate + "-" + lastQuery.toDate + '>' + lastQuery.dateOption, "");
+            callAjaxLoop("author" + authorNUM, 8, row, 8, 8, tableData[row].eventNo + ">" + "indexB^" + tableData[row].groupName + "_" + tableData[row].author + " & "
+                    + "indexB^" + tableData[row].groupName + "_" + tableData[row].referencedAuthor + ">완전일치>" + lastQuery.fromDate + "-" + lastQuery.toDate + '>' + lastQuery.dateOption, "");
         });
     }
 
@@ -783,8 +783,8 @@
                 //addCheckEBtnListener();
 
                 $.each(data, function (i, tdata) {
-                    addAuthorClickListener(i, tdata.author);
-                    addRefAuthorClickListener(i, tdata.referencedAuthor);
+                    addAuthorClickListener(i, tdata.groupName + "_" +tdata.author);
+                    addRefAuthorClickListener(i, tdata.groupName + "_" +tdata.referencedAuthor);
                     //addContentTdClickListener(i, tdata.contents);
                     //addCheckRBtnListener(i);
                 });
@@ -825,18 +825,6 @@
 
             if (obj.category == "내용") SearchWord += "indexA^" + tmp;
             else if (obj.category == "저자") SearchWord += "indexB^" + tmp;
-            else if (obj.category == "저자") {
-                var str = tmp.split("_");
-                if (str.length > 1) {
-                    if (str[0] != $('input[name="groups"]:checked').val()) {
-                        alert("저자와 그룹이 일치하지 않습니다.");
-                        isOK = false;
-                    }
-                } else {
-                    tmp = $('input[name="groups"]:checked').val() + '_' + tmp;
-                }
-                SearchWord += "indexB^" + tmp;
-            }
             //else if (obj.category == "참조") SearchWord += "indexC^" + tmp;
 
             if (obj.operator == "O R") SearchWord += " <OR> ";
@@ -869,8 +857,8 @@
         SearchWord += data.fromDate + "-" + data.toDate;
         SearchWord += ">" + data.dateOption;
         SearchWord += ">" + data.groups;
-        if (data.groups)
-            console.log("jsonSearchInfo ::: " + data.typeInfo + " : " + data.fromDate + " : " + data.toDate);
+        if(data.groups)
+        console.log("jsonSearchInfo ::: " + data.typeInfo + " : " + data.fromDate + " : " + data.toDate);
 
         if (!isOK) SearchWord = "";
 ///
@@ -980,16 +968,16 @@
                 }
             }
             else if (tdata.contents == "NoData") {
-                alert("데이터베이스에 저장된 자료가 없습니다!!!");
+                alert("다시 한번 검색해 주세요. 동일한 결과가 반복될 경우에는 데이터베이스에 저장된 자료가 없을 수 있습니다!!!");
             }
             else {
                 if (tdata.sel == "0") {
-                    if (tdata.contents != "NotGroup") {
-                        setTime = setTimeout(function () {
-                            callAjaxLoop(tdata.id, tdata.job, 1, 4, 0, 0, "");
-                        }, 100);
-                    }
-                    else alert("허용된 사용자 그룹이 아닙니다.");
+                	if(tdata.contents != "NotGroup") {
+	                    setTime = setTimeout(function () {
+	                        callAjaxLoop(tdata.id, tdata.job, 1, 4, 0, 0, "");
+	                    }, 100);
+                	}
+                	else alert("허용된 사용자 그룹이 아닙니다.");
                 }
                 else if (tdata.sel == "1") {
                     setTime = setTimeout(function () {
@@ -1209,11 +1197,11 @@
                         + " & " + tableData[row].referencedAuthor + ">완전일치>"
                         + lastQuery.fromDate + "-" + lastQuery.toDate + ">" + lastQuery.dateOption;
 
-                msg += ">" + $('input[name="groups"]:checked').val();
+                msg += ">" + tableData[row].groupName;
                 console.log(msg);
 
                 //if ($('#book-table tbody').find('tr').eq(row).find('td').eq(col).find('span').hasClass( "glyphicon-ok"))
-                callAjaxLoop("author" + authorNUM, row, 1, 1, col, msg, "");
+                callAjaxLoop("author" + authorNUM, row, 1, 1, col,msg, "");
                 //else
                 //	callAjaxLoop("author"+authorNUM, 8, row, 1, 0, m, tableData[row].eventNo);
 
@@ -1335,23 +1323,25 @@
                                 if (responseData == 'true') {
 
                                     for (var k = 0; k < $('#book-table tbody').find('tr').length; k++) {
-                                        var nicTmp = $('#book-table tbody').find('tr').eq(k).find('td').eq(5).text();
+                                        var nicTmp = $('#book-table tbody').find('tr').eq(k).find('td').eq(2).text()
+                                        	+"_"+$('#book-table tbody').find('tr').eq(k).find('td').eq(5).text();
                                         var html = '';
-                                        if (nicTmp == author) {
-                                            html = author + '<span>(' + nicname + ')</span>';
+                                        if (nicTmp == $('.popover-input-author').val()) {
+                                            html = $('#book-table tbody').find('tr').eq(k).find('td').eq(5).text() + '<span>(' + nicname + ')</span>';
                                             $('#book-table tbody').find('tr').eq(k).find('td').eq(5).html(html);
                                         }
 
-                                        nicTmp = $('#book-table tbody').find('tr').eq(k).find('td').eq(6).text();
+                                        nicTmp = $('#book-table tbody').find('tr').eq(k).find('td').eq(2).text()
+                                    		+"_"+$('#book-table tbody').find('tr').eq(k).find('td').eq(6).text();
                                         html = '';
                                         if (nicTmp == $('.popover-input-author').val()) {
-                                            html = author + '<span>(' + nicname + ')</span>';
+                                            html = $('#book-table tbody').find('tr').eq(k).find('td').eq(6).text() + '<span>(' + nicname + ')</span>';
                                             $('#book-table tbody').find('tr').eq(k).find('td').eq(6).html(html);
                                         }
 
                                         //console.log("BBBBBB : " + $('#book-table tbody').find('tr').eq(k).find('td').eq(5).text());
                                     }
-                                    highLightResult();
+                                    //highLightResult();
 
                                     $('.popover .btn-identity-check').attr('disabled', '');
                                     $('.popover .btn-modify-nickname').toggleClass('btn-primary').text('편집');
@@ -1502,22 +1492,25 @@
                             success: function (responseData) {
                                 if (responseData == 'true') {
                                     for (var k = 0; k < $('#book-table tbody').find('tr').length; k++) {
-                                        var nicTmp = $('#book-table tbody').find('tr').eq(k).find('td').eq(5).text();
+                                        var nicTmp = $('#book-table tbody').find('tr').eq(k).find('td').eq(2).text()
+                                			+"_"+$('#book-table tbody').find('tr').eq(k).find('td').eq(5).text();
                                         var html = '';
-                                        if (nicTmp == author) {
-                                            html = author + '<span>(' + nicname + ')</span>';
+                                        if (nicTmp == $('.popover-input-author').val()) {
+                                            html = $('#book-table tbody').find('tr').eq(k).find('td').eq(5).text() + '<span>(' + nicname + ')</span>';
                                             $('#book-table tbody').find('tr').eq(k).find('td').eq(5).html(html);
                                         }
 
-                                        nicTmp = $('#book-table tbody').find('tr').eq(k).find('td').eq(6).text();
+                                        nicTmp = $('#book-table tbody').find('tr').eq(k).find('td').eq(2).text()
+                            				+"_"+$('#book-table tbody').find('tr').eq(k).find('td').eq(6).text();
                                         html = '';
                                         if (nicTmp == $('.popover-input-author').val()) {
-                                            html = author + '<span>(' + nicname + ')</span>';
+                                            html = $('#book-table tbody').find('tr').eq(k).find('td').eq(6).text() + '<span>(' + nicname + ')</span>';
                                             $('#book-table tbody').find('tr').eq(k).find('td').eq(6).html(html);
                                         }
+
                                         //console.log("BBBBBB : " + $('#book-table tbody').find('tr').eq(k).find('td').eq(5).text());
                                     }
-                                    highLightResult();
+                                    //highLightResult();
 
                                     $('.popover .btn-identity-check').attr('disabled', '');
                                     $('.popover .btn-modify-nickname').toggleClass('btn-primary').text('편집');
@@ -1597,25 +1590,13 @@
         var data = tdata.data;
         var str = "";
         var isOK = true;
-        //console.log("tdata.groups = " + tdata.groups);
+		//console.log("tdata.groups = " + tdata.groups);
 
         for (var i = 0; i < data.length; i++) {
-            var tmp = data[i].input;
+        	var tmp = data[i].input;
             if (data[i].category == "내용") str += 'indexA^' + tmp;
-            //else if (data[i].category == "저자") str += 'indexB^';
-            //else if (data[i].category == "참조") str += 'indexC^' + tmp;
-            else if (data[i].category == "저자") {
-                var str2 = tmp.split("_");
-                if (str2.length > 1) {
-                    if (str2[0] != tdata.groups) {
-                        alert("저자와 그룹이 일치하지 않습니다.");
-                        isOK = false;
-                    }
-                } else {
-                    tmp = tdata.groups + '_' + tmp;
-                }
-                str += "indexB^" + tmp;
-            }
+            else if (data[i].category == "저자") str += "indexB^" + tmp;
+			//else if (data[i].category == "참조") str += 'indexC^' + tmp;
 
             if (i < data.length - 1) {
                 if (data[i].operator == "O R") str += " <OR> ";
