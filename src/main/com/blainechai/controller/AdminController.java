@@ -2,6 +2,7 @@ package com.blainechai.controller;
 
 import com.blainechai.constant.UserType;
 import com.blainechai.domain.*;
+import com.blainechai.model.BookInfo;
 import com.blainechai.model.GroupApi;
 import com.blainechai.model.UserAccountApi;
 import com.blainechai.repository.*;
@@ -21,6 +22,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 
 import static com.blainechai.util.LoggerUtil.*;
 
@@ -689,4 +691,144 @@ public class AdminController {
         List<UserGroup> userGroups = userGroupRepository.findByUserAccount_UserId(userAccount.getUserId());
         return new UserAccountApi(userAccount, userGroups);
     }
+
+
+    @RequestMapping(value = "/test")
+    public ModelAndView nicknameTestPage(HttpServletRequest request) {
+        return new ModelAndView("test");
+    }
+
+    @RequestMapping(value = "/test/nickname/add")
+    public ModelAndView addNickname(HttpServletRequest request) {
+        Gson gson = new Gson();
+
+        int authorCount = 0;
+        int stringCount = 0;
+
+        try {
+            authorCount = Integer.parseInt(request.getParameter("author-count"));
+            stringCount = Integer.parseInt(request.getParameter("string-count"));
+            if (Math.log(authorCount) / Math.log(10) >= stringCount) {
+                return new ModelAndView("api").addObject("json", "글자수가 더 커야합니다.");
+            }
+            ArrayList<NicknameOption> nickList = new ArrayList<NicknameOption>();
+            for (int i = 0; i < authorCount; i++) {
+
+                if (nicknameRepository.findByAuthor("" + i).size() <= 0) {
+                    String nickname = null;
+                    do {
+                        nickname = getRandomString(stringCount);
+                    } while (nicknameRepository.findByNickname(nickname).size() > 0);
+                    NicknameOption tmpNick = new NicknameOption("" + i, nickname, "9", "");
+                    nickList.add(tmpNick);
+                }
+            }
+            nicknameRepository.save(nickList);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return new ModelAndView("api").addObject("json", gson.toJson(nicknameRepository.findAll()));
+    }
+
+    @RequestMapping(value = "/test/nickname/get")
+    public ModelAndView getTestNickname(HttpServletRequest request) {
+
+        return new ModelAndView("api").addObject("json", new Gson().toJson(nicknameRepository.findAll()));
+    }
+
+    @RequestMapping(value = "/test/nickname/delete")
+    public ModelAndView deleteAllNickname(HttpServletRequest request) {
+        Gson gson = new Gson();
+
+        nicknameRepository.deleteAll();
+
+        return new ModelAndView("api").addObject("json", gson.toJson(nicknameRepository.findAll()));
+    }
+
+    @RequestMapping(value = "/test/search")
+    public ModelAndView searchNickname(HttpServletRequest request) {
+        Gson gson = new Gson();
+        try {
+            int searchSize = Integer.parseInt(request.getParameter("search-data-count"));
+            ArrayList<BookInfo> bookInfoList = new ArrayList<BookInfo>();
+            for (int i = 0; i < searchSize; i++) {
+                Random random = new Random();
+                String author = String.valueOf(random.nextInt(3000));
+                String referencedAuthor = String.valueOf(random.nextInt(3000));
+                bookInfoList.add(new BookInfo("", "", "", "", author, referencedAuthor, "", "", "", "", ""));
+            }
+            ArrayList<BookInfo> bookInfoList1 = new ArrayList<BookInfo>(bookInfoList);
+
+            long start = System.currentTimeMillis();
+            for (BookInfo bookInfo : bookInfoList) {
+                List<NicknameOption> nicknames = nicknameRepository.findByAuthor(bookInfo.getAuthor());
+                //find in nickname table and if nickname exist, add to BookInfo
+                if (nicknames.size() > 0) {
+                    bookInfo.setAuthNickname(nicknames.get(0).getNickname());
+                }
+            }
+            for (BookInfo bookInfo : bookInfoList) {
+                List<NicknameOption> nicknames = nicknameRepository.findByAuthor(bookInfo.getReferencedAuthor());
+                //find in nickname table and if nickname exist, add to BookInfo
+                if (nicknames.size() > 0) {
+                    bookInfo.setRefNickname(nicknames.get(0).getNickname());
+                }
+            }
+            long end = System.currentTimeMillis();
+
+            long runningTime1 = end - start;
+
+//            System.out.println(gson.toJson(bookInfoList1));
+            start = System.currentTimeMillis();
+            fillNicknamesOfBookList(bookInfoList1);
+            end = System.currentTimeMillis();
+
+            long runningTime2 = end - start;
+
+            return new ModelAndView("api").addObject("json",
+                    "기존 결과: " + runningTime1 + " ms\n" +
+                            "<br>신규 결과: " + runningTime2 + " ms\n" +
+                            "<br>기존 결과 데이터: " + gson.toJson(bookInfoList) + "\n" +
+                            "신규 결과 데이터: " + gson.toJson(bookInfoList1));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return new ModelAndView("api").addObject("json", "실패");
+    }
+
+    private String getRandomString(int length) {
+        char[] charaters = {'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z'};
+//        char[] charaters = {'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9'};
+        StringBuilder sb = new StringBuilder();
+        Random rn = new Random();
+        for (int i = 0; i < length; i++) {
+            sb.append(charaters[rn.nextInt(charaters.length)]);
+        }
+        return sb.toString();
+    }
+
+    private List<BookInfo> fillNicknamesOfBookList(List<BookInfo> bookInfoList) {
+        List<NicknameOption> nicknames = nicknameRepository.findAll();
+
+        for (BookInfo bookInfo : bookInfoList) {
+            for (NicknameOption nicknameOption : nicknames) {
+                if (bookInfo.getAuthor().equals(nicknameOption.getAuthor())) {
+                    bookInfo.setAuthNickname(nicknameOption.getNickname());
+                    System.out.println(bookInfo.getReferencedAuthor());
+                    if (!bookInfo.getRefNickname().equals("")) {
+                        break;
+                    }
+                } else if (bookInfo.getReferencedAuthor().equals(nicknameOption.getAuthor())) {
+                    bookInfo.setRefNickname(nicknameOption.getNickname());
+                    if (!bookInfo.getAuthNickname().equals("")) {
+                        break;
+                    }
+                }
+            }
+        }
+
+        return bookInfoList;
+    }
+
 }

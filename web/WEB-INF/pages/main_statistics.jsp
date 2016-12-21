@@ -87,6 +87,7 @@
     <script src="/js/Blob.js"></script>
     <script src="/js/d3.v3.min.js"></script>
     <script src="/js/randomColor.js"></script>
+    <script src="/js/jquery.base64.js"></script>
 
 </head>
 <body>
@@ -988,14 +989,14 @@
     function svgToCanvas() {
         // Select the first svg element
         console.error('aa');
-        var svg = d3.select('svg')[0][0],
-                img = new Image(),
-                serializer = new XMLSerializer(),
-                svgStr = serializer.serializeToString(svg);
+        var svg = d3.select('svg')[0][0];
+        var img = new Image();
+        var serializer = new XMLSerializer();
         console.error('bb');
-        img.src = 'data:image/svg+xml;base64,' + window.btoa(svgStr);
+        var svgStr = serializer.serializeToString(svg);
         console.error('cc');
-        console.error(window.btoa(svgStr));
+        img.src = 'data:image/svg+xml;base64,' + jQuery.base64.encode(svgStr);
+        console.error(jQuery.base64.encode(svgStr));
         // You could also use the actual string without base64 encoding it:
 //        img.src = "data:image/svg+xml;utf8," + svgStr;
 
@@ -1007,25 +1008,40 @@
         canvas.width = w;
         canvas.height = h;
         console.error('ee');
-//        canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+        canvas.getContext('2d').drawImage(img, 0, 0, w, h);
         // Now save as png or whatever
 
         console.error($('canvas')[0].toDataURL());
         $('body').append($('<a download="graph.png" href="' + $('canvas')[0].toDataURL() + '">aaaaaaaaaaaaa</a>'));
         console.error('ff');
 //        var tar = $('<a>b</a>');
-//        var filename = "hi.png";
-//        if (window.navigator.msSaveBlob) { // IE 10+
-//            alert('IE' + csv);
-//            window.navigator.msSaveOrOpenBlob(new Blob([csv], {type: "text/plain;charset=utf-8;"}), filename)
-//        }
-//        else {
-//            tar.attr({'download': filename, 'href': canvas.toDataURL().replace('data:image', 'data:application'), 'target': '_blank'});
-//            $('body').append(tar);
-//            tar[0].click();
-//            console.error('tar');
-
-//        }
+        var filename = "hi.png";
+        if (window.navigator.msSaveBlob) { // IE 10+
+////            alert('IE' + csv);
+            console.error('gg');
+//            console.error(canvas.toDataURL().replace('data:image/png;base64,',''));
+//            var data = canvas.toDataURL().replace('data:image/png;base64,', '');
+//            var bytes = new Uint8Array(data.length / 2);
+//
+//            for (var i = 0; i < data.length; i += 2) {
+//                bytes[i / 2] = parseInt(data.substring(i, i + 2), /* base = */ 16);
+//            }
+            console.log(canvas.msToBlob());
+            window.navigator.msSaveOrOpenBlob(new Blob(canvas.msToBlob()), filename);
+////            window.navigator.msSaveOrOpenBlob(new Blob([canvas.toDataURL().replace('data:image/png;base64,', '')], {type: "image/png;base64"}), filename);
+            console.error('hihi');
+        }
+        else {
+            tar.attr({
+                'download': filename,
+                'href': canvas.toDataURL().replace('data:image', 'data:application'),
+                'target': '_blank'
+            });
+            $('body').append(tar);
+            tar[0].click();
+            console.error('tar');
+//
+        }
     }
 
 

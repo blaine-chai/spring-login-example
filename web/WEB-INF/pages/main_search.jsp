@@ -11,7 +11,6 @@
     <!-- 합쳐지고 최소화된 최신 CSS -->
     <link rel="stylesheet"
           href="/css/bootstrap.min.css">
-    <!-- 부가적인 테마 -->
 
     <!-- 합쳐지고 최소화된 최신 자바스크립트 -->
     <script src="/js/bootstrap.min.js"></script>
@@ -31,8 +30,8 @@
     <script src="/js/moment.js"></script>
     <script src="/js/jquery.datetimepicker.full.js"></script>
     <script src="/js/jquery-ui.js"></script>
-    <script src="/js/FileSaver.js"></script>
-    <script src="/js/Blob.js"></script>
+    <%--<script src="/js/FileSaver.js"></script>--%>
+    <%--<script src="/js/Blob.js"></script>--%>
 
 </head>
 <body>

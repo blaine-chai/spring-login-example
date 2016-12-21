@@ -139,7 +139,8 @@
                     <%--class="btn btn-default btn-primary">검색</label></div>--%>
                     <%--</div>--%>
                     <div id="nickname-result-container" class="panel panel-default"
-                         style="overflow: auto; max-height:400px; margin-left: 2px; margin-right: 2px; display: none;border-top-left-radius: 0;border-top-right-radius: 0;">
+                         style=" max-height:400px; margin-left: 2px; margin-right: 2px; display: none;border-top-left-radius: 0;border-top-right-radius: 0;">
+                        <div class="nickname-result-table-container" style="max-height:366px;overflow: auto;">
                         <table id="nickname-result-table" style="font-size:11px; overflow: auto;position:relative;"
                                class="table table-fixed table-condensed table-hover">
                             <%--<thead>--%>
@@ -152,6 +153,12 @@
                             <tbody>
                             </tbody>
                         </table>
+                        </div>
+                        <div class="component-pager" style="height: 24px;margin: 5px 0 5px 0;">
+                        <div style="width: 297px;position: absolute;text-align: center;line-height: 24px;"><span class="component-pager-page" style="">1</span></div>
+                        <label class="btn btn-default btn-default-left" style="position: absolute;height: 20px;width: 20px;font-size: 14px;margin: 2px;left: 35px;">
+                            <span style="position: absolute;top: -2px;right: 8px;">«</span></label>
+                        <label class="btn btn-default btn-default-right" style="height: 20px;width: 20px;font-size: 14px;margin: 2px;position: absolute;right: 35px;"><span style="position: absolute;top: -2px;right: 8px;">»</span></label></div>
                     </div>
                 </div>
 
@@ -231,6 +238,8 @@
 
 
     var loadingRing = $('<img class="loading-ring" src="/imgs/ajax-loader.gif" style="position: absolute;right: 50px;">');
+
+    var searchResultPager = $('#nickname-result-container .component-pager');
 
 
     $(document).ready(function () {

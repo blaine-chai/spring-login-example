@@ -30,10 +30,10 @@ function exportTableToCSV($table, filename) {
         // Data URI
         csvData = 'data:application/csv;charset=utf-8,' + encodeURIComponent(csv);
 
-    // console.log(csv);
+    console.log(csv);
 
     if (window.navigator.msSaveBlob) { // IE 10+
-        //alert('IE' + csv);
+        // alert('IE' + csv);
         window.navigator.msSaveOrOpenBlob(new Blob([csv], {type: "text/plain;charset=utf-8;"}), filename)
     }
     else {

@@ -18,13 +18,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.springframework.web.servlet.support.RequestContextUtils;
 
 import javax.servlet.http.HttpServletRequest;
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -33,7 +27,6 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Random;
 import java.util.Set;
 
 import static com.blainechai.util.LoggerUtil.*;
@@ -196,9 +189,10 @@ public class MainPageController {
 //    public ModelAndView getAlarm(HttpServletRequest request) {
 //        updateCount++;
 //        ModelAndView modelAndView = new ModelAndView("api").addObject("json", String.valueOf(updateCount));
-        /**
-         * 아래 주석부분이 실제 코드이므로 해제하고 개발하시면 됩니다.
-         */
+
+    /**
+     * 아래 주석부분이 실제 코드이므로 해제하고 개발하시면 됩니다.
+     */
 
 //        String sessionId = request.getSession().getId();
 //        String userId = sessionRepository.findByJSessionId(sessionId).get(0).getUserId();
@@ -224,7 +218,6 @@ public class MainPageController {
 //
 //        return modelAndView;
 //    }
-
     @RequestMapping(value = {"/main/profile"})
     public ModelAndView profilePage(HttpServletRequest request) {
         String sessionId = request.getSession().getId();
@@ -254,30 +247,31 @@ public class MainPageController {
 
         List<NicknameOption> nicknames = nicknameRepository.findAll();
         List<NicknameOption> nicknames2 = new ArrayList<NicknameOption>();
-    	boolean b = false;
-        for(int j=0; j < userGroups.size(); j++) {
-			if(userGroups.get(j).getGroupName().getGroupName().equals("전부")) {
-				b = true; break;
-			}
+        boolean b = false;
+        for (int j = 0; j < userGroups.size(); j++) {
+            if (userGroups.get(j).getGroupName().getGroupName().equals("전부")) {
+                b = true;
+                break;
+            }
         }
-        if(!b) {
-	        for (int i = 0; i < nicknames.size(); i++) {
-	        	//System.out.println(i + "  : NicknameOption : author = " + nicknames.get(i).getAuthor() + " : nickname =" + nicknames.get(i).getNickname());
-	        	b = false;
-	        	String tmp = nicknames.get(i).getAuthor().split("_")[0];
-				for(int j=0; j < userGroups.size(); j++) {
-					if(userGroups.get(j).getGroupName().getGroupName().equals(tmp)) {
-						b = true; break;
-					}
-				}
-				//System.out.println(i + " : " + tmp + " : " + b);
-				if(b) {
-					nicknames2.add(nicknames.get(i));
-				}
-				//System.out.println(i + " : " + tmp + " : " + nicknames2.size());
-	        }
-        }
-        else nicknames2.addAll(nicknames);
+        if (!b) {
+            for (int i = 0; i < nicknames.size(); i++) {
+                //System.out.println(i + "  : NicknameOption : author = " + nicknames.get(i).getAuthor() + " : nickname =" + nicknames.get(i).getNickname());
+                b = false;
+                String tmp = nicknames.get(i).getAuthor().split("_")[0];
+                for (int j = 0; j < userGroups.size(); j++) {
+                    if (userGroups.get(j).getGroupName().getGroupName().equals(tmp)) {
+                        b = true;
+                        break;
+                    }
+                }
+                //System.out.println(i + " : " + tmp + " : " + b);
+                if (b) {
+                    nicknames2.add(nicknames.get(i));
+                }
+                //System.out.println(i + " : " + tmp + " : " + nicknames2.size());
+            }
+        } else nicknames2.addAll(nicknames);
 
         Gson gson = new Gson();
         ModelAndView modelAndView = new ModelAndView("api");
@@ -329,9 +323,9 @@ public class MainPageController {
 
             sc = new SocketComm(userId + "@" + id, ip, port, selInt, pageInt, strQuery);
         } else if (selInt == 16) {
-        	String[] s = msg.split(">");
+            String[] s = msg.split(">");
             /*
-        	String strQuery = "";
+            String strQuery = "";
             if (s[1].equals("전부")) strQuery = "indexB^" + s[0];
             else 	strQuery = "indexB^" + s[0] + " & indexC^" + s[1];
             sc = new SocketComm(userId + "@" + id, ip, port, selInt, pageInt, strQuery);
@@ -499,7 +493,7 @@ public class MainPageController {
         if (sessionRepository.findByJSessionId(sessionId).size() > 0) {
             userId = sessionRepository.findByJSessionId(sessionId).get(0).getUserId();
         }
-        System.out.println("ZZZZZZZZZZ: timeE = " +searchPeriod);
+        System.out.println("ZZZZZZZZZZ: timeE = " + searchPeriod);
 
         String[] dayMonth2 = searchPeriod.split("-");
         String[] dayMonth = dayMonth2[2].split("_");
@@ -509,11 +503,19 @@ public class MainPageController {
         System.out.println("ZZZZZZZZZZ: timeE = " + dayMonth2[0] + " :1: timeNow = " + dayMonth2[1]);
 
         Calendar c = Calendar.getInstance();
-        try { c.setTime(formatter.parse(dayMonth2[0])); } catch (ParseException e) { e.printStackTrace();  }
+        try {
+            c.setTime(formatter.parse(dayMonth2[0]));
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
         String startTime = c.get(c.YEAR) + (String.format("%02d", c.get(c.MONTH) + 1)) + (String.format("%02d", c.get(c.DATE))) + "000000";
 
         c = Calendar.getInstance();
-        try { c.setTime(formatter.parse(dayMonth2[1])); } catch (ParseException e) { e.printStackTrace();  }
+        try {
+            c.setTime(formatter.parse(dayMonth2[1]));
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
         //if (dayMonth[1].equals("monthly")) c.add(c.MONTH, 1);
         //else c.add(c.DATE, 1);
         //if (dayMonth[1].equals("monthly")) c.add(c.MONTH, -19);
@@ -640,20 +642,20 @@ public class MainPageController {
     }
 
 
-    @RequestMapping(value = {"/main/statistics/search-author-total-data"})
-    public ModelAndView getStatisticsAuthorTotal(HttpServletRequest request) {
-        String searchPeriod = request.getParameter("searchPeriod");
-
-        ArrayList<String> authorList = new ArrayList<String>();
-        authorList.add("total");
-
-        ArrayList<LinkedHashMap<String, String>> resultList = getGraphDataByAuthorsAndPeriod(authorList, searchPeriod);
-
-        ModelAndView modelAndView = new ModelAndView("api");
-        Gson gson = new Gson();
-        modelAndView.addObject("json", gson.toJson(resultList));
-        return modelAndView;
-    }
+//    @RequestMapping(value = {"/main/statistics/search-author-total-data"})
+//    public ModelAndView getStatisticsAuthorTotal(HttpServletRequest request) {
+//        String searchPeriod = request.getParameter("searchPeriod");
+//
+//        ArrayList<String> authorList = new ArrayList<String>();
+//        authorList.add("total");
+//
+//        ArrayList<LinkedHashMap<String, String>> resultList = getGraphDataByAuthorsAndPeriod(authorList, searchPeriod);
+//
+//        ModelAndView modelAndView = new ModelAndView("api");
+//        Gson gson = new Gson();
+//        modelAndView.addObject("json", gson.toJson(resultList));
+//        return modelAndView;
+//    }
 
     @RequestMapping(value = {"/main/statistics/search-author-data"})
     public ModelAndView getStatisticsAuthor(HttpServletRequest request) {
@@ -685,15 +687,15 @@ public class MainPageController {
 
             String[] s = msg.split(">");
             String groupChecked = "";
-            if(!s[4].equals("전부")) {
-                for(int j=0; j < userGroups.size(); j++) {
-                	if(userGroups.get(j).getGroupName().getGroupName().equals(s[4])) {
-                		groupChecked = " & indexC^" + s[4];
-                		break;
-                	}
+            if (!s[4].equals("전부")) {
+                for (int j = 0; j < userGroups.size(); j++) {
+                    if (userGroups.get(j).getGroupName().getGroupName().equals(s[4])) {
+                        groupChecked = " & indexC^" + s[4];
+                        break;
+                    }
                 }
             }
-        	msg = s[0] + groupChecked + ">" + s[1] + ">" +s[2] + ">" +s[3];
+            msg = s[0] + groupChecked + ">" + s[1] + ">" + s[2] + ">" + s[3];
 
             sc = new SocketComm(userId + "@" + id, ip, port, 21, 0, msg);
             sc.runStart();
@@ -805,7 +807,7 @@ public class MainPageController {
         return resultList;
     }
 
-    private ArrayList<LinkedHashMap<String, String>> getGraphDataByAuthorsAndPeriod(ArrayList<String> authorList, String searchPeriod) {
+/*    private ArrayList<LinkedHashMap<String, String>> getGraphDataByAuthorsAndPeriod(ArrayList<String> authorList, String searchPeriod) {
         ArrayList<LinkedHashMap<String, String>> resultList = new ArrayList<LinkedHashMap<String, String>>();
 
         switch (Integer.parseInt(searchPeriod)) {
@@ -856,7 +858,7 @@ public class MainPageController {
         }
 
         return resultList;
-    }
+    }*/
 
     @RequestMapping(value = {"/main/status"})
     public String statusPage() {
@@ -944,25 +946,25 @@ public class MainPageController {
                 System.out.println("\tAAAA : msg = " + msg);
                 String[] s = msg.split(">");
                 String groupChecked = "";
-                if(!s[4].equals("전부")) {
-                    for(int j=0; j < userGroups.size(); j++) {
-                    	if(userGroups.get(j).getGroupName().getGroupName().equals(s[4])) {
-                    		groupChecked = "indexC^" + s[4];
-                    		break;
-                    	}
+                if (!s[4].equals("전부")) {
+                    for (int j = 0; j < userGroups.size(); j++) {
+                        if (userGroups.get(j).getGroupName().getGroupName().equals(s[4])) {
+                            groupChecked = "indexC^" + s[4];
+                            break;
+                        }
                     }
                 }
-                for(int j=0; j < userGroups.size(); j++) {
-                	if(userGroups.get(j).getGroupName().getGroupName().equals(s[4])) {
-                		isGroup = true;
-                	}
-                	if(userGroups.get(j).getGroupName().getGroupName().equals("전부"))
-                		isGroup = true;
+                for (int j = 0; j < userGroups.size(); j++) {
+                    if (userGroups.get(j).getGroupName().getGroupName().equals(s[4])) {
+                        isGroup = true;
+                    }
+                    if (userGroups.get(j).getGroupName().getGroupName().equals("전부"))
+                        isGroup = true;
                 }
-                if(groupChecked.equals(""))
-                	msg = s[0] + ">" + s[1] + ">" +s[2] + ">" +s[3] + ">";
+                if (groupChecked.equals(""))
+                    msg = s[0] + ">" + s[1] + ">" + s[2] + ">" + s[3] + ">";
                 else
-                	msg = s[0] + " & " + groupChecked + ">" + s[1] + ">" +s[2] + ">" +s[3] + ">";
+                    msg = s[0] + " & " + groupChecked + ">" + s[1] + ">" + s[2] + ">" + s[3] + ">";
 
                 System.out.println("\tAAAA : msg = " + msg);
                 sc = new SocketComm(userId + "@" + id, ip, port, selInt, pageInt, msg);
@@ -978,29 +980,30 @@ public class MainPageController {
 
             if (sc.beGetGood() >= 0) {
                 if (selInt <= 1) {
-                	if(isGroup) send += "OK";                    // query
-                	else 	send += "NotGroup";
-                }
-                else if ((selInt == 2) || (selInt == 12)) {
+                    if (isGroup) send += "OK";                    // query
+                    else send += "NotGroup";
+                } else if ((selInt == 2) || (selInt == 12)) {
                     send += msg;
                     bookInfoList = sc.getR();
+// 수정
+                    fillNicknamesOfBookList(bookInfoList);
+
                     for (BookInfo bookInfo : bookInfoList) {
-                        List<NicknameOption> nicknames = nicknameRepository.findByAuthor(bookInfo.getGroupName()+"_"+bookInfo.getAuthor());
+                        List<NicknameOption> nicknames = nicknameRepository.findByAuthor(bookInfo.getGroupName() + "_" + bookInfo.getAuthor());
                         //find in nickname table and if nickname exist, add to BookInfo
                         if (nicknames.size() > 0) {
                             bookInfo.setAuthNickname(nicknames.get(0).getNickname());
                         }
                     }
                     for (BookInfo bookInfo : bookInfoList) {
-                        List<NicknameOption> nicknames = nicknameRepository.findByAuthor(bookInfo.getGroupName()+"_"+bookInfo.getReferencedAuthor());
+                        List<NicknameOption> nicknames = nicknameRepository.findByAuthor(bookInfo.getGroupName() + "_" + bookInfo.getReferencedAuthor());
                         //find in nickname table and if nickname exist, add to BookInfo
                         if (nicknames.size() > 0) {
                             bookInfo.setRefNickname(nicknames.get(0).getNickname());
                         }
                     }
-                }
-                else if (selInt == 3) send += sc.getKetSet();    // 연관문자
-                else if (selInt == 4){
+                } else if (selInt == 3) send += sc.getKetSet();    // 연관문자
+                else if (selInt == 4) {
                     int progressPer = sc.getProPercent();
                     int cntTmp = sc.getCount();    // 카운트
                     if ((cntTmp < 50) && (progressPer < 100)) send = "NotOK";
@@ -1008,18 +1011,15 @@ public class MainPageController {
                         if (progressPer < 100) send = cntTmp + "!@#$" + progressPer + "!@#$OK";
                         else send = cntTmp + "!@#$" + progressPer + "!@#$NOT";
                     }
-                }
-                else if (selInt == 14) {
+                } else if (selInt == 14) {
                     int progressPer = sc.getProPercent();
                     int cntTmp = sc.getCount();    // 카운트
                     if (progressPer < 100) send = "NotOK";
                     else
                         send = cntTmp + "!@#$" + progressPer;
-                }
-                else if (selInt == 6) {
+                } else if (selInt == 6) {
                     send += "OK";
-                }
-                else send += "EXPORT";        // R
+                } else send += "EXPORT";        // R
             } else if (sc.beGetGood() == -2) {
                 send = "NoData";
             } else {
@@ -1254,7 +1254,7 @@ public class MainPageController {
 
 
                     if (result > commonBookmarks.get(i).getCount()) {
-                    	historyApis.add(new HistoryApi(commonBookmarks.get(i), true)); //date가 update된 경우
+                        historyApis.add(new HistoryApi(commonBookmarks.get(i), true)); //date가 update된 경우
                     } else {
                         historyApis.add(new HistoryApi(commonBookmarks.get(i), false));
                     }
@@ -1364,9 +1364,9 @@ public class MainPageController {
 //            System.out.println("@@@@@");
             if (userBookmarks.size() > 0) {
 
-            	UserBookmark userBookmark = userBookmarks.get(0);
+                UserBookmark userBookmark = userBookmarks.get(0);
 
-            	String msg = wordParse(searchWordParse(userBookmark.getWord()));
+                String msg = wordParse(searchWordParse(userBookmark.getWord()));
 
                 SocketComm sc = new SocketComm(userId + "@" + "A_" + System.currentTimeMillis(), ip, port, 18, 0, msg);
                 sc.runStart();
@@ -1553,7 +1553,7 @@ public class MainPageController {
 
     public String wordParse(String str) {
         String[] s = str.split(">");
-        String groups = s[s.length-1];
+        String groups = s[s.length - 1];
 
         String first = " <AND> ";
         String second = " <OR> ";
@@ -1608,7 +1608,7 @@ public class MainPageController {
                 //System.out.println("CCCCCCCCCCCCC : word : " + str[0] + " : " + s[i]);
                 if (!str[0].equals("indexB")) word += str[0] + "^" + s[i];
                 else {
-                	word += str[0] + "^" + getAuthorByNickname(s[i], groups);
+                    word += str[0] + "^" + getAuthorByNickname(s[i], groups);
                 }
                 //System.out.println("CCCCCCCCCCCCC : word : " + str[0] + "^" + s[i]);
             }
@@ -1625,8 +1625,8 @@ public class MainPageController {
         String[] t = null;
         String SearchWord = "";
 
-        t = s[s.length-1].split("\"");
-        String groups = t[0];		// 그룹명
+        t = s[s.length - 1].split("\"");
+        String groups = t[0];        // 그룹명
 
         int k = 1;
         while (true) {
@@ -1644,8 +1644,8 @@ public class MainPageController {
             } else break;
         }
         k = k + 3;
-        if(!groups.equals("전부"))
-        	SearchWord += " <AND> indexC^" + groups;
+        if (!groups.equals("전부"))
+            SearchWord += " <AND> indexC^" + groups;
 
         if (s[k].contains("문자포함")) SearchWord += ">문자포함";
         else if (s[k].contains("형태소")) SearchWord += ">형태소";
@@ -1661,7 +1661,7 @@ public class MainPageController {
 
         String[] t = name.split(">", 2);
         String[] t1 = t[0].split("_", 2);
-        if(t1.length >= 2)return name;
+        if (t1.length >= 2) return name;
 
         String nickname = t[0];
 
@@ -1672,7 +1672,7 @@ public class MainPageController {
             author = nicknameOptions.get(0).getAuthor();
         }
 
-        if (author.equals("")) author = groups + "_"+ name ;
+        if (author.equals("")) author = groups + "_" + name;
 
         if (t.length > 1) author = author + ">" + t[1];
         //System.out.println("ZZZZ :" + author);
@@ -1680,8 +1680,32 @@ public class MainPageController {
         return author;
     }
 
-    private final class SEARCH_PERIOD {
-        final static int daily = 0, weekly = 1, monthly = 2, yearly = 3;
-    }
-}
+    private List<BookInfo> fillNicknamesOfBookList(List<BookInfo> bookInfoList) {
+        List<NicknameOption> nicknames = nicknameRepository.findAll();
 
+        for (BookInfo bookInfo : bookInfoList) {
+            for (NicknameOption nicknameOption : nicknames) {
+                if (nicknameOption.getAuthor()
+                        .equals(bookInfo.getGroupName() + "_" + bookInfo.getAuthor())) {
+                    bookInfo.setAuthNickname(nicknameOption.getNickname());
+                    System.out.println(bookInfo.getReferencedAuthor());
+                    if (!bookInfo.getRefNickname().equals("")) {
+                        break;
+                    }
+                } else if (bookInfo.getReferencedAuthor()
+                        .equals(bookInfo.getGroupName() + "_" + bookInfo.getReferencedAuthor())) {
+                    bookInfo.setRefNickname(nicknameOption.getNickname());
+                    if (!bookInfo.getAuthNickname().equals("")) {
+                        break;
+                    }
+                }
+            }
+        }
+
+        return bookInfoList;
+    }
+
+//    private final class SEARCH_PERIOD {
+//        final static int daily = 0, weekly = 1, monthly = 2, yearly = 3;
+//    }
+}

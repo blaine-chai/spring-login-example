@@ -429,7 +429,7 @@ var GraphModule = (function () {
                 graphContainer.find('.graph-overall-container').remove();
 
                 var graphOverallContainer = $('<div class="panel panel-default graph-overall-container" style="position: absolute;top: 15px;left:75px;padding: 5px;margin-bottom: 0;">' +
-                // var graphOverallContainer = $('<div class="panel panel-default graph-overall-container" style="position: absolute;width: 130px;top: 15px;left:75px;padding: 5px;margin-bottom: 0;">' +
+                    // var graphOverallContainer = $('<div class="panel panel-default graph-overall-container" style="position: absolute;width: 130px;top: 15px;left:75px;padding: 5px;margin-bottom: 0;">' +
                     '<div class="panel panel-default graph-overall" style="padding: 5px;margin-bottom: 0;"></div></div>');
                 graphOverallContainer.draggable({containment: option.containerSelector});
                 graphContainer.append(graphOverallContainer);
@@ -669,72 +669,77 @@ var GraphModule = (function () {
                 // text.attr('x', (-text.width()) * 1.1);
                 // text.attr('y', -text.height());
             });
-
-            function svgToCanvas() {
-                // Select the first svg element
-                var svg = d3.select('.tmp-graph-container>svg')[0][0],
-                    img = new Image(),
-                    serializer = new XMLSerializer(),
-                    svgStr = serializer.serializeToString(svg);
-
-                img.src = 'data:image/svg+xml;base64,' + window.btoa(svgStr);
-
-                // You could also use the actual string without base64 encoding it:
-                //img.src = "data:image/svg+xml;utf8," + svgStr;
-
-
-                var canvas = document.createElement("canvas");
-                document.body.appendChild(canvas);
-
-                canvas.width = w;
-                canvas.height = h;
-                canvas.getContext("2d").drawImage(img, 0, 0, w, h);
-                // Now save as png or whatever
-
-                $('body').append('<a download="graph.png" href="' + canvas.toDataURL() + '"></a>');
-                var tar = $('<a></a>');
-                var filename = "graph.png";
-                if (window.navigator.msSaveBlob) { // IE 10+
-                    //alert('IE' + csv);
-                    window.navigator.msSaveOrOpenBlob(new Blob([canvas.toDataURL().replace('data:image', '')], {type: "text/plain;charset=utf-8;"}), filename)
-                }
-                else {
-                    console.error(canvas.toDataURL());
-                    tar.attr({
-                        'download': filename,
-                        'href': canvas.toDataURL().replace(/^data:image\/(png|jpg);base64,/, 'data:application/'),
-                        'target': '_blank'
-                    });
-                    $('body').append(tar);
-                    tar[0].click();
-                    console.error('tar');
-
-                }
-            }
+            //
+            // function svgToCanvas() {
+            //     // Select the first svg element
+            //     var svg = d3.select('.tmp-graph-container>svg')[0][0],
+            //         img = new Image(),
+            //         serializer = new XMLSerializer(),
+            //         svgStr = serializer.serializeToString(svg);
+            //
+            //     img.src = 'data:image/svg+xml;base64,' + window.btoa(svgStr);
+            //
+            //     // You could also use the actual string without base64 encoding it:
+            //     //img.src = "data:image/svg+xml;utf8," + svgStr;
+            //
+            //
+            //     var canvas = document.createElement("canvas");
+            //     document.body.appendChild(canvas);
+            //
+            //     canvas.width = w;
+            //     canvas.height = h;
+            //     canvas.getContext("2d").drawImage(img, 0, 0, w, h);
+            //     // Now save as png or whatever
+            //
+            //     $('body').append('<a download="graph.png" href="' + canvas.toDataURL() + '"></a>');
+            //     var tar = $('<a></a>');
+            //     var filename = "graph.png";
+            //     if (window.navigator.msSaveBlob) { // IE 10+
+            //         //alert('IE' + csv);
+            //         window.navigator.msSaveOrOpenBlob(new Blob([canvas.toDataURL().replace('data:image/png;base64,', '')], {type: "text/plain;charset=utf-8;"}), filename)
+            //     }
+            //     else {
+            //         console.error(canvas.toDataURL());
+            //         tar.attr({
+            //             'download': filename,
+            //             'href': canvas.toDataURL().replace(/^data:image\/(png|jpg);base64,/, 'data:application/'),
+            //             'target': '_blank'
+            //         });
+            //         $('body').append(tar);
+            //         tar[0].click();
+            //         console.error('tar');
+            //
+            //     }
+            // }
 
             // var nWin = function () {
-                var newWindow = window.open();
-                // var html = $(tmpGraphContainer).html();
-                //
-                // $(newWindow.document.body).html(html);
-
-            svg = d3.select('.tmp-graph-container>svg')[0][0],
-                img = new Image(),
-                serializer = new XMLSerializer(),
+            var newWindow = window.open();
+            // var html = $(tmpGraphContainer).html();
+            //
+            // $(newWindow.document.body).html(html);
+            console.log('1');
+            svg = d3.select('.tmp-graph-container>svg')[0][0];
+                img = new Image();
+                serializer = new XMLSerializer();
                 svgStr = serializer.serializeToString(svg);
 
-            img.src = 'data:image/svg+xml;base64,' + window.btoa(svgStr);
+            img.src = 'data:image/svg+xml;base64,' + jQuery.base64.encode(svgStr);
+            // img.src = 'data:image/svg+xml;base64,' + window.btoa(svgStr);
+            // img.src = 'data:image/svg+xml;base64,' + svgStr;
 
             // You could also use the actual string without base64 encoding it:
             //img.src = "data:image/svg+xml;utf8," + svgStr;
 
 
+            console.log('a');
             var canvas = newWindow.document.createElement("canvas");
+            console.log('b');
             newWindow.document.body.appendChild(canvas);
-
+            console.log('c');
             canvas.width = w;
             canvas.height = h;
-            canvas.getContext("2d").drawImage(img, 0, 0, w, h);
+            canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+            console.log('d');
 
             // }();
             return w;
