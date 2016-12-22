@@ -719,9 +719,9 @@ var GraphModule = (function () {
             // $(newWindow.document.body).html(html);
             console.log('1');
             svg = d3.select('.tmp-graph-container>svg')[0][0];
-                img = new Image();
-                serializer = new XMLSerializer();
-                svgStr = serializer.serializeToString(svg);
+            img = new Image();
+            serializer = new XMLSerializer();
+            svgStr = serializer.serializeToString(svg);
 
             img.src = 'data:image/svg+xml;base64,' + jQuery.base64.encode(svgStr);
             // img.src = 'data:image/svg+xml;base64,' + window.btoa(svgStr);
@@ -730,19 +730,35 @@ var GraphModule = (function () {
             // You could also use the actual string without base64 encoding it:
             //img.src = "data:image/svg+xml;utf8," + svgStr;
 
+            /*var svg = document.querySelector('svg');
+             var serializer = new XMLSerializer();
+             var svgString = serializer.serializeToString(svg);
+             var canvas = document.getElementById("test");
+             canvg(canvas, svgString);*/
 
-            console.log('a');
-            var canvas = newWindow.document.createElement("canvas");
-            console.log('b');
-            newWindow.document.body.appendChild(canvas);
-            console.log('c');
-            canvas.width = w;
-            canvas.height = h;
-            canvas.getContext('2d').drawImage(img, 0, 0, w, h);
-            console.log('d');
+            img.onload = function () {
+
+                console.log('a');
+                var canvas = newWindow.document.createElement("canvas");
+                console.log('b');
+                newWindow.document.body.appendChild(canvas);
+                console.log('c');
+                canvas.width = w;
+                canvas.height = h;
+                canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+                console.log('d');
+                // newWindow.document.write("<img src='" + img.src + "'/>");
+                // console.error(canvas.toDataURL());
+                // var a = newWindow.document.createElement("a");
+                // a.download = "graph.png";
+                // a.href = canvas.toDataURL("image/png");
+                // a.click();
+                $('.tmp-graph-container').remove();
+            };
+
 
             // }();
-            return w;
+            // return w;
         }
 
 

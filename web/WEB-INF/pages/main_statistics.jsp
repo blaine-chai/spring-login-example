@@ -70,6 +70,10 @@
         .x.axis text {
             /*font-size: 10px;*/
         }
+
+        .graph-container {
+            cursor: pointer;
+        }
     </style>
 
     <!-- Latest compiled and minified CSS -->
@@ -179,7 +183,7 @@
                         </ul>
                     </div>
                 </div>
-                <div id="total-book-graph-container" class="panel panel-default"
+                <div id="total-book-graph-container" class="panel panel-default graph-container"
                      style="margin-top: 20px;width: calc(100% - 30px);height: calc(100% - 91px);margin-left: 15px;margin-right: 15px;margin-bottom: 15px;position: relative;">
                 </div>
             </div>
@@ -224,7 +228,7 @@
                         </ul>
                     </div>
                 </div>
-                <div id="total-author-graph-container" class="panel panel-default"
+                <div id="total-author-graph-container" class="panel panel-default graph-container"
                      style="margin-top: 20px;width: calc(100% - 30px);height: calc(100% - 91px);margin-left: 15px;margin-right: 15px;margin-bottom: 15px;position: relative;">
                 </div>
             </div>
@@ -437,7 +441,7 @@
                     </div>
                 </div>
 
-                <div id="author-graph-container" class="panel panel-default"
+                <div id="author-graph-container" class="panel panel-default graph-container"
                      style="margin-top: 5px;height: calc(100% - 192px);float: left;width: calc(100% - 40px);background: #fff;margin-left: 20px;margin-right: 20px; position:relative;">
 
                     <%--<div id="author-graph-container" class="col-md-6" style="margin-top: 15px; height: 100%;">--%>
@@ -581,6 +585,22 @@
         //$("input:radio[name='groups']").removeAttr('checked');
         $("input:radio[name='groups']").eq(0).prop("checked", true);
         $("input:radio[name='groups']:radio[value='전부']").prop("checked", true);
+
+        $('#total-book-graph-container').click(function () {
+            if ($(this).find('svg').size() > 0) {
+                totalGraph.openWithNewWindow();
+            }
+        });
+        $('#total-author-graph-container').click(function () {
+            if ($(this).find('svg').size() > 0) {
+                authorTotalGraph.openWithNewWindow();
+            }
+        });
+        $('#author-graph-container').click(function () {
+            if ($(this).find('svg').size() > 0) {
+                authorGraph.openWithNewWindow();
+            }
+        });
 
         <%--/*--%>
         <%--<div class="dropdown-menu panel panel-default checkbox" style="position:absolute;width: 300px;min-height: 50px;background: rgba(255, 255, 255, 0.95);z-index: 10;left: -250px;top: 25px;overflow-y:auto;text-align: left;">--%>

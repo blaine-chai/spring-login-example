@@ -3,6 +3,7 @@ package com.blainechai.domain;
 import org.eclipse.persistence.annotations.CascadeOnDelete;
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -12,7 +13,7 @@ import java.util.List;
  */
 @Entity
 @Table(name = "common_group_name")
-public class CommonGroupName {
+public class CommonGroupName implements Serializable {
     private static final long serialVersionUID = 1L;
 
 
@@ -21,6 +22,8 @@ public class CommonGroupName {
     private Long id;
 
     private String groupName;
+
+    private String groupId;
 
     @OneToMany(fetch=FetchType.EAGER, cascade = CascadeType.ALL)
     @JoinColumn(name="groupName")
