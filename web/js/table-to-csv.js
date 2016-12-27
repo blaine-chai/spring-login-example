@@ -1,7 +1,8 @@
 function exportTableToCSV($table, filename) {
 
     // if($table.find('tbody').children().length<=0){
-    var $rows = $table.find('tr:has(td),tr:has(th)'),
+    // var $rows = $table.find('tr:has(td),tr:has(th)'),
+    var $rows = $table.find('tr:has(td):has(.export-checkbox:checked),tr:has(th)'),
 
         // Temporary delimiter characters unlikely to be typed by keyboard
         // This is to avoid accidentally splitting the actual contents

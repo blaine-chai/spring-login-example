@@ -402,7 +402,7 @@
                                                 </button>
                                                 <div class="dropdown-menu panel panel-default checkbox"
                                                      style="position:absolute;width: 300px;min-height: 50px;background: rgba(255, 255, 255, 0.95);z-index: 10;left: -250px;top: 25px;overflow-y:auto;text-align: left;">
-                                                    <c:forEach items="${userGroupApis}" var="userGroup">
+                                                    <c:forEach items="${userGroups}" var="userGroup">
                                                         <label style="margin-left: 2px;width:85px;font-size: 12px;max-width:85px;">
                                                             <input style="width: 20px;" type="radio" name="groups"
                                                                    value="${userGroup.groupName.groupName}"

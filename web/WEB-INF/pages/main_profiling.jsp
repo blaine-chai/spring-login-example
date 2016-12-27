@@ -118,7 +118,7 @@
                     </div>
                     <div class="panel panel-default checkbox"
                          style="padding-top: 5px;padding-bottom:5px;margin-top:10px;margin-bottom: 0;">
-                        <c:forEach items="${userGroupApis}" var="userGroup">
+                        <c:forEach items="${userGroups}" var="userGroup">
                             <label style="margin-left: 2px;width:85px;font-size: 12px;max-width:85px;">
                                 <input type="radio" name="groups" value="${userGroup.groupName.groupName}"
                                        checked="checked" style="width: 20px;">${userGroup.groupName.groupName}</label>

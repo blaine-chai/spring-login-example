@@ -225,23 +225,24 @@ body {
     border: 2px solid #efefef;
 }
 
-.relative-content-container{
-	position:relative;
+.relative-content-container {
+    position: relative;
 }
 
 .relative-table-wrapper {
     padding: 15px;
 }
+
 .relative-table-wrapper th {
-    text-align:center; 
+    text-align: center;
 }
 
 .relative-table-wrapper tr td:last-child {
-    text-align:left; 
+    text-align: left;
 }
 
 .relative-table-wrapper td {
-    text-align:center; 
+    text-align: center;
 }
 
 .relative-table-wrapper .close {
@@ -381,7 +382,11 @@ body {
 #search-date-option-container {
     width: 40px;
     /*margin-bottom: 10px;*/
-    margin-right:10px;
+    margin-right: 10px;
     float: left;
     padding: 0;
+}
+
+.export-checkbox {
+    margin-right: 5px!important;
 }
