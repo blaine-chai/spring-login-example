@@ -14,6 +14,11 @@ public interface CommonGroupNameRepository extends JpaRepository<CommonGroupName
 
     List<CommonGroupName> findByGroupName(String groupName);
 
+    List<CommonGroupName> findByGroupId(String groupId);
+
     @Transactional
     long deleteByGroupName(String groupName);
+
+    @Transactional
+    long deleteByGroupId(String groupId);
 }

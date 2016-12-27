@@ -1,5 +1,6 @@
 package com.blainechai.controller;
 
+import com.blainechai.constant.Constant;
 import com.blainechai.constant.UserType;
 import com.blainechai.controller.api.SocketComm;
 import com.blainechai.domain.*;
@@ -18,6 +19,9 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.springframework.web.servlet.support.RequestContextUtils;
 
 import javax.servlet.http.HttpServletRequest;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
 import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -249,7 +253,7 @@ public class MainPageController {
         List<NicknameOption> nicknames2 = new ArrayList<NicknameOption>();
         boolean b = false;
         for (int j = 0; j < userGroups.size(); j++) {
-            if (userGroups.get(j).getGroupName().getGroupName().equals("전부")) {
+            if (userGroups.get(j).getGroupName().getGroupName().equals(Constant.GROUP_NAME_ALL)) {
                 b = true;
                 break;
             }
@@ -687,7 +691,7 @@ public class MainPageController {
 
             String[] s = msg.split(">");
             String groupChecked = "";
-            if (!s[4].equals("전부")) {
+            if (!s[4].equals(Constant.GROUP_NAME_ALL)) {
                 for (int j = 0; j < userGroups.size(); j++) {
                     if (userGroups.get(j).getGroupName().getGroupName().equals(s[4])) {
                         groupChecked = " & indexC^" + s[4];
@@ -958,7 +962,7 @@ public class MainPageController {
                     if (userGroups.get(j).getGroupName().getGroupName().equals(s[4])) {
                         isGroup = true;
                     }
-                    if (userGroups.get(j).getGroupName().getGroupName().equals("전부"))
+                    if (userGroups.get(j).getGroupName().getGroupName().equals(Constant.GROUP_NAME_ALL))
                         isGroup = true;
                 }
                 if (groupChecked.equals(""))
@@ -1705,7 +1709,80 @@ public class MainPageController {
         return bookInfoList;
     }
 
+    private Map<String, String> getGroupMap() {
+        List<CommonGroupName> groupNames = groupNameRepository.findAll();
+        Map<String, String> groupMap = new LinkedHashMap<String, String>();
+
+        for (CommonGroupName groupName : groupNames) {
+            groupMap.put(groupName.getGroupName(), groupName.getGroupId());
+        }
+        return groupMap;
+    }
+
+    private Map<String, String> getGroupIdMap() {
+        List<CommonGroupName> groupNames = groupNameRepository.findAll();
+        Map<String, String> groupMap = new LinkedHashMap<String, String>();
+
+        for (CommonGroupName groupName : groupNames) {
+            groupMap.put(groupName.getGroupId(), groupName.getGroupName());
+        }
+        return groupMap;
+    }
+
 //    private final class SEARCH_PERIOD {
 //        final static int daily = 0, weekly = 1, monthly = 2, yearly = 3;
 //    }
+
+
+    private void refreshGroupList() {
+//        Gson gson = new Gson();
+        File dir1 = new File("group.conf");
+        List<CommonGroupName> commonGroupNames = new ArrayList<CommonGroupName>();
+        try {
+            System.out.println("Current dir : " + dir1.getCanonicalPath());
+            BufferedReader in = new BufferedReader(new FileReader(dir1));
+            String s;
+
+            while ((s = in.readLine()) != null) {
+                CommonGroupName commonGroupName = new CommonGroupName(s.split(" ")[0], s.split(" ")[1]);
+                commonGroupNames.add(commonGroupName);
+            }
+            in.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        Map<String, String> groupIdMap = getGroupIdMap();
+//        System.out.println(gson.toJson(commonGroupNames));
+        for (CommonGroupName group : commonGroupNames) {
+            String groupName = groupIdMap.get(group.getGroupId());
+            if (groupName == null) {
+                groupNameRepository.save(new CommonGroupName(group.getGroupName(), group.getGroupId()));
+            } else {
+                CommonGroupName groupName1 = groupNameRepository.findByGroupId(group.getGroupId()).get(0);
+                groupName1.setGroupName(group.getGroupName());
+                groupNameRepository.save(groupName1);
+            }
+        }
+
+        List<String> orgGroupIdList = new ArrayList<String>(groupIdMap.keySet());
+        for (String orgGroupId : orgGroupIdList) {
+            boolean isExist = false;
+
+            for (CommonGroupName tarGroupName : commonGroupNames) {
+                if (tarGroupName.getGroupId().equals(orgGroupId)) {
+                    isExist = true;
+                }
+            }
+
+            if (!isExist && !orgGroupId.equals(Constant.GROUP_NAME_ALL)) {
+                userGroupRepository.deleteByGroupName_GroupId(orgGroupId);
+                groupNameRepository.deleteByGroupId(orgGroupId);
+            }
+        }
+
+        if (groupNameRepository.findByGroupName(Constant.GROUP_NAME_ALL).size() <= 0) {
+            groupNameRepository.save(new CommonGroupName(Constant.GROUP_NAME_ALL, Constant.GROUP_ID_ALL));
+        }
+    }
 }

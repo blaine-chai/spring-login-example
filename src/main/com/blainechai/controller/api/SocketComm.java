@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import com.blainechai.constant.Constant;
 import com.blainechai.model.AuthorBookContent;
 import com.blainechai.model.BookInfo;
 import com.blainechai.model.RelAuthorInfo;
@@ -170,7 +171,7 @@ public class SocketComm
 
 	public String[] getFrom(String key)
 	{
-		if(!key.equals("전부")) {
+		if(!key.equals(Constant.GROUP_NAME_ALL)) {
 			for(int i=from.size()-1; i >= 0; i--) {
 				String[] tmp = from.get(i).split("_");
 				if(tmp.length < 2) continue;

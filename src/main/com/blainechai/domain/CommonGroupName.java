@@ -32,6 +32,11 @@ public class CommonGroupName implements Serializable {
     protected CommonGroupName() {
     }
 
+    public CommonGroupName(String groupName, String groupId) {
+        this.groupName = groupName;
+        this.groupId = groupId;
+    }
+
     public CommonGroupName(String groupName) {
         this.groupName = groupName;
     }
@@ -57,5 +62,13 @@ public class CommonGroupName implements Serializable {
             this.userGroup = new ArrayList<UserGroup>();
         }
         this.userGroup.add(userGroup);
+    }
+
+    public String getGroupId() {
+        return groupId;
+    }
+
+    public void setGroupId(String groupId) {
+        this.groupId = groupId;
     }
 }

@@ -85,6 +85,7 @@
                         <thead>
                         <tr>
                             <th width="80%" class="text-center">그룹 이름</th>
+                            <th width="80%" class="text-center">그룹 아이디</th>
                             <th class="text-center shrink" style="width: 100px;">
                                 <button class="btn btn-primary" style="width: 100px;"
                                         onclick="joinGroupClickHandler(this);return false;">생성
@@ -160,7 +161,7 @@
 
     function getGroupNames() {
         $.ajax({
-            url: '/admin/group-name/get',
+            url: '/admin/group-map/get',
             type: 'post',
             data: {},
             contentType: "application/x-www-form-urlencoded; charset=UTF-8",
@@ -183,6 +184,7 @@
         $.each(data, function (i, d) {
             var trEl = $('<tr>' +
                     '<td class="group-name-td"></td>' +
+                    '<td class="group-id-td"></td>' +
                     '<td class="text-center shrink">' +
                     '<button class="btn btn-primary" style="width:calc(50% - 2px);margin-right: 5px;" name="groupName" value="" onclick="modifyGroupClickHandler(this);return false;">수정</button>' +
 //                    '<form style="width:calc(50% - 2px);" action="/admin/group-name/delete" method="post">' +
@@ -191,6 +193,7 @@
                     '</td></tr>');
 //            console.error(d);
             trEl.find('.group-name-td').text(d.groupName);
+            trEl.find('.group-id-td').text(d.groupId);
             trEl.find('button[name=groupName]').val(d.groupName);
             tbody.append(trEl);
         });

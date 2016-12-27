@@ -1,5 +1,6 @@
 package com.blainechai.controller;
 
+import com.blainechai.constant.Constant;
 import com.blainechai.constant.UserType;
 import com.blainechai.domain.*;
 import com.blainechai.model.BookInfo;
@@ -19,10 +20,11 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.springframework.web.servlet.support.RequestContextUtils;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.util.*;
 
 import static com.blainechai.util.LoggerUtil.*;
 
@@ -60,8 +62,8 @@ public class AdminController {
     @Autowired
     private CommonGroupNameRepository groupNameRepository;
 
-    @Autowired
-    private CommonGroupMapRepository groupMapRepository;
+//    @Autowired
+//    private CommonGroupMapRepository groupMapRepository;
 
     @Autowired
     private UserGroupRepository userGroupRepository;
@@ -562,9 +564,11 @@ public class AdminController {
         try {
             String groupName = request.getParameter("groupName");
             String orgGroupName = request.getParameter("orgGroupName");
-            if (groupName.equals(orgGroupName)) {
+            if (orgGroupName.equals(Constant.GROUP_NAME_ALL)) {
+                return new ModelAndView("api").addObject("json", Constant.GROUP_NAME_ALL + " 그룹은 수정할 수 없습니다.");
+            } else if (groupName.equals(orgGroupName)) {    //그룹명의 변동이 없는 경우
                 return new ModelAndView("api").addObject("json", true);
-            } else if (groupNameRepository.findByGroupName(groupName).size() <= 0) {
+            } else if (groupNameRepository.findByGroupName(groupName).size() <= 0) {    //그룹명이 이미 존재하는지 확인
                 CommonGroupName commonGroupName = groupNameRepository.findByGroupName(orgGroupName).get(0);
                 List<UserGroup> userGroups = userGroupRepository.findByGroupName(commonGroupName);
                 commonGroupName.setGroupName(groupName);
@@ -599,8 +603,13 @@ public class AdminController {
     @RequestMapping(value = "/group-name/delete", method = RequestMethod.POST)
     public ModelAndView groupNameDelete(HttpServletRequest request) {
         try {
-            userGroupRepository.deleteByGroupName_GroupName(request.getParameter("groupName"));
-            groupNameRepository.deleteByGroupName(request.getParameter("groupName"));
+            String groupName = request.getParameter("groupName");
+
+            if (groupName.equals(Constant.GROUP_NAME_ALL)) {
+                return new ModelAndView("api").addObject("json", Constant.GROUP_NAME_ALL + " 그룹은 삭제할 수 없습니다.");
+            }
+            userGroupRepository.deleteByGroupName_GroupName(groupName);
+            groupNameRepository.deleteByGroupName(groupName);
             ModelAndView modelAndView = new ModelAndView("admin_group_name_list");
 //        List<CommonGroupName> groupNames = groupNameRepository.findAll();
 //        modelAndView.addObject("groupList", groupNames);
@@ -835,90 +844,108 @@ public class AdminController {
     }
 
 
-    @RequestMapping(value = "/group-map")
-    public ModelAndView groupMap(HttpServletRequest request) {
-        ModelAndView modelAndView = new ModelAndView("admin_group_map_list");
-
-        modelAndView.addObject("groupList", groupMapRepository.findAll());
-        return modelAndView;
-    }
-
-//    @RequestMapping(value = "/group/register")
-//    public ModelAndView groupRegister(HttpServletRequest request){
-//        ModelAndView modelAndView = new ModelAndView("admin_group_");
+//    @RequestMapping(value = "/group-map/refresh")
+//    public ModelAndView groupMap(HttpServletRequest request) {
+//        ModelAndView modelAndView = new ModelAndView("admin_group_map_list");
+//
+////        System.out.println(System.getProperty("user.dir"));
+////        File dir1 = new File("group.conf");
+////        List<CommonGroupName> commonGroupNames = new ArrayList<CommonGroupName>();
+////        try {
+////            System.out.println("Current dir : " + dir1.getCanonicalPath());
+////            BufferedReader in = new BufferedReader(new FileReader(dir1));
+////            String s;
+////
+////            while ((s = in.readLine()) != null) {
+////                CommonGroupName commonGroupName = new CommonGroupName(s.split(" ")[0], s.split(" ")[1]);
+////                commonGroupNames.add(commonGroupName);
+////            }
+////            in.close();
+////        } catch (Exception e) {
+////            e.printStackTrace();
+////        }
+//
+////        modelAndView.addObject("groupList", commonGroupNames);
+//        return modelAndView;
 //    }
 
-    @RequestMapping(value = "/group-map/get")
-    public ModelAndView groupMapGet(HttpServletRequest request) {
-        Gson gson = new Gson();
+    @RequestMapping(value = "/group-name/refresh")
+    public ModelAndView getGroupMap(HttpServletRequest request) {
         ModelAndView modelAndView = new ModelAndView("api");
+        Gson gson = new Gson();
+
+
+        System.out.println(System.getProperty("user.dir"));
+        File dir1 = new File("group.conf");
+        List<CommonGroupName> commonGroupNames = new ArrayList<CommonGroupName>();
         try {
-            modelAndView.addObject("json", gson.toJson(groupMapRepository.findAll()));
-        } catch (ArrayIndexOutOfBoundsException e) {
-            modelAndView.addObject("json", false);
+            System.out.println("Current dir : " + dir1.getCanonicalPath());
+            BufferedReader in = new BufferedReader(new FileReader(dir1));
+            String s;
+
+            while ((s = in.readLine()) != null) {
+                CommonGroupName commonGroupName = new CommonGroupName(s.split(" ")[0], s.split(" ")[1]);
+                commonGroupNames.add(commonGroupName);
+            }
+            in.close();
+        } catch (Exception e) {
+            e.printStackTrace();
         }
+
+        Map<String, String> groupIdMap = getGroupIdMap();
+        System.out.println(gson.toJson(commonGroupNames));
+        for (CommonGroupName group : commonGroupNames) {
+            String groupName = groupIdMap.get(group.getGroupId());
+            if (groupName == null) {
+                groupNameRepository.save(new CommonGroupName(group.getGroupName(), group.getGroupId()));
+            } else {
+                CommonGroupName groupName1 = groupNameRepository.findByGroupId(group.getGroupId()).get(0);
+                groupName1.setGroupName(group.getGroupName());
+                groupNameRepository.save(groupName1);
+            }
+        }
+
+        List<String> orgGroupIdList = new ArrayList<String>(groupIdMap.keySet());
+        for (String orgGroupId : orgGroupIdList) {
+            boolean isExist = false;
+
+            for (CommonGroupName tarGroupName : commonGroupNames) {
+                if (tarGroupName.getGroupId().equals(orgGroupId)) {
+                    isExist = true;
+                }
+            }
+
+            if (!isExist && !orgGroupId.equals(Constant.GROUP_NAME_ALL)) {
+                userGroupRepository.deleteByGroupName_GroupId(orgGroupId);
+                groupNameRepository.deleteByGroupId(orgGroupId);
+            }
+        }
+
+        if (groupNameRepository.findByGroupName(Constant.GROUP_NAME_ALL).size() <= 0) {
+            groupNameRepository.save(new CommonGroupName(Constant.GROUP_NAME_ALL, Constant.GROUP_ID_ALL));
+        }
+        modelAndView.addObject("json", gson.toJson(groupNameRepository.findAll()));
         return modelAndView;
     }
 
 
-    @RequestMapping(value = "/group-map/update")
-    public ModelAndView groupMapUpdate(HttpServletRequest request) {
-        try {
-            String groupName = request.getParameter("groupName");
-            String orgGroupName = request.getParameter("orgGroupName");
-            if (groupName.equals(orgGroupName)) {
-                return new ModelAndView("api").addObject("json", true);
-            } else if (groupMapRepository.findByGroupName_GroupName(groupName).size() <= 0) {
-                CommonGroupMap commonGroupMap = groupMapRepository.findByGroupName_GroupName(orgGroupName).get(0);
-//                List<UserGroup> userGroups = userGroupRepository.findByGroupName(commonGroupName);
-//                commonGroupName.setGroupName(groupName);
-//                commonGroupName = groupNameRepository.save(commonGroupName);
-//                UserGroup userGroup;
-//                for (int i = 0; i < userGroups.size(); i++) {
-//                    userGroups.get(i).getGroupName().setGroupName(groupName);
-//                    userGroup = userGroupRepository.save(userGroups.get(i));
-//                    userGroupRepository.save(userGroups.get(i));
-//                }
-                return new ModelAndView("api").addObject("json", true);
-            } else return new ModelAndView("api").addObject("json", false);
-        } catch (Exception e) {
-            return new ModelAndView("api").addObject("json", false);
+    private Map<String, String> getGroupMap() {
+        List<CommonGroupName> groupNames = groupNameRepository.findAll();
+        Map<String, String> groupMap = new LinkedHashMap<String, String>();
+
+        for (CommonGroupName groupName : groupNames) {
+            groupMap.put(groupName.getGroupName(), groupName.getGroupId());
         }
+        return groupMap;
     }
 
-    @RequestMapping(value = "/group-map/add")
-    public ModelAndView groupMapAdd(HttpServletRequest request) {
-        String groupName = request.getParameter("groupName");
-        String groupId = request.getParameter("groupId");
-        ModelAndView modelAndView = new ModelAndView("api");
-        if (groupMapRepository.findByGroupName_GroupName(groupName).size() <= 0) {
-            CommonGroupName commonGroupName = groupNameRepository.findByGroupName(groupName).get(0);
-            groupMapRepository.save(new CommonGroupMap(groupId, commonGroupName));
-//                modelAndView.addObject("groupList", groupNameRepository.findAll());
-            return new ModelAndView("api").addObject("json", true);
-        } else {
-            return new ModelAndView("api").addObject("json", false);
+    private Map<String, String> getGroupIdMap() {
+        List<CommonGroupName> groupNames = groupNameRepository.findAll();
+        Map<String, String> groupMap = new LinkedHashMap<String, String>();
+
+        for (CommonGroupName groupName : groupNames) {
+            groupMap.put(groupName.getGroupId(), groupName.getGroupName());
         }
-    }
-
-
-    @RequestMapping(value = "/group-map/delete", method = RequestMethod.POST)
-    public ModelAndView groupMapDelete(HttpServletRequest request) {
-        try {
-            userGroupRepository.deleteByGroupName_GroupName(request.getParameter("groupName"));
-            groupNameRepository.deleteByGroupName(request.getParameter("groupName"));
-//            ModelAndView modelAndView = new ModelAndView("admin_group_name_list");
-//        List<CommonGroupName> groupNames = groupNameRepository.findAll();
-//        modelAndView.addObject("groupList", groupNames);
-            return new ModelAndView("api").addObject("json", true);
-        } catch (Exception e) {
-            return new ModelAndView("api").addObject("json", false);
-        }
-    }
-
-    @RequestMapping(value = "/group-map/delete-all", method = RequestMethod.POST)
-    public ModelAndView groupMapDeleteAll(HttpServletRequest request) {
-        groupMapRepository.deleteAll();
-        return new ModelAndView("api").addObject("json", "");
+        return groupMap;
     }
 }

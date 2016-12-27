@@ -5,5 +5,6 @@ package com.blainechai.constant;
  */
 public final class Constant {
     public final static String JSESSIONID = "JSESSIONID";
-
+    public final static String GROUP_NAME_ALL = "전부";
+    public final static String GROUP_ID_ALL = "전부";
 }

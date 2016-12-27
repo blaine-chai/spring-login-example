@@ -584,7 +584,7 @@
 
         //$("input:radio[name='groups']").removeAttr('checked');
         $("input:radio[name='groups']").eq(0).prop("checked", true);
-        $("input:radio[name='groups']:radio[value='전부']").prop("checked", true);
+        $("input:radio[name='groups']:radio[value=전부]").prop("checked", true);
 
         $('#total-book-graph-container').click(function () {
             if ($(this).find('svg').size() > 0) {

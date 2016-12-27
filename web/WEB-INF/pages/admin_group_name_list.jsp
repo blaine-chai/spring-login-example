@@ -16,6 +16,10 @@
         table td.shrink {
             white-space: nowrap
         }
+
+        .table-container{
+            position: relative;
+        }
     </style>
     <style>
         form {
@@ -56,7 +60,7 @@
         <div class="col-sm-3">
 
             <ul class="nav nav-stacked">
-                <li class="nav-header"><a href="#"  data-target="#user-menu">메뉴 <i
+                <li class="nav-header"><a href="#" data-target="#user-menu">메뉴 <i
                         class="glyphicon glyphicon-chevron-down"></i></a>
                     <ul class="nav nav-stacked collapse in" id="user-menu">
                         <%--<li><a href="#" content="/admin/admin-account" onclick="setIframe(this);return false;"><i--%>
@@ -75,16 +79,17 @@
             </ul>
         </div>
         <div class="col-sm-9" style="height:100%;">
-            <div class="">
+            <div class="" style="position: relative;">
+                <button class="btn btn-primary" style="right: 5px;position: absolute;"
+                        onclick="refreshGroup();return false;">그룹 새로고침
+                </button>
                 <h2>Group List</h2>
                 <div class="table-responsive">
-                    <form action="/admin/group-name/register" method="post" style="width: 100%; position:relative;">
-
-                    </form>
                     <table class="table table-condensed table-hover group-list-table" id="group-list-table">
                         <thead>
                         <tr>
                             <th width="80%" class="text-center">그룹 이름</th>
+                            <th width="80%" class="text-center">그룹 아이디</th>
                             <th class="text-center shrink" style="width: 100px;">
                                 <button class="btn btn-primary" style="width: 100px;"
                                         onclick="joinGroupClickHandler(this);return false;">생성
@@ -179,6 +184,7 @@
         $.each(data, function (i, d) {
             var trEl = $('<tr>' +
                     '<td class="group-name-td"></td>' +
+                    '<td class="group-id-td"></td>' +
                     '<td class="text-center shrink">' +
                     '<button class="btn btn-primary" style="width:calc(50% - 2px);margin-right: 5px;" name="groupName" value="" onclick="modifyGroupClickHandler(this);return false;">수정</button>' +
 //                    '<form style="width:calc(50% - 2px);" action="/admin/group-name/delete" method="post">' +
@@ -187,6 +193,7 @@
                     '</td></tr>');
 //            console.error(d);
             trEl.find('.group-name-td').text(d.groupName);
+            trEl.find('.group-id-td').text(d.groupId);
             trEl.find('button[name=groupName]').val(d.groupName);
             tbody.append(trEl);
         });
@@ -207,8 +214,10 @@
 //                        tarTr.find('.group-name-td').text(groupName);
                         alert('삭제 되었습니다.');
                         getGroupNames()
-                    } else {
+                    } else if (responseData == 'false') {
                         alert('삭제에 실패하였습니다. 다시 시도해 주세요.');
+                    } else {
+                        alert(responseData);
                     }
                 }
             });
@@ -310,8 +319,10 @@
                             alert('저장 되었습니다.');
                             $('.modify-dialogue-container').hide();
                             getGroupNames();
-                        } else {
+                        } else if (responseData == 'false') {
                             alert('같은 그룹명이 존재합니다.');
+                        } else {
+                            alert(responseData);
                         }
                     }
                 });
@@ -327,6 +338,27 @@
             return false;
         }
         return true;
+    }
+
+    function refreshGroup() {
+        $.ajax({
+            url: '/admin/group-name/refresh',
+            type: 'post',
+            data: {},
+            contentType: "application/x-www-form-urlencoded; charset=UTF-8",
+            success: function (responseData) {
+                if (responseData == 'false') {
+                    alert('다시 시도해 주세요.');
+                } else {
+                    console.error(responseData);
+                    var groupNames = JSON.parse(responseData);
+//                    console.error(groupNames);
+                    addListTd(groupNames);
+                    alert('그룹이 import 되었습니다.');
+                }
+            }
+        });
+
     }
 </script>
 </body>
