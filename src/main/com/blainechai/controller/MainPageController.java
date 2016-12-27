@@ -1734,9 +1734,9 @@ public class MainPageController {
 //    }
 
 
-    private void refreshGroupList() {
+    private void refreshGroupList(String filePath) {
 //        Gson gson = new Gson();
-        File dir1 = new File("group.conf");
+        File dir1 = new File(filePath);
         List<CommonGroupName> commonGroupNames = new ArrayList<CommonGroupName>();
         try {
             System.out.println("Current dir : " + dir1.getCanonicalPath());

@@ -6,6 +6,7 @@ import com.blainechai.domain.*;
 import com.blainechai.model.BookInfo;
 import com.blainechai.model.GroupApi;
 import com.blainechai.model.UserAccountApi;
+import com.blainechai.model.UserGroupApi;
 import com.blainechai.repository.*;
 import com.blainechai.util.EncryptUtil;
 import com.google.gson.Gson;
@@ -652,11 +653,17 @@ public class AdminController {
 
 
     private List<UserAccountApi> getAllUserAccountApis() {
+        Map<String, String> groupNameMap = getGroupMap();
         List<UserAccount> adminList = userAccountRepository.findByType(UserType.USER);
         List<UserAccountApi> userAccountApis = new ArrayList<UserAccountApi>();
         for (UserAccount userAccount : adminList) {
             List<UserGroup> userGroups = userGroupRepository.findByUserAccount_UserId(userAccount.getUserId());
-            UserAccountApi userAccountApi = new UserAccountApi(userAccount, userGroups);
+            List<UserGroupApi> userGroupApis = new ArrayList<UserGroupApi>();
+            for (UserGroup userGroup : userGroups) {
+                UserGroupApi tmpGroupApi = new UserGroupApi(userGroup.getGroupName().getGroupName(), groupNameMap.get(userGroup.getGroupName().getGroupName()));
+                userGroupApis.add(tmpGroupApi);
+            }
+            UserAccountApi userAccountApi = new UserAccountApi(userAccount, userGroupApis);
             userAccountApis.add(userAccountApi);
         }
 
@@ -665,34 +672,51 @@ public class AdminController {
 
     private List<UserAccountApi> getUserAccountApis(List<UserAccount> userAccounts) {
 //        List<UserAccount> adminList = userAccountRepository.findAll();
+        Map<String, String> groupNameMap = getGroupMap();
         List<UserAccountApi> userAccountApis = new ArrayList<UserAccountApi>();
         for (UserAccount userAccount : userAccounts) {
             List<UserGroup> userGroups = userGroupRepository.findByUserAccount_UserId(userAccount.getUserId());
-            UserAccountApi userAccountApi = new UserAccountApi(userAccount, userGroups);
+            List<UserGroupApi> userGroupApis = new ArrayList<UserGroupApi>();
+
+            for (UserGroup userGroup : userGroups) {
+                UserGroupApi tmpGroupApi = new UserGroupApi(userGroup.getGroupName().getGroupName(), groupNameMap.get(userGroup.getGroupName().getGroupName()));
+                userGroupApis.add(tmpGroupApi);
+            }
+            UserAccountApi userAccountApi = new UserAccountApi(userAccount, userGroupApis);
             userAccountApis.add(userAccountApi);
         }
 
         return userAccountApis;
     }
-
-    private List<UserAccountApi> getAllAdminAccountApis() {
-        List<UserAccount> adminList = userAccountRepository.findByType(UserType.ADMIN);
-        List<UserAccountApi> userAccountApis = new ArrayList<UserAccountApi>();
-        for (UserAccount userAccount : adminList) {
-            List<UserGroup> userGroups = userGroupRepository.findByUserAccount_UserId(userAccount.getUserId());
-            UserAccountApi userAccountApi = new UserAccountApi(userAccount, userGroups);
-            userAccountApis.add(userAccountApi);
-        }
-
-        return userAccountApis;
-    }
+//
+//    private List<UserAccountApi> getAllAdminAccountApis() {
+//        List<UserAccount> adminList = userAccountRepository.findByType(UserType.ADMIN);
+//        List<UserAccountApi> userAccountApis = new ArrayList<UserAccountApi>();
+//        for (UserAccount userAccount : adminList) {
+//            List<UserGroup> userGroups = userGroupRepository.findByUserAccount_UserId(userAccount.getUserId());
+//            UserAccountApi userAccountApi = new UserAccountApi(userAccount, userGroups);
+//            userAccountApis.add(userAccountApi);
+//        }
+//
+//        return userAccountApis;
+//    }
 
     private List<UserAccountApi> getAdminAccountApis(List<UserAccount> adminAccounts) {
 //        List<UserAccount> adminList = userAccountRepository.findAll();
+        Map<String, String> groupNameMap = getGroupMap();
+
+
         List<UserAccountApi> adminAccountApis = new ArrayList<UserAccountApi>();
         for (UserAccount adminAccount : adminAccounts) {
             List<UserGroup> userGroups = userGroupRepository.findByUserAccount_UserId(adminAccount.getUserId());
-            UserAccountApi adminAccountApi = new UserAccountApi(adminAccount, userGroups);
+
+            List<UserGroupApi> userGroupApis = new ArrayList<UserGroupApi>();
+
+            for (UserGroup userGroup : userGroups) {
+                UserGroupApi tmpGroupApi = new UserGroupApi(userGroup.getGroupName().getGroupName(), groupNameMap.get(userGroup.getGroupName().getGroupName()));
+                userGroupApis.add(tmpGroupApi);
+            }
+            UserAccountApi adminAccountApi = new UserAccountApi(adminAccount, userGroupApis);
             adminAccountApis.add(adminAccountApi);
         }
 
@@ -700,8 +724,20 @@ public class AdminController {
     }
 
     private UserAccountApi getUserAccountApi(UserAccount userAccount) {
+        Map<String, String> groupNameMap = getGroupMap();
+
         List<UserGroup> userGroups = userGroupRepository.findByUserAccount_UserId(userAccount.getUserId());
-        return new UserAccountApi(userAccount, userGroups);
+        List<UserGroupApi> userGroupApis = new ArrayList<UserGroupApi>();
+
+        for (UserGroup userGroup : userGroups) {
+            UserGroupApi tmpGroupApi = new UserGroupApi(userGroup.getGroupName().getGroupName(), groupNameMap.get(userGroup.getGroupName().getGroupName()));
+            userGroupApis.add(tmpGroupApi);
+        }
+        return new UserAccountApi(userAccount, userGroupApis);
+    }
+
+    private UserGroupApi getUserGroupApi(UserGroup userGroup) {
+        return new UserGroupApi(userGroup.getGroupName().getGroupName(), groupNameRepository.findByGroupName(userGroup.getGroupName().getGroupName()).get(0).getGroupId());
     }
 
 

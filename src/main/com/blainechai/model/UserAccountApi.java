@@ -4,7 +4,6 @@ import com.blainechai.domain.UserAccount;
 import com.blainechai.domain.UserGroup;
 
 import java.sql.Date;
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -17,24 +16,24 @@ public class UserAccountApi {
     private String phone;
     private Date createDate;
     private String type;
-    private List<UserGroup> userGroups;
+    private List<UserGroupApi> userGroupApis;
 
-    public UserAccountApi(String userId, String username, String phone, Date createDate, String type, List<UserGroup> userGroups) {
+    public UserAccountApi(String userId, String username, String phone, Date createDate, String type, List<UserGroupApi> userGroupApis) {
         this.userId = userId;
         this.username = username;
         this.phone = phone;
         this.createDate = createDate;
         this.type = type;
-        this.userGroups = userGroups;
+        this.userGroupApis = userGroupApis;
     }
 
-    public UserAccountApi(UserAccount userAccount, List<UserGroup> userGroup) {
+    public UserAccountApi(UserAccount userAccount, List<UserGroupApi> userGroup) {
         this.userId = userAccount.getUserId();
         this.username = userAccount.getUsername();
         this.phone = userAccount.getPhone();
         this.createDate = userAccount.getCreateDate();
         this.type = userAccount.getType();
-        this.userGroups = userGroup;
+        this.userGroupApis = userGroup;
     }
 
     public UserAccountApi(UserAccount userAccount) {
@@ -93,17 +92,17 @@ public class UserAccountApi {
         this.type = type;
     }
 
-    public List<UserGroup> getUserGroups() {
-        return userGroups;
+    public List<UserGroupApi> getUserGroupApis() {
+        return userGroupApis;
     }
 
-    public void setUserGroups(List<UserGroup> userGroups) {
-        this.userGroups = userGroups;
+    public void setUserGroupApis(List<UserGroupApi> userGroupApis) {
+        this.userGroupApis = userGroupApis;
     }
 
     public boolean hasGroupName(String groupName) {
-        for (UserGroup userGroup : userGroups) {
-            if (groupName.equals(userGroup.getGroupName().getGroupName())) {
+        for (UserGroupApi userGroup : userGroupApis) {
+            if (groupName.equals(userGroup.getGroupName())) {
                 return true;
             }
         }

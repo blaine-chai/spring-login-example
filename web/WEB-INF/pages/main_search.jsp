@@ -158,7 +158,7 @@
                 </div>
                 <div class="panel panel-default checkbox"
                      style="padding-top: 5px;padding-bottom:5px;margin-top:10px;margin-bottom: 0;">
-                    <c:forEach items="${userGroups}" var="userGroup">
+                    <c:forEach items="${userGroupApis}" var="userGroup">
                         <label style="margin-left: 2px;width:85px;font-size: 12px;max-width:85px;">
                             <input type="radio" name="groups" value="${userGroup.groupName.groupName}"
                                    checked="checked" style="width: 20px;">${userGroup.groupName.groupName}</label>
@@ -400,7 +400,7 @@
         $('input:radio[name="groups"]').eq(0).prop("checked", true);
         $('input:radio[name="groups"]:radio[value="전부"]').prop("checked", true);
         <%--/*--%>
-        <%--<c:forEach items="${userGroups}" var="userGroup">--%>
+        <%--<c:forEach items="${userGroupApis}" var="userGroup">--%>
         <%--<label style="margin-left: 1px;font-size: 12px;">--%>
         <%--<input type="radio" name="groups" value="${userGroup.groupName.groupName}"--%>
         <%--checked="checked" style=""> ${userGroup.groupName.groupName}</label>--%>

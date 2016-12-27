@@ -289,9 +289,9 @@
             trEl.find('.username-td').text(d.username);
             trEl.find('.create-date-td').text(d.createDate);
             trEl.find('button[name=userId]').val(d.userId);
-            $.each(d.userGroups, function (i, g) {
+            $.each(d.userGroupApis, function (i, g) {
                 var tmpEl = $('<span style="padding-right: 5px;"></span>');
-                tmpEl.text(g.groupName.groupName);
+                tmpEl.text(g.groupName);
                 trEl.find('.group-td').append(tmpEl);
             });
             tbody.append(trEl);
