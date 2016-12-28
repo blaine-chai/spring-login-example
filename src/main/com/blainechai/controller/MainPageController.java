@@ -231,6 +231,12 @@ public class MainPageController {
         modelAndView.addObject("userId", userId);
         modelAndView.addObject("userType", sessionRepository.findByJSessionId(sessionId).get(0).getType());
         List<UserGroup> userGroups = userGroupRepository.findByUserAccount_UserId(userId);
+        for (int i = 0; i < userGroups.size(); i++) {
+            if (userGroups.get(i).getGroupName().getGroupName().equals(Constant.GROUP_NAME_ALL)) {
+                userGroups.remove(i);
+                break;
+            }
+        }
         modelAndView.addObject("userGroups", userGroups);
 
         return modelAndView;

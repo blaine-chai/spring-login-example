@@ -44,7 +44,7 @@
             href="/admin" style="margin-right: 5px;" class="btn badge logout-btn">admin<span
             class="glyphicon glyphicon-cog" style="padding-left: 10px;"></span></a></c:if><a
             href="/logout" class="btn badge logout-btn">로그아웃<span class="glyphicon glyphicon-log-out"
-                                                                           style="padding-left: 10px;"></span></a>
+                                                                  style="padding-left: 10px;"></span></a>
     </div>
 </div>
 <div id="nav-wrapper">
@@ -141,24 +141,28 @@
                     <div id="nickname-result-container" class="panel panel-default"
                          style=" max-height:400px; margin-left: 2px; margin-right: 2px; display: none;border-top-left-radius: 0;border-top-right-radius: 0;">
                         <div class="nickname-result-table-container" style="max-height:366px;overflow: auto;">
-                        <table id="nickname-result-table" style="font-size:11px; overflow: auto;position:relative;"
-                               class="table table-fixed table-condensed table-hover">
-                            <%--<thead>--%>
-                            <%--<tr style="text-align: center;">--%>
-                            <%--<th style="width: 30px"></th>--%>
-                            <%--<th>저자</th>--%>
-                            <%--<th>별명</th>--%>
-                            <%--</tr>--%>
-                            <%--</thead>--%>
-                            <tbody>
-                            </tbody>
-                        </table>
+                            <table id="nickname-result-table" style="font-size:11px; overflow: auto;position:relative;"
+                                   class="table table-fixed table-condensed table-hover">
+                                <%--<thead>--%>
+                                <%--<tr style="text-align: center;">--%>
+                                <%--<th style="width: 30px"></th>--%>
+                                <%--<th>저자</th>--%>
+                                <%--<th>별명</th>--%>
+                                <%--</tr>--%>
+                                <%--</thead>--%>
+                                <tbody>
+                                </tbody>
+                            </table>
                         </div>
                         <div class="component-pager" style="height: 24px;margin: 5px 0 5px 0;">
-                        <div style="width: 297px;position: absolute;text-align: center;line-height: 24px;"><span class="component-pager-page" style="">1</span></div>
-                        <label class="btn btn-default btn-default-left" style="position: absolute;height: 20px;width: 20px;font-size: 14px;margin: 2px;left: 35px;">
-                            <span style="position: absolute;top: -2px;right: 8px;">«</span></label>
-                        <label class="btn btn-default btn-default-right" style="height: 20px;width: 20px;font-size: 14px;margin: 2px;position: absolute;right: 35px;"><span style="position: absolute;top: -2px;right: 8px;">»</span></label></div>
+                            <div style="width: 297px;position: absolute;text-align: center;line-height: 24px;"><span
+                                    class="component-pager-page" style="">1</span></div>
+                            <label class="btn btn-default btn-default-left"
+                                   style="position: absolute;height: 20px;width: 20px;font-size: 14px;margin: 2px;left: 35px;">
+                                <span style="position: absolute;top: -2px;right: 8px;">«</span></label>
+                            <label class="btn btn-default btn-default-right"
+                                   style="height: 20px;width: 20px;font-size: 14px;margin: 2px;position: absolute;right: 35px;"><span
+                                    style="position: absolute;top: -2px;right: 8px;">»</span></label></div>
                     </div>
                 </div>
 
@@ -278,7 +282,7 @@
         setProfileResultTableSize();
 
         $("input:radio[name='groups']").eq(0).prop("checked", true);
-        $("input:radio[name='groups']:radio[value='전부']").prop("checked", true);
+//        $("input:radio[name='groups']:radio[value='전부']").prop("checked", true);
 
 //            $('#result-table-wrapper').scroll(function () {
 //                $('#book-table-header').css("top",
@@ -319,46 +323,53 @@
         //nicNameUpdate();
 
         $('#nickname-search-btn').click(function (e) {
-        	if(isProfileSearch) {
-        		isProfileSearch = false;
-	            $('#nickname-result-table>tbody').children().remove();
-	            $('#nickname-result-container').hide();
-	            var keyword = $('#nickname-search-input').val() + ">"+ $('input[name="groups"]:checked').val();
+            if (isProfileSearch) {
+                isProfileSearch = false;
+                $('#nickname-result-table>tbody').children().remove();
+                $('#nickname-result-container').hide();
+                var keyword = $('#nickname-search-input').val() + ">" + $('input[name="groups"]:checked').val();
 
-	            console.log(keyword);
-	            if(keyword == "") {
-	            	alert("검색어를 입력해주세요.");
-	        		isProfileSearch = true;
-	            }
-	            else
-	            	callAjax("profileSearch", keyword, "", 16, 0, keyword, "");
-        	}
+                console.log(keyword);
+                if (keyword == "") {
+                    alert("검색어를 입력해주세요.");
+                    isProfileSearch = true;
+                }
+                else
+                    callAjax("profileSearch", keyword, "", 16, 0, keyword, "");
+            }
         });
 
         setNicknameModifyHandler();
+
+        $('.btn-default-left').click(function () {
+            setNicknameResultTable(parseInt($(this).attr('index')));
+        });
+
+        $('.btn-default-right').click(function () {
+            setNicknameResultTable(parseInt($(this).attr('index')));
+        });
     });
 
 
     function setAuthorResultClickHandler() {
-        $('#nickname-result-table .nickname-search-td').click(function (e)
-   		{
-        	if(isProfileSearch) {
-        		isProfileSearch = false;
-				var tmpAuthor = $(this).parent().find('td').eq(1).text() + $(this).parent().find('td').eq(2).text();
-				console.log(tmpAuthor);
-	            idCNT++;
+        $('#nickname-result-table .nickname-search-td').click(function (e) {
+            if (isProfileSearch) {
+                isProfileSearch = false;
+                var tmpAuthor = $(this).parent().find('td').eq(1).text() + $(this).parent().find('td').eq(2).text();
+                console.log(tmpAuthor);
+                idCNT++;
 
-	            $('#profile-result-container').children().hide();
-	            $('#profile-result-container').children().remove();
+                $('#profile-result-container').children().hide();
+                $('#profile-result-container').children().remove();
 
-	            $(this).append(loadingRing);
+                $(this).append(loadingRing);
 
-	            stop = false;
-	            if (setTime != 0) clearTimeout(setTime);
-	            var period = tmpAuthor + '>' + $('#datepicker1').val() + " 00:00:00" + "-" + $('#datepicker2').val() + " 23:59:59"
-	            			 + ">" + $('label[name=dateOption]').text() + ">"+ $('input[name="groups"]:checked').val();
-	            callAjax("profile" + idCNT, period, "", 9, 0, "", "");
-        	}
+                stop = false;
+                if (setTime != 0) clearTimeout(setTime);
+                var period = tmpAuthor + '>' + $('#datepicker1').val() + " 00:00:00" + "-" + $('#datepicker2').val() + " 23:59:59"
+                        + ">" + $('label[name=dateOption]').text() + ">" + $('input[name="groups"]:checked').val();
+                callAjax("profile" + idCNT, period, "", 9, 0, "", "");
+            }
         });
         $('#nickname-result-container').show(300);
     }
@@ -398,7 +409,7 @@
         }
         else if (data.contents == "NoData") {
             alert("처리시간을 조정하여 다시 한번 검색해 주세요.동일한 결과가 반복될 경우에는 데이터베이스에 저장된 자료가 없을 수 있습니다!!!");
-			$('.loading-ring').remove();
+            $('.loading-ring').remove();
             isProfileSearch = true;
         }
         else {
@@ -473,46 +484,108 @@
                 var result = JSON.parse(data.bookInfoList);
                 resultAuthor = result;
 
-                var tmpEl = "";
+//                var tmpEl = "";
                 var key = data.author.split(">")[0];
                 var group = data.author.split(">")[1];
                 //console.log("::" +result[0]+ "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa" + result.length);
                 var cnt = 0;
-				if(result.length!=0) {
-					$.each(result, function (i, nicDB) {
-	                   // console.log("ZZZZZZZZ" + result[i]);
-						if(i >= 50) return;
-	                    var tmp = result[i].split(">");
-	                    var nic = '';
-	                    if(tmp.length > 1) nic = tmp[1];
-	                    result[i] = tmp[0];
-	                    //if (tmp.length > 1) {
-		                    //if (result[i].indexOf(key) != -1) {  //if(str1.indexOf(str2) != -1){
-		                        //console.log(result[i]);
-		                        tmpEl += '<tr>' +
-		                             '<td style="text-align: center;"><input type="radio" class="nickname-radio" name="nickname-radio"></td>' +
-		                             '<td class="nickname-search-td">' + result[i] + '</td>' +
-		                             '<td class="nickname-search-td">' + (nic != '' ? '(' + nic + ')' : '') + '</td>' +
-		                             '</tr>';
-		                         cnt++;
-		                   // }
-	                    //}
-	                });
+                if (result.length != 0) {
+                    setNicknameResultTable(1);
+//                    $.each(result, function (i, nicDB) {
+//                        // console.log("ZZZZZZZZ" + result[i]);
+//                        if (i >= 50) return;
+//                        var tmp = result[i].split(">");
+//                        var nic = '';
+//                        if (tmp.length > 1) nic = tmp[1];
+//                        result[i] = tmp[0];
+//                        //if (tmp.length > 1) {
+//                        //if (result[i].indexOf(key) != -1) {  //if(str1.indexOf(str2) != -1){
+//                        //console.log(result[i]);
+//                        tmpEl += '<tr>' +
+//                                '<td style="text-align: center;"><input type="radio" class="nickname-radio" name="nickname-radio"></td>' +
+//                                '<td class="nickname-search-td">' + result[i] + '</td>' +
+//                                '<td class="nickname-search-td">' + (nic != '' ? '(' + nic + ')' : '') + '</td>' +
+//                                '</tr>';
+//                        cnt++;
+//                        // }
+//                        //}
+//                    });
+//
+//                    if (cnt == 0) alert("검색결과가 없습니다.");
+//                    else {
+//                        $('#nickname-result-table>tbody').append($(tmpEl));
+//                        if (result.length > 50)
+//                            $('#nickname-result-table').parent().parent().find('.component-pager-page').text('1-50(' + result.length + ')');
+//                        else
+//                            $('#nickname-result-table').parent().parent().find('.component-pager-page').text('1-' + result.length + '(' + result.length + ')');
+//                        setAuthorResultClickHandler();
+//                    }
 
-	                if(cnt == 0) alert("검색결과가 없습니다.");
-	                else {
-		                $('#nickname-result-table').append($(tmpEl));
-		                if(result.length > 50)
-		                	$('#nickname-result-table').parent().parent().find('.component-pager-page').text('1-50('+ result.length + ')');
-		                else
-	                		$('#nickname-result-table').parent().parent().find('.component-pager-page').text('1-'+result.length+'('+result.length + ')');
-		                setAuthorResultClickHandler();
-	                }
-
-				}
-				else alert("검색결과가 없습니다.");
+                }
+                else alert("검색결과가 없습니다.");
                 isProfileSearch = true;
             }
+        }
+    }
+
+    // 이전페이지의 첫번째 번호와 다음 페이지의 첫번째 번호가 들어감 from은 표시할 내용의 첫번째 번호
+    function setNicknameResultTable(from) {
+        var next;
+        var prev;
+//        var end = from + 49
+        if (from <= 0) {
+            return;
+        } else if (from > resultAuthor.length) {
+            return;
+        }
+        if (from + 50 < resultAuthor.length) {
+            next = from + 50;
+        } else if (from + 50 > resultAuthor.length) {
+            next = resultAuthor.length + 1;
+        }
+
+        if (from < 1) {
+            return;
+        } else if (from < 51) {
+            prev = -1;
+        } else {
+            prev = from - 50;
+        }
+
+        $('#nickname-result-table>tbody').empty();
+        var tmpEl = "";
+//        else if(from+50 == resultAuthor.size())
+        for (i = from - 1; i < next-1; i++) {
+            // console.log("ZZZZZZZZ" + result[i]);
+            var tmp = resultAuthor[i].split(">");
+            var nic = '';
+            if (tmp.length > 1) nic = tmp[1];
+            resultAuthor[i] = tmp[0];
+            //if (tmp.length > 1) {
+            //if (result[i].indexOf(key) != -1) {  //if(str1.indexOf(str2) != -1){
+            //console.log(result[i]);
+            tmpEl += '<tr>' +
+                    '<td style="text-align: center;"><input type="radio" class="nickname-radio" name="nickname-radio"></td>' +
+                    '<td class="nickname-search-td">' + resultAuthor[i] + '</td>' +
+                    '<td class="nickname-search-td">' + (nic != '' ? '(' + nic + ')' : '') + '</td>' +
+                    '</tr>';
+//            cnt++;
+        }
+        // }
+        //}
+
+        if (from == 0) alert("검색결과가 없습니다.");
+        else {
+            $('#nickname-result-table>tbody').append($(tmpEl));
+            if (resultAuthor.length > 50) {
+                $('#nickname-result-table').parent().parent().find('.component-pager-page').text(from + '-' + (next - 1) + '(' + resultAuthor.length + ')');
+                $('.btn-default-left').attr('index', prev);
+                $('.btn-default-right').attr('index', next);
+
+            }
+            else
+                $('#nickname-result-table').parent().parent().find('.component-pager-page').text('1-' + resultAuthor.length + '(' + resultAuthor.length + ')');
+            setAuthorResultClickHandler();
         }
     }
 
@@ -611,7 +684,7 @@
 
         idCNT++;
         var period = tmpAuthor + '>' + $('#datepicker1').val() + " 00:00:00" + "-" + $('#datepicker2').val() + " 23:59:59"
-        		+ ">" + $('label[name=dateOption]').text() + ">"+ $('input[name="groups"]:checked').val();
+                + ">" + $('label[name=dateOption]').text() + ">" + $('input[name="groups"]:checked').val();
         callAjax("profile" + idCNT, period, classId, 9, 1, "", "");
     }
 
@@ -688,9 +761,9 @@
                         },
                         success: function (responseData) {
                             if (responseData == 'true') {
-                            	nicknameForm.children().remove();
-                            	nicknameForm.hide();
-                            	alert('저장이 완료되었습니다.');
+                                nicknameForm.children().remove();
+                                nicknameForm.hide();
+                                alert('저장이 완료되었습니다.');
                             } else {
                                 //when nickname not checked
                                 alert('에러가 발생했습니다. 다시 시도해 주세요.');
@@ -702,7 +775,7 @@
                 }
             });
 
-            $('#nickname-form .btn-delete-nickname').click(function(){
+            $('#nickname-form .btn-delete-nickname').click(function () {
                 $.ajax({
                     url: "/main/nickname/delete",
                     type: "post",
@@ -735,19 +808,19 @@
                     $('.nickname-form-input-nickname').val(result.nickname);
                     $('.nickname-form-input-modified-time').val(result.lastModifiedDate);
                     if (result.priority == undefined) {
-                    	$('.nickname-form-input-priority').val('9');
+                        $('.nickname-form-input-priority').val('9');
                     } else {
-                    	$('.nickname-form-input-priority').val(result.priority);
+                        $('.nickname-form-input-priority').val(result.priority);
                     }
                     $('.nickname-form-input-note').val(result.note);
                 }
             });
 
             $('#nickname-form .btn-identity-check').click(function (e) {
-            	if (!stringCheck($('.nickname-form-input-nickname').val())){
-            		alert('별명을 입력 후 다시 시도해주세요.');
-            		return;
-            	}
+                if (!stringCheck($('.nickname-form-input-nickname').val())) {
+                    alert('별명을 입력 후 다시 시도해주세요.');
+                    return;
+                }
                 $.ajax({
                     url: "/main/nickname/check",
                     type: "post",
@@ -900,14 +973,14 @@
             var relAuthor = nicNameOff($(element).find('td').eq(1).text());
 
             var fromTime = $('#datepicker1').val();
-            if(fromTime != "") fromTime += " 00:00:00";
+            if (fromTime != "") fromTime += " 00:00:00";
             var toTime = $('#datepicker2').val();
-            if(toTime != "") toTime += " 23:59:59";
+            if (toTime != "") toTime += " 23:59:59";
 
-            if((fromTime == "")&& (toTime == "")) fromTime = "";
-            else   			 fromTime = fromTime + "-" + toTime;
+            if ((fromTime == "") && (toTime == "")) fromTime = "";
+            else             fromTime = fromTime + "-" + toTime;
 
-            var period = fromTime + ">" + $('label[name=dateOption]').text() + ">"+ $('input[name="groups"]:checked').val();
+            var period = fromTime + ">" + $('label[name=dateOption]').text() + ">" + $('input[name="groups"]:checked').val();
 
             var id = "profile" + idCNT;
 //console.log(">"+ $('input[name="groups"]:checked').val());
@@ -954,11 +1027,11 @@
             tmpEl.find('tbody').append('<tr>' +
                     '<td>' + tdata.publishedDate + '</td>' +
                     '<td class="author-td author' + i + '" title="' + tdata.author + '" href="#">' + tdata.author +
-                    		'<span>' + (tdata.authNickname != undefined ? '(' + tdata.authNickname + ')' : '') + '</span>' + '</td>' +
+                    '<span>' + (tdata.authNickname != undefined ? '(' + tdata.authNickname + ')' : '') + '</span>' + '</td>' +
                     '<td class="relation-td relation' + i + '" title="' + tdata.referencedAuthor + '" href="#">' + tdata.referencedAuthor
-                            + '<span>' + (tdata.refNickname != undefined ? '(' + tdata.refNickname + ')' : '') + '</span>' + '</td>' +
+                    + '<span>' + (tdata.refNickname != undefined ? '(' + tdata.refNickname + ')' : '') + '</span>' + '</td>' +
                     //'<td class="author-td author' + i + '" title="' + tdata.author + '" href="#">' + tdata.author + "(" + tdata.authNickname + ")" + '</td>' +
-					//'<td class="relation-td relation' + i + '" title="' + tdata.referencedAuthor + '" href="#">' + nicNameFind(tdata.referencedAuthor) + '</td>' +
+                    //'<td class="relation-td relation' + i + '" title="' + tdata.referencedAuthor + '" href="#">' + nicNameFind(tdata.referencedAuthor) + '</td>' +
                     '<td style="word-break: break-all">' + tdata.contents + '</td>' +
                     '</tr>');
         });
@@ -1026,7 +1099,7 @@
              callAjaxLoop("author"+authorNUM, 8, row, 8, 8, tableData[row].eventNo+">f", "");
              */
 
-			var period = $('#datepicker1').val() + " 00:00:00" + "-" + $('#datepicker2').val() + " 23:59:59" + ">" +  $('label[name=dateOption]').text();
+            var period = $('#datepicker1').val() + " 00:00:00" + "-" + $('#datepicker2').val() + " 23:59:59" + ">" + $('label[name=dateOption]').text();
             callAjax(id, "}}}}}}}>indexB^" + author + " & " + "indexB^" + relAuthor + ">완전일치>" + period, "", 8, 0, "", "");
         });
 
@@ -1042,9 +1115,9 @@
             $('.pagination-' + id).parent().parent().parent().find('tbody').append('<tr>' +
                     '<td>' + tdata.publishedDate + '</td>' +
                     '<td class="author-td author' + i + '" title="' + tdata.author + '" href="#">' + tdata.author +
-            			'<span>' + (tdata.authNickname != undefined ? '(' + tdata.authNickname + ')' : '') + '</span>' + '</td>' +
-            		'<td class="relation-td relation' + i + '" title="' + tdata.referencedAuthor + '" href="#">' + tdata.referencedAuthor +
-                    	'<span>' + (tdata.refNickname != undefined ? '(' + tdata.refNickname + ')' : '') + '</span>' + '</td>' +
+                    '<span>' + (tdata.authNickname != undefined ? '(' + tdata.authNickname + ')' : '') + '</span>' + '</td>' +
+                    '<td class="relation-td relation' + i + '" title="' + tdata.referencedAuthor + '" href="#">' + tdata.referencedAuthor +
+                    '<span>' + (tdata.refNickname != undefined ? '(' + tdata.refNickname + ')' : '') + '</span>' + '</td>' +
                     '<td style="word-break: break-all">' + tdata.contents + '</td>' +
                     '</tr>');
         });
@@ -1318,43 +1391,43 @@
         }
 
     })(ProfileResultModule);
-/*
-    var nicNameDB = [];
-    function nicNameFind(author) {
-        var Nic = author;
-        $.each(nicNameDB, function (i, nicDB) {
-            if (nicDB.author == author) {
-                console.log("aAAAAA");
-                //if(nicDB.author.indexOf(keyword) != -1) {  //if(str1.indexOf(str2) != -1){
-                Nic = author + "(" + nicNameDB[i].nickname + ")";
-            }
-        });
+    /*
+     var nicNameDB = [];
+     function nicNameFind(author) {
+     var Nic = author;
+     $.each(nicNameDB, function (i, nicDB) {
+     if (nicDB.author == author) {
+     console.log("aAAAAA");
+     //if(nicDB.author.indexOf(keyword) != -1) {  //if(str1.indexOf(str2) != -1){
+     Nic = author + "(" + nicNameDB[i].nickname + ")";
+     }
+     });
 
-//        console.log(Nic + " : " + author);
-        return Nic;
-    }
-*/
+     //        console.log(Nic + " : " + author);
+     return Nic;
+     }
+     */
 
     function nicNameOff(author) {
         var s = author.split("(");
 
         return s[0];
     }
-/*
-    function nicNameUpdate() {
-        $.ajax({
-            url: "/main/profile/search-author",
-            type: "post",
-            data: {
-                "keyword": $('#nickname-search-input').val()
-            },
-            success: function (responseData) {
-                var result = JSON.parse(responseData);
-                nicNameDB = result;
-            }
-        });
-    }
-*/
+    /*
+     function nicNameUpdate() {
+     $.ajax({
+     url: "/main/profile/search-author",
+     type: "post",
+     data: {
+     "keyword": $('#nickname-search-input').val()
+     },
+     success: function (responseData) {
+     var result = JSON.parse(responseData);
+     nicNameDB = result;
+     }
+     });
+     }
+     */
     function timeConverter(UNIX_timestamp) {
         var a = new Date(UNIX_timestamp * 1000);
         //var months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
@@ -1366,17 +1439,17 @@
          console.log(timestamp);
          */
         var year = a.getFullYear();
-        var month = a.getMonth()+1;
+        var month = a.getMonth() + 1;
         var date = a.getDate();
         var hour = a.getHours();
         var min = a.getMinutes();
         var sec = a.getSeconds();
 
-        if(month < 10) month = "0" + month;
-        if(date < 10) date = "0" + date;
-        if(hour < 10) hour = "0" + hour;
-        if(min < 10) min = "0" + min;
-        if(sec < 10) sec = "0" + sec;
+        if (month < 10) month = "0" + month;
+        if (date < 10) date = "0" + date;
+        if (hour < 10) hour = "0" + hour;
+        if (min < 10) min = "0" + min;
+        if (sec < 10) sec = "0" + sec;
 
         //var time = a.getFullYear() + '/' + month + '/' + date + ' ' + hour + ':' + min + ':' + sec ;
         var time = a.getFullYear() + '/' + month + '/' + date;

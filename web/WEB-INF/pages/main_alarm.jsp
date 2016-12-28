@@ -117,7 +117,10 @@
                                style="position: absolute; top: 0; background: #ffffff; z-index: 4;">
                             <thead id="header" style="">
                             <tr>
-                                <th>번호</th>
+                                <th><input class="export-checkbox export-checkbox-all" type="checkbox"
+                                <%--onclick="exportCheckboxClick(this);return false;">번호--%>
+                                >번호
+                                </th>
                                 <th>그룹</th>
                                 <th>발행일자</th>
                                 <th>저장일자</th>
@@ -725,7 +728,7 @@
             //console.log(tdata.author + " : " + tdata.referencedAuthor);
             //console.log(authorNic + " : " + refAuthorNic);
 
-            html += '<tr><td>' + tdata.number + '</td>';
+            html += '<tr><td><input class="export-checkbox" type="checkbox">' + tdata.number + '</td>';
             html += '<td class="group-td">' + tdata.groupName + '</td>';
             html += '<td>' + tdata.publishedDate + '</td>';
             html += '<td>' + tdata.savedDate + '</td>';
@@ -1650,6 +1653,38 @@
     fetch_unix_timestamp = function () {     	//return parseInt(new Date().getTime().toString().substring(0, 10));
         return Math.floor(new Date().getTime() / 1000);
     };
+
+    function exportCheckboxClick() {
+//        $('.export-checkbox').change(function () {
+//        $('.export-checkbox').click(function () {
+        $(document).on('click', '.export-checkbox', function () {
+
+            var el = $(this);
+//            console.error(el.is(':checked'));
+            if (el.hasClass('export-checkbox-all')) {
+                if (el.is(':checked')) {
+                    $('.export-checkbox').prop('checked', true).attr('checked', 'checked');
+//                    console.error($('.export-checkbox').prop('checked'));
+                } else {
+                    $('.export-checkbox').prop('checked', false).removeAttr('checked');
+//                    console.error('true')
+                }
+            } else {
+                if (el.is(':checked')) {
+//                    console.error(el.is(':checked')+'!!');
+                    el.prop('checked', true).attr('checked', 'checked');
+                    if ($('.export-checkbox').size() == $('.export-checkbox:checked').size() + 1) {
+                        $('.export-checkbox-all').prop('checked', true).attr('checked', 'checked');
+                    }
+                } else {
+                    el.prop('checked', false).removeAttr('checked');
+                    $('.export-checkbox-all').prop('checked', false).removeAttr('checked');
+//                    console.error(el.is(':checked'));
+                }
+            }
+        });
+    }
+    exportCheckboxClick();
 
 </script>
 </body>
