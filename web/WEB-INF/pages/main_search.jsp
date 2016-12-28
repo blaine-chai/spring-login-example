@@ -1019,7 +1019,7 @@
             //console.log(tdata.author + " : " + tdata.referencedAuthor);
             //console.log(authorNic + " : " + refAuthorNic);
 
-            html += '<tr><td>' + tdata.number + '</td>';
+            html += '<tr><td><input class="export-checkbox" type="checkbox">' + tdata.number + '</td>';
 //          var priorityEl = $('')
 //          priorityEl.find('select').val(tdata.priority);
             html += '<td class="group-td">' + tdata.groupName + '</td>';
@@ -2047,6 +2047,38 @@
 
         return time;
     }
+
+    function exportCheckboxClick() {
+//        $('.export-checkbox').change(function () {
+//        $('.export-checkbox').click(function () {
+        $(document).on('click','.export-checkbox', function () {
+
+            var el = $(this);
+            console.error(el.is(':checked'));
+            if (el.hasClass('export-checkbox-all')) {
+                if (el.is(':checked')) {
+                    $('.export-checkbox').prop('checked', true).attr('checked', 'checked');
+//                    console.error($('.export-checkbox').prop('checked'));
+                } else {
+                    $('.export-checkbox').prop('checked', false).removeAttr('checked');
+//                    console.error('true')
+                }
+            } else {
+                if (el.is(':checked')) {
+                    console.error(el.is(':checked')+'!!');
+                    el.prop('checked', true).attr('checked', 'checked');
+                    if ($('.export-checkbox').size() == $('.export-checkbox:checked').size() + 1) {
+                        $('.export-checkbox-all').prop('checked', true).attr('checked', 'checked');
+                    }
+                } else {
+                    el.prop('checked', false).removeAttr('checked');
+                    $('.export-checkbox-all').prop('checked', false).removeAttr('checked');
+                    console.error(el.is(':checked'));
+                }
+            }
+        });
+    }
+    exportCheckboxClick();
 
 </script>
 </body>

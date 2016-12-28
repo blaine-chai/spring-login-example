@@ -32,8 +32,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.TreeMap;
-import java.util.TreeSet;
 
 import static com.blainechai.util.LoggerUtil.*;
 
@@ -345,14 +343,14 @@ public class MainPageController {
                 bookInfoList.clear();
                 bookInfoList = sc.getR();
                 fillNicknamesOfBookList(bookInfoList);
-           } else if (selInt == 4) {
+            } else if (selInt == 4) {
                 int progressPer = sc.getProPercent();
                 int cntTmp = sc.getCount();    // 카운트
                 if (progressPer < 100) send = "NotOK";
                 else send = cntTmp + "!@#$" + progressPer + "!@#$NOT";
             } else if (selInt == 9) send = "OK";
             else if (selInt == 10) {
-                resultList = findNicknameCheck2(sc.getQ(id)); 		// 메인서버에서의 검색 결과
+                resultList = findNicknameCheck2(sc.getQ(id));        // 메인서버에서의 검색 결과
                 send = "OK";
             } else if (selInt == 15) {
                 from = findNicknameCheck(sc.getFrom(), author.split(">")[0]);
@@ -378,63 +376,62 @@ public class MainPageController {
     }
 
     private String findNickname(String author) {
-    	String[] authorTmp = author.split(">", 2);
+        String[] authorTmp = author.split(">", 2);
 
         List<NicknameOption> nicknames = nicknameRepository.findAll();
 
-    	for (NicknameOption nicknameOption : nicknames) {
-    		//System.out.println(nicknameOption.getNickname() + " :author: " + author);
+        for (NicknameOption nicknameOption : nicknames) {
+            //System.out.println(nicknameOption.getNickname() + " :author: " + author);
             if (nicknameOption.getNickname().equals(authorTmp[0])) {
-            	author = nicknameOption.getAuthor() + ">" + authorTmp[1];
-            	break;
+                author = nicknameOption.getAuthor() + ">" + authorTmp[1];
+                break;
             }
-    	}
+        }
 
-		System.out.println(" :author: " + author);
+        System.out.println(" :author: " + author);
         return author;
     }
 
-    private String[] findNicknameCheck(String[] authors, String key)
-    {
-    	System.out.println("findNicknameCheck :key: " + key);
-    	ArrayList<String> tMap = new ArrayList<String>();
+    private String[] findNicknameCheck(String[] authors, String key) {
+        System.out.println("findNicknameCheck :key: " + key);
+        ArrayList<String> tMap = new ArrayList<String>();
 
         List<NicknameOption> nicknames = nicknameRepository.findAll();
-    	for (NicknameOption nicknameOption : nicknames) {
+        for (NicknameOption nicknameOption : nicknames) {
             if (nicknameOption.getNickname().contains(key)) {
-            	tMap.add(nicknameOption.getAuthor()+">"+nicknameOption.getNickname());
+                tMap.add(nicknameOption.getAuthor() + ">" + nicknameOption.getNickname());
             }
-    	}
+        }
 
-        for(int i=0; i < authors.length; i++) {
-	    	for (NicknameOption nicknameOption : nicknames) {
-	    		//System.out.println(nicknameOption.getAuthor() + " :author: " + authors[i]);
-	            if (nicknameOption.getAuthor().equals(authors[i])) {
-	            	authors[i] += ">" + nicknameOption.getNickname();
-	            	//tMap.add(authors[i]+">"+nicknameOption.getNickname());
-	            	break;
-	            }
-	    	}
+        for (int i = 0; i < authors.length; i++) {
+            for (NicknameOption nicknameOption : nicknames) {
+                //System.out.println(nicknameOption.getAuthor() + " :author: " + authors[i]);
+                if (nicknameOption.getAuthor().equals(authors[i])) {
+                    authors[i] += ">" + nicknameOption.getNickname();
+                    //tMap.add(authors[i]+">"+nicknameOption.getNickname());
+                    break;
+                }
+            }
         }
 
         String[] authorPlusNic = new String[tMap.size() + authors.length];
-        for(int i=0; i < tMap.size(); i++) authorPlusNic[i] = tMap.get(i);
-        for(int i=0; i < authors.length; i++) authorPlusNic[tMap.size()+i] = authors[i];
+        for (int i = 0; i < tMap.size(); i++) authorPlusNic[i] = tMap.get(i);
+        for (int i = 0; i < authors.length; i++) authorPlusNic[tMap.size() + i] = authors[i];
 
         return authorPlusNic;
     }
-    private List<RelAuthorInfo> findNicknameCheck2(List<RelAuthorInfo> authors)
-    {
+
+    private List<RelAuthorInfo> findNicknameCheck2(List<RelAuthorInfo> authors) {
         List<NicknameOption> nicknames = nicknameRepository.findAll();
-        for(int i=0; i < authors.size(); i++) {
-	    	for (NicknameOption nicknameOption : nicknames) {
-	    		//System.out.println(nicknameOption.getAuthor() + " :author: " + authors[i]);
-	            if (nicknameOption.getAuthor().equals(authors.get(i).getRelAuthor())) {
-	            	authors.get(i).setRelAuthor(authors.get(i).getRelAuthor()+"(" + nicknameOption.getNickname()+")");
-	            	//tMap.add(authors[i]+">"+nicknameOption.getNickname());
-	            	break;
-	            }
-	    	}
+        for (int i = 0; i < authors.size(); i++) {
+            for (NicknameOption nicknameOption : nicknames) {
+                //System.out.println(nicknameOption.getAuthor() + " :author: " + authors[i]);
+                if (nicknameOption.getAuthor().equals(authors.get(i).getRelAuthor())) {
+                    authors.get(i).setRelAuthor(authors.get(i).getRelAuthor() + "(" + nicknameOption.getNickname() + ")");
+                    //tMap.add(authors[i]+">"+nicknameOption.getNickname());
+                    break;
+                }
+            }
         }
 
         return authors;
@@ -741,7 +738,7 @@ public class MainPageController {
             msg = wordParse(msg);
 
             String[] s = msg.split(">");
-            msg = s[0] + ">" + s[1] + ">" + s[2] + ">" + s[3] + ">" + geoupInAll(sessionId, s[4]);
+            msg = s[0] + ">" + s[1] + ">" + s[2] + ">" + s[3] + ">" + groupInAll(sessionId, s[4]);
 
             sc = new SocketComm(userId + "@" + id, ip, port, 21, 0, msg);
             sc.runStart();
@@ -992,7 +989,7 @@ public class MainPageController {
                 System.out.println("\tAAAA : msg = " + msg);
 
                 String[] s = msg.split(">");
-                msg = s[0] + ">" + s[1] + ">" + s[2] + ">" + s[3] + ">" + geoupInAll(sessionId, s[4]);
+                msg = s[0] + ">" + s[1] + ">" + s[2] + ">" + s[3] + ">" + groupInAll(sessionId, s[4]);
 
                 System.out.println("\tAAAA : msg = " + msg);
                 sc = new SocketComm(userId + "@" + id, ip, port, selInt, pageInt, msg);
@@ -1241,7 +1238,7 @@ public class MainPageController {
                 CommonBookmark commonBookmark = commonBookmarks.get(0);
                 String msg = wordParse(searchWordParse(commonBookmark.getAdminBookmark().getWord()));
                 String[] s = msg.split(">");
-                msg = s[0] + ">" + s[1] + ">" + geoupInAll(sessionId, s[2]);
+                msg = s[0] + ">" + s[1] + ">" + groupInAll(sessionId, s[2]);
 
                 SocketComm sc = new SocketComm(userId + "@" + "A_" + System.currentTimeMillis(), ip, port, 18, 0, msg);
                 sc.runStart();
@@ -1276,7 +1273,7 @@ public class MainPageController {
 
                     String msg = wordParse(searchWordParse(commonBookmarks.get(i).getAdminBookmark().getWord()));
                     String[] s = msg.split(">");
-                    msg = s[0] + ">" + s[1] + ">" + geoupInAll(sessionId, s[2]);
+                    msg = s[0] + ">" + s[1] + ">" + groupInAll(sessionId, s[2]);
 
                     sc = new SocketComm(userId + "@" + "A_" + System.currentTimeMillis(), ip, port, 18, 0, msg);
                     sc.runStart();
@@ -1310,7 +1307,7 @@ public class MainPageController {
 
         msg = wordParse(searchWordParse(word));
         String[] s = msg.split(">");
-        msg = s[0] + ">" + s[1] + ">" + geoupInAll(sessionId, s[2]);
+        msg = s[0] + ">" + s[1] + ">" + groupInAll(sessionId, s[2]);
         System.out.println("userBookmarkAdd : id = " + id + " : msg = " + msg);
 
         if (sessionRepository.findByJSessionId(sessionId).size() > 0) {
@@ -1367,7 +1364,7 @@ public class MainPageController {
 
         msg = wordParse(searchWordParse(word));
         String[] s = msg.split(">");
-        msg = s[0] + ">" + s[1] + ">" + geoupInAll(sessionId, s[2]);
+        msg = s[0] + ">" + s[1] + ">" + groupInAll(sessionId, s[2]);
         //System.out.println("userBookmarkAdd : id = " + id + " : msg = " + msg);
 
         if (sessionRepository.findByJSessionId(sessionId).size() > 0) {
@@ -1403,7 +1400,7 @@ public class MainPageController {
 
                 String msg = wordParse(searchWordParse(userBookmark.getWord()));
                 String[] s = msg.split(">");
-                msg = s[0] + ">" + s[1] + ">" + geoupInAll(sessionId, s[2]);
+                msg = s[0] + ">" + s[1] + ">" + groupInAll(sessionId, s[2]);
 
                 SocketComm sc = new SocketComm(userId + "@" + "A_" + System.currentTimeMillis(), ip, port, 18, 0, msg);
                 sc.runStart();
@@ -1436,7 +1433,7 @@ public class MainPageController {
 
                     String msg = wordParse(searchWordParse(userBookmarks.get(i).getWord()));
                     String[] s = msg.split(">");
-                    msg = s[0] + ">" + s[1] + ">" + geoupInAll(sessionId, s[2]);
+                    msg = s[0] + ">" + s[1] + ">" + groupInAll(sessionId, s[2]);
 
                     sc = new SocketComm(userId + "@" + "A_" + System.currentTimeMillis(), ip, port, 18, 0, msg);
                     sc.runStart();
@@ -1500,11 +1497,11 @@ public class MainPageController {
         if (nicknameOptions.size() <= 0) {
             NicknameOption nicknameOption = new NicknameOption(author, nickname, priority, note);
             nicknameRepository.save(nicknameOption);
-            if(!priority.equals("9")) changeNic = author + ">9>" + priority;
+            if (!priority.equals("9")) changeNic = author + ">9>" + priority;
         } else {
             NicknameOption nicknameOption = nicknameOptions.get(0);
             //System.out.println("/nickname/update 222: " + nickname + " : " + author + " : " + priority + " : " + nicknameOption.getPriority());
-        	if(!nicknameOption.getPriority().equals(priority))
+            if (!nicknameOption.getPriority().equals(priority))
                 changeNic = author + ">" + nicknameOption.getPriority() + ">" + priority;
             nicknameOption.setNickname(nickname);
             nicknameOption.setPriority(priority);
@@ -1512,7 +1509,7 @@ public class MainPageController {
             nicknameOption.setLastModifiedDate();
             nicknameRepository.save(nicknameOption);
         }
-        if(!changeNic.equals("")) {
+        if (!changeNic.equals("")) {
             String sessionId = request.getSession().getId();
             String userId = sessionRepository.findByJSessionId(sessionId).get(0).getUserId();
             SocketComm sc = new SocketComm(userId + "@Priority", ip, port, 6, 0, changeNic);
@@ -1734,44 +1731,44 @@ public class MainPageController {
         return author;
     }
 
-    private String geoupInAll(String sessionId, String group)
-    {
+    private String groupInAll(String sessionId, String group) {
         String userId = "";
         List<Session> sessions = sessionRepository.findByJSessionId(sessionId);
         if (sessions.size() > 0) {
             userId = sessionRepository.findByJSessionId(sessionId).get(0).getUserId();
-        }
-        else return "";
+        } else return "";
 
         List<UserGroup> userGroups = userGroupRepository.findByUserAccount_UserId(userId);
 
-        if (group.equals("전부")) {
-        	String str = "";
-        	boolean isFirst = true;
+        Map<String, String> groupToIdMap = getGroupMap();
+
+        if (group.equals(Constant.GROUP_NAME_ALL)) {
+            String str = "";
+            boolean isFirst = true;
             for (int j = 0; j < userGroups.size(); j++) {
-                if (!userGroups.get(j).getGroupName().getGroupName().equals("전부")) {
-                    if(isFirst) {
-                    	str = userGroups.get(j).getGroupName().getGroupName();
+                if (!userGroups.get(j).getGroupName().getGroupName().equals(Constant.GROUP_NAME_ALL)) {
+                    if (isFirst) {
+                        str = groupToIdMap.get(userGroups.get(j).getGroupName().getGroupName());
                         isFirst = false;
-                    }
-                    else str += " " + userGroups.get(j).getGroupName().getGroupName();
+                    } else str += " " + groupToIdMap.get(userGroups.get(j).getGroupName().getGroupName());
                 }
             }
-            group = str;
+//            group = str;
+            return str;
+        } else {
+            return groupToIdMap.get(group);
         }
-
-        return group;
     }
 
     private List<BookInfo> fillNicknamesOfBookList(List<BookInfo> bookInfoList) {
         List<NicknameOption> nicknames = nicknameRepository.findAll();
 
         for (BookInfo bookInfo : bookInfoList) {
-        	String aName = bookInfo.getAuthor();
-        	String rName = bookInfo.getReferencedAuthor();
-        	String aPri = "9";
-        	String rPri = "9";
-        	for (NicknameOption nicknameOption : nicknames) {
+            String aName = bookInfo.getAuthor();
+            String rName = bookInfo.getReferencedAuthor();
+            String aPri = "9";
+            String rPri = "9";
+            for (NicknameOption nicknameOption : nicknames) {
                 if (nicknameOption.getAuthor().equals(aName)) {
                     bookInfo.setAuthNickname(nicknameOption.getNickname());
                     aPri = nicknameOption.getPriority();
@@ -1782,9 +1779,9 @@ public class MainPageController {
                     rPri = nicknameOption.getPriority();
                     if (!aPri.equals("9")) break;
                 }
-        	}
+            }
 
-        	bookInfo.setPriority(aPri + "/" + rPri);
+            bookInfo.setPriority(aPri + "/" + rPri);
         }
 
         return bookInfoList;
