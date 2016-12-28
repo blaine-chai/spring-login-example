@@ -91,9 +91,9 @@
                             <th width="80%" class="text-center">그룹 이름</th>
                             <th width="80%" class="text-center">그룹 아이디</th>
                             <th class="text-center shrink" style="width: 100px;">
-                                <button class="btn btn-primary" style="width: 100px;"
-                                        onclick="joinGroupClickHandler(this);return false;">생성
-                                </button>
+                                <%--<button class="btn btn-primary" style="width: 100px;"--%>
+                                        <%--onclick="joinGroupClickHandler(this);return false;">생성--%>
+                                <%--</button>--%>
                             </th>
                         </tr>
                         </thead>

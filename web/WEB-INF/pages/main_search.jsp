@@ -108,12 +108,11 @@
                                     aria-labelledby="dropdownMenu1">
                                     <li role="presentation"><a role="menuitem" tabindex="-1" href="#">내용</a></li>
                                     <li role="presentation"><a role="menuitem" tabindex="-1" href="#">저자</a></li>
-                                    <%--<li role="presentation"><a role="menuitem" tabindex="-1" href="#">참조</a></li>--%>
+                                    <li role="presentation"><a role="menuitem" tabindex="-1" href="#">순위</a></li>
                                 </ul>
                             </div>
                         </div>
-                        <input type="text" class="form-control col-xs-4 search-input"
-                               onkeypress="onkeypressClick(event)" placeholder="검색어를 입력해주세요.">
+                        <input type="text" class="form-control col-xs-4 search-input" onkeypress="onkeypressClick(event)" placeholder="검색어를 입력해주세요.">
                         <div class="dropdown input-group-btn">
                             <div class="btn-group">
                                 <button type="button" class="btn btn-default btn-sm dropdown-toggle"
@@ -135,7 +134,7 @@
                                     </li>
                                 </ul>
                             </div>
-                            <label class="btn btn-default btn-sm close-search-option-btn" disabled>-</label>
+                            <label class="btn btn-default btn-sm close-search-option-btn" disabled>&nbsp;</label>
                         </div>
                     </div>
                 </div>
@@ -245,10 +244,10 @@
                                 <%--onclick="exportCheckboxClick(this);return false;">번호--%>
                                 >번호
                                 </th>
-                                <th>우선순위</th>
                                 <th>그룹</th>
                                 <th>발행일자</th>
                                 <th>저장일자</th>
+                                <th>우선순위</th>
                                 <th>저자</th>
                                 <th>참조저자</th>
                                 <th>R</th>
@@ -267,10 +266,10 @@
                             <thead>
                             <tr style="">
                                 <th>번호</th>
-                                <th>우선순위</th>
                                 <th>그룹</th>
                                 <th>발행일자</th>
                                 <th>저장일자</th>
+                                <th>우선순위</th>
                                 <th>저자</th>
                                 <th>참조저자</th>
                                 <th>R</th>
@@ -324,7 +323,7 @@
     function handleOperatorSelect(element) {
         var list = $(element).parent().parent().parent().parent().parent();
         if ($('#search-input-wrapper>div').length - 1 == $('#search-input-wrapper>div').index(list) && $(element).text() != "SEL") {
-            $('#search-input-wrapper').append('<div class="input-group input-group-sm search-input-group"><div class="dropdown input-group-btn"><div class="btn-group"><button type="button" class="btn btn-default btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="width: 72px"><span class="search-category-option">내용</span>\n<div style="display: inline-block"><span class="caret"></span><span class="sr-only"></span></div></button><ul class="dropdown-menu search-category-selector" role="menu" aria-labelledby="dropdownMenu1"><li role="presentation"><a role="menuitem" tabindex="-1" href="#">내용</a></li><li role="presentation"><a role="menuitem" tabindex="-1" href="#">저자</a></li></ul></div></div><input type="text" class="form-control col-xs-4 search-input" onkeypress="onkeypressClick(event)" placeholder="검색어를 입력해주세요."><div class="dropdown input-group-btn"><div class="btn-group"><button type="button" class="btn btn-default btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="width: 55px"><span class="search-operator-option">SEL</span>\n<div style="display: inline-block"><span class="caret"></span><span class="sr-only"></span></div></button><ul id="operator-selector" class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu1"><li role="presentation"><a role="menuitem" tabindex="1" href="#">SEL</a></li><li role="presentation"><a role="menuitem" tabindex="2" href="#" onclick="handleOperatorSelect(this);return false;">AND</a></li><li role="presentation"><a role="menuitem" tabindex="3" href="#" onclick="handleOperatorSelect(this);return false;">O R</a></li></ul></div><label class="btn btn-default btn-sm close-search-option-btn">-</label></div></div>');
+            $('#search-input-wrapper').append('<div class="input-group input-group-sm search-input-group"><div class="dropdown input-group-btn"><div class="btn-group"><button type="button" class="btn btn-default btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="width: 72px"><span class="search-category-option">내용</span>\n<div style="display: inline-block"><span class="caret"></span><span class="sr-only"></span></div></button><ul class="dropdown-menu search-category-selector" role="menu" aria-labelledby="dropdownMenu1"><li role="presentation"><a role="menuitem" tabindex="-1" href="#">내용</a></li><li role="presentation"><a role="menuitem" tabindex="-1" href="#">저자</a></li><li role="presentation"><a role="menuitem" tabindex="-1" href="#">순위</a></li></ul></div></div><input type="text" class="form-control col-xs-4 search-input" onkeypress="onkeypressClick(event)" placeholder="검색어를 입력해주세요."><div class="dropdown input-group-btn"><div class="btn-group"><button type="button" class="btn btn-default btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="width: 55px"><span class="search-operator-option">SEL</span>\n<div style="display: inline-block"><span class="caret"></span><span class="sr-only"></span></div></button><ul id="operator-selector" class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu1"><li role="presentation"><a role="menuitem" tabindex="1" href="#">SEL</a></li><li role="presentation"><a role="menuitem" tabindex="2" href="#" onclick="handleOperatorSelect(this);return false;">AND</a></li><li role="presentation"><a role="menuitem" tabindex="3" href="#" onclick="handleOperatorSelect(this);return false;">O R</a></li></ul></div><label class="btn btn-default btn-sm close-search-option-btn">-</label></div></div>');
             $('.close-search-option-btn').click(function (e) {
                 $(this).parent().parent().remove();
                 $('#search-input-wrapper>div').eq($('#search-input-wrapper>div').length - 1).find('.search-operator-option').text('SEL');
@@ -524,6 +523,7 @@
     function searchBTNclick() {
         var data = jsonSearchInfo();
         console.error(data);
+        console.error(SearchWord);
         //var SearchWord =
         if (SearchWord != "") {
             //$('#book-table').empty();
@@ -633,6 +633,7 @@
                 authorNUM = authorNUM + 1;
                 console.log("authorNUM = " + authorNUM);
             }
+            /*
             else if (col == 1) {
                 var priChange = tableData[row].eventNo + ">" + tableData[row].priority + ">" + $('#book-table tbody').find('tr').eq(row).find('select').val();
 
@@ -645,6 +646,7 @@
                 tableData[row].priority = $('#book-table tbody').find('tr').eq(row).find('select').val();
                 priNUM = priNUM + 1;
             }
+            */
             //else if(col == 9) {
             //	addContentTdClickListener($('#book-table tbody').find('tr').eq(row).find('td').eq(9),
             //			$('#book-table tbody').find('tr').eq(row).find('td').eq(9).text());
@@ -963,7 +965,13 @@
 
             if (obj.category == "내용") SearchWord += "indexA^" + tmp;
             else if (obj.category == "저자") SearchWord += "indexB^" + tmp;
-            //else if (obj.category == "참조") SearchWord += "indexC^" + tmp;
+            else if (obj.category == "순위") {
+            	if((tmp >= '1') && (tmp <= '9')) SearchWord += "priority^" + tmp;
+            	else {
+            		alert("우선순위의 범위는 1~9입니다.");
+            		isOK = false;
+            	}
+            }
 
             if (obj.operator == "O R") SearchWord += " <OR> ";
             else if (obj.operator == "AND") SearchWord += " <AND> ";
@@ -986,7 +994,6 @@
         data.groups = $('input[name="groups"]:checked').val();
 
         lastQuery = data;
-
 ///
         SearchWord += typeInfo;
         SearchWord += ">";
@@ -1009,27 +1016,18 @@
         }
         var html = '<tbody>';
         $.each(data, function (i, tdata) {
-            var authorNic = nicNameFind(tdata.author);
-            var refAuthorNic = nicNameFind(tdata.referencedAuthor);
             //console.log(tdata.author + " : " + tdata.referencedAuthor);
             //console.log(authorNic + " : " + refAuthorNic);
 
-//            html += '<tr><td><input class="export-checkbox " type="checkbox" onclick="exportCheckboxClick(this);return false;">' + tdata.number + '</td>';
-            html += '<tr><td><input class="export-checkbox" type="checkbox">' + tdata.number + '</td>';
+            html += '<tr><td>' + tdata.number + '</td>';
 //          var priorityEl = $('')
 //          priorityEl.find('select').val(tdata.priority);
-            html += '<td>' + '<select><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option><option>6</option><option>7</option><option>8</option><option>9</option></select>' + '</td>';
             html += '<td class="group-td">' + tdata.groupName + '</td>';
             html += '<td>' + tdata.publishedDate + '</td>';
             html += '<td>' + tdata.savedDate + '</td>';
-            /*
-             html += '<td class="author-td author' + i + '" title="' + tdata.author + '" href="#">' + tdata.author +
-             '<span>' + (authorNic != "" ? '(' + authorNic + ')' : '') + '</span>' + '</td>';
-             //html += '<td class="relation-td">' + tdata.referencedAuthor + '</td>';
-             html += '<td class="relation-td relation' + i + '" title="' + tdata.referencedAuthor + '" href="#">' + tdata.referencedAuthor
-             + '<span>' + (refAuthorNic != "" ? '(' + refAuthorNic + ')' : '') + '</span>' + '</td>';
-             */
-            html += '<td class="author-td author' + i + '" title="' + tdata.author + '" href="#">' + tdata.author +
+
+			html += '<td>' + tdata.priority + '</td>';
+			html += '<td class="author-td author' + i + '" title="' + tdata.author + '" href="#">' + tdata.author +
                     '<span>' + (tdata.authNickname != undefined ? '(' + tdata.authNickname + ')' : '') + '</span>' + '</td>';
             //html += '<td class="relation-td">' + tdata.referencedAuthor + '</td>';
             html += '<td class="relation-td relation' + i + '" title="' + tdata.referencedAuthor + '" href="#">' + tdata.referencedAuthor
@@ -1059,6 +1057,7 @@
             html = $(html);
             html.hide();
             $('#book-table').append(html);
+/*
             $.each(data, function (i, tdata) {
                 $('#book-table select').eq(i).val(tdata.priority);
                 $('#book-table select').eq(i).change(function () {
@@ -1066,12 +1065,12 @@
                     setPriority($(this));
                 })
             });
-
+*/
             html.show(0, function () {
 
                 $.each(data, function (i, tdata) {
-                    addAuthorClickListener(i, tdata.groupName + "_" + tdata.author);
-                    addRefAuthorClickListener(i, tdata.groupName + "_" + tdata.referencedAuthor);
+                    addAuthorClickListener(i, tdata.author);
+                    addRefAuthorClickListener(i, tdata.referencedAuthor);
                     //addContentTdClickListener(i, tdata.contents);
                     //addCheckRBtnListener(i);
                 });
@@ -1303,6 +1302,7 @@
             }
         });
     }
+
     function dataParsing(source) {
         var tdata = JSON.parse(source);
         lastQuery = tdata;
@@ -1316,7 +1316,7 @@
             var tmp = data[i].input;
             if (data[i].category == "내용") str += 'indexA^' + tmp;
             else if (data[i].category == "저자") str += "indexB^" + tmp;
-            //else if (data[i].category == "참조") str += 'indexC^';
+            else if (data[i].category == "순위") str += 'priority^ + tmp';
 
             if (i < data.length - 1) {
                 if (data[i].operator == "O R") str += " <OR> ";
@@ -1379,7 +1379,7 @@
         $('input:radio[name="groups"]:radio[value="' + a.groups + '"]').prop("checked", true);
 
         $.each(a.data, function (i) {
-            var newDiv = $('<div class="input-group input-group-sm search-input-group"><div class="dropdown input-group-btn"><div class="btn-group"><button type="button" class="btn btn-default btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="width: 72px"><span class="search-category-option">내용</span><div style="display: inline-block"><span class="caret"></span><span class="sr-only"></span></div></button><ul class="dropdown-menu search-category-selector" role="menu" aria-labelledby="dropdownMenu1"><li role="presentation"><a role="menuitem" tabindex="-1" href="#">내용</a></li><li role="presentation"><a role="menuitem" tabindex="-1" href="#">저자</a></li></ul></div></div><input type="text" class="form-control col-xs-4 search-input" onkeypress="onkeypressClick(event)" placeholder="검색어를 입력해주세요."><div class="dropdown input-group-btn"><div class="btn-group"><button type="button" class="btn btn-default btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="width: 55px"><span class="search-operator-option">SEL</span>\n<div style="display: inline-block"><span class="caret"></span><span class="sr-only"></span></div></button><ul id="operator-selector" class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu1"><li role="presentation"><a role="menuitem" tabindex="1" href="#">SEL</a></li><li role="presentation"><a role="menuitem" tabindex="2" href="#" onclick="handleOperatorSelect(this);return false;">AND</a></li><li role="presentation"><a role="menuitem" tabindex="3" href="#" onclick="handleOperatorSelect(this);return false;">O R</a></li></ul></div><label class="btn btn-default btn-sm close-search-option-btn">-</label></div></div>');
+            var newDiv = $('<div class="input-group input-group-sm search-input-group"><div class="dropdown input-group-btn"><div class="btn-group"><button type="button" class="btn btn-default btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="width: 72px"><span class="search-category-option">내용</span><div style="display: inline-block"><span class="caret"></span><span class="sr-only"></span></div></button><ul class="dropdown-menu search-category-selector" role="menu" aria-labelledby="dropdownMenu1"><li role="presentation"><a role="menuitem" tabindex="-1" href="#">내용</a></li><li role="presentation"><a role="menuitem" tabindex="-1" href="#">저자</a></li><li role="presentation"><a role="menuitem" tabindex="-1" href="#">순위</a></li></ul></div></div><input type="text" class="form-control col-xs-4 search-input" onkeypress="onkeypressClick(event)" placeholder="검색어를 입력해주세요."><div class="dropdown input-group-btn"><div class="btn-group"><button type="button" class="btn btn-default btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="width: 55px"><span class="search-operator-option">SEL</span>\n<div style="display: inline-block"><span class="caret"></span><span class="sr-only"></span></div></button><ul id="operator-selector" class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu1"><li role="presentation"><a role="menuitem" tabindex="1" href="#">SEL</a></li><li role="presentation"><a role="menuitem" tabindex="2" href="#" onclick="handleOperatorSelect(this);return false;">AND</a></li><li role="presentation"><a role="menuitem" tabindex="3" href="#" onclick="handleOperatorSelect(this);return false;">O R</a></li></ul></div><label class="btn btn-default btn-sm close-search-option-btn">-</label></div></div>');
             if (i == 0) {
                 newDiv.find('.close-search-option-btn').attr('disabled', '');
             }
@@ -1407,19 +1407,19 @@
         authInfoJson = data;
 
         var tmpEl = '<div class="alert bg-white alert-dismissible fade in border-gray relative-table-wrapper" style="position: absolute; z-index: 10; width: 700px; left:' + relStartPos.left + 'px;top:' + relStartPos.top + 'px;" role="alert">' +
-                '<button type="button" class="close" onclick="$(this).parent().remove(); return false;" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span></button>' +
-                '<div class="relative-title" style="font-size: 13px;">' + tableData[row].author + ' - ' + tableData[row].referencedAuthor + '<span>  : ' + count + ' 건</span></div>' +
-                //' <div id="checkR-result-number">검색결과 : 00000000</div>' +
-                '<div class="relative-content-container"><div style="font-size: 11px;position: absolute;right: 0;">' +
-                //'<span class="relative-author-from-date">' + lastQuery.fromDate + '</span>' + (lastQuery.fromDate == '' && lastQuery.toDate == '' ? '' : '</span><span> ~ </span><span class="relative-author-to-date">' + lastQuery.toDate + '</span>') +
-                '<span class="relative-author-from-date">' + lastQuery.fromDate + '</span>' + (lastQuery.fromDate == '' && lastQuery.toDate == '' ? '' : '</span><span> ~ </span><span class="relative-author-to-date">' + lastQuery.toDate + '(' + lastQuery.dateOption + ')' + '</span>') +
-                '</div>' +
-                '<div style="padding-top: 15px;"><div style="overflow:auto; height: 300px;">' +
-                '<table class="table table-hover table-fixed table-bordered table-striped table-condensed" style="font-size: 11px; margin-bottom: 0;">' +
-                '<thead><tr><th width="120px">시간</th><th width="70px">저자</th><th width="70px">참조</th><th>내용</th></tr></thead>' +
-                '<tbody></tbody></table></div><div><nav aria-label="..." style="text-align: center; margin-top:10px;">';
-        tmpEl += '<ul class="pagination pagination-sm pagination-' + id + '" style="margin: 0 auto;">';
-        tmpEl += '<li><a href="#" aria-label="Previous" class="disabled"><span aria-hidden="true">«</span></a></li>';
+        '<button type="button" class="close" onclick="$(this).parent().remove(); return false;" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span></button>' +
+        '<div class="relative-title" style="font-size: 13px;">' + tableData[row].author + ' - ' + tableData[row].referencedAuthor + '<span>  : ' + count + ' 건</span></div>' +
+        //' <div id="checkR-result-number">검색결과 : 00000000</div>' +
+        '<div class="relative-content-container"><div style="font-size: 11px;position: absolute;right: 0;">' +
+        //'<span class="relative-author-from-date">' + lastQuery.fromDate + '</span>' + (lastQuery.fromDate == '' && lastQuery.toDate == '' ? '' : '</span><span> ~ </span><span class="relative-author-to-date">' + lastQuery.toDate + '</span>') +
+        '<span class="relative-author-from-date">' + lastQuery.fromDate + '</span>' + (lastQuery.fromDate == '' && lastQuery.toDate == '' ? '' : '</span><span> ~ </span><span class="relative-author-to-date">' + lastQuery.toDate + '(' + lastQuery.dateOption + ')' + '</span>') +
+        '</div>' +
+        '<div style="padding-top: 15px;"><div style="overflow:auto; height: 300px;">' +
+        '<table class="table table-hover table-fixed table-bordered table-striped table-condensed" style="font-size: 11px; margin-bottom: 0;">' +
+        '<thead><tr><th width="120px">시간</th><th width="70px">저자</th><th width="70px">참조</th><th>내용</th></tr></thead>' +
+        '<tbody></tbody></table></div><div><nav aria-label="..." style="text-align: center; margin-top:10px;">';
+    tmpEl += '<ul class="pagination pagination-sm pagination-' + id + '" style="margin: 0 auto;">';
+    tmpEl += '<li><a href="#" aria-label="Previous" class="disabled"><span aria-hidden="true">«</span></a></li>';
         for (var j = 0; j * 50 < count; j++) {
             if (j != page) tmpEl += '<li><a href="#">' + (j + 1) + '</a></li>';
             else tmpEl += '<li><a href="#">' + (j + 1) + '</a></li>';
@@ -1617,6 +1617,7 @@
                             return;
                         }
                         var author = $('.popover-input-author').val();
+                        var priority = $('.popover-input-priority').val();
                         $.ajax({
                             url: "/main/nickname/update",
                             type: "post",
@@ -1624,28 +1625,32 @@
                                 "nickname": nicname,
                                 "author": author,
 //                                "lastModifiedDate": $('.popover-input-modified-time').val(),
-                                "priority": $('.popover-input-priority').val(),
+                                "priority": priority,
                                 "note": $('.popover-input-note').val()
                             },
                             success: function (responseData) {
                                 if (responseData == 'true') {
 
                                     for (var k = 0; k < $('#book-table tbody').find('tr').length; k++) {
-                                        var nicTmp = $('#book-table tbody').find('tr').eq(k).find('td').eq(2).text()
-                                                + "_" + $('#book-table tbody').find('tr').eq(k).find('td').eq(5).text();
+                                        var nicTmp = $('#book-table tbody').find('tr').eq(k).find('td').eq(5).text().split("(")[0];
                                         var html = '';
                                         if (nicTmp == author) {
-                                            html = $('#book-table tbody').find('tr').eq(k).find('td').eq(5).text() + '<span>(' + nicname + ')</span>';
+                                            html = nicTmp + '<span>(' + nicname + ')</span>';
                                             $('#book-table tbody').find('tr').eq(k).find('td').eq(5).html(html);
+                                            if ($('#book-table tbody').find('tr').eq(k).find('td').eq(4).text().substring(0,1) != priority) {
+                                            	$('#book-table tbody').find('tr').eq(k).find('td').eq(4).text(priority + $('#book-table tbody').find('tr').eq(k).find('td').eq(4).text().substring(1,3));
+                                            }
                                         }
 
-                                        nicTmp = $('#book-table tbody').find('tr').eq(k).find('td').eq(2).text()
-                                                + "_" + $('#book-table tbody').find('tr').eq(k).find('td').eq(6).text();
+                                        nicTmp = $('#book-table tbody').find('tr').eq(k).find('td').eq(6).text().split("(")[0];
                                         html = '';
                                         if (nicTmp == author) {
-                                            html = $('#book-table tbody').find('tr').eq(k).find('td').eq(6).text() + '<span>(' + nicname + ')</span>';
+                                            html = nicTmp + '<span>(' + nicname + ')</span>';
                                             $('#book-table tbody').find('tr').eq(k).find('td').eq(6).html(html);
-                                        }
+                                            if ($('#book-table tbody').find('tr').eq(k).find('td').eq(4).text().substring(2,3) != priority) {
+                                            	$('#book-table tbody').find('tr').eq(k).find('td').eq(4).text($('#book-table tbody').find('tr').eq(k).find('td').eq(4).text().substring(0,2) + priority);
+                                            }
+                                       }
 
                                         //console.log("BBBBBB : " + $('#book-table tbody').find('tr').eq(k).find('td').eq(5).text());
                                     }
@@ -1786,7 +1791,8 @@
                         return;
                     }
                     var author = $('.popover-input-author').val();
-                    if ($('.btn-identity-check').attr('disabled') != undefined) {
+                    var priority = $('.popover-input-priority').val();
+					if ($('.btn-identity-check').attr('disabled') != undefined) {
                         $.ajax({
                             url: "/main/nickname/update",
                             type: "post",
@@ -1794,28 +1800,32 @@
                                 "nickname": nicname,
                                 "author": author,
 //                                "lastModifiedDate": $('.popover-input-modified-time').val(),
-                                "priority": $('.popover-input-priority').val(),
+                                "priority": priority,
                                 "note": $('.popover-input-note').val()
                             },
                             success: function (responseData) {
                                 if (responseData == 'true') {
                                     for (var k = 0; k < $('#book-table tbody').find('tr').length; k++) {
-                                        var nicTmp = $('#book-table tbody').find('tr').eq(k).find('td').eq(2).text()
-                                                + "_" + $('#book-table tbody').find('tr').eq(k).find('td').eq(5).text();
+                                        var nicTmp = $('#book-table tbody').find('tr').eq(k).find('td').eq(5).text().split("(")[0];
                                         var html = '';
-                                        console.log(nicTmp + " : " + author);
                                         if (nicTmp == author) {
-                                            html = $('#book-table tbody').find('tr').eq(k).find('td').eq(5).text() + '<span>(' + nicname + ')</span>';
+                                            html = nicTmp + '<span>(' + nicname + ')</span>';
                                             $('#book-table tbody').find('tr').eq(k).find('td').eq(5).html(html);
+                                            if ($('#book-table tbody').find('tr').eq(k).find('td').eq(4).text().substring(0,1) != priority) {
+                                            	$('#book-table tbody').find('tr').eq(k).find('td').eq(4).text(priority + $('#book-table tbody').find('tr').eq(k).find('td').eq(4).text().substring(1,3));
+                                            }
                                         }
 
-                                        nicTmp = $('#book-table tbody').find('tr').eq(k).find('td').eq(2).text()
-                                                + "_" + $('#book-table tbody').find('tr').eq(k).find('td').eq(6).text();
+                                        nicTmp = $('#book-table tbody').find('tr').eq(k).find('td').eq(6).text().split("(")[0];
                                         html = '';
                                         if (nicTmp == author) {
-                                            html = $('#book-table tbody').find('tr').eq(k).find('td').eq(6).text() + '<span>(' + nicname + ')</span>';
+                                            html = nicTmp + '<span>(' + nicname + ')</span>';
                                             $('#book-table tbody').find('tr').eq(k).find('td').eq(6).html(html);
-                                        }
+                                            if ($('#book-table tbody').find('tr').eq(k).find('td').eq(4).text().substring(2,3) != priority) {
+                                            	$('#book-table tbody').find('tr').eq(k).find('td').eq(4).text($('#book-table tbody').find('tr').eq(k).find('td').eq(4).text().substring(0,2) + priority);
+                                            }
+                                       }
+
                                         //console.log("BBBBBB : " + $('#book-table tbody').find('tr').eq(k).find('td').eq(5).text());
                                     }
                                     //highLightResult();
@@ -2015,53 +2025,28 @@
         return str.replace(specials, "\\$&");
     };
 
-    fetch_unix_timestamp = function () {
-        return Math.floor(new Date().getTime() / 1000);
-    };
-    function timeConverter(UNIX_timestamp) {
+	fetch_unix_timestamp = function () {  return Math.floor(new Date().getTime() / 1000); };
+	function timeConverter(UNIX_timestamp) {
         var a = new Date(UNIX_timestamp * 1000);
         //var months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
         //var month = months[a.getMonth()];
         var year = a.getFullYear();
-        var month = a.getMonth();
+        var month = a.getMonth() + 1;
         var date = a.getDate();
         var hour = a.getHours();
         var min = a.getMinutes();
         var sec = a.getSeconds();
-        //var time = date + ' ' + month + ' ' + year + ' ' + hour + ':' + min + ':' + sec ;
-        var time = a.getFullYear() + "/" + (a.getMonth() + 1) + "/" + a.getDate();
+
+        if(month < 10) month = "0" + month;
+        if(date < 10) date = "0" + date;
+        if(hour < 10) hour = "0" + hour;
+        if(min < 10) min = "0" + min;
+        if(sec < 10) sec = "0" + sec;
+
+        var time = a.getFullYear() + '/' + month + '/' + date + ' ' + hour + ':' + min + ':' + sec ;
+
         return time;
     }
-
-    function exportCheckboxClick() {
-//        $('.export-checkbox').change(function () {
-//        $('.export-checkbox').click(function () {
-        $('.export-checkbox').on('click', function () {
-
-            var el = $(this);
-            console.error(el.is(':checked'));
-            if (el.hasClass('export-checkbox-all')) {
-                if (el.is(':checked')) {
-                    $('.export-checkbox').prop('checked', true).attr('checked', 'checked');
-//                    console.error($('.export-checkbox').prop('checked'));
-                } else {
-                    $('.export-checkbox').prop('checked', false).removeAttr('checked');
-//                    console.error('true')
-                }
-            } else {
-                if (el.is(':checked')) {
-                    el.prop('checked', false);
-                    if ($('.export-checkbox').size() == $('.export-checkbox:checked').size() + 1) {
-                        $('.export-checkbox-all').prop('checked', true);
-                    }
-                } else {
-                    el.prop('checked', true);
-                    $('.export-checkbox-all').prop('checked', false);
-                }
-            }
-        });
-    }
-    exportCheckboxClick();
 
 </script>
 </body>

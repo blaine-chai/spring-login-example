@@ -269,10 +269,9 @@
                                                 </button>
                                                 <ul class="dropdown-menu search-category-selector" role="menu"
                                                     aria-labelledby="dropdownMenu1">
-                                                    <li role="presentation"><a role="menuitem" tabindex="-1"
-                                                                               href="#">내용</a></li>
-                                                    <li role="presentation"><a role="menuitem" tabindex="-1"
-                                                                               href="#">저자</a></li>
+                                                    <li role="presentation"><a role="menuitem" tabindex="-1" href="#">내용</a></li>
+                                                    <li role="presentation"><a role="menuitem" tabindex="-1" href="#">저자</a></li>
+                                                    <li role="presentation"><a role="menuitem" tabindex="-1" href="#">순위</a></li>
                                                     <%--<li role="presentation"><a role="menuitem" tabindex="-1"href="#">참조</a></li>--%>
                                                 </ul>
                                             </div>
@@ -318,10 +317,9 @@
                                                 </button>
                                                 <ul class="dropdown-menu search-category-selector" role="menu"
                                                     aria-labelledby="dropdownMenu1">
-                                                    <li role="presentation"><a role="menuitem" tabindex="-1"
-                                                                               href="#">내용</a></li>
-                                                    <li role="presentation"><a role="menuitem" tabindex="-1"
-                                                                               href="#">저자</a></li>
+                                                    <li role="presentation"><a role="menuitem" tabindex="-1" href="#">내용</a></li>
+                                                    <li role="presentation"><a role="menuitem" tabindex="-1" href="#">저자</a></li>
+                                                    <li role="presentation"><a role="menuitem" tabindex="-1" href="#">순위</a></li>
                                                     <%--<li role="presentation"><a role="menuitem" tabindex="-1"href="#">참조</a></li>--%>
                                                 </ul>
                                             </div>
@@ -362,12 +360,8 @@
                                                     </button>
                                                     <ul class="dropdown-menu search-category-selector" role="menu"
                                                         aria-labelledby="dropdownMenu1">
-                                                        <li><a role="author-dropdown" period="0" tabindex="-1"
-                                                               href="#">MSG</a>
-                                                        </li>
-                                                        <li><a role="author-dropdown" period="3" tabindex="-1"
-                                                               href="#">DB</a>
-                                                        </li>
+                                                        <li><a role="author-dropdown" period="0" tabindex="-1" href="#">MSG</a></li>
+                                                        <li><a role="author-dropdown" period="3" tabindex="-1" href="#">DB</a></li>
                                                     </ul>
                                                 </div>
                                                 <div class="btn-group" style="float:left; margin: auto;">
@@ -584,7 +578,7 @@
 
         //$("input:radio[name='groups']").removeAttr('checked');
         $("input:radio[name='groups']").eq(0).prop("checked", true);
-        $("input:radio[name='groups']:radio[value=전부]").prop("checked", true);
+        $("input:radio[name='groups']:radio[value='전부']").prop("checked", true);
 
         $('#total-book-graph-container').click(function () {
             if ($(this).find('svg').size() > 0) {
@@ -626,6 +620,7 @@
             }
             getNewAuthorGraphData();
         });
+
         fetch_unix_timestamp = function () {     	//return parseInt(new Date().getTime().toString().substring(0, 10));
             return Math.floor(new Date().getTime() / 1000);
         };
@@ -633,26 +628,11 @@
         var timestamp = fetch_unix_timestamp();
         console.log(timestamp);
 
-        function timeConverter(UNIX_timestamp) {
-            var a = new Date(UNIX_timestamp * 1000);
-            //var months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-            //var month = months[a.getMonth()];
-            var year = a.getFullYear();
-            var month = a.getMonth();
-            var date = a.getDate();
-            var hour = a.getHours();
-            var min = a.getMinutes();
-            var sec = a.getSeconds();
-            //var time = date + ' ' + month + ' ' + year + ' ' + hour + ':' + min + ':' + sec ;
-            var time = a.getFullYear() + "/" + (a.getMonth() + 1) + "/" + a.getDate();
-            return time;
-        }
-
         console.log(timeConverter(timestamp - 3600 * 24 * 50));
 
         //var d = new Date();
         //var ttt = d.getFullYear() + "/" + (d.getMonth()+1) + "/" + d.getDate();
-        var ttt = timeConverter(timestamp - 3600 * 24 * 710);
+        var ttt = timeConverter(timestamp - 3600 * 24 * 730);
 
         $('#datepicker1').datetimepicker({
             format: 'Y/m/d',
@@ -688,11 +668,8 @@
         getAuthorTotalGraphData($('.search-category-option').eq(1).text());
 
         $('label[name=dateOption]').click(function () {
-            if ($(this).text() == 'MSG') {
-                $(this).text('DB');
-            } else {
-                $(this).text('MSG');
-            }
+            if ($(this).text() == 'MSG') $(this).text('DB');
+            else 						 $(this).text('MSG');
         });
     });
 
@@ -958,7 +935,13 @@
         var category = categoryEls.eq(2).text();
         if (category == "내용") SearchWord += "indexA^" + input;
         else if (category == "저자") SearchWord += "indexB^" + input;
-        //else if (category == "참조") SearchWord += "indexC^" + input;
+        else if (category == "순위") {
+        	if((input >= '1') && (input <= '9')) SearchWord += "priority^" + input;
+        	else {
+        		alert("우선순위의 범위는 1~9입니다.");
+        		isOK = false;
+        	}
+        }
 
         var operator = operatorEls.eq(0).text();
         if (operator != "SEL") {
@@ -971,7 +954,13 @@
             var category = categoryEls.eq(3).text();
             if (category == "내용") SearchWord += "indexA^" + input;
             else if (category == "저자") SearchWord += "indexB^" + input;
-            //else if (category == "참조") SearchWord += "indexC^" + input;
+            else if (category == "순위") {
+            	if((input >= '1') && (input <= '9')) SearchWord += "priority^" + input;
+            	else {
+            		alert("우선순위의 범위는 1~9입니다.");
+            		isOK = false;
+            	}
+            }
         }
 
         SearchWord += ">" + typeInfo;
@@ -1118,8 +1107,35 @@
         });
 
     };
-    // This must be a hyperlink
 
+    function timeConverter(UNIX_timestamp) {
+        var a = new Date(UNIX_timestamp * 1000);
+        //var months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+        //var month = months[a.getMonth()];
+
+        /*	console.log(tdata.fromDate + "-" + tdata.toDate);
+         console.log(timeConverter(timestamp));
+         timestamp = timeConverter(timestamp - 3600 * 24 * 30);
+         console.log(timestamp);
+         */
+        var year = a.getFullYear();
+        var month = a.getMonth()+1;
+        var date = a.getDate();
+        var hour = a.getHours();
+        var min = a.getMinutes();
+        var sec = a.getSeconds();
+
+        if(month < 10) month = "0" + month;
+        if(date < 10) date = "0" + date;
+        if(hour < 10) hour = "0" + hour;
+        if(min < 10) min = "0" + min;
+        if(sec < 10) sec = "0" + sec;
+
+        var time = a.getFullYear() + '/' + month + '/' + date;
+        //var time = a.getFullYear() + '/' + month + '/' + date + ' ' + hour + ':' + min + ':' + sec ;
+
+        return time;
+    }
 
 </script>
 </body>

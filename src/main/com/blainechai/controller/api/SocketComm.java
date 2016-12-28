@@ -110,12 +110,12 @@ public class SocketComm
 
 		resultList.clear();
 		for (int i = 0; i < r.length; i++) {
-			//System.out.println(r[i][1] + " :33: " + r[i][2]);
 			int num = Integer.parseInt(r[i][1]) + Integer.parseInt(r[i][2]);
 			if(num == 0) continue;
 			r[i][1] = num + "";
 			r[i][2] = id + "_" + i;
 			resultList.add(new RelAuthorInfo(r[i]));
+			System.out.println(r[i][0] + " :33: " + r[i][2]);
 		}
 
 		System.out.println("\t :444: " + resultList.size() + " : " + (System.currentTimeMillis()-time));
@@ -169,21 +169,17 @@ public class SocketComm
 		return html;
 	}
 
-	public String[] getFrom(String key)
+	public String[] getFrom()
 	{
-		if(!key.equals(Constant.GROUP_NAME_ALL)) {
-			for(int i=from.size()-1; i >= 0; i--) {
-				String[] tmp = from.get(i).split("_");
-				if(tmp.length < 2) continue;
-				//System.out.println(from.get(i) + " :AAAAAAAAAA: " + key);
-				if(!tmp[0].equals(key)) from.remove(i);
-				//System.out.println(tmp[0] + " :BBBBBBBB: " + from.size());
-			}
+
+		for(int i=from.size()-1; i >= 0; i--) {
+			if(from.get(i).equals("")) from.remove(i);
 		}
-		//System.out.println(key + " :AAAAAAAAAA: " + from.size());
+		System.out.println(":AAAAAAAAAA: " + from.size());
 
 		String[] from1 = new String[from.size()];
 		for(int i=0; i < from.size(); i++) from1[i] = from.get(i);
+		//System.out.println(key + " :AAAAAAAAAA: " + from.get(0));
 
 		return from1;
 	}
@@ -205,7 +201,7 @@ public class SocketComm
 		try
 		{
 			System.out.println("\tmsg : " + msg);
-			int k = 4;
+			int k = 5;
 			dos.writeInt(k);
 
 			String[] sss = msg.split(">");
@@ -322,7 +318,7 @@ public class SocketComm
 	{
 		System.out.println("reqProfile :: msg = " + msg);
 		String[] s = msg.split(">");
-		dos.writeUTF("indexB^" + s[0]);
+		dos.writeUTF("indexB^" + s[0].split("\\(")[0]);
 
 		if(s[2].equals("ALL")) {
 			s[1] = getPeriod("-");
@@ -334,6 +330,7 @@ public class SocketComm
 
 		dos.writeUTF(s[1]);
 		dos.writeUTF(s[2]);
+		dos.writeUTF(s[3]);
 
 		System.out.println("reqProfile :: msg = " + msg + " :: " + s[1]);
 
@@ -360,7 +357,9 @@ public class SocketComm
 	public void reqFrom() throws IOException
 	{
 		System.out.println("msg = " + msg);
-		dos.writeUTF(msg);
+		String[] s = msg.split(">");
+		dos.writeUTF(s[0]);
+		dos.writeUTF(s[1]);
 		//dos.writeBoolean(true);
 		good = 0;
 	}
@@ -415,7 +414,7 @@ public class SocketComm
 		try
 		{
 			System.out.println("\tStat2 : msg : " + msg);
-			int k = 4;
+			int k = 5;
 			//msg = "indexA^한국>문자포함>20150101000000-20150531235959>MSG_daily";
 			dos.writeInt(k);
 
@@ -466,6 +465,8 @@ public class SocketComm
 
 		dos.writeUTF(s[0]);
 		dos.writeUTF(s[1]);
+		dos.writeUTF(s[2]);
+
 		//dos.writeUTF(s[1]);
 		good = 0;
 	}
@@ -480,6 +481,7 @@ public class SocketComm
 
 		dos.writeUTF(s[0]);
 		dos.writeUTF(s[1]);
+		dos.writeUTF(s[2]);
 
 		good = dis.readInt();
 
@@ -506,10 +508,10 @@ public class SocketComm
 				dos.writeUTF("QUERY");
 				reqQUERY();
 			}
-			else  if ((sel == 2)||(sel == 12)) {			// VIEW
+			else  if ((sel == 2)||(sel == 12)) { // VIEW
 				dos.writeBoolean(false);
 				dos.writeUTF("VIEW");
-				System.out.println("\tVIEWVIEWVIEWVIEWVIEWVIEW");
+				System.out.println("\tVIEW");
 				reqVIEW();
 			}
 			else  if (sel == 3) {			// KEYS
@@ -517,7 +519,7 @@ public class SocketComm
 				dos.writeUTF("KEYS");
 				reqKEYS();
 			}
-			else  if ((sel == 4)||(sel == 14)) {			// VIEW
+			else  if ((sel == 4)||(sel == 14)) { // VIEW
 				dos.writeBoolean(false);
 				dos.writeUTF("COUNT");
 				reqCOUNT();
@@ -526,70 +528,70 @@ public class SocketComm
 				dos.writeBoolean(false);
 				dos.writeUTF("STOP");
 			}
-			else  if (sel == 6) {			// checkR
+			else  if (sel == 6) {			// PRI
 				dos.writeBoolean(false);
 				dos.writeUTF("PRI");
 				reqPri();
 			}
-			else  if (sel == 7) {			// checkR
+			else  if (sel == 7) {			// CHECKR
 				dos.writeBoolean(false);
 				dos.writeUTF("CHECKR");
 				reqCheckR();
 			}
-			else  if (sel == 8) {			// checkR
+			else  if (sel == 8) {			// EXPORT
 				dos.writeBoolean(false);
 				dos.writeUTF("EXPORT");
 				reqExport();
 			}
-			else  if (sel == 9) {			// checkR
+			else  if (sel == 9) {			// PROFILE
 				dos.writeBoolean(true);
 				dos.writeUTF("PROFILE");
 				reqProfile();
 			}
-			else  if (sel == 10) {			// checkR
+			else  if (sel == 10) {			// GETPROFILE
 				dos.writeBoolean(false);
 				dos.writeUTF("GETPROFILE");
 				reqGetProfile();
 			}
-			else  if (sel == 13) {			// checkR
+			else  if (sel == 13) {			// READ
 				dos.writeBoolean(false);
 				dos.writeUTF("READ");
 				reqRead();
 			}
-			else  if (sel == 16) {			// checkR
+			else  if (sel == 16) {			// FROM
 				dos.writeBoolean(false);
 				dos.writeUTF("FROM");
 				reqFrom();
 			}
-			else  if (sel == 15) {			// checkR
+			else  if (sel == 15) {			// GETFROM
 				dos.writeBoolean(false);
 				dos.writeUTF("GETFROM");
 				reqGetFrom();
 			}
-			else  if (sel == 21) {			// checkR
+			else  if (sel == 21) {			// STAT2
 				dos.writeBoolean(false);
 				dos.writeUTF("STAT2");
 				reqStat2();
 			}
-			else  if (sel == 22) {			// checkR
+			else  if (sel == 22) {			// GETSTAT2
 				dos.writeBoolean(false);
 				dos.writeUTF("GETSTAT2");
 				reqStat2Read();
 			}
-			else  if (sel == 23) {			// checkR
+			else  if (sel == 23) {			// STAT1
 				dos.writeBoolean(false);
 				dos.writeUTF("STAT1");
 				reqStat1();
 			}
-			else  if (sel == 19) {			// checkR
-				dos.writeBoolean(false);
-				dos.writeUTF("NOTICE");
-				reqNotice();
-			}
-			else  if (sel == 18) {			// checkR
+			else  if (sel == 18) {			// GETNOTICE
 				dos.writeBoolean(false);
 				dos.writeUTF("GETNOTICE");
 				reqGetNotice();
+			}
+			else  if (sel == 19) {			// NOTICE
+				dos.writeBoolean(false);
+				dos.writeUTF("NOTICE");
+				reqNotice();
 			}
 
 			if (good >= 0)
@@ -622,7 +624,7 @@ public class SocketComm
 		String fromDate = "";
 		String toDate = "";
 
-		System.out.println("ZZZZZZZ :" + t + " : " + ss.length);
+		//System.out.println("ZZZZZZZ :" + t + " : " + ss.length);
 
 		if(ss.length == 0) {
 			fromDate = "19900101000000";;

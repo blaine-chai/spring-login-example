@@ -316,14 +316,14 @@
             }
         });
 
-        nicNameUpdate();
+        //nicNameUpdate();
 
         $('#nickname-search-btn').click(function (e) {
         	if(isProfileSearch) {
         		isProfileSearch = false;
 	            $('#nickname-result-table>tbody').children().remove();
 	            $('#nickname-result-container').hide();
-	            var keyword = $('#nickname-search-input').val();
+	            var keyword = $('#nickname-search-input').val() + ">"+ $('input[name="groups"]:checked').val();
 
 	            console.log(keyword);
 	            if(keyword == "") {
@@ -331,7 +331,7 @@
 	        		isProfileSearch = true;
 	            }
 	            else
-	            	callAjax("profileSearch", keyword+ ">" + $('input[name="groups"]:checked').val(), "", 16, 0, keyword, "");
+	            	callAjax("profileSearch", keyword, "", 16, 0, keyword, "");
         	}
         });
 
@@ -344,7 +344,8 @@
    		{
         	if(isProfileSearch) {
         		isProfileSearch = false;
-				var tmpAuthor = nicNameOff($(this).parent().find('td').eq(1).text());
+				var tmpAuthor = $(this).parent().find('td').eq(1).text() + $(this).parent().find('td').eq(2).text();
+				console.log(tmpAuthor);
 	            idCNT++;
 
 	            $('#profile-result-container').children().hide();
@@ -354,7 +355,8 @@
 
 	            stop = false;
 	            if (setTime != 0) clearTimeout(setTime);
-	            var period = tmpAuthor + '>' + $('#datepicker1').val() + " 00:00:00" + "-" + $('#datepicker2').val() + " 23:59:59" + ">" + $('label[name=dateOption]').text();
+	            var period = tmpAuthor + '>' + $('#datepicker1').val() + " 00:00:00" + "-" + $('#datepicker2').val() + " 23:59:59"
+	            			 + ">" + $('label[name=dateOption]').text() + ">"+ $('input[name="groups"]:checked').val();
 	            callAjax("profile" + idCNT, period, "", 9, 0, "", "");
         	}
         });
@@ -402,7 +404,7 @@
             if (data.sel == 1) {
                 //var result = JSON.parse(data.bookInfoList);
                 callAjax(data.id, data.author, data.period, 4, data.page, "", "");
-                nicNameUpdate();
+                //nicNameUpdate();
             }
             else if (data.sel == 2) {
                 setRelBadgeShow(responseData);
@@ -424,7 +426,7 @@
                 stop = true;
                 var result = JSON.parse(data.bookInfoList);
                 callAjax(data.id, data.author, data.period, 10, data.page, "", "");
-                nicNameUpdate();
+                //nicNameUpdate();
             }
             else if (data.sel == 10) {
                 var author = data.author.split('>');
@@ -464,7 +466,7 @@
             else if (data.sel == 16) {
                 stop = true;
                 callAjax(data.id, data.author, data.period, 15, data.page, "", "");
-                nicNameUpdate();
+                //nicNameUpdate();
             }
             else if (data.sel == 15) {
                 var result = JSON.parse(data.bookInfoList);
@@ -473,6 +475,7 @@
                 var group = data.author.split(">")[1];
                 //console.log("::" +result[0]+ "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa" + result.length);
                 var cnt = 0;
+/*
                 $.each(nicNameDB, function (i, nicDB) {
 					//console.log("::" + nicNameDB[i].nickname+ " :: " + nicNameDB[i].nickname.indexOf(key));
 					if (nicNameDB[i].nickname.indexOf(key) != -1) {  //  if(str1.indexOf(str2) != -1){
@@ -487,23 +490,25 @@
                     	//}
                     }
                 });
-
+*/
 				if(result.length!=0) {
 					$.each(result, function (i, nicDB) {
-	                    //console.log(result[i]);
-	                    var tmp = result[i].split("_");
-	                    if (tmp.length > 1) {
-		                    if (tmp[1].indexOf(key) != -1) {  //if(str1.indexOf(str2) != -1){
+	                   // console.log("ZZZZZZZZ" + result[i]);
+	                    var tmp = result[i].split(">");
+	                    var nic = '';
+	                    if(tmp.length > 1) nic = tmp[1];
+	                    result[i] = tmp[0];
+	                    //if (tmp.length > 1) {
+		                    //if (result[i].indexOf(key) != -1) {  //if(str1.indexOf(str2) != -1){
 		                        //console.log(result[i]);
-		                        var nic = nicNameFindOnly(result[i]);
 		                        tmpEl += '<tr>' +
 		                             '<td style="text-align: center;"><input type="radio" class="nickname-radio" name="nickname-radio"></td>' +
 		                             '<td class="nickname-search-td">' + result[i] + '</td>' +
 		                             '<td class="nickname-search-td">' + (nic != '' ? '(' + nic + ')' : '') + '</td>' +
 		                             '</tr>';
 		                         cnt++;
-		                    }
-	                    }
+		                   // }
+	                    //}
 	                });
 
 	                if(cnt == 0) alert("검색결과가 없습니다.");
@@ -609,11 +614,12 @@
         if (parentContainer != "") return;
         parentContainer = $(element).parent().parent().parent().parent().parent().parent();
         $(element).append(loadingRing);
-        var tmpAuthor = nicNameOff($(element).parent().find('td').eq(1).text());
+        var tmpAuthor = $(element).parent().find('td').eq(1).text();
         var classId = $(element).parent().attr('class-id');
 
         idCNT++;
-        var period = tmpAuthor + '>' + $('#datepicker1').val() + " 00:00:00" + "-" + $('#datepicker2').val() + " 23:59:59" + ">" + $('label[name=dateOption]').text();
+        var period = tmpAuthor + '>' + $('#datepicker1').val() + " 00:00:00" + "-" + $('#datepicker2').val() + " 23:59:59"
+        		+ ">" + $('label[name=dateOption]').text() + ">"+ $('input[name="groups"]:checked').val();
         callAjax("profile" + idCNT, period, classId, 9, 1, "", "");
     }
 
@@ -909,10 +915,10 @@
             if((fromTime == "")&& (toTime == "")) fromTime = "";
             else   			 fromTime = fromTime + "-" + toTime;
 
-            var period = fromTime + ">" + $('label[name=dateOption]').text();
+            var period = fromTime + ">" + $('label[name=dateOption]').text() + ">"+ $('input[name="groups"]:checked').val();
 
             var id = "profile" + idCNT;
-
+//console.log(">"+ $('input[name="groups"]:checked').val());
             callAjax(id, author + '>' + period, relAuthor, 1, 0, "", "");
         });
     }
@@ -939,7 +945,7 @@
                 '<label class="btn btn-primary btn-export" style="position: absolute;right: 15px;bottom: 15px;font-size: 11px;">export</label></div>';
 
         var tmpEl = $('<div class="alert bg-white alert-dismissible fade in border-gray relative-table-wrapper" style="position: absolute; z-index: 10; width: 700px; left:' + relStartPos.left + 'px;top:' + relStartPos.top + 'px;" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span></button>' +
-                '<div class="relative-title">' + nicNameFind(author) + ' - ' + nicNameFind(relAuthor) + '<span>  : ' + count + ' 건</span></div>' +
+                '<div class="relative-title">' + author + ' - ' + relAuthor + '<span>  : ' + count + ' 건</span></div>' +
                 '<div style="font-size: 10px;margin-top: 10px;margin-bottom: 10px;position: relative;left: 450px;">' +
                 '<span class="relative-author-from-date">' + period + '(' + $('label[name=dateOption]').text() + ')</span>' +
                 '</div>' +
@@ -955,10 +961,12 @@
         $.each(result, function (i, tdata) {
             tmpEl.find('tbody').append('<tr>' +
                     '<td>' + tdata.publishedDate + '</td>' +
-                    '<td class="author-td author' + i + '" title="' + tdata.author + '" href="#">' + nicNameFind(tdata.author) + '</td>' +
-                    '<td class="relation-td relation' + i + '" title="' + tdata.
-                    referencedAuthor + '" href="#">' + nicNameFind(tdata.referencedAuthor)
-                    + '</td>' +
+                    '<td class="author-td author' + i + '" title="' + tdata.author + '" href="#">' + tdata.author +
+                    		'<span>' + (tdata.authNickname != undefined ? '(' + tdata.authNickname + ')' : '') + '</span>' + '</td>' +
+                    '<td class="relation-td relation' + i + '" title="' + tdata.referencedAuthor + '" href="#">' + tdata.referencedAuthor
+                            + '<span>' + (tdata.refNickname != undefined ? '(' + tdata.refNickname + ')' : '') + '</span>' + '</td>' +
+                    //'<td class="author-td author' + i + '" title="' + tdata.author + '" href="#">' + tdata.author + "(" + tdata.authNickname + ")" + '</td>' +
+					//'<td class="relation-td relation' + i + '" title="' + tdata.referencedAuthor + '" href="#">' + nicNameFind(tdata.referencedAuthor) + '</td>' +
                     '<td style="word-break: break-all">' + tdata.contents + '</td>' +
                     '</tr>');
         });
@@ -1042,8 +1050,7 @@
             $('.pagination-' + id).parent().parent().parent().find('tbody').append('<tr>' +
                     '<td>' + tdata.publishedDate + '</td>' +
                     '<td class="author-td author' + i + '" title="' + tdata.author + '" href="#">' + nicNameFind(tdata.author) + '</td>' +
-                    '<td class="relation-td relation' + i + '" title="' + tdata.referencedAuthor + '" href="#">' + nicNameFind(tdata.referencedAuthor)
-                    + '</td>' +
+                    '<td class="relation-td relation' + i + '" title="' + tdata.referencedAuthor + '" href="#">' + nicNameFind(tdata.referencedAuthor) + '</td>' +
                     '<td style="word-break: break-all">' + tdata.contents + '</td>' +
                     '</tr>');
         });
@@ -1388,30 +1395,6 @@
     })(ProfileResultModule);
 
     var nicNameDB = [];
-    function nicNameAdd(name, Nic) {
-        nicNameDB[nicNameDB.length] = new Object();
-        nicNameDB[nicNameDB.length].name = name;
-        nicNameDB[nicNameDB.length].nicNme = name;
-    }
-
-    function nicNameDel(name) {
-        for (var i = 0; i < nicNameDB.length; i++) {
-            if (nicNameDB[i].name = name) {
-                nicNameDB.splice(i, 1);
-                break;
-            }
-        }
-    }
-
-    function nicNameChange(name, Nic) {
-        for (var i = 0; i < nicNameDB.length; i++) {
-            if (nicNameDB[i].name = name) {
-                nicNameDB[i].nicName = Nic;
-                break;
-            }
-        }
-    }
-
     function nicNameFind(author) {
         var Nic = author;
         $.each(nicNameDB, function (i, nicDB) {
@@ -1426,26 +1409,12 @@
         return Nic;
     }
 
-    function nicNameFindOnly(author) {
-        var Nic = '';
-        $.each(nicNameDB, function (i, nicDB) {
-            if (nicDB.author == author) {
-                console.log("aAAAAA");
-                //if(nicDB.author.indexOf(keyword) != -1) {  //if(str1.indexOf(str2) != -1){
-                Nic = nicNameDB[i].nickname;
-            }
-        });
-
-//        console.log(Nic + " : " + Nic);
-        return Nic;
-    }
-
     function nicNameOff(author) {
         var s = author.split("(");
 
         return s[0];
     }
-
+/*
     function nicNameUpdate() {
         $.ajax({
             url: "/main/profile/search-author",
@@ -1459,19 +1428,32 @@
             }
         });
     }
-
+*/
     function timeConverter(UNIX_timestamp) {
         var a = new Date(UNIX_timestamp * 1000);
         //var months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
         //var month = months[a.getMonth()];
+
+        /*	console.log(tdata.fromDate + "-" + tdata.toDate);
+         console.log(timeConverter(timestamp));
+         timestamp = timeConverter(timestamp - 3600 * 24 * 30);
+         console.log(timestamp);
+         */
         var year = a.getFullYear();
-        var month = a.getMonth();
+        var month = a.getMonth()+1;
         var date = a.getDate();
         var hour = a.getHours();
         var min = a.getMinutes();
         var sec = a.getSeconds();
-        //var time = date + ' ' + month + ' ' + year + ' ' + hour + ':' + min + ':' + sec ;
-        var time = a.getFullYear() + "/" + (a.getMonth() + 1) + "/" + a.getDate();
+
+        if(month < 10) month = "0" + month;
+        if(date < 10) date = "0" + date;
+        if(hour < 10) hour = "0" + hour;
+        if(min < 10) min = "0" + min;
+        if(sec < 10) sec = "0" + sec;
+
+        //var time = a.getFullYear() + '/' + month + '/' + date + ' ' + hour + ':' + min + ':' + sec ;
+        var time = a.getFullYear() + '/' + month + '/' + date;
         return time;
     }
 
