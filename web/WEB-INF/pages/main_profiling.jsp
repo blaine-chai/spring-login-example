@@ -383,6 +383,7 @@
 
     var stop = true;
     var setTime;
+    var resultAuthor;
     function searchRelAuthorSuccess(responseData) {
         var data = JSON.parse(responseData);
         if ((data.sel == 10) && (!stop)) return;
@@ -470,30 +471,17 @@
             }
             else if (data.sel == 15) {
                 var result = JSON.parse(data.bookInfoList);
+                resultAuthor = result;
+
                 var tmpEl = "";
                 var key = data.author.split(">")[0];
                 var group = data.author.split(">")[1];
                 //console.log("::" +result[0]+ "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa" + result.length);
                 var cnt = 0;
-/*
-                $.each(nicNameDB, function (i, nicDB) {
-					//console.log("::" + nicNameDB[i].nickname+ " :: " + nicNameDB[i].nickname.indexOf(key));
-					if (nicNameDB[i].nickname.indexOf(key) != -1) {  //  if(str1.indexOf(str2) != -1){
-                        //Nic = author + "(" + nicNameDB[i].nickname + ")";
-                        //if((group == "전부") || (nicDB.author.split(">")[0] == group)) {
-	                        tmpEl += '<tr>' +
-	                        '<td style="text-align: center;"><input type="radio" class="nickname-radio" name="nickname-radio"></td>' +
-	                        '<td class="nickname-search-td">' + nicDB.author + '</td>' +
-	                        '<td class="nickname-search-td">' + (nicNameDB[i].nickname != '' ? '(' + nicNameDB[i].nickname + ')' : '') + '</td>' +
-	                        '</tr>';
-	                        cnt++;
-                    	//}
-                    }
-                });
-*/
 				if(result.length!=0) {
 					$.each(result, function (i, nicDB) {
 	                   // console.log("ZZZZZZZZ" + result[i]);
+						if(i >= 50) return;
 	                    var tmp = result[i].split(">");
 	                    var nic = '';
 	                    if(tmp.length > 1) nic = tmp[1];
@@ -514,6 +502,10 @@
 	                if(cnt == 0) alert("검색결과가 없습니다.");
 	                else {
 		                $('#nickname-result-table').append($(tmpEl));
+		                if(result.length > 50)
+		                	$('#nickname-result-table').parent().parent().find('.component-pager-page').text('1-50('+ result.length + ')');
+		                else
+	                		$('#nickname-result-table').parent().parent().find('.component-pager-page').text('1-'+result.length+'('+result.length + ')');
 		                setAuthorResultClickHandler();
 	                }
 
@@ -1049,81 +1041,12 @@
         $.each(data, function (i, tdata) {
             $('.pagination-' + id).parent().parent().parent().find('tbody').append('<tr>' +
                     '<td>' + tdata.publishedDate + '</td>' +
-                    '<td class="author-td author' + i + '" title="' + tdata.author + '" href="#">' + nicNameFind(tdata.author) + '</td>' +
-                    '<td class="relation-td relation' + i + '" title="' + tdata.referencedAuthor + '" href="#">' + nicNameFind(tdata.referencedAuthor) + '</td>' +
+                    '<td class="author-td author' + i + '" title="' + tdata.author + '" href="#">' + tdata.author +
+            			'<span>' + (tdata.authNickname != undefined ? '(' + tdata.authNickname + ')' : '') + '</span>' + '</td>' +
+            		'<td class="relation-td relation' + i + '" title="' + tdata.referencedAuthor + '" href="#">' + tdata.referencedAuthor +
+                    	'<span>' + (tdata.refNickname != undefined ? '(' + tdata.refNickname + ')' : '') + '</span>' + '</td>' +
                     '<td style="word-break: break-all">' + tdata.contents + '</td>' +
                     '</tr>');
-        });
-    }
-
-
-    function setRelBadgeClickHandler2(element) {
-        $(element).find('.relative-badge-td').click(function (e) {
-            idCNT++;
-            var author = nicNameOff($(element).parent().parent().parent().parent().find('.table-expanded-title').text());
-            var relAuthor = nicNameOff($(element).find('td').eq(1).text());
-            var period = $('#datepicker1').val() + " 00:00:00" + "-" + $('#datepicker2').val() + " 23:59:59" + ">" + $('label[name=dateOption]').text();
-
-            var id = "profile" + idCNT;
-
-            $.ajax({
-                url: "/main/profile/search-rel-author-content",
-                type: "post",
-                data: {
-                    "author": author,
-                    "rel-author": relAuthor,
-                    "period": period,
-                    "id": id
-                },
-                success: function (responseData) {
-                    var tmpData = JSON.parse(responseData);
-                    var result = JSON.parse(tmpData.bookInfoList);
-                    var tmpHtml = $('<div class="alert bg-white alert-dismissible fade in border-gray relative-table-wrapper" style="position: absolute; z-index: 10; width: 700px; left:' + relStartPos.left + 'px;top:' + relStartPos.top + 'px;" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span></button>' +
-                            '<div class="relative-title">' + $(element).parent().parent().parent().parent().find('.table-expanded-title').text() + ' - ' + $(element).find('td').eq(1).text() + '</div>' +
-                            '<div style="font-size: 10px;margin-top: 10px;margin-bottom: 10px;position: relative;left: 450px;">' +
-//                            '<span class="relative-author-from-date">' + lastQuery.fromDate + '</span>' + (lastQuery.fromDate == '' && lastQuery.toDate == '' ? '' : '</span><span> ~ </span><span class="relative-author-to-date">' + lastQuery.toDate + '</span>') +
-                            '</div>' +
-                            '<div class="draggable-content-container"><div style="overflow: scroll;height: 300px;">' +
-                            '<table class="table table-hover table-fixed table-bordered table-striped table-condensed" style="font-size: 11px; margin-bottom: 0;">' +
-                            '<thead><tr><th width="120px">저장시간</th><th width="50px">저자</th><th width="50px">참조</th><th>내용</th></tr></thead>' +
-                            '<tbody></tbody></table></div><div><nav aria-label="..." style="text-align: center; margin-top:10px;">' +
-                            '<ul class="pagination pagination-sm" style="margin: 0 auto;">' +
-                            '<li><a href="#" aria-label="Previous" class="disabled"><span aria-hidden="true">«</span></a></li>' +
-                            '<li><a href="#" class="active">1</a></li>' +
-                            '<li><a href="#">2</a></li>' +
-                            '<li><a href="#">3</a></li>' +
-                            '<li><a href="#">4</a></li>' +
-                            '<li><a href="#">5</a></li>' +
-                            '<li><a href="#" aria-label="Next"><span aria-hidden="true">»</span></a></li></ul></nav></div>' +
-                            '<label class="btn btn-primary btn-export" style="position: absolute;right: 15px;bottom: 15px;font-size: 11px;">export</label></div>');
-                    setRelTablePos();
-
-                    $.each(result, function (i, mResult) {
-                        var tmpEl = $('<tr><td>' + mResult.savedDate + '</td>' +
-                                '<td>' + nicNameFind(mResult.author) + '</td>' +
-                                '<td>' + nicNameFind(mResult.relAuthor) + '</td>' +
-                                '<td class="relative-table-content-td">' + mResult.content + '</td></tr>');
-                        tmpHtml.find('tbody').append(tmpEl);
-                        tmpEl.find('.relative-table-content-td').popover({
-                            html: true,
-                            content: function () {
-                                return $(this).text();
-                            },
-                            template: '<div class="popover popover-relative-content-td"><div class="arrow"></div><div class="popover-inner"><h3 class="popover-title"></h3><div class="popover-content"><p></p></div></div></div>',
-                            container: tmpHtml.find('.draggable-content-container'),
-                            placement: 'auto'
-                        }).on('show.bs.popover', function () {
-                            //remove popover when other popover appeared
-                            $('.popover-relative-content-td').popover('hide');
-                        });
-
-                    });
-
-                    $('body').append(tmpHtml);
-                    tmpHtml.draggable({cancel: '.draggable-content-container'});
-//                    var tarEl = $(this);
-                }
-            });
         });
     }
 
@@ -1195,7 +1118,8 @@
                 var parentContainer = opt.parentContainer;
                 var tmpEl = $(opt.html);
                 tmpEl.find('.expand-btn').css('width', opt.btnWidth);
-                tmpEl.find('.table-expanded-title').text(nicNameFind(opt.title));
+                //tmpEl.find('.table-expanded-title').text(nicNameFind(opt.title));
+                tmpEl.find('.table-expanded-title').text(opt.title);
                 tmpEl.find('.table-expanded-container').css('max-height', opt.tableHeight);
                 tmpEl.css('padding-top', opt.paddingTop);
 
@@ -1289,7 +1213,8 @@
                                     '<td class="relative-badge-td" style="cursor: pointer; width:30px;">' + data.from + '</td>' +
                                     //                            '<td class="relative-badge-td"><span class="badge" style="background-color: #770c35;">' + parseInt(Math.random() * 30) + '</span></td>' +
                                     //                        '<td class="relative-badge-td" style="width:30px;">' + data.to + '</td>' +
-                                    '<td class="profile-relative-author-td" style="cursor:pointer; border-right:0;">' + nicNameFind(data.relAuthor) + '</td>' +
+                                    //'<td class="profile-relative-author-td" style="cursor:pointer; border-right:0;">' + nicNameFind(data.relAuthor) + '</td>' +
+                                    '<td class="profile-relative-author-td" style="cursor:pointer; border-right:0;">' + data.relAuthor + '</td>' +
                                     '<td style="vertical-align: middle; margin: 0; padding: 0; border-left:0; width: 15px;"><label class="btn btn-default btn-sm remove-btn" style="padding: 3px 10px; line-height: 1; margin: 0 5px 0 0;">-</label></td></tr>');
                             tmpTr.attr('class-id', CLASS_NAME_PREFIX + data.to);
                             tmpTr.attr('parent-class-id', opt.parentClassId);
@@ -1393,7 +1318,7 @@
         }
 
     })(ProfileResultModule);
-
+/*
     var nicNameDB = [];
     function nicNameFind(author) {
         var Nic = author;
@@ -1408,6 +1333,7 @@
 //        console.log(Nic + " : " + author);
         return Nic;
     }
+*/
 
     function nicNameOff(author) {
         var s = author.split("(");

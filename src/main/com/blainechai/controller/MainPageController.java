@@ -320,13 +320,16 @@ public class MainPageController {
         int selInt = Integer.parseInt(sel);
         int pageInt = Integer.parseInt(p);
 
+        Map<String, String> groupToIdMap = getGroupMap();
+
         SocketComm sc = null;
         if (selInt < 5) {
             String[] s = author.split(">");
             String strQuery = "indexB^" + s[0] + " & indexB^" + period + ">완전일치>" + s[1] + ">" + s[2] + ">" + s[3];
             sc = new SocketComm(userId + "@" + id, ip, port, selInt, pageInt, strQuery);
         } else if (selInt == 16) {
-            sc = new SocketComm(userId + "@" + id, ip, port, selInt, pageInt, "indexB^" + msg);
+            String[] s = msg.split(">");
+            sc = new SocketComm(userId + "@" + id, ip, port, selInt, pageInt, "indexB^" + s[0] + ">" + groupToIdMap.get(s[1]));
         } else {
             sc = new SocketComm(userId + "@" + id, ip, port, selInt, pageInt, author);
         }
