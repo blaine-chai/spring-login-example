@@ -380,7 +380,7 @@ var GraphModule = (function () {
                 setGraphOverall();
             }
             console.error(svg);
-            svg.on('click', function(){
+            svg.on('click', function () {
                 openWithNewWindow();
             });
         };
@@ -764,41 +764,92 @@ var GraphModule = (function () {
              }
              // start loading the image.
              img.src = url;*/
+            //
+            // img.src = 'data:image/svg+xml;base64,' + jQuery.base64.encode(svgStr);
+            // console.log(img.src);
+            // // img.src = 'data:image/svg+xml;base64,' + window.btoa(svgStr);
+            // // img.src = 'data:image/svg+xml;base64,' + svgStr;
+            //
+            // // You could also use the actual string without base64 encoding it:
+            // //img.src = "data:image/svg+xml;utf8," + svgStr;
+            //
+            // /*var svg = document.querySelector('svg');
+            //  var serializer = new XMLSerializer();
+            //  var svgString = serializer.serializeToString(svg);
+            //  var canvas = document.getElementById("test");
+            //  canvg(canvas, svgString);*/
+            // if (window.navigator.msSaveBlob) {
+            //     var doctype = '<?xml version="1.0" standalone="no"?>'
+            //         + '<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">';
+            //
+            //     // serialize our SVG XML to a string.
+            //     var source = (new XMLSerializer()).serializeToString(svg);
+            //
+            //     // create a file blob of our SVG.
+            //     var blob = new Blob([ doctype + source], { type: 'image/svg+xml;charset=utf-8' });
+            //
+            //     var url = window.URL.createObjectURL(blob);
+            //
+            //     // Put the svg into an image tag so that the Canvas element can read it in.
+            //     var img = d3.select('body').append('img')
+            //         // .attr('width', 100)
+            //         // .attr('height', 100)
+            //         .node();
+            //
+            //
+            //     img.onload = function(){
+            //         // // Now that the image has loaded, put the image into a canvas element.
+            //         // var canvas = d3.select('body').append('canvas').node();
+            //         // canvas.width = 100;
+            //         // canvas.height = 100;
+            //         // var ctx = canvas.getContext('2d');
+            //         // ctx.drawImage(img, 0, 0);
+            //         // var canvasUrl = canvas.toDataURL("image/png");
+            //         // var img2 = d3.select('body').append('img')
+            //         //     .attr('width', 100)
+            //         //     .attr('height', 100)
+            //         //     .node();
+            //         // // this is now the base64 encoded version of our PNG! you could optionally
+            //         // // redirect the user to download the PNG by sending them to the url with
+            //         // // `window.location.href= canvasUrl`.
+            //         // img2.src = canvasUrl;
+            //
+            //
+            //     };
+            //     // start loading the image.
+            //     img.src = url;
+            //
+            //     newWindow.document.write("<img src='" + img.src + "'/>");
+            //     $('.tmp-graph-container').remove();
+            // }
+            // else {
+            //     img.onload = function () {
+            //
+            //         // console.log('a');
+            //         var canvas = newWindow.document.createElement("canvas");
+            //         // console.log('b');
+            //         newWindow.document.body.appendChild(canvas);
+            //         // console.log('c');
+            //         canvas.width = w;
+            //         canvas.height = h;
+            //         canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+            //         // console.log('d');
+            //         $(newWindow.document.body).append('<script src="/js/jquery.min.js"></script><script>$("canvas").click(function(){var a = newWindow.document.createElement("a");a.download = "graph.png";a.href = canvas.toDataURL("image/png");a.click();$(newWindow.document.body).append(\'<a download="graph.png" href="\' + canvas.toDataURL() + \'"></a>\');newWindow.getElementsByTagName(\'a\')[0].appendChild(canvas);});</script>')
+            //         // newWindow.document.write("<img src='" + img.src + "'/>");
+            //         // console.error(canvas.toDataURL());
+            //         // var a = newWindow.document.createElement("a");
+            //         // a.download = "graph.png";
+            //         // a.href = canvas.toDataURL("image/png");
+            //         // a.click();
+            //         // $(newWindow.document.body).append('<a download="graph.png" href="' + canvas.toDataURL() + '"></a>');
+            //         // newWindow.getElementsByTagName('a')[0].appendChild(canvas);
+            //         $('.tmp-graph-container').remove();
+            //     };
+            // }
 
-            img.src = 'data:image/svg+xml;base64,' + jQuery.base64.encode(svgStr);
-            console.log(img.src);
-            // img.src = 'data:image/svg+xml;base64,' + window.btoa(svgStr);
-            // img.src = 'data:image/svg+xml;base64,' + svgStr;
+            newWindow.document.write(svgStr);
 
-            // You could also use the actual string without base64 encoding it:
-            //img.src = "data:image/svg+xml;utf8," + svgStr;
-
-            /*var svg = document.querySelector('svg');
-             var serializer = new XMLSerializer();
-             var svgString = serializer.serializeToString(svg);
-             var canvas = document.getElementById("test");
-             canvg(canvas, svgString);*/
-
-            img.onload = function () {
-
-                console.log('a');
-                var canvas = newWindow.document.createElement("canvas");
-                console.log('b');
-                newWindow.document.body.appendChild(canvas);
-                console.log('c');
-                canvas.width = w;
-                canvas.height = h;
-                canvas.getContext('2d').drawImage(img, 0, 0, w, h);
-                console.log('d');
-                // newWindow.document.write("<img src='" + img.src + "'/>");
-                // console.error(canvas.toDataURL());
-                // var a = newWindow.document.createElement("a");
-                // a.download = "graph.png";
-                // a.href = canvas.toDataURL("image/png");
-                // a.click();
-                $('.tmp-graph-container').remove();
-            };
-
+            $('.tmp-graph-container').remove();
 
             // }();
             // return w;
@@ -916,8 +967,8 @@ var GraphModule = (function () {
                         setGraphOverall();
                     }
 
-                    svg.on('click', function(){
-                       openWithNewWindow();
+                    svg.on('click', function () {
+                        openWithNewWindow();
                     });
                 }
             },
