@@ -41,6 +41,7 @@ public class SocketComm
 	private ArrayList<String> from = new ArrayList<String>();
 	private String[] statTime = null;
 	private int[] stat = null;
+	private String group = "";
 
 	long time = System.currentTimeMillis();
 
@@ -90,7 +91,8 @@ public class SocketComm
 
 	public int getKeyCount() { return keyCount; }
 	public int getProPercent() { return proPercent; }
-	public int getCount() { return viewCount;	}
+	public int getCount() { return viewCount; }
+	public String getGroup() { return group; }
 
 	public List<BookInfo> getR()
 	{
@@ -115,7 +117,7 @@ public class SocketComm
 			r[i][1] = num + "";
 			r[i][2] = id + "_" + i;
 			resultList.add(new RelAuthorInfo(r[i]));
-			System.out.println(r[i][0] + " :33: " + r[i][2]);
+			//System.out.println(r[i][0] + " :33: " + r[i][2]);
 		}
 
 		System.out.println("\t :444: " + resultList.size() + " : " + (System.currentTimeMillis()-time));
@@ -287,9 +289,9 @@ public class SocketComm
 			s[3] = getPeriod("-");
 			s[4] = "MSG";
 		}
-		else 		s[3] = getPeriod(s[3]);
+		else s[3] = getPeriod(s[3]);
 
-		msg = s[0] + ">" + s[1] + ">" + s[2] + ">" + s[3] + ">" + s[4];
+		msg = s[0] + ">" + s[1] + ">" + s[2] + ">" + s[3] + ">" + s[4] + ">" + s[5] + ">" + s[6];
 		System.out.println("msg = " + msg);
 
 		dos.writeUTF(msg);
@@ -488,6 +490,19 @@ public class SocketComm
 		System.out.println("\treqGetNotice : good : " + good);
 	}
 
+	public void reqGroup() throws IOException
+	{
+		System.out.println("reqGroup");
+		String[] s = msg.split(">");
+
+		//System.out.println("s[0] = " + s[0]);
+		//System.out.println("s[1] = " + s[1]);
+
+		group = dis.readUTF();
+		if(!group.equals("")) good = 1;
+		System.out.println("\treqGroup : good : " + good + " : " + group);
+	}
+
 
 	public void runStart()
 	{
@@ -592,6 +607,11 @@ public class SocketComm
 				dos.writeBoolean(false);
 				dos.writeUTF("NOTICE");
 				reqNotice();
+			}
+			else  if (sel == 99) {			// GET GROUP
+				dos.writeBoolean(false);
+				dos.writeUTF("GROUP");
+				reqGroup();
 			}
 
 			if (good >= 0)

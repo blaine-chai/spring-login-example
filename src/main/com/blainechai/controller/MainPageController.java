@@ -320,7 +320,7 @@ public class MainPageController {
         String msg = request.getParameter("msg");
         String data = request.getParameter("data");
 
-        System.out.println("\tsearchRelAuthorByAuthor : userID=" + userId + "@" + id + " : sel=" + sel
+        System.out.println("\t searchRelAuthorByAuthor : userID=" + userId + "@" + id + " : sel=" + sel
                 + " : page=" + p + " : author=" + author + " : period=" + period + " : msg=" + msg);
 
         int selInt = Integer.parseInt(sel);
@@ -331,11 +331,21 @@ public class MainPageController {
         SocketComm sc = null;
         if (selInt < 5) {
             String[] s = author.split(">");
-            String strQuery = "indexB^" + s[0] + " & indexB^" + period + ">완전일치>" + s[1] + ">" + s[2] + ">" + s[3];
+            String strQuery = "indexB^" + s[0] + " & indexB^" + period + ">완전일치>" + s[1] + ">" + s[2] + ">" + groupToIdMap.get(s[3]);
             sc = new SocketComm(userId + "@" + id, ip, port, selInt, pageInt, strQuery);
         } else if (selInt == 16) {
             String[] s = msg.split(">");
             sc = new SocketComm(userId + "@" + id, ip, port, selInt, pageInt, "indexB^" + s[0] + ">" + groupToIdMap.get(s[1]));
+        } else if (selInt == 9) {
+            String[] s = author.split(">");
+            //System.out.println(s[3] + " :ZZZZZ: " + groupToIdMap.get(s[3]));
+            String strQuery = s[0] + ">" + s[1] + ">" + s[2] + ">" + groupToIdMap.get(s[3]);
+            sc = new SocketComm(userId + "@" + id, ip, port, selInt, pageInt, strQuery);
+        } else if (selInt == 8) {
+            String[] s = author.split(">");
+            //System.out.println(s.length + " :ZZZZZ: " + author);
+            String strQuery = s[0] + ">" + s[1] + ">" + s[2] + ">" + s[3] + ">" + s[4] + ">" + s[5] + ">" + groupToIdMap.get(s[5]);
+            sc = new SocketComm(userId + "@" + id, ip, port, selInt, pageInt, strQuery);
         } else {
             sc = new SocketComm(userId + "@" + id, ip, port, selInt, pageInt, author);
         }
@@ -990,7 +1000,7 @@ public class MainPageController {
         String send = "";
 
         SocketComm sc = null;
-        //boolean isGroup = false;
+        boolean isGroup = true;
         if (selInt < 100) {
             if (selInt <= 1) {
                 System.out.println("\tAAAA : msg = " + msg);
@@ -998,72 +1008,72 @@ public class MainPageController {
                 System.out.println("\tAAAA : msg = " + msg);
 
                 String[] s = msg.split(">");
-                msg = s[0] + ">" + s[1] + ">" + s[2] + ">" + s[3] + ">" + groupInAll(sessionId, s[4]);
-
-                System.out.println("\tAAAA : msg = " + msg);
-                sc = new SocketComm(userId + "@" + id, ip, port, selInt, pageInt, msg);
-            } else if ((selInt == 6) || (selInt == 8) || (selInt == 13)) {
+                String groupAfter = groupInAll(sessionId, s[4]);
+                if(groupAfter.equals("")) isGroup = false;
+                System.out.println("\tAAAA : msg = " + msg + " :" + groupAfter + ": " + isGroup);
+                if(isGroup) {
+	                msg = s[0] + ">" + s[1] + ">" + s[2] + ">" + s[3] + ">" + groupAfter;
+	                sc = new SocketComm(userId + "@" + id, ip, port, selInt, pageInt, msg);
+                }
+            } else if (selInt == 8) {
                 System.out.println("\tBBBB : msg = " + msg);
+                String[] s = msg.split(">");
+                msg = s[0] + ">" + s[1] + ">" + s[2] + ">" + s[3] + ">"  + s[4] + ">" + s[5] + ">" + groupInAll(sessionId, s[5]);
+                System.out.println("\tBBBB : msg = " + msg);
+                sc = new SocketComm(userId + "@" + id, ip, port, selInt, pageInt, msg);
+            } else if (selInt == 13) {
+                //String[] s = msg.split(">");
+                //msg = s[0] + ">" + groupInAll(sessionId, s[1]);
+                //System.out.println("\tBBBB : msg = " + msg);
                 sc = new SocketComm(userId + "@" + id, ip, port, selInt, pageInt, msg);
             } else
                 sc = new SocketComm(userId + "@" + id, ip, port, selInt, pageInt);
 
-            sc.runStart();
-            long time = System.currentTimeMillis();
-            //int progress = 29;
+            if(isGroup) {
+	            sc.runStart();
+	            long time = System.currentTimeMillis();
+	            //int progress = 29;
 
-            if (sc.beGetGood() >= 0) {
-                if (selInt <= 1) {
-                    send += "OK";                    // query
-                } else if ((selInt == 2) || (selInt == 12)) {
-                    send += msg;
-                    bookInfoList = sc.getR();
-// 수정
-                    fillNicknamesOfBookList(bookInfoList);
-
-//                    for (BookInfo bookInfo : bookInfoList) {
-//                        List<NicknameOption> nicknames = nicknameRepository.findByAuthor(bookInfo.getGroupName() + "_" + bookInfo.getAuthor());
-//                        //find in nickname table and if nickname exist, add to BookInfo
-//                        if (nicknames.size() > 0) {
-//                            bookInfo.setAuthNickname(nicknames.get(0).getNickname());
-//                        }
-//                    }
-//                    for (BookInfo bookInfo : bookInfoList) {
-//                        List<NicknameOption> nicknames = nicknameRepository.findByAuthor(bookInfo.getGroupName() + "_" + bookInfo.getReferencedAuthor());
-//                        //find in nickname table and if nickname exist, add to BookInfo
-//                        if (nicknames.size() > 0) {
-//                            bookInfo.setRefNickname(nicknames.get(0).getNickname());
-//                        }
-//                    }
-                } else if (selInt == 3) send += sc.getKetSet();    // 연관문자
-                else if (selInt == 4) {
-                    int progressPer = sc.getProPercent();
-                    int cntTmp = sc.getCount();    // 카운트
-                    if ((cntTmp < 50) && (progressPer < 100)) send = "NotOK";
-                    else {
-                        if (progressPer < 100) send = cntTmp + "!@#$" + progressPer + "!@#$OK";
-                        else send = cntTmp + "!@#$" + progressPer + "!@#$NOT";
-                    }
-                } else if (selInt == 14) {
-                    int progressPer = sc.getProPercent();
-                    int cntTmp = sc.getCount();    // 카운트
-                    if (progressPer < 100) send = "NotOK";
-                    else
-                        send = cntTmp + "!@#$" + progressPer;
-                } else if (selInt == 6) {
-                    send += "OK";
-                } else send += "EXPORT";        // R
-            } else if (sc.beGetGood() == -2) {
-                send = "NoData";
-            } else {
-                send = "NotOK";
+	            if (sc.beGetGood() >= 0) {
+	                if (selInt <= 1) {
+	                	send += "OK";                    // query
+	                } else if ((selInt == 2) || (selInt == 12)) {
+	                    send += msg;
+	                    bookInfoList = sc.getR();
+	// 수정
+	                    fillNicknamesOfBookList(bookInfoList);
+	                }
+	                else if (selInt == 3) send += sc.getKetSet();    // 연관문자
+	                else if (selInt == 4) {
+	                    int progressPer = sc.getProPercent();
+	                    int cntTmp = sc.getCount();    // 카운트
+	                    if ((cntTmp < 50) && (progressPer < 100)) send = "NotOK";
+	                    else {
+	                        if (progressPer < 100) send = cntTmp + "!@#$" + progressPer + "!@#$OK";
+	                        else send = cntTmp + "!@#$" + progressPer + "!@#$NOT";
+	                    }
+	                } else if (selInt == 14) {
+	                    int progressPer = sc.getProPercent();
+	                    int cntTmp = sc.getCount();    // 카운트
+	                    if (progressPer < 100) send = "NotOK";
+	                    else
+	                        send = cntTmp + "!@#$" + progressPer;
+	                } else if (selInt == 6) {
+	                    send += "OK";
+	                } else send += "EXPORT";        // R
+	            } else if (sc.beGetGood() == -2) {
+	                send = "NoData";
+	            } else {
+	                send = "NotOK";
+	            }
             }
+        	else 	send += "NotGroup";
         } else {
             send = "OK";
         }
 
         //System.out.println(sc.beGetGood() + " :: " + send);
-        System.out.println("333 : " + id + " : " + job + " : " + jobOrder + " : " + sel + " : " + p);
+        System.out.println("333 : " + id + " : " + job + " : " + jobOrder + " : " + sel + " : " + p + " : " + send);
 
         SendInfo si = new SendInfo(id, job, jobOrder, sel, p, send, gson.toJson(bookInfoList));
         List<SendInfo> bookInfoString = new ArrayList<SendInfo>();
@@ -1247,12 +1257,15 @@ public class MainPageController {
                 CommonBookmark commonBookmark = commonBookmarks.get(0);
                 String msg = wordParse(searchWordParse(commonBookmark.getAdminBookmark().getWord()));
                 String[] s = msg.split(">");
-                msg = s[0] + ">" + s[1] + ">" + groupInAll(sessionId, s[2]);
+                int result = 0;
+                String group = groupInAll(sessionId, s[2]);
+                if(!group.equals("")) {
+	                msg = s[0] + ">" + s[1] + ">" + groupInAll(sessionId, s[2]);
 
-                SocketComm sc = new SocketComm(userId + "@" + "A_" + System.currentTimeMillis(), ip, port, 18, 0, msg);
-                sc.runStart();
-                int result = sc.beGetGood();
-
+	                SocketComm sc = new SocketComm(userId + "@" + "A_" + System.currentTimeMillis(), ip, port, 18, 0, msg);
+	                sc.runStart();
+	                result = sc.beGetGood();
+                }
                 //System.out.println("ALRAM96!!common!!!! msg : " + result);
                 commonBookmark.setCount(result);
                 commonBookmarkRepository.save(commonBookmark);
@@ -1282,13 +1295,16 @@ public class MainPageController {
 
                     String msg = wordParse(searchWordParse(commonBookmarks.get(i).getAdminBookmark().getWord()));
                     String[] s = msg.split(">");
-                    msg = s[0] + ">" + s[1] + ">" + groupInAll(sessionId, s[2]);
+                    int result = 0;
+                    String group = groupInAll(sessionId, s[2]);
+                    if(!group.equals("")) {
+                        msg = s[0] + ">" + s[1] + ">" + groupInAll(sessionId, s[2]);
 
-                    sc = new SocketComm(userId + "@" + "A_" + System.currentTimeMillis(), ip, port, 18, 0, msg);
-                    sc.runStart();
-                    int result = sc.beGetGood();
-                    System.out.println("common-bookmark/get :: AAAAA : " + i + " : " + msg + "  => " + result + "  => " + commonBookmarks.get(i).getCount());
-
+                        sc = new SocketComm(userId + "@" + "A_" + System.currentTimeMillis(), ip, port, 18, 0, msg);
+                        sc.runStart();
+                        result = sc.beGetGood();
+                        System.out.println("common-bookmark/get :: AAAAA : " + i + " : " + msg + "  => " + result + "  => " + commonBookmarks.get(i).getCount());
+                    }
 
                     if (result > commonBookmarks.get(i).getCount()) {
                         historyApis.add(new HistoryApi(commonBookmarks.get(i), true)); //date가 update된 경우
@@ -1316,10 +1332,11 @@ public class MainPageController {
 
         msg = wordParse(searchWordParse(word));
         String[] s = msg.split(">");
-        msg = s[0] + ">" + s[1] + ">" + groupInAll(sessionId, s[2]);
-        System.out.println("userBookmarkAdd : id = " + id + " : msg = " + msg);
+        String group = groupInAll(sessionId, s[2]);
+        msg = s[0] + ">" + s[1] + ">" + group;
+        System.out.println("adminBookmarkAdd : id = " + id + " : msg = " + msg);
 
-        if (sessionRepository.findByJSessionId(sessionId).size() > 0) {
+        if ((sessionRepository.findByJSessionId(sessionId).size() > 0)&& (!group.equals(""))) {
             adminId = sessionRepository.findByJSessionId(sessionId).get(0).getUserId();
             List<UserAccount> adminAccounts = userAccountRepository.findByUserId(adminId);
             if (adminAccounts.size() > 0) {
@@ -1409,12 +1426,16 @@ public class MainPageController {
 
                 String msg = wordParse(searchWordParse(userBookmark.getWord()));
                 String[] s = msg.split(">");
-                msg = s[0] + ">" + s[1] + ">" + groupInAll(sessionId, s[2]);
+                int result = 0;
+                String group = groupInAll(sessionId, s[2]);
+                if(!group.equals("")) {
+                    msg = s[0] + ">" + s[1] + ">" + groupInAll(sessionId, s[2]);
 
-                SocketComm sc = new SocketComm(userId + "@" + "A_" + System.currentTimeMillis(), ip, port, 18, 0, msg);
-                sc.runStart();
-                int result = sc.beGetGood();
-                System.out.println("ALRAM97!!user!!!! msg : " + result);
+                    SocketComm sc = new SocketComm(userId + "@" + "A_" + System.currentTimeMillis(), ip, port, 18, 0, msg);
+                    sc.runStart();
+                    result = sc.beGetGood();
+                    System.out.println("ALRAM97!!user!!!! msg : " + result);
+                }
 
                 userBookmark.setCount(result);
                 userBookmarkRepository.save(userBookmark);
@@ -1442,12 +1463,17 @@ public class MainPageController {
 
                     String msg = wordParse(searchWordParse(userBookmarks.get(i).getWord()));
                     String[] s = msg.split(">");
-                    msg = s[0] + ">" + s[1] + ">" + groupInAll(sessionId, s[2]);
+                    int result = 0;
+                    String group = groupInAll(sessionId, s[2]);
+                    if(!group.equals("")) {
+                        msg = s[0] + ">" + s[1] + ">" + groupInAll(sessionId, s[2]);
 
-                    sc = new SocketComm(userId + "@" + "A_" + System.currentTimeMillis(), ip, port, 18, 0, msg);
-                    sc.runStart();
-                    int result = sc.beGetGood();
-                    System.out.println("user-bookmark/get :: AAAAA : " + i + " : " + msg + " => " + result + "  => " + userBookmarks.get(i).getCount());
+                        sc = new SocketComm(userId + "@" + "A_" + System.currentTimeMillis(), ip, port, 18, 0, msg);
+                        sc.runStart();
+                        result = sc.beGetGood();
+                        System.out.println("user-bookmark/get :: AAAAA : " + i + " : " + msg + " => " + result + "  => " + userBookmarks.get(i).getCount());
+
+                    }
 
                     if (result > userBookmarks.get(i).getCount()) {
                         historyApis.add(new HistoryApi(userBookmarks.get(i), true)); //데이터가 업데이트 된 경우
@@ -1749,6 +1775,30 @@ public class MainPageController {
 
         List<UserGroup> userGroups = userGroupRepository.findByUserAccount_UserId(userId);
 
+    	boolean isOK = false;
+        for (int j = 0; j < userGroups.size(); j++) {
+        	///////////////	전부인 경우에도 허용된 그룹만 허용할 경우 조정 필요
+            if (userGroups.get(j).getGroupName().getGroupName().equals(Constant.GROUP_NAME_ALL)) {
+            	isOK = true;
+            	break;
+            }
+            //////////////
+            if (userGroups.get(j).getGroupName().getGroupName().equals(group)) {
+            	isOK = true;
+            	break;
+            }
+        }
+    	if(!isOK) return "";
+
+        Map<String, String> groupToIdMap = getGroupMap();
+
+       if (group.equals(Constant.GROUP_NAME_ALL)) {
+            return getAllGroup();
+        } else {
+        	return groupToIdMap.get(group);
+        }
+
+        /*
         Map<String, String> groupToIdMap = getGroupMap();
 
         if (group.equals(Constant.GROUP_NAME_ALL)) {
@@ -1762,15 +1812,16 @@ public class MainPageController {
                     } else str += " " + groupToIdMap.get(userGroups.get(j).getGroupName().getGroupName());
                 }
             }
-//            group = str;
             return str;
         } else {
-            return groupToIdMap.get(group);
+        	return groupToIdMap.get(group);
         }
+        */
     }
 
     private List<BookInfo> fillNicknamesOfBookList(List<BookInfo> bookInfoList) {
         List<NicknameOption> nicknames = nicknameRepository.findAll();
+        Map<String, String> groupToIdMap = getGroupIdMap();
 
         for (BookInfo bookInfo : bookInfoList) {
             String aName = bookInfo.getAuthor();
@@ -1791,6 +1842,8 @@ public class MainPageController {
             }
 
             bookInfo.setPriority(aPri + "/" + rPri);
+
+            bookInfo.setGroupName(groupToIdMap.get(bookInfo.getGroupName()));
         }
 
         return bookInfoList;
@@ -1816,10 +1869,25 @@ public class MainPageController {
         return groupMap;
     }
 
+    private String getAllGroup() {
+        List<CommonGroupName> groupNames = groupNameRepository.findAll();
+        String str = "";
+        boolean b = true;
+        for (CommonGroupName groupName : groupNames) {
+        	if(groupName.getGroupId().equals(Constant.GROUP_NAME_ALL)) continue;
+            if (b) {
+            	str = groupName.getGroupId();
+            	b = false;
+            }
+            else
+            	str += " " + groupName.getGroupId();
+        }
+        return str;
+    }
+
 //    private final class SEARCH_PERIOD {
 //        final static int daily = 0, weekly = 1, monthly = 2, yearly = 3;
 //    }
-
 
     private void refreshGroupList(String filePath) {
 //        Gson gson = new Gson();

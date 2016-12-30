@@ -524,7 +524,7 @@
 //        })
 
         tmpHtml.find('.btn-export').click(function (event) {
-            exportTableToCSV.apply(this, [$(tmpHtml.find('table')), 'export.csv']);
+            exportTableToCSVInStatistics.apply(this, [$(tmpHtml.find('table')), 'export.csv']);
         });
 
 //        $(".btn-export").on('click', function (event) {
@@ -580,21 +580,21 @@
         $("input:radio[name='groups']").eq(0).prop("checked", true);
         $("input:radio[name='groups']:radio[value='전부']").prop("checked", true);
 
-        $('#total-book-graph-container').click(function () {
-            if ($(this).find('svg').size() > 0) {
-                totalGraph.openWithNewWindow();
-            }
-        });
-        $('#total-author-graph-container').click(function () {
-            if ($(this).find('svg').size() > 0) {
-                authorTotalGraph.openWithNewWindow();
-            }
-        });
-        $('#author-graph-container').click(function () {
-            if ($(this).find('svg').size() > 0) {
-                authorGraph.openWithNewWindow();
-            }
-        });
+//        $('#total-book-graph-container>svg').click(function () {
+//            if ($(this).find('svg').size() > 0) {
+//                totalGraph.openWithNewWindow();
+//            }
+//        });
+//        $('#total-author-graph-container>svg').click(function () {
+//            if ($(this).find('svg').size() > 0) {
+//                authorTotalGraph.openWithNewWindow();
+//            }
+//        });
+//        $('#author-graph-container>svg').click(function () {
+//            if ($(this).find('svg').size() > 0) {
+//                authorGraph.openWithNewWindow();
+//            }
+//        });
 
         <%--/*--%>
         <%--<div class="dropdown-menu panel panel-default checkbox" style="position:absolute;width: 300px;min-height: 50px;background: rgba(255, 255, 255, 0.95);z-index: 10;left: -250px;top: 25px;overflow-y:auto;text-align: left;">--%>
@@ -936,9 +936,9 @@
         if (category == "내용") SearchWord += "indexA^" + input;
         else if (category == "저자") SearchWord += "indexB^" + input;
         else if (category == "순위") {
-        	if((input >= '1') && (input <= '9')) SearchWord += "priority^" + input;
+        	if((input >= 1) && (input <= 8)) SearchWord += "priority^" + input;
         	else {
-        		alert("우선순위의 범위는 1~9입니다.");
+        		alert("우선순위의 범위는 1~8입니다.");
         		isOK = false;
         	}
         }
@@ -964,7 +964,12 @@
         }
 
         SearchWord += ">" + typeInfo;
-        SearchWord += ">" + $('#datepicker1').val() + " 00:00:00" + "-" + $('#datepicker2').val() + " 23:59:59";
+		var from = $('#datepicker1').val();
+		var to = $('#datepicker2').val();
+		if ($('#datepicker1').val() != '') from += " 00:00:00";
+		if ($('#datepicker2').val() != '') to += " 23:59:59";
+        SearchWord += ">" + from + "-" + to;
+
         if (categoryEls.eq(5).text() == "일별")
             SearchWord += ">" + categoryEls.eq(4).text() + "_" + "daily";
         else
@@ -1060,7 +1065,7 @@
             text = text.replace(/"/g, '""');
             return '"' + text + '"';
         };
-
+console.log(clean_text);
         $(this).each(function () {
             var table = $(this);
             var caption = $(this).find('caption').text();
@@ -1102,9 +1107,7 @@
             console.error($('body').append(download_link));
             download_link.find('span').click();
             console.error(download_link.click());
-
-
-        });
+		});
 
     };
 

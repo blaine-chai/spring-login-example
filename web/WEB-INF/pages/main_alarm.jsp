@@ -203,10 +203,11 @@
                 type: 'post',
                 data: {},
                 success: function (responseData) {
-                    //console.log(responseData);
+                    console.log(responseData);
                     var result = JSON.parse(responseData);
                     bookmarkModule.removeTableContent();
                     bookmarkModule.setData(result);
+                    console.log("AAAAAAAAAAAAAA" + bookmarkModule.getData().length);
                     if (bookmarkModule.getData().length > 0) {
                         $.each(bookmarkModule.getData(), function (i, d) {
                             var tmp = $('<tr data-index="' + i + '">' +
@@ -279,7 +280,8 @@
                     } else {
                         var tmp = $('<tr style="height: 100%;"><td style="border: 0;">등록된 북마크가 없습니다.</td></tr>');
                         bookmarkModule.getContainer().find('tbody').append(tmp);
-                    }
+                        console.log("AAAAAAAAAAAAAA" + bookmarkModule.getContainer().find('tbody').html());
+                   }
                 }
             });
         });
@@ -301,13 +303,19 @@
         userBookmarkModule.init();
         userBookmarkModule.generateTBody();
         setInterval(refreshUserBookmark, 60000);
+        console.log("AAAAAAAAAAAAAA");
 
         adminBookmarkModule.setTitle('Admin Bookmark Alarm');
-        adminBookmarkModule.setContainer($('#alarm-admin-bookmark'));
+        console.log("BBBBBBBBBBB");
+       adminBookmarkModule.setContainer($('#alarm-admin-bookmark'));
+       console.log("CCCCCCCCCCCCCC");
         adminBookmarkModule.setTBodyGenerator(tbodyHandlerGenerator('admin-bookmark', adminBookmarkModule));
-        adminBookmarkModule.init();
-        adminBookmarkModule.generateTBody();
-        setInterval(refreshAdminBookmark, 60000);
+        console.log("DDDDDDDDDDD");
+     adminBookmarkModule.init();
+     console.log("EEEEEEEE");
+       adminBookmarkModule.generateTBody();
+       console.log("FFFFFFFFFFFFFFF");
+     setInterval(refreshAdminBookmark, 60000);
 
         $(window).resize(function () {
             $('#content').height($(window).height() - 197);
@@ -582,7 +590,7 @@
         str += ">" + tdata.typeInfo;
 //        str += ">" + tdata.fromDate + "-" + tdata.toDate;
 //        str += ">" + tdata.dateOption;
-        str += ">그룹 : " + tdata.groups;
+        str += ">" + tdata.groups;
 
         return str;
     }
@@ -692,8 +700,10 @@
              else
              callAjaxLoop("author"+authorNUM, 8, row, 8, 8, tableData[row].eventNo+">f", "");
              */
-            callAjaxLoop("author" + authorNUM, 8, row, 8, 8, tableData[row].eventNo + ">" + "indexB^" + tableData[row].groupName + "_" + tableData[row].author + " & "
-                    + "indexB^" + tableData[row].groupName + "_" + tableData[row].referencedAuthor + ">완전일치>" + lastQuery.fromDate + "-" + lastQuery.toDate + '>' + lastQuery.dateOption, "");
+			callAjaxLoop("Aauthor" + authorNUM, 8, row, 8, 8, tableData[row].eventNo + ">" + "indexB^" + tableData[row].author + " & "
+                     + "indexB^" + tableData[row].referencedAuthor + ">완전일치>" + lastQuery.fromDate + "-" + lastQuery.toDate + '>' + lastQuery.dateOption + ">" + tableData[row].groupName, "");
+			//callAjaxLoop("author" + authorNUM, 8, row, 8, 8, tableData[row].eventNo + ">" + "indexB^" + tableData[row].groupName + "_" + tableData[row].author + " & "
+            //        + "indexB^" + tableData[row].groupName + "_" + tableData[row].referencedAuthor + ">완전일치>" + lastQuery.fromDate + "-" + lastQuery.toDate + '>' + lastQuery.dateOption, "");
         });
     }
 
@@ -974,14 +984,14 @@
             else if (tdata.contents == "NoData") {
                 alert("다시 한번 검색해 주세요. 동일한 결과가 반복될 경우에는 데이터베이스에 저장된 자료가 없을 수 있습니다!!!");
             }
+            else if (tdata.contents == "NotGroup") {
+                alert("허용된 사용자 그룹이 아닙니다.");
+            }
             else {
                 if (tdata.sel == "0") {
-                	if(tdata.contents != "NotGroup") {
 	                    setTime = setTimeout(function () {
 	                        callAjaxLoop(tdata.id, tdata.job, 1, 4, 0, 0, "");
 	                    }, 100);
-                	}
-                	else alert("허용된 사용자 그룹이 아닙니다.");
                 }
                 else if (tdata.sel == "1") {
                     setTime = setTimeout(function () {
@@ -1205,7 +1215,7 @@
                 console.log(msg);
 
                 //if ($('#book-table tbody').find('tr').eq(row).find('td').eq(col).find('span').hasClass( "glyphicon-ok"))
-                callAjaxLoop("author" + authorNUM, row, 1, 1, col,msg, "");
+                callAjaxLoop("Aauthor" + authorNUM, row, 1, 1, col,msg, "");
                 //else
                 //	callAjaxLoop("author"+authorNUM, 8, row, 1, 0, m, tableData[row].eventNo);
 

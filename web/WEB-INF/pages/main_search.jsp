@@ -188,8 +188,7 @@
                         <label class="btn btn-default btn-sm expand-btn btn-primary"
                                style="width: 29px; margin:0;">+</label>
                         <label class="btn btn-default btn-sm" style="width:calc(100% - 29px); margin:0;"
-                               onclick="$(this).parent().find('.expand-btn').click();return false;">Admin
-                            History</label>
+                               onclick="$(this).parent().find('.expand-btn').click();return false;">Admin History</label>
                         <div id="admin-history" class="panel history"
                              style="overflow: auto; max-height:300px; margin-left: 2px; margin-right: 2px; display: none;">
                             <table style="font-size:11px;max-height: 300px; overflow: auto;word-break: break-all;"
@@ -627,7 +626,7 @@
                 console.log(msg);
 
                 //if ($('#book-table tbody').find('tr').eq(row).find('td').eq(col).find('span').hasClass( "glyphicon-ok"))
-                callAjaxLoop("author" + authorNUM, row, 1, 1, col, msg, "");
+                callAjaxLoop("Bauthor" + authorNUM, row, 1, 1, col, msg, "");
                 //else
                 //	callAjaxLoop("author"+authorNUM, 8, row, 1, 0, m, tableData[row].eventNo);
 
@@ -743,7 +742,10 @@
             else if (tdata.contents == "NoData") {
                 alert("다시 한번 검색해 주세요. 동일한 결과가 반복될 경우에는 데이터베이스에 저장된 자료가 없을 수 있습니다!!!");
             }
-            else {
+            else if (tdata.contents == "NotGroup") {
+                alert("허용된 사용자 그룹이 아닙니다.");
+            }
+           else {
                 if (tdata.sel == "0") {
                     setTime = setTimeout(function () {
                         callAjaxLoop(tdata.id, tdata.job, 1, 4, 0, 0, "");
@@ -967,9 +969,9 @@
             if (obj.category == "내용") SearchWord += "indexA^" + tmp;
             else if (obj.category == "저자") SearchWord += "indexB^" + tmp;
             else if (obj.category == "순위") {
-                if ((tmp >= '1') && (tmp <= '9')) SearchWord += "priority^" + tmp;
+                if ((tmp >= 1) && (tmp <= 8)) SearchWord += "priority^" + tmp;
                 else {
-                    alert("우선순위의 범위는 1~9입니다.");
+                    alert("우선순위의 범위는 1~8입니다.");
                     isOK = false;
                 }
             }
@@ -1508,8 +1510,8 @@
              else
              callAjaxLoop("author"+authorNUM, 8, row, 8, 8, tableData[row].eventNo+">f", "");
              */
-            callAjaxLoop("author" + authorNUM, 8, row, 8, 8, tableData[row].eventNo + ">" + "indexB^" + tableData[row].groupName + "_" + tableData[row].author + " & "
-                    + "indexB^" + tableData[row].groupName + "_" + tableData[row].referencedAuthor + ">완전일치>" + lastQuery.fromDate + "-" + lastQuery.toDate + '>' + lastQuery.dateOption, "");
+            callAjaxLoop("Bauthor" + authorNUM, 8, row, 8, 8, tableData[row].eventNo + ">" + "indexB^" + tableData[row].author + " & "
+                    + "indexB^" + tableData[row].referencedAuthor + ">완전일치>" + lastQuery.fromDate + "-" + lastQuery.toDate + '>' + lastQuery.dateOption + ">" + tableData[row].groupName, "");
         });
     }
 

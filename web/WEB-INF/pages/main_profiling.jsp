@@ -335,7 +335,7 @@
                     isProfileSearch = true;
                 }
                 else
-                    callAjax("profileSearch", keyword, "", 16, 0, keyword, "");
+                    callAjax("CprofileSearch", keyword, "", 16, 0, keyword, "");
             }
         });
 
@@ -366,9 +366,14 @@
 
                 stop = false;
                 if (setTime != 0) clearTimeout(setTime);
-                var period = tmpAuthor + '>' + $('#datepicker1').val() + " 00:00:00" + "-" + $('#datepicker2').val() + " 23:59:59"
-                        + ">" + $('label[name=dateOption]').text() + ">" + $('input[name="groups"]:checked').val();
-                callAjax("profile" + idCNT, period, "", 9, 0, "", "");
+    			var from = $('#datepicker1').val();
+    			var to = $('#datepicker2').val();
+    			if ($('#datepicker1').val() != '') from += " 00:00:00";
+    			if ($('#datepicker2').val() != '') to += " 23:59:59";
+
+
+                var period = tmpAuthor + '>' + from + "-" + to + ">" + $('label[name=dateOption]').text() + ">" + $('input[name="groups"]:checked').val();
+                callAjax("Cprofile" + idCNT, period, "", 9, 0, "", "");
             }
         });
         $('#nickname-result-container').show(300);
@@ -683,9 +688,13 @@
         var classId = $(element).parent().attr('class-id');
 
         idCNT++;
-        var period = tmpAuthor + '>' + $('#datepicker1').val() + " 00:00:00" + "-" + $('#datepicker2').val() + " 23:59:59"
-                + ">" + $('label[name=dateOption]').text() + ">" + $('input[name="groups"]:checked').val();
-        callAjax("profile" + idCNT, period, classId, 9, 1, "", "");
+        var from = $('#datepicker1').val();
+        var to = $('#datepicker2').val();
+        if ($('#datepicker1').val() != '') from += " 00:00:00";
+        if ($('#datepicker2').val() != '') to += " 23:59:59";
+
+        var period = tmpAuthor + '>' + from + "-" + to + ">" + $('label[name=dateOption]').text() + ">" + $('input[name="groups"]:checked').val();
+        callAjax("Cprofile" + idCNT, period, classId, 9, 1, "", "");
     }
 
     function initPagination(current, from, to, lastPage, cssSelector) {
@@ -977,10 +986,7 @@
             var toTime = $('#datepicker2').val();
             if (toTime != "") toTime += " 23:59:59";
 
-            if ((fromTime == "") && (toTime == "")) fromTime = "";
-            else             fromTime = fromTime + "-" + toTime;
-
-            var period = fromTime + ">" + $('label[name=dateOption]').text() + ">" + $('input[name="groups"]:checked').val();
+            var period = fromTime + "-" + toTime + ">" + $('label[name=dateOption]').text() + ">" + $('input[name="groups"]:checked').val();
 
             var id = "profile" + idCNT;
 //console.log(">"+ $('input[name="groups"]:checked').val());
@@ -993,6 +999,7 @@
 
         var s = tmpadta.author.split(">");
         var author = s[0];
+        var groupName = s[3];
         var relAuthor = tmpadta.period;
         var period = s[1];
         var id = tmpadta.id;
@@ -1098,9 +1105,13 @@
              else
              callAjaxLoop("author"+authorNUM, 8, row, 8, 8, tableData[row].eventNo+">f", "");
              */
+			var from = $('#datepicker1').val();
+			var to = $('#datepicker2').val();
+			if ($('#datepicker1').val() != '') from += " 00:00:00";
+			if ($('#datepicker2').val() != '') to += " 23:59:59";
 
-            var period = $('#datepicker1').val() + " 00:00:00" + "-" + $('#datepicker2').val() + " 23:59:59" + ">" + $('label[name=dateOption]').text();
-            callAjax(id, "}}}}}}}>indexB^" + author + " & " + "indexB^" + relAuthor + ">완전일치>" + period, "", 8, 0, "", "");
+			var period = from + "-" + to + ">" + $('label[name=dateOption]').text();
+            callAjax(id, "}}}}}}}>indexB^" + author + " & " + "indexB^" + relAuthor + ">완전일치>" + period + ">" + groupName, "", 8, 0, "", "");
         });
 
     }

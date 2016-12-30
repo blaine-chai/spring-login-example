@@ -2,6 +2,7 @@ package com.blainechai.controller;
 
 import com.blainechai.constant.Constant;
 import com.blainechai.constant.UserType;
+import com.blainechai.controller.api.SocketComm;
 import com.blainechai.domain.*;
 import com.blainechai.model.BookInfo;
 import com.blainechai.model.GroupApi;
@@ -23,8 +24,10 @@ import org.springframework.web.servlet.support.RequestContextUtils;
 import javax.servlet.http.HttpServletRequest;
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
+import java.io.IOException;
 import java.util.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -910,27 +913,39 @@ public class AdminController {
 //    }
 
     @RequestMapping(value = "/group-name/refresh")
-    public ModelAndView getGroupMap(HttpServletRequest request) {
+    public ModelAndView getGroupMap(HttpServletRequest request) throws NumberFormatException, IOException {
         ModelAndView modelAndView = new ModelAndView("api");
         Gson gson = new Gson();
 
 
         System.out.println(System.getProperty("user.dir"));
-        File dir1 = new File("group.conf");
         List<CommonGroupName> commonGroupNames = new ArrayList<CommonGroupName>();
-        try {
-            System.out.println("Current dir : " + dir1.getCanonicalPath());
-            BufferedReader in = new BufferedReader(new FileReader(dir1));
-            String s;
+        //try {
+            //BufferedReader in = new BufferedReader(new FileReader(dir1));
+            //String s;
+        	//while ((s = in.readLine()) != null) {
+	    	String path = MainPageController.class.getResource("").getPath(); // 현재 클래스의 절대 경로를 가져온다.
+	        BufferedReader in = new BufferedReader(new FileReader(new File(path).getParentFile().getParentFile().getParent() + File.separator + "IPandPort.txt"));
 
-            while ((s = in.readLine()) != null) {
-                CommonGroupName commonGroupName = new CommonGroupName(s.split(" ")[0], s.split(" ")[1]);
+	        String ip = in.readLine();
+	        int port = Integer.parseInt(in.readLine());
+	        System.out.println(ip + " : " + port);
+
+	        SocketComm sc = new SocketComm("userName@group", ip, port, 99, 0);
+			sc.runStart();
+			String str = "";
+			if (sc.beGetGood() >= 0) str = sc.getGroup();
+			else 	str = "";
+
+	    	String[] ss = "AAA A`BBB B`CCC C".split("`");
+	    	for (int i=0; i < ss.length; i++) {
+                CommonGroupName commonGroupName = new CommonGroupName(ss[i].split(" ")[0], ss[i].split(" ")[1]);
                 commonGroupNames.add(commonGroupName);
             }
-            in.close();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+            //in.close();
+        //} catch (Exception e) {
+        //    e.printStackTrace();
+		//}
 
         Map<String, String> groupIdMap = getGroupIdMap();
         System.out.println(gson.toJson(commonGroupNames));
