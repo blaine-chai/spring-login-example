@@ -1033,9 +1033,9 @@
         $.each(result, function (i, tdata) {
             tmpEl.find('tbody').append('<tr>' +
                     '<td>' + tdata.publishedDate + '</td>' +
-                    '<td class="author-td author' + i + '" title="' + tdata.author + '" href="#">' + tdata.author +
+                    '<td class="author-td author' + i + '" title="' + tdata.author + '" href="#">' + (tdata.author == author ? '<span class="highlight-background">' + tdata.author + '</span>' : tdata.author) +
                     '<span>' + (tdata.authNickname != undefined ? '(' + tdata.authNickname + ')' : '') + '</span>' + '</td>' +
-                    '<td class="relation-td relation' + i + '" title="' + tdata.referencedAuthor + '" href="#">' + tdata.referencedAuthor
+                    '<td class="relation-td relation' + i + '" title="' + tdata.referencedAuthor + '" href="#">' + (tdata.referencedAuthor == author ? '<span class="highlight-background">' + tdata.referencedAuthor + '</span>' : tdata.referencedAuthor)
                     + '<span>' + (tdata.refNickname != undefined ? '(' + tdata.refNickname + ')' : '') + '</span>' + '</td>' +
                     //'<td class="author-td author' + i + '" title="' + tdata.author + '" href="#">' + tdata.author + "(" + tdata.authNickname + ")" + '</td>' +
                     //'<td class="relation-td relation' + i + '" title="' + tdata.referencedAuthor + '" href="#">' + nicNameFind(tdata.referencedAuthor) + '</td>' +

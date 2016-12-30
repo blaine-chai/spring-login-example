@@ -188,7 +188,8 @@
                         <label class="btn btn-default btn-sm expand-btn btn-primary"
                                style="width: 29px; margin:0;">+</label>
                         <label class="btn btn-default btn-sm" style="width:calc(100% - 29px); margin:0;"
-                               onclick="$(this).parent().find('.expand-btn').click();return false;">Admin History</label>
+                               onclick="$(this).parent().find('.expand-btn').click();return false;">Admin
+                            History</label>
                         <div id="admin-history" class="panel history"
                              style="overflow: auto; max-height:300px; margin-left: 2px; margin-right: 2px; display: none;">
                             <table style="font-size:11px;max-height: 300px; overflow: auto;word-break: break-all;"
@@ -745,7 +746,7 @@
             else if (tdata.contents == "NotGroup") {
                 alert("허용된 사용자 그룹이 아닙니다.");
             }
-           else {
+            else {
                 if (tdata.sel == "0") {
                     setTime = setTimeout(function () {
                         callAjaxLoop(tdata.id, tdata.job, 1, 4, 0, 0, "");
@@ -1409,6 +1410,8 @@
         var data = JSON.parse(responseData);
         authInfoJson = data;
 
+        var authorName = tableData[row].author;
+
         var tmpEl = '<div class="alert bg-white alert-dismissible fade in border-gray relative-table-wrapper" style="position: absolute; z-index: 10; width: 700px; left:' + relStartPos.left + 'px;top:' + relStartPos.top + 'px;" role="alert">' +
                 '<button type="button" class="close" onclick="$(this).parent().remove(); return false;" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span></button>' +
                 '<div class="relative-title" style="font-size: 13px;">' + tableData[row].author + ' - ' + tableData[row].referencedAuthor + '<span>  : ' + count + ' 건</span></div>' +
@@ -1438,13 +1441,13 @@
 
         $.each(data, function (i, tdata) {
             tmpEl.find('tbody').append('<tr>' +
-                    '<td>' + tdata.publishedDate + '</td>' +
-                    '<td class="author-td author' + i + '" title="' + tdata.author + '" href="#">' + tdata.author +
-                    '<span>' + (tdata.authNickname != undefined ? '(' + tdata.authNickname + ')' : '') + '</span>' + '</td>' +
-                    '<td class="relation-td relation' + i + '" title="' + tdata.referencedAuthor + '" href="#">' + tdata.referencedAuthor
-                    + '<span>' + (tdata.refNickname != undefined ? '(' + tdata.refNickname + ')' : '') + '</span>' + '</td>' +
-                    '<td style="word-break: break-all">' + tdata.contents + '</td>' +
-                    '</tr>');
+            '<td>' + tdata.publishedDate + '</td>' +
+            '<td class="author-td author' + i + '" title="' + tdata.author + '" href="#">' + (tdata.author == authorName ? '<span class="highlight-background">' + tdata.author + '</span>' : tdata.author) +
+            '<span>' + (tdata.authNickname != undefined ? '(' + tdata.authNickname + ')' : '') + '</span>' + '</td>' +
+            '<td class="relation-td relation' + i + '" title="' + tdata.referencedAuthor + '" href="#">' + (tdata.referencedAuthor == authorName ? '<span class="highlight-background">' + tdata.referencedAuthor + '</span>' : tdata.referencedAuthor)
+            + '<span>' + (tdata.refNickname != undefined ? '(' + tdata.refNickname + ')' : '') + '</span>' + '</td>' +
+            '<td style="word-break: break-all">' + tdata.contents + '</td>' +
+            '</tr>');
         });
 
         $('body').append(tmpEl);

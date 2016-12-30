@@ -43,7 +43,7 @@ function exportTableToCSV($table, filename) {
     }
 }
 
-function exportTableToCSVInStatistics($table, filename) {
+function exportTableToCSVInStatistics($table, filename, total) {
 
     // if($table.find('tbody').children().length<=0){
     // var $rows = $table.find('tr:has(td),tr:has(th)'),
@@ -71,12 +71,14 @@ function exportTableToCSVInStatistics($table, filename) {
 
             }).get().join(tmpRowDelim)
                 .split(tmpRowDelim).join(rowDelim)
-                .split(tmpColDelim).join(colDelim) + '"',
+                .split(tmpColDelim).join(colDelim);
 
-        // Data URI
-        csvData = 'data:application/csv;charset=utf-8,' + encodeURIComponent(csv);
+    // Data URI
 
-    console.log(csv);
+    csv += rowDelim+'total' + colDelim + total + '"';
+    csvData = 'data:application/csv;charset=utf-8,' + encodeURIComponent(csv);
+
+    // console.log(csv);
 
     if (window.navigator.msSaveBlob) { // IE 10+
         // alert('IE' + csv);

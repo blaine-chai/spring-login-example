@@ -90,15 +90,15 @@ public class MainPageController {
 		File fileInSamePackage = new File(path + "test.txt"); // path 폴더 내의 test.txt 를 가리킨다
 		System.out.println(new File(path).getParentFile().getParentFile().getParent()); //--> 절대 경로가 출력됨
 		*/
-//        String path = MainPageController.class.getResource("").getPath(); // 현재 클래스의 절대 경로를 가져온다.
-//        BufferedReader in = new BufferedReader(new FileReader(new File(path).getParentFile().getParentFile().getParent() + File.separator + "IPandPort.txt"));
-
-//        ip = in.readLine();
-//        port = Integer.parseInt(in.readLine());
-//        System.out.println(ip + " : " + port);
-//        in.close();
-        ip = "14.52.86.172";
-        port = 3000;
+        String path = MainPageController.class.getResource("").getPath(); // 현재 클래스의 절대 경로를 가져온다.
+        BufferedReader in = new BufferedReader(new FileReader(new File(path).getParentFile().getParentFile().getParent() + File.separator + "IPandPort.txt"));
+//
+        ip = in.readLine();
+        port = Integer.parseInt(in.readLine());
+        System.out.println(ip + " : " + port);
+        in.close();
+//        ip = "14.52.86.172";
+//        port = 3000;
     }
 
     @RequestMapping(value = {""})

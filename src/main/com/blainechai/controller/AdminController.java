@@ -921,31 +921,33 @@ public class AdminController {
         System.out.println(System.getProperty("user.dir"));
         List<CommonGroupName> commonGroupNames = new ArrayList<CommonGroupName>();
         //try {
-            //BufferedReader in = new BufferedReader(new FileReader(dir1));
-            //String s;
-        	//while ((s = in.readLine()) != null) {
-	    	String path = MainPageController.class.getResource("").getPath(); // 현재 클래스의 절대 경로를 가져온다.
-	        BufferedReader in = new BufferedReader(new FileReader(new File(path).getParentFile().getParentFile().getParent() + File.separator + "IPandPort.txt"));
+        //BufferedReader in = new BufferedReader(new FileReader(dir1));
+        //String s;
+        //while ((s = in.readLine()) != null) {
+        String path = MainPageController.class.getResource("").getPath(); // 현재 클래스의 절대 경로를 가져온다.
+        BufferedReader in = new BufferedReader(new FileReader(new File(path).getParentFile().getParentFile().getParent() + File.separator + "IPandPort.txt"));
 
-	        String ip = in.readLine();
-	        int port = Integer.parseInt(in.readLine());
-	        System.out.println(ip + " : " + port);
+        String ip = in.readLine();
+        int port = Integer.parseInt(in.readLine());
+        System.out.println(ip + " : " + port);
 
-	        SocketComm sc = new SocketComm("userName@group", ip, port, 99, 0);
-			sc.runStart();
-			String str = "";
-			if (sc.beGetGood() >= 0) str = sc.getGroup();
-			else 	str = "";
+        SocketComm sc = new SocketComm("userName@group", ip, port, 99, 0);
+        sc.runStart();
+        String str = "";
+        if (sc.beGetGood() >= 0) str = sc.getGroup();
+        else str = "";
 
-	    	String[] ss = "AAA A`BBB B`CCC C".split("`");
-	    	for (int i=0; i < ss.length; i++) {
-                CommonGroupName commonGroupName = new CommonGroupName(ss[i].split(" ")[0], ss[i].split(" ")[1]);
-                commonGroupNames.add(commonGroupName);
-            }
-            //in.close();
+        System.out.println(str);
+
+        String[] ss = str.split("`");
+        for (int i = 0; i < ss.length; i++) {
+            CommonGroupName commonGroupName = new CommonGroupName(ss[i].split(" ")[0], ss[i].split(" ")[1]);
+            commonGroupNames.add(commonGroupName);
+        }
+        //in.close();
         //} catch (Exception e) {
         //    e.printStackTrace();
-		//}
+        //}
 
         Map<String, String> groupIdMap = getGroupIdMap();
         System.out.println(gson.toJson(commonGroupNames));

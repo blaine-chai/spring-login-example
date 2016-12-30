@@ -598,6 +598,7 @@
     function setCheckR(responseData, row, count, id, page) {
         var data = JSON.parse(responseData);
         authInfoJson = data;
+        var authorName = tableData[row].author;
 
         var tmpEl = '<div class="alert bg-white alert-dismissible fade in border-gray relative-table-wrapper" style="position: absolute; z-index: 10; width: 700px; left:' + relStartPos.left + 'px;top:' + relStartPos.top + 'px;" role="alert">' +
 	        '<button type="button" class="close" onclick="$(this).parent().remove(); return false;" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span></button>' +
@@ -629,9 +630,9 @@
         $.each(data, function (i, tdata) {
             tmpEl.find('tbody').append('<tr>' +
                     '<td>' + tdata.publishedDate + '</td>' +
-                    '<td class="author-td author' + i + '" title="' + tdata.author + '" href="#">' + tdata.author +
+                    '<td class="author-td author' + i + '" title="' + tdata.author + '" href="#">' + (tdata.author == authorName ? '<span class="highlight-background">' + tdata.author + '</span>' : tdata.author) +
                     '<span>' + (tdata.authNickname != undefined ? '(' + tdata.authNickname + ')' : '') + '</span>' + '</td>' +
-                    '<td class="relation-td relation' + i + '" title="' + tdata.referencedAuthor + '" href="#">' + tdata.referencedAuthor
+                    '<td class="relation-td relation' + i + '" title="' + tdata.referencedAuthor + '" href="#">' + (tdata.referencedAuthor == authorName ? '<span class="highlight-background">' + tdata.referencedAuthor + '</span>' : tdata.referencedAuthor)
                     + '<span>' + (tdata.refNickname != undefined ? '(' + tdata.refNickname + ')' : '') + '</span>' + '</td>' +
                     '<td style="word-break: break-all">' + tdata.contents + '</td>' +
                     '</tr>');

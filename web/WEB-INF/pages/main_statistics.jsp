@@ -524,7 +524,7 @@
 //        })
 
         tmpHtml.find('.btn-export').click(function (event) {
-            exportTableToCSVInStatistics.apply(this, [$(tmpHtml.find('table')), 'export.csv']);
+            exportTableToCSVInStatistics.apply(this, [$(tmpHtml.find('table')), 'export.csv', graphModule.getTotalData()[graphModule.getTotalData().length - 1]['total'].format()]);
         });
 
 //        $(".btn-export").on('click', function (event) {
