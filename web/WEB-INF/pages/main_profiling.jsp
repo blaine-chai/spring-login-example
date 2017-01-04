@@ -33,6 +33,8 @@
     <script src="/js/jquery-ui.js"></script>
     <script src="/js/FileSaver.js"></script>
     <script src="/js/Blob.js"></script>
+    <script src="/js/springy.js"></script>
+    <script src="/js/springyui.js"></script>
 
 </head>
 <body>
@@ -205,6 +207,9 @@
                                style="width:70px;position: absolute;right: 0; ">취소</label>
                     </div>
                 </div>
+
+                <label class="btn btn-default btn-sm show-graph-btn"
+                       style="width:70%; margin-left:15%;margin-top: 10px;">그래프 보기</label>
             </div>
         </div>
 
@@ -221,6 +226,13 @@
             </div>
         </div>
     </div>
+</div>
+<div class="cover"
+     style="width: 100%;height: 100%;background:rgba(51,51,51,0.5); z-index: 10;position: absolute;top:0;padding: 20px;display: none;">
+    <div class="close-btn" style="position: absolute;cursor: pointer;font-size: 18px;right: 40px;z-index: 10;top:40px;">
+        x
+    </div>
+    <div class="profiling-graph-container" style="background: #fff;position: absolute;top: 20px;"></div>
 </div>
 <%--<script type="text/javascript" charset="UTF-8" src="/js/alarm-update.js"></script>--%>
 <script type="text/javascript" charset="UTF-8" src="/js/auto-logout.js"></script>
@@ -239,7 +251,7 @@
     relStartPos.count = 0;
     var nicNameDB;
     var isProfileSearch = true;
-
+    var dataEx;
 
     var loadingRing = $('<img class="loading-ring" src="/imgs/ajax-loader.gif" style="position: absolute;right: 50px;">');
 
@@ -253,27 +265,29 @@
             }
         });
 
-        $(window).resize(
-                function () {
-                    //            $('#content').height($(window).height());
-                    $('#search-wrapper').height(
-                            $(window).height() - 197);
-                    //            console($(document).width() + 'px');
-                    $('#menu-wrapper').height(
-                            $(window).height() - 207);
-                    //            $('#book-table').attr('data-height', $(window).height() - 194 - 200)
-                    //            $('#book-table').height($(window).height() - 194 - 200)
-                    $('#result-table-wrapper').height($(window).height() - 222);
+        $(window).resize(function () {
+            //            $('#content').height($(window).height());
+            $('#search-wrapper').height(
+                    $(window).height() - 197);
+            //            console($(document).width() + 'px');
+            $('#menu-wrapper').height(
+                    $(window).height() - 207);
+            //            $('#book-table').attr('data-height', $(window).height() - 194 - 200)
+            //            $('#book-table').height($(window).height() - 194 - 200)
+            $('#result-table-wrapper').height($(window).height() - 222);
 //                    $('#profile-result-container>div').height($('#result-table-wrapper').height());
-                    setProfileResultTableSize();
-                    var results = $('#profile-result-container>div');
-                    for (i = 0; i < results.length; i++) {
+            setProfileResultTableSize();
+            var results = $('#profile-result-container>div');
+            for (i = 0; i < results.length; i++) {
 //                console.error(results.eq(i).height() - 1);
-                        if (results.eq(i).height() > $('#result-table-wrapper').height() - 1) {
-                            results.eq(i).height($('#result-table-wrapper').height() - 1);
-                        }
-                    }
-                });
+                if (results.eq(i).height() > $('#result-table-wrapper').height() - 1) {
+                    results.eq(i).height($('#result-table-wrapper').height() - 1);
+                }
+            }
+
+            $('.profiling-graph').attr('width', ($(window).width() - 50) + 'px')
+                    .attr('height', ($(window).height() - 50) + 'px');
+        });
         $('#search-wrapper').height($(window).height() - 197);
         $('#menu-wrapper').height($(window).height() - 207);
         //        $('#book-table').height($(window).height() - 194 - 200)
@@ -366,14 +380,16 @@
 
                 stop = false;
                 if (setTime != 0) clearTimeout(setTime);
-    			var from = $('#datepicker1').val();
-    			var to = $('#datepicker2').val();
-    			if ($('#datepicker1').val() != '') from += " 00:00:00";
-    			if ($('#datepicker2').val() != '') to += " 23:59:59";
+                var from = $('#datepicker1').val();
+                var to = $('#datepicker2').val();
+                if ($('#datepicker1').val() != '') from += " 00:00:00";
+                if ($('#datepicker2').val() != '') to += " 23:59:59";
 
 
                 var period = tmpAuthor + '>' + from + "-" + to + ">" + $('label[name=dateOption]').text() + ">" + $('input[name="groups"]:checked').val();
                 callAjax("Cprofile" + idCNT, period, "", 9, 0, "", "");
+
+                $('.profiling-graph').remove();
             }
         });
         $('#nickname-result-container').show(300);
@@ -449,6 +465,8 @@
                 var author = data.author.split('>');
                 var result = JSON.parse(data.bookInfoList);
                 if (data.page == 0) {
+                    initGraph();
+                    dataEx = data;
                     ProfileResultModule.ExpandComponent().newExpandComponent({
                         data: result,
                         parentClassId: data.period,
@@ -466,6 +484,9 @@
                     exBTN.text("-");
                     $('.loading-ring').remove();
                     $('#profile-result-container').width('260');
+
+                    addNode(author[0],function(){});
+                    addEdge(author[0], JSON.parse(data.bookInfoList));
                 }
                 else {
                     ProfileResultModule.ExpandComponent().newExpandComponent({
@@ -477,6 +498,7 @@
                     $('.loading-ring').remove();
                     setProfileResultTableSize();
                     parentContainer = "";
+                    addEdge(author[0], JSON.parse(data.bookInfoList));
                 }
                 isProfileSearch = true;
             }
@@ -560,7 +582,7 @@
         $('#nickname-result-table>tbody').empty();
         var tmpEl = "";
 //        else if(from+50 == resultAuthor.size())
-        for (i = from - 1; i < next-1; i++) {
+        for (i = from - 1; i < next - 1; i++) {
             // console.log("ZZZZZZZZ" + result[i]);
             var tmp = resultAuthor[i].split(">");
             var nic = '';
@@ -1105,12 +1127,12 @@
              else
              callAjaxLoop("author"+authorNUM, 8, row, 8, 8, tableData[row].eventNo+">f", "");
              */
-			var from = $('#datepicker1').val();
-			var to = $('#datepicker2').val();
-			if ($('#datepicker1').val() != '') from += " 00:00:00";
-			if ($('#datepicker2').val() != '') to += " 23:59:59";
+            var from = $('#datepicker1').val();
+            var to = $('#datepicker2').val();
+            if ($('#datepicker1').val() != '') from += " 00:00:00";
+            if ($('#datepicker2').val() != '') to += " 23:59:59";
 
-			var period = from + "-" + to + ">" + $('label[name=dateOption]').text();
+            var period = from + "-" + to + ">" + $('label[name=dateOption]').text();
             callAjax(id, "}}}}}}}>indexB^" + author + " & " + "indexB^" + relAuthor + ">완전일치>" + period + ">" + groupName, "", 8, 0, "", "");
         });
 
@@ -1304,6 +1326,9 @@
                             tmpTr.attr('parent-class-id', opt.parentClassId);
                             tmpEl.find('tbody').append(tmpTr);
                             setRelBadgeClickHandler(tmpTr);
+                            addNode(data.relAuthor, function () {
+                                tmpTr.find('.profile-relative-author-td').click();
+                            });
                         }
                     });
                     tmpEl.find('.profile-relative-author-td').click(function (e) {
@@ -1471,6 +1496,128 @@
         return Math.floor(new Date().getTime() / 1000);
     };
 
+    var graph;
+
+    var initGraph = function () {
+        $('.profiling-graph').remove();
+        var canvas = $('<canvas class="profiling-graph" width="1000px" height="500px" style="margin-top: 20px;"></canvas>');
+        $('.profiling-graph-container').append(canvas);
+        $('.profiling-graph').attr('width', ($(window).width() - 50) + 'px')
+                .attr('height', ($(window).height() - 50) + 'px');
+        graph = new Springy.Graph();
+
+        canvas.springy({
+            graph: graph,
+            nodeSelected: function (node) {
+                console.log('Node selected: ' + JSON.stringify(node.data));
+            }
+        });
+
+    };
+    colorSet = [
+        '#3333FF',
+        '#669933',
+        '#FF3333',
+        '#33CCFF',
+        '#33FF33',
+        '#FF33CC',
+        '#CCFF33',
+        '#CC33FF',
+        '#663366',
+        '#336699',
+        '#CC33CC',
+        '#336666',
+        '#CCCC33',
+        '#330066',
+        '#993366',
+        '#666633',
+        '#006633',
+        '#33CCCC',
+        '#CC3333',
+        '#663300',
+        '#3333CC',
+        '#336666',
+        '#33CC33',
+        '#000000'];
+    var graphCount = 0;
+    var addData = function (author, bookInfoList) {
+        graph.newNode({label: author});
+
+        $.each(bookInfoList, function (i, b) {
+            graph.newNode({label: b.relAuthor});
+            graph.newEdge(author, b.relAuthor, {label: b.from, color: colorSet[graphCount % 23], weight: b.from / 20});
+        });
+        graphCount++;
+
+    };
+
+    var addNode = function (author, doubleclick) {
+        graph.newNode({
+            label: author,
+            ondoubleclick: doubleclick
+        });
+    };
+    var addEdge = function (author, bookInfoList) {
+        $.each(bookInfoList, function (i, b) {
+            graph.newEdge(author, b.relAuthor, {
+                label: b.from,
+                color: colorSet[graphCount % 23],
+                weight: b.from / 20
+            });
+        });
+        graphCount++;
+
+    };
+
+    //    var profilingGraph1 = (function () {
+    //
+    //        var graph = new Springy.Graph();
+    //
+    //        var dennis = graph.newNode({
+    //            label: 'Dennis',
+    //            ondoubleclick: function () {
+    //                console.log("Hello!");
+    //            }
+    //        });
+    //        var michael = graph.newNode({label: 'Michael'});
+    //        var jessica = graph.newNode({label: 'Jessica'});
+    //        var timothy = graph.newNode({label: 'Timothy'});
+    //        var barbara = graph.newNode({label: 'Barbara'});
+    //        var franklin = graph.newNode({label: 'Franklin'});
+    //        var monty = graph.newNode({label: 'Monty'});
+    //        var james = graph.newNode({label: 'James'});
+    //        var bianca = graph.newNode({label: 'Bianca'});
+    //
+    //        graph.newEdge(dennis, michael, {color: '#00A0B0', directional: false});
+    //        graph.newEdge(michael, dennis, {color: '#6A4A3C', directional: false});
+    //        graph.newEdge(michael, jessica, {color: '#CC333F'});
+    //        graph.newEdge(jessica, barbara, {color: '#EB6841'});
+    //        graph.newEdge(michael, timothy, {color: '#EDC951'});
+    //        graph.newEdge(franklin, monty, {color: '#7DBE3C'});
+    //        graph.newEdge(dennis, monty, {color: '#000000'});
+    //        graph.newEdge(monty, james, {color: '#00A0B0'});
+    //        graph.newEdge(barbara, timothy, {color: '#6A4A3C'});
+    //        graph.newEdge(dennis, bianca, {color: '#CC333F'});
+    //        graph.newEdge(bianca, monty, {color: '#EB6841'});
+    //
+    //        jQuery(function () {
+    //            var springy = window.springy = jQuery('.profiling-graph').springy({
+    //                graph: graph,
+    //                nodeSelected: function (node) {
+    //                    console.log('Node selected: ' + JSON.stringify(node.data));
+    //                }
+    //            });
+    //        });
+    //
+    //        return graph;
+    //    })();
+
+    $('.close-btn').click(function () {
+        $(this).parent().hide();
+    });
+    $('.show-graph-btn').click(function () {
+        $('.cover').show();
+    });
 </script>
 </body>
 </html>
