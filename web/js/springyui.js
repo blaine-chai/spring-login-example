@@ -28,7 +28,7 @@
     jQuery.fn.springy = function (params) {
         var graph = this.graph = params.graph || new Springy.Graph();
         var nodeFont = "11px Verdana, sans-serif";
-        var edgeFont = "9px Verdana, sans-serif";
+        var edgeFont = "10px Verdana, sans-serif";
         var stiffness = params.stiffness || 400.0;
         var repulsion = params.repulsion || 400.0;
         var damping = params.damping || 0.5;
@@ -280,7 +280,7 @@
 
                 // label
                 if (edge.data.label !== undefined) {
-                    text = edge.data.label
+                    text = edge.data.label;
                     ctx.save();
                     ctx.textAlign = "center";
                     ctx.textBaseline = "top";

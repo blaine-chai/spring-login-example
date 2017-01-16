@@ -753,6 +753,11 @@ public class AdminController {
         return new ModelAndView("test");
     }
 
+    @RequestMapping(value = "/canvas")
+    public ModelAndView canvasTestPage(HttpServletRequest request) {
+        return new ModelAndView("test_canvas");
+    }
+
     @RequestMapping(value = "/test/nickname/add")
     public ModelAndView addNickname(HttpServletRequest request) {
         Gson gson = new Gson();
