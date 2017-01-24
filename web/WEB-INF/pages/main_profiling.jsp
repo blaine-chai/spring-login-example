@@ -22,6 +22,7 @@
 
     <link href="/css/main-style.css" rel="stylesheet" type="text/css">
     <link href="/css/jquery.datetimepicker.css" rel="stylesheet" type="text/css">
+    <%--<link href="/css/jquery-qtip.css" rel="stylesheet" type="text/css">--%>
 
 
     <!-- Latest compiled and minified JavaScript -->
@@ -34,6 +35,12 @@
     <script src="/js/FileSaver.js"></script>
     <script src="/js/Blob.js"></script>
     <script src="/js/cytoscape.js"></script>
+    <%--<script src="/js/jquery-qtip.js"></script>--%>
+    <%--<script src="/js/cytoscape-qtip.js"></script>--%>
+    <script src="http://cdnjs.cloudflare.com/ajax/libs/qtip2/2.2.0/jquery.qtip.min.js"></script>
+    <link href="http://cdnjs.cloudflare.com/ajax/libs/qtip2/2.2.0/jquery.qtip.min.css" rel="stylesheet"
+          type="text/css"/>
+    <script src="https://cdn.rawgit.com/cytoscape/cytoscape.js-qtip/2.2.5/cytoscape-qtip.js"></script>
 
 </head>
 <body>
@@ -193,7 +200,7 @@
                     <div class="input-group input-group-sm" style=" width:100%">
                         <span class="input-group-addon" style="width: 70px">우선순위</span>
                         <span class="input-group-addon" style="width:calc(100% - 70px);"><select
-                                class="nickname-form-input nickname-form-input-priority"><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option><option>6</option><option>7</option><option>8</option><option>9</option></select></span>
+                                class="nickname-form-input nickname-form-input-priority"><option>0</option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option><option>6</option><option>7</option><option>8</option><option>9</option></select></span>
                     </div>
                     <div class="input-group input-group-sm" style="width:100%; height: 60px;">
                         <span class="input-group-addon" style="width: 70px">메모</span>
@@ -253,9 +260,12 @@
     var dataEx;
 
     var loadingRing = $('<img class="loading-ring" src="/imgs/ajax-loader.gif" style="position: absolute;right: 50px;">');
+    var loadingRing2 = $('<img class="loading-ring" src="/imgs/ajax-loader.gif" style="position: absolute;left: 8px;">');
+    var loadingRing3 = $('<img class="loading-ring" src="/imgs/ajax-loader.gif" style="position: absolute;right: 150px;">');
 
     var searchResultPager = $('#nickname-result-container .component-pager');
 
+    var isGraphMode = false;
 
     $(document).ready(function () {
         $(document).ajaxComplete(function (e, xhr, settings) {
@@ -284,17 +294,17 @@
                 }
             }
 
-            $('.profiling-graph').width($(window).width() - 50)
-                    .height($(window).height() - 50);
+            $('.profiling-graph').width($(window).width() - 45)
+                    .height($(window).height() - 45);
 
-            $('.profiling-graph>div').width($(window).width() - 50)
-                    .height($(window).height() - 50);
-            $('.profiling-graph-container').width($(window).width() - 50)
-                    .height($(window).height() - 50);
+            $('.profiling-graph>div').width($(window).width() - 45)
+                    .height($(window).height() - 45);
+            $('.profiling-graph-container').width($(window).width() - 45)
+                    .height($(window).height() - 45);
         });
 
-        $('.profiling-graph-container').width($(window).width() - 50)
-                .height($(window).height() - 50);
+        $('.profiling-graph-container').width($(window).width() - 45)
+                .height($(window).height() - 45);
         $('#search-wrapper').height($(window).height() - 197);
         $('#menu-wrapper').height($(window).height() - 207);
         //        $('#book-table').height($(window).height() - 194 - 200)
@@ -355,8 +365,13 @@
                     alert("검색어를 입력해주세요.");
                     isProfileSearch = true;
                 }
-                else
-                    callAjax("CprofileSearch", keyword, "", 16, 0, keyword, "");
+                else {
+                    if ($('#nickname-search-input').val() != "*") {
+                        $(this).append(loadingRing3);
+                        callAjax("CprofileSearch", keyword, "", 16, 0, keyword, "");
+                    } else
+                        callAjax("CprofileSearch", keyword, "", 17, 0, keyword, "");
+                }
             }
         });
 
@@ -392,10 +407,10 @@
                 if ($('#datepicker1').val() != '') from += " 00:00:00";
                 if ($('#datepicker2').val() != '') to += " 23:59:59";
 
+                isGraphMode = $('.show-graph-btn').is('.active');
 
                 var period = tmpAuthor + '>' + from + "-" + to + ">" + $('label[name=dateOption]').text() + ">" + $('input[name="groups"]:checked').val();
                 callAjax("Cprofile" + idCNT, period, "", 9, 0, "", "");
-
                 $('.profiling-graph').remove();
             }
         });
@@ -440,6 +455,9 @@
             $('.loading-ring').remove();
             isProfileSearch = true;
         }
+        else if (data.contents == "NotConnect") {
+            alert("네크워크 연결실패!!! 동일한 결과가 반복될 경우에는 서버가 실행중인지 확인이 필요합니다.");
+        }
         else {
             if (data.sel == 1) {
                 //var result = JSON.parse(data.bookInfoList);
@@ -447,10 +465,12 @@
                 //nicNameUpdate();
             }
             else if (data.sel == 2) {
+                $('.loading-ring').remove();
                 setRelBadgeShow(responseData);
                 //setTime = setTimeout(function() {callAjaxLoop(tdata.id, data.author, data.period, 4, 0, "", ""); }, 1000);
             }
             else if (data.sel == 12) {
+                $('.loading-ring').remove();
                 setRelBadgeShow2(data.bookInfoList, data.job, data.contents, data.id, data.page);
             }
 
@@ -471,43 +491,53 @@
             else if (data.sel == 10) {
                 var author = data.author.split('>');
                 var result = JSON.parse(data.bookInfoList);
-                if (data.page == 0) {
-                    initGraph();
-                    dataEx = data;
-                    addNode(author[0], function () {
-                    });
-                    ProfileResultModule.ExpandComponent().newExpandComponent({
-                        data: result,
-                        parentClassId: data.period,
-                        title: author[0]
-                        //parentContainer: $(element).parent().parent().parent().parent().parent().parent()
-                    });
-                    var exBTN = $('#profile-result-container .expand-btn');
+                if (result.length > 0) {
+                    console.log("AAAAAAAA");
+                    if (data.page == 0) {
+                        if (isGraphMode) {
+                            initGraph();
+                            dataEx = data;
+                            addNode(author[0], function () {
+                            });
+                            addGraphData(author[0], result);
+                            $('.cover').css("visibility", "visible");
+                        } else {
+                            ProfileResultModule.ExpandComponent().newExpandComponent({
+                                data: result,
+                                parentClassId: data.period,
+                                title: author[0]
+                                //parentContainer: $(element).parent().parent().parent().parent().parent().parent()
+                            });
+                            var exBTN = $('#profile-result-container .expand-btn');
 
-                    //console.log(exBTN.parent().html());
-                    exBTN.parent().parent().find('.table-expanded-container').hide(300);
-                    exBTN.parent().parent().find('.component-pager').hide(300);
-                    exBTN.parent().find('.table-expanded-container').show(300);
-                    exBTN.parent().find('.component-pager').show(300);
-                    exBTN.parent().parent().find('.expand-btn').text('+');
-                    exBTN.text("-");
-                    $('.loading-ring').remove();
-                    $('#profile-result-container').width('260');
+                            //console.log(exBTN.parent().html());
+                            exBTN.parent().parent().find('.table-expanded-container').hide(300);
+                            exBTN.parent().parent().find('.component-pager').hide(300);
+                            exBTN.parent().find('.table-expanded-container').show(300);
+                            exBTN.parent().find('.component-pager').show(300);
+                            exBTN.parent().parent().find('.expand-btn').text('+');
+                            exBTN.text("-");
+                            $('#profile-result-container').width('260');
+                        }
+                    }
+                    else {
+                        if (isGraphMode) {
+                            addGraphData(author[0], result);
+                        } else {
+                            ProfileResultModule.ExpandComponent().newExpandComponent({
+                                data: result,
+                                parentClassId: data.period,
+                                title: author[0],
+                                parentContainer: parentContainer
+                            });
+                            $('.loading-ring').remove();
+                            setProfileResultTableSize();
+                            parentContainer = "";
+                        }
+                    }
+                } else alert("검색결과가 없습니다.");
+                $('.loading-ring').remove();
 
-//                    addEdge(author[0], JSON.parse(data.bookInfoList));
-                }
-                else {
-                    ProfileResultModule.ExpandComponent().newExpandComponent({
-                        data: result,
-                        parentClassId: data.period,
-                        title: author[0],
-                        parentContainer: parentContainer
-                    });
-                    $('.loading-ring').remove();
-                    setProfileResultTableSize();
-                    parentContainer = "";
-
-                }
                 isProfileSearch = true;
             }
             else if (data.sel == 16) {
@@ -522,42 +552,32 @@
 //                var tmpEl = "";
                 var key = data.author.split(">")[0];
                 var group = data.author.split(">")[1];
-                //console.log("::" +result[0]+ "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa" + result.length);
-                var cnt = 0;
                 if (result.length != 0) {
                     setNicknameResultTable(1);
-//                    $.each(result, function (i, nicDB) {
-//                        // console.log("ZZZZZZZZ" + result[i]);
-//                        if (i >= 50) return;
-//                        var tmp = result[i].split(">");
-//                        var nic = '';
-//                        if (tmp.length > 1) nic = tmp[1];
-//                        result[i] = tmp[0];
-//                        //if (tmp.length > 1) {
-//                        //if (result[i].indexOf(key) != -1) {  //if(str1.indexOf(str2) != -1){
-//                        //console.log(result[i]);
-//                        tmpEl += '<tr>' +
-//                                '<td style="text-align: center;"><input type="radio" class="nickname-radio" name="nickname-radio"></td>' +
-//                                '<td class="nickname-search-td">' + result[i] + '</td>' +
-//                                '<td class="nickname-search-td">' + (nic != '' ? '(' + nic + ')' : '') + '</td>' +
-//                                '</tr>';
-//                        cnt++;
-//                        // }
-//                        //}
-//                    });
-//
-//                    if (cnt == 0) alert("검색결과가 없습니다.");
-//                    else {
-//                        $('#nickname-result-table>tbody').append($(tmpEl));
-//                        if (result.length > 50)
-//                            $('#nickname-result-table').parent().parent().find('.component-pager-page').text('1-50(' + result.length + ')');
-//                        else
-//                            $('#nickname-result-table').parent().parent().find('.component-pager-page').text('1-' + result.length + '(' + result.length + ')');
-//                        setAuthorResultClickHandler();
-//                    }
-
                 }
                 else alert("검색결과가 없습니다.");
+
+                $('.loading-ring').remove();
+
+                isProfileSearch = true;
+            }
+            else if (data.sel == 17) {
+                var result = JSON.parse(data.bookInfoList);
+                resultAuthor = result;
+
+//                var tmpEl = "";
+                var key = data.author.split(">")[0];
+                var group = data.author.split(">")[1];
+                //console.log("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa : " + result.length);
+                if (result.length != 0) {
+                    //console.log("AAAAA");
+                    setNicknameResultTable(1);
+                }
+                else {
+                    //console.log("BBBBB");
+                    alert("검색결과가 없습니다.");
+                }
+
                 isProfileSearch = true;
             }
         }
@@ -591,17 +611,14 @@
         var tmpEl = "";
 //        else if(from+50 == resultAuthor.size())
         for (i = from - 1; i < next - 1; i++) {
-            // console.log("ZZZZZZZZ" + result[i]);
+            //console.log("ZZZZZZZZ" + resultAuthor[i]);
             var tmp = resultAuthor[i].split(">");
             var nic = '';
             if (tmp.length > 1) nic = tmp[1];
-            resultAuthor[i] = tmp[0];
-            //if (tmp.length > 1) {
-            //if (result[i].indexOf(key) != -1) {  //if(str1.indexOf(str2) != -1){
-            //console.log(result[i]);
+
             tmpEl += '<tr>' +
                     '<td style="text-align: center;"><input type="radio" class="nickname-radio" name="nickname-radio"></td>' +
-                    '<td class="nickname-search-td">' + resultAuthor[i] + '</td>' +
+                    '<td class="nickname-search-td">' + tmp[0] + '</td>' +
                     '<td class="nickname-search-td">' + (nic != '' ? '(' + nic + ')' : '') + '</td>' +
                     '</tr>';
 //            cnt++;
@@ -775,7 +792,7 @@
                     '<div class="input-group input-group-sm" style=" width:100%">' +
                     '<span class="input-group-addon" style="width: 70px">우선순위</span>' +
                     '<span class="input-group-addon" style="width:calc(100% - 70px);">' +
-                    '<select class="nickname-form-input nickname-form-input-priority"><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option><option>6</option><option>7</option><option>8</option><option>9</option></select></span></div>' +
+                    '<select class="nickname-form-input nickname-form-input-priority"><option>0</option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option><option>6</option><option>7</option><option>8</option><option>9</option></select></span></div>' +
                     '<div class="input-group input-group-sm" style="width:100%; height: 60px;">' +
                     '<span class="input-group-addon" style="width: 70px">메모</span>' +
                     '<textarea class="form-control nickname-form-input nickname-form-input-note" style="height: 60px;resize: none;"></textarea></div>' +
@@ -920,7 +937,7 @@
                     '<div class="input-group input-group-sm" style=" width:100%">' +
                     '<span class="input-group-addon" style="width: 70px">우선순위</span>' +
                     '<span class="input-group-addon" style="width:calc(100% - 70px);">' +
-                    '<select class="nickname-form-input nickname-form-input-priority"><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option><option>6</option><option>7</option><option>8</option><option>9</option></select></span></div>' +
+                    '<select class="nickname-form-input nickname-form-input-priority"><option>0</option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option><option>6</option><option>7</option><option>8</option><option>9</option></select></span></div>' +
                     '<div class="input-group input-group-sm" style="width:100%; height: 60px;">' +
                     '<span class="input-group-addon" style="width: 70px">메모</span>' +
                     '<textarea class="form-control nickname-form-input nickname-form-input-note" style="height: 60px;resize: none;"></textarea></div>' +
@@ -1005,6 +1022,7 @@
             nicknameForm.show(300);
         });
     }
+
     function setRelBadgeClickHandler(element) {
         $(element).find('.relative-badge-td').click(function (e) {
             idCNT++;
@@ -1020,6 +1038,7 @@
 
             var id = "profile" + idCNT;
 //console.log(">"+ $('input[name="groups"]:checked').val());
+            $(element).append(loadingRing2);
             callAjax(id, author + '>' + period, relAuthor, 1, 0, "", "");
         });
     }
@@ -1061,16 +1080,19 @@
         setRelTablePos();
         console.log(result);
         $.each(result, function (i, tdata) {
-            tmpEl.find('tbody').append('<tr>' +
-                    '<td>' + tdata.publishedDate + '</td>' +
-                    '<td class="author-td author' + i + '" title="' + tdata.author + '" href="#">' + (tdata.author == author ? '<span class="highlight-background">' + tdata.author + '</span>' : tdata.author) +
-                    '<span>' + (tdata.authNickname != undefined ? '(' + tdata.authNickname + ')' : '') + '</span>' + '</td>' +
-                    '<td class="relation-td relation' + i + '" title="' + tdata.referencedAuthor + '" href="#">' + (tdata.referencedAuthor == author ? '<span class="highlight-background">' + tdata.referencedAuthor + '</span>' : tdata.referencedAuthor)
-                    + '<span>' + (tdata.refNickname != undefined ? '(' + tdata.refNickname + ')' : '') + '</span>' + '</td>' +
-                    //'<td class="author-td author' + i + '" title="' + tdata.author + '" href="#">' + tdata.author + "(" + tdata.authNickname + ")" + '</td>' +
-                    //'<td class="relation-td relation' + i + '" title="' + tdata.referencedAuthor + '" href="#">' + nicNameFind(tdata.referencedAuthor) + '</td>' +
-                    '<td style="word-break: break-all">' + tdata.contents + '</td>' +
-                    '</tr>');
+            var authorColor = "background: #d3f3d3;";
+            var relAuthorColor = "background: #f3d3f3;";
+            if (tdata.author != author) {
+                authorColor = "background: #f3d3f3;";
+                relAuthorColor = "background: #d3f3d3;";
+            }
+            var hml = '<tr>' + '<td>' + tdata.publishedDate + '</td>';
+            hml += '<td style="' + authorColor + '" class="author-td author' + i + '" title="' + tdata.author + '" href="#">' + tdata.author +
+                    '<span>' + (tdata.authNickname != undefined ? '(' + tdata.authNickname + ')' : '') + '</span>' + '</td>';
+            hml += '<td style="' + relAuthorColor + '" class="relation-td relation' + i + '" title="' + tdata.referencedAuthor + '" href="#">' + tdata.referencedAuthor
+                    + '<span>' + (tdata.refNickname != undefined ? '(' + tdata.refNickname + ')' : '') + '</span>' + '</td>';
+            hml += '<td style="word-break: break-all">' + tdata.contents + '</td>' + '</tr>';
+            tmpEl.find('tbody').append(hml);
         });
 
         $('body').append(tmpEl);
@@ -1085,16 +1107,20 @@
             var col = $(this).parent().children().index($(this));
             console.log($(this).parent().children().length);
 
+            $(this).append(loadingRing2);
             var textPage = $('.pagination-' + id).find('li').eq(col).text();
             var prePage = $('.pagination-' + id + ' .active').text();
 
-            if (textPage == prePage) return;
+            if (textPage == prePage) {
+                $('.loading-ring').remove();
+                return;
+            }
 
             if ((col > 0) && (col < ($(this).parent().children().length) - 1)) {
                 repeatCnt = 0;
                 //stop = false;
                 $(this).addClass('active').siblings().removeClass('active');
-                callAjax(id, 2, 3, 12, textPage - 1, count, "");
+                callAjax(id, 2, 3, 12, textPage - 1, count + ">" + author, "");
                 console.log(col + " :111: " + textPage);
             }
             else {
@@ -1104,22 +1130,28 @@
                     textPage = textPage - 5;
                     if (textPage < 1) textPage = 1;
 
-                    if (textPage == prePage) return;
+                    if (textPage == prePage) {
+                        $('.loading-ring').remove();
+                        return;
+                    }
                     $('.pagination-' + id).find('li').eq(1).addClass('active').siblings().removeClass('active');
                     repeatCnt = 0;
                     //stop = false;
-                    callAjax(id, 2, 3, 12, textPage - 1, count, "");
+                    callAjax(id, 2, 3, 12, textPage - 1, count + ">" + author, "");
                 }
                 else {
                     textPage = textPage + 5;
                     var lastp = ((count - 1) - (count - 1) % 50) / 50 + 1;
                     if (textPage > lastp) textPage = lastp;
 
-                    if (textPage == prePage) return;
+                    if (textPage == prePage) {
+                        $('.loading-ring').remove();
+                        return;
+                    }
                     $('.pagination-' + id).find('li').eq($(this).parent().children().length - 2).addClass('active').siblings().removeClass('active');
                     repeatCnt = 0;
                     //stop = false;
-                    callAjax(id, 2, 3, 12, textPage - 1, count, "");
+                    callAjax(id, 2, 3, 12, textPage - 1, count + ">" + author, "");
                 }
                 console.log(col + " :222: " + textPage);
             }
@@ -1148,19 +1180,28 @@
 
     function setRelBadgeShow2(responseData, row, count, id, page) {
         var data = JSON.parse(responseData);
-        //authInfoJson = data;
         console.log(row + " : " + count + " : " + id + " : " + page);
+
+        var s = count.split(">");
+        count = s[0];
+        var author = s[1];
+        //authInfoJson = data;
 
         $('.pagination-' + id).parent().parent().parent().find('tbody').children().remove();
         $.each(data, function (i, tdata) {
-            $('.pagination-' + id).parent().parent().parent().find('tbody').append('<tr>' +
-                    '<td>' + tdata.publishedDate + '</td>' +
-                    '<td class="author-td author' + i + '" title="' + tdata.author + '" href="#">' + tdata.author +
-                    '<span>' + (tdata.authNickname != undefined ? '(' + tdata.authNickname + ')' : '') + '</span>' + '</td>' +
-                    '<td class="relation-td relation' + i + '" title="' + tdata.referencedAuthor + '" href="#">' + tdata.referencedAuthor +
-                    '<span>' + (tdata.refNickname != undefined ? '(' + tdata.refNickname + ')' : '') + '</span>' + '</td>' +
-                    '<td style="word-break: break-all">' + tdata.contents + '</td>' +
-                    '</tr>');
+            var authorColor = "background: #d3f3d3;";
+            var relAuthorColor = "background: #f3d3f3;";
+            if (tdata.author != author) {
+                authorColor = "background: #f3d3f3;";
+                relAuthorColor = "background: #d3f3d3;";
+            }
+            var hml = '<tr>' + '<td>' + tdata.publishedDate + '</td>';
+            hml += '<td style="' + authorColor + '" class="author-td author' + i + '" title="' + tdata.author + '" href="#">' + tdata.author +
+                    '<span>' + (tdata.authNickname != undefined ? '(' + tdata.authNickname + ')' : '') + '</span>' + '</td>';
+            hml += '<td style="' + relAuthorColor + '" class="relation-td relation' + i + '" title="' + tdata.referencedAuthor + '" href="#">' + tdata.referencedAuthor
+                    + '<span>' + (tdata.refNickname != undefined ? '(' + tdata.refNickname + ')' : '') + '</span>' + '</td>';
+            hml += '<td style="word-break: break-all">' + tdata.contents + '</td>' + '</tr>';
+            $('.pagination-' + id).parent().parent().parent().find('tbody').append(hml);
         });
     }
 
@@ -1229,7 +1270,7 @@
 
             var init = function (options) {
                 var opt = $.extend(defaults, options);
-                var parentContainer = opt.parentContainer;
+                var pContainer = opt.parentContainer;
                 var tmpEl = $(opt.html);
                 tmpEl.find('.expand-btn').css('width', opt.btnWidth);
                 //tmpEl.find('.table-expanded-title').text(nicNameFind(opt.title));
@@ -1239,16 +1280,19 @@
 
                 var data = opt.data;
                 var from = 0;
-                var to = 50;
+                var to = 5;
+                var count = 5;
 
+                console.log(pContainer);
                 var addExpandComponent = function () {
+                    hi = pContainer;
                     if (topContainer.children().length == 0 || parentContainer.index() >= parentContainer.parent().children().size() - 1) {
                         var container = $('<div class="panel profile-result-content" style="width:260px; float: left; border-bottom-right-radius: 0;border-top-right-radius: 0;background-color: #fafafa;overflow:auto; border-right: 1px solid #ddd;margin-bottom: 0;padding-left: 5px;padding-right: 5px;"></div>');
                         container.append(tmpEl);
                         topContainer.append(container);
                         topContainer.width(topContainer.width() + 260);
                     } else {
-                        parentContainer.parent().children().eq(parentContainer.index() + 1).append(tmpEl);
+                        pContainer.parent().children().eq(pContainer.index() + 1).append(tmpEl);
                     }
                 };
 
@@ -1256,9 +1300,9 @@
                     $(e).find('.btn-default-left').click(function () {
                         //console.log(data.length + " :: ");
                         tmpEl.find('tbody').children().remove();
-                        from = from - 50;
+                        from = from - count;
                         if (parseInt(from) < 0) from = 0;
-                        to = from + 50;
+                        to = from + count;
                         if (parseInt(to) > data.length) to = data.length;
                         setContent(data, from, to);
                         tmpEl.find('.component-pager-page').text((from + 1) + "-" + to + "(" + data.length + ")");
@@ -1270,9 +1314,9 @@
                     $(e).find('.btn-default-right').click(function () {
                         tmpEl.find('tbody').children().remove();
 
-                        to = to + 50;
+                        to = to + count;
                         if (parseInt(to) > data.length) to = data.length;
-                        from = (to - 1) - (to - 1) % 50;
+                        from = (to - 1) - (to - 1) % count;
                         if (parseInt(to) < 0) from = 0;
                         setContent(data, from, to);
                         tmpEl.find('.component-pager-page').text((from + 1) + "-" + to + "(" + data.length + ")");
@@ -1317,9 +1361,10 @@
                 }
                 tmpEl.find('.component-pager-page').text((from + 1) + "-" + to + "(" + data.length + ")");
 
+                console.log(pContainer);
+
                 var setContent = function (data, from, to) {
                     console.log(from + " : " + to);
-                    var tmpTrList = [];
                     $.each(data, function (i, data) {
                         if ((i >= parseInt(from)) && (i < parseInt(to))) {
                             var tmpTr = $('<tr>' +
@@ -1334,17 +1379,7 @@
                             tmpTr.attr('parent-class-id', opt.parentClassId);
                             tmpEl.find('tbody').append(tmpTr);
                             setRelBadgeClickHandler(tmpTr);
-                            addNode(data.relAuthor, function () {
-                                tmpTr.find('.profile-relative-author-td').click();
-                            });
-                            tmpTrList.push(function () {
-                                tmpTr.find('.relative-badge-td').click();
-                                console.error(this);
-                            })
                         }
-                    });
-                    $.each(data, function (i, data) {
-                        addEdge(opt.title, data.relAuthor, tmpTrList[i]);
                     });
                     tmpEl.find('.profile-relative-author-td').click(function (e) {
                         var classId = $(this).parent().attr('class-id');
@@ -1522,6 +1557,22 @@
 
         initCy();
 
+//        cy.on('mouseover', 'node', function(event) {
+//            var node = event.cyTarget;
+//            node.qtip({
+//                content: 'hello',
+//                show: {
+//                    event: event.type,
+//                    ready: true
+//                },
+//                hide: {
+//                    event: 'mouseout unfocus'
+//                }
+//            }, event);
+//        });
+
+//        layout = cy.makeLayout();
+
         $('.profiling-graph').width($(window).width() - 50)
                 .height($(window).height() - 50);
 
@@ -1566,40 +1617,106 @@
 
         $.each(bookInfoList, function (i, b) {
             graph.newNode({label: b.relAuthor});
-            graph.newEdge(author, b.relAuthor, {label: b.from, color: colorSet[graphCount % 23], weight: b.from / 20});
+            graph.newEdge(author, b.relAuthor, {
+                label: b.from,
+                color: colorSet[graphCount % 23],
+                weight: b.from / 20
+            });
         });
         graphCount++;
 
     };
 
+    var nodeCount = 0;
     var addNode = function (author, click) {
 //        graph.newNode({
 //            label: author,
 //            ondoubleclick: doubleclick
 //        });
-        cy.add({
-            "data": {
-                "id": author,
-//                        "idInt": 1,
-                "name": author,
-//                        "score": 0.006769776522008331,
-                "query": true,
-                "gene": true,
-            },
-//                    "position": {"x": 481, "y": 384},
-            "group": "nodes",
-            "removed": false,
-            "selected": false,
-            "selectable": true,
-            "locked": false,
-            "grabbed": false,
-            "grabbable": true,
-            "classes": "hi"
-        });
-        cy.nodes().last().on('click', click);
 
+        var nodeList = cy.nodes();
+        var hasNode = false;
+        for (var iii = 0; iii < nodeList.size(); iii++) {
+            if (nodeList[iii].attr().id == author) {
+                hasNode = true;
+                return;
+            }
+        }
+//        $.each(nodeList, function (i, node) {
+//            if (node.attr().id == author) {
+//                hasNode = true;
+//            }
+//        });
+        if (!hasNode) {
+            nodeCount++;
+            var count = nodeCount;
+            cy.add({
+                "data": {
+                    "id": author,
+//                        "idInt": 1,
+                    "name": author,
+//                        "score": 0.006769776522008331,
+//                    "query": true,
+//                    "gene": true
+                    "queried": false
+                },
+//                    "position": {"x": 481, "y": 384},
+                "group": "nodes",
+                "removed": false,
+                "selected": false,
+                "selectable": true,
+                "locked": false,
+                "grabbed": false,
+                "grabbable": true
+//                "classes": "hi"
+            });
+
+            var curNode = cy.nodes().last();
+//            curNode.on('click', function () {
+//                curNode.qtip(
+//
+//                )
+//            });
+            cy.nodes().last().qtip({
+                content: '<div id="show-more-btn-' + count + '" class="show-more-btn">더 보기</div><div id="delete-node-btn-' + count + '" class="delete-node-btn">삭제</div>',
+                position: {
+                    my: 'left center',
+                    at: 'right center'
+//                    target:'mouse'
+                },
+                style: {
+                    classes: 'qtip-bootstrap',
+                    tip: {
+                        width: 16,
+                        height: 8
+                    }
+                }, events: {
+                    show: function (event, api) {
+                        var $qtip = $(this);
+//                        console.error("hi");
+                        $('#show-more-btn-' + count).click(click).click(function () {
+                            $qtip.qtip('hide');
+                        });
+                        $('#delete-node-btn-' + count).click(function () {
+                            cy.remove(curNode);
+                            $.each(cy.nodes(), function (i, n) {
+                                if (n.neighborhood().length <= 0) {
+                                    cy.remove(n);
+                                }
+                            });
+                            $(this).parent().parent().attr('aria-hidden', 'true');
+                            $qtip.qtip('hide');
+                        });
+                    }
+//                    , hide: function (event, api) {
+//                        $(this).qtip('destroy');
+//                    }
+                }
+            });
+
+        }
     };
-    var addEdge = function (author, relAuthor, click) {
+    var addEdge = function (author, relAuthor, from, click) {
 //        $.each(bookInfoList, function (i, b) {
 //            graph.newEdge(author, b.relAuthor, {
 //                label: b.from,
@@ -1607,21 +1724,37 @@
 //                weight: b.from / 20
 //            });
 //        });
-        cy.add({
-            group: "edges",
-            data: {source: author, target: relAuthor}
-        });
-        cy.edges().last().on('click', click);
-
-        graphCount++;
-
+        var edgeList = cy.edges();
+        var hasEdge = false;
+        for (var iii = 0; iii < edgeList.size(); iii++) {
+            var source = edgeList[iii].attr().source;
+            var target = edgeList[iii].attr().target;
+            if ((source == author && target == relAuthor) || (source == relAuthor && target == author)) {
+                hasEdge = true;
+                return;
+            }
+        }
+        if (!hasEdge) {
+            cy.add({
+                group: "edges",
+                data: {
+                    source: author,
+                    target: relAuthor,
+                    label: from,
+                    weight: parseInt(from) / 10,
+                    color: colorSet[graphCount % 23]
+                }
+            });
+            cy.edges().last().on('click', click);
+        }
     };
 
     $('.close-btn').click(function () {
         $(this).parent().css("visibility", "hidden");
     });
     $('.show-graph-btn').click(function () {
-        $('.cover').css("visibility", "visible");
+//        $('.cover').css("visibility", "visible");
+        $(this).toggleClass('active');
     });
 
     var layout = {
@@ -1632,7 +1765,7 @@
         randomize: true,
         idealEdgeLength: 100,
         nodeOverlap: 20,
-        maxSimulationTime: 1500
+        maxSimulationTime: 1000
     };
 
     function initCy() {
@@ -1687,7 +1820,8 @@
                         "text-outline-width": "2px",
                         "color": "#fff",
                         "overlay-padding": "6px",
-                        "z-index": "10"
+                        "z-index": "10",
+                        "cursor": "pointer"
                     }
                 }, {
                     "selector": "node[?attr]",
@@ -1718,9 +1852,10 @@
                         "curve-style": "haystack",
                         "haystack-radius": "0.5",
                         "opacity": "0.4",
-                        "line-color": "#bbb",
-                        "width": "mapData(weight, 0, 1, 1, 8)",
-                        "overlay-padding": "3px"
+                        "line-color": "data(color)",
+                        "width": "mapData(weight, 0, 100, 0, 50)",
+                        "overlay-padding": "3px",
+                        "label": "data(label)"
                     }
                 }, {"selector": "node.unhighlighted", "style": {"opacity": "0.2"}}, {
                     "selector": "edge.unhighlighted",
@@ -1741,106 +1876,170 @@
                     }
                 }, {"selector": "edge.filtered", "style": {"opacity": "0"}}],
 
-                elements: [{
-                    "data": {
-                        "id": "1",
-//                        "idInt": 1,
-                        "name": "승목",
-//                        "score": 0.006769776522008331,
-                        "query": true,
-                        "gene": true,
-                    },
-//                    "position": {"x": 481, "y": 384},
-                    "group": "nodes",
-                    "removed": false,
-                    "selected": false,
-                    "selectable": true,
-                    "locked": false,
-                    "grabbed": false,
-                    "grabbable": true,
-                    "classes": "hi"
-                }, {
-                    "data": {
-                        "id": "2",
-//                        "idInt": 611408,
-                        "name": "채승목",
-//                        "score": 0.006769776522008331,
-                        "query": false,
-                        "gene": true
-                    },
-//                    "position": {"x": 531.9740635094307, "y": 464.8210898234145},
-                    "group": "nodes",
-                    "removed": false,
-                    "selected": false,
-                    "selectable": true,
-                    "locked": false,
-                    "grabbed": false,
-                    "grabbable": true,
-                    "classes": ""
-                }, {
-                    "data": {
-                        "id": "3",
-//                        "idInt": 611408,
-                        "name": "3",
-//                        "score": 0.006769776522008331,
-                        "query": false,
-                        "gene": true
-                    },
-//                    "position": {"x": 531.9740635094307, "y": 464.8210898234145},
-                    "group": "nodes",
-                    "removed": false,
-                    "selected": false,
-                    "selectable": true,
-                    "locked": false,
-                    "grabbed": false,
-                    "grabbable": true,
-                    "classes": ""
-                }, {
-                    "data": {
-                        "id": "4",
-//                        "idInt": 611408,
-                        "name": "4",
-//                        "score": 0.006769776522008331,
-                        "query": false,
-                        "gene": true
-                    },
-//                    "position": {"x": 531.9740635094307, "y": 464.8210898234145},
-                    "group": "nodes",
-                    "removed": false,
-                    "selected": false,
-                    "selectable": true,
-                    "locked": false,
-                    "grabbed": false,
-                    "grabbable": true,
-                    "classes": ""
-                }, {
-                    "data": {
-                        "id": "5",
-//                        "idInt": 611408,
-                        "name": "5",
-//                        "score": 0.006769776522008331,
-                        "query": false,
-                        "gene": true
-                    },
-//                    "position": {"x": 531.9740635094307, "y": 464.8210898234145},
-                    "group": "nodes",
-                    "removed": false,
-                    "selected": false,
-                    "selectable": true,
-                    "locked": false,
-                    "grabbed": false,
-                    "grabbable": true,
-                    "classes": ""
-                }, {
-                    group: "edges",
-                    data: {source: "1", target: "2"}
-                }, {
-                    group: "edges",
-                    data: {source: "1", target: "3"}
-                }]
+                /*elements: [{
+                 "data": {
+                 "id": "1",
+                 //                        "idInt": 1,
+                 "name": "승목",
+                 //                        "score": 0.006769776522008331,
+                 "query": true,
+                 "gene": true,
+                 },
+                 //                    "position": {"x": 481, "y": 384},
+                 "group": "nodes",
+                 "removed": false,
+                 "selected": false,
+                 "selectable": true,
+                 "locked": false,
+                 "grabbed": false,
+                 "grabbable": true,
+                 "classes": "hi"
+                 }, {
+                 "data": {
+                 "id": "2",
+                 //                        "idInt": 611408,
+                 "name": "채승목",
+                 //                        "score": 0.006769776522008331,
+                 "query": false,
+                 "gene": true
+                 },
+                 //                    "position": {"x": 531.9740635094307, "y": 464.8210898234145},
+                 "group": "nodes",
+                 "removed": false,
+                 "selected": false,
+                 "selectable": true,
+                 "locked": false,
+                 "grabbed": false,
+                 "grabbable": true,
+                 "classes": ""
+                 }, {
+                 "data": {
+                 "id": "3",
+                 //                        "idInt": 611408,
+                 "name": "3",
+                 //                        "score": 0.006769776522008331,
+                 "query": false,
+                 "gene": true
+                 },
+                 //                    "position": {"x": 531.9740635094307, "y": 464.8210898234145},
+                 "group": "nodes",
+                 "removed": false,
+                 "selected": false,
+                 "selectable": true,
+                 "locked": false,
+                 "grabbed": false,
+                 "grabbable": true,
+                 "classes": ""
+                 }, {
+                 "data": {
+                 "id": "4",
+                 //                        "idInt": 611408,
+                 "name": "4",
+                 //                        "score": 0.006769776522008331,
+                 "query": false,
+                 "gene": true
+                 },
+                 //                    "position": {"x": 531.9740635094307, "y": 464.8210898234145},
+                 "group": "nodes",
+                 "removed": false,
+                 "selected": false,
+                 "selectable": true,
+                 "locked": false,
+                 "grabbed": false,
+                 "grabbable": true,
+                 "classes": ""
+                 }, {
+                 "data": {
+                 "id": "5",
+                 //                        "idInt": 611408,
+                 "name": "5",
+                 //                        "score": 0.006769776522008331,
+                 "query": false,
+                 "gene": true
+                 },
+                 //                    "position": {"x": 531.9740635094307, "y": 464.8210898234145},
+                 "group": "nodes",
+                 "removed": false,
+                 "selected": false,
+                 "selectable": true,
+                 "locked": false,
+                 "grabbed": false,
+                 "grabbable": true,
+                 "classes": ""
+                 }, {
+                 group: "edges",
+                 data: {source: "1", target: "2", label:"23"},
+                 }, {
+                 group: "edges",
+                 data: {source: "1", target: "3"}
+                 }]*/
             });
         });
     }
+
+    function addGraphData(author, data) {
+        var CLASS_NAME_PREFIX = 'expand-table-';
+        var tmpTrList = [];
+        $.each(data, function (i, data) {
+            addNode(data.relAuthor, function () {
+                var tmpAuthor = data.relAuthor;
+                var classId = CLASS_NAME_PREFIX + data.to;
+                //console.log(classId);
+//                var hasChildren = false;
+//                $('tr[parent-class-id=' + classId + ']').each(function () {
+//                    hasChildren = true;
+//                });
+//                if (hasChildren) {
+//                    alert("중복된 ID 입니다");
+//                } else {
+//                    console.log(parentContainer);
+//                    console.log(opt.parentContainer);
+//                    console.log(pContainer);
+//                    if (parentContainer != "") return;
+//                    parentContainer = opt.parentContainer;
+
+                idCNT++;
+                var from = $('#datepicker1').val();
+                var to = $('#datepicker2').val();
+                if ($('#datepicker1').val() != '') from += " 00:00:00";
+                if ($('#datepicker2').val() != '') to += " 23:59:59";
+
+                var period = tmpAuthor + '>' + from + "-" + to + ">" + $('label[name=dateOption]').text() + ">" + $('input[name="groups"]:checked').val();
+                callAjax("Cprofile" + idCNT, period, classId, 9, 1, "", "");
+//                }
+                return false;
+            });
+
+            console.error(author);
+            tmpTrList.push(function () {
+                idCNT++;
+//                var author = author;
+                console.error(author);
+                var relAuthor = data.relAuthor;
+
+                var fromTime = $('#datepicker1').val();
+                if (fromTime != "") fromTime += " 00:00:00";
+                var toTime = $('#datepicker2').val();
+                if (toTime != "") toTime += " 23:59:59";
+
+                var period = fromTime + "-" + toTime + ">" + $('label[name=dateOption]').text() + ">" + $('input[name="groups"]:checked').val();
+
+                var id = "profile" + idCNT;
+//console.log(">"+ $('input[name="groups"]:checked').val());
+                callAjax(id, author + '>' + period, relAuthor, 1, 0, "", "");
+            });
+        });
+
+        cy.layout(layout);
+
+        $.each(data, function (i, data) {
+            addEdge(author, data.relAuthor, data.from, tmpTrList[i]);
+//                    cy.layout(layout);
+        });
+        cy.layout(layout);
+        graphCount++;
+    }
+
 </script>
 </body>
 </html>

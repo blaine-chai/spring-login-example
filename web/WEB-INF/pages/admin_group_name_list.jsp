@@ -17,7 +17,7 @@
             white-space: nowrap
         }
 
-        .table-container{
+        .table-container {
             position: relative;
         }
     </style>
@@ -74,6 +74,9 @@
                         <li><a href="/admin/group-name" content="/admin/group-name"><i
                                 class="glyphicon glyphicon-user"></i> Group List</a>
                         </li>
+                        <li><a href="/admin/test" content="/admin/test"><i
+                                class="glyphicon glyphicon-chevron-right"></i> Nickname Test</a>
+                        </li>
                     </ul>
                 </li>
             </ul>
@@ -92,7 +95,7 @@
                             <th width="80%" class="text-center">그룹 아이디</th>
                             <th class="text-center shrink" style="width: 100px;">
                                 <%--<button class="btn btn-primary" style="width: 100px;"--%>
-                                        <%--onclick="joinGroupClickHandler(this);return false;">생성--%>
+                                <%--onclick="joinGroupClickHandler(this);return false;">생성--%>
                                 <%--</button>--%>
                             </th>
                         </tr>

@@ -153,23 +153,23 @@
                          title="total" onclick="titleClickListener(this);return false;">EVENTS(MSG)
                     </div>
                     <div class="datepicker-container"
-                         style="width: 200px;text-align: center;margin: auto;float: left;position:absolute;right:80px;bottom:7px;">
+                         style="width: 170px;text-align: center;margin: auto;float: left;position:absolute;right:125px;bottom:7px;">
                         <div class="" style="padding: 0; margin:0 auto; float: left;"><input
                                 id="total-book-graph-datepicker-1" data-provide="datepicker"
-                                style="width: 90px;text-align: center;font-size: 12px;float: left;">
+                                style="width: 80px;text-align: center;font-size: 12px;float: left;">
                         </div>
-                        <div style="float:left; width: 20px; font-size:11px;text-align: center; padding:0;vertical-align: middle;line-height: 23px;">
+                        <div style="float:left; width: 10px; font-size:11px;text-align: center; padding:0;vertical-align: middle;line-height: 23px;">
                             ~
                         </div>
                         <div style="padding:0;margin:0 auto;float: left;"><input id="total-book-graph-datepicker-2"
                                                                                  data-provide="datepicker"
-                                                                                 style="width: 90px;text-align: center;font-size: 12px;float: left;">
+                                                                                 style="width: 80px;text-align: center;font-size: 12px;float: left;">
                         </div>
                     </div>
-                    <div class="btn-group" style="position:absolute;right:10px;bottom:4px;">
+                    <div class="btn-group" style="position:absolute;right:65px;bottom:4px;">
                         <button type="button" class="btn btn-default btn-sm dropdown-toggle total-book-dropdown"
                                 data-toggle="dropdown" aria-haspopup="true"
-                                aria-expanded="false" style="width: 60px">
+                                aria-expanded="false" style="width: 55px">
                             <span class="search-category-option">월별</span>
                             <div style="display: inline-block"><span class="caret"></span><span
                                     class="sr-only"></span>
@@ -182,6 +182,26 @@
                                    period="2" tabindex="-1" href="#">월별</a></li>
                         </ul>
                     </div>
+                    <div class="btn-group2" style="position:absolute;right:10px;bottom:4px;">
+                       <button type="button"
+                              class="btn btn-primary btn-sm dropdown-toggle author-dropdown"
+                              data-toggle="dropdown" aria-haspopup="true"
+                              aria-expanded="false" style="width:50px">
+                          <span class="search-category-option">그룹</span>
+                      </button>
+                      <div class="dropdown-menu panel panel-default checkbox"
+                           style="position:absolute;width: 200px;min-height: 50px;background: rgba(255, 255, 255, 0.95);z-index: 10;left: -150px;top: 25px;overflow-y:auto;text-align: left;">
+                          <c:forEach items="${userGroups}" var="userGroup">
+                              <label style="margin-left: 2px;width:85px;font-size: 12px;max-width:85px;">
+                                  <input style="width: 20px;" type="radio" name="groups1"
+                                         onclick="getSearchTotalData2();"
+                                         value="${userGroup.groupName.groupName}"
+                                         checked="checked"
+                                         style="">${userGroup.groupName.groupName}</label>
+                          </c:forEach>
+                      </div>
+                    </div>
+
                 </div>
                 <div id="total-book-graph-container" class="panel panel-default graph-container"
                      style="margin-top: 20px;width: calc(100% - 30px);height: calc(100% - 91px);margin-left: 15px;margin-right: 15px;margin-bottom: 15px;position: relative;">
@@ -197,23 +217,23 @@
                          onclick="titleClickListener(this);return false;">EVENTS(DB)
                     </div>
                     <div class="datepicker-container"
-                         style="width: 200px;text-align: center;margin: auto;float: left;position:absolute;right:80px;bottom:7px;">
+                         style="width: 170px;text-align: center;margin: auto;float: left;position:absolute;right:125px;bottom:7px;">
                         <div class="" style="padding: 0; margin:0 auto; float: left;"><input
                                 id="total-author-graph-datepicker-1" data-provide="datepicker"
-                                style="width: 90px;text-align: center;font-size: 12px;float: left;">
+                                style="width: 80px;text-align: center;font-size: 12px;float: left;">
                         </div>
-                        <div style="float:left; width: 20px; font-size:11px;text-align: center; padding:0;vertical-align: middle;line-height: 23px;">
+                        <div style="float:left; width: 10px; font-size:11px;text-align: center; padding:0;vertical-align: middle;line-height: 23px;">
                             ~
                         </div>
                         <div style="padding:0;margin:0 auto;float: left;"><input id="total-author-graph-datepicker-2"
                                                                                  data-provide="datepicker"
-                                                                                 style="width: 90px;text-align: center;font-size: 12px;float: left;">
+                                                                                 style="width: 80px;text-align: center;font-size: 12px;float: left;">
                         </div>
                     </div>
-                    <div class="btn-group" style="position:absolute;right:10px;bottom:4px;">
+                    <div class="btn-group" style="position:absolute;right:65px;bottom:4px;">
                         <button type="button" class="btn btn-default btn-sm dropdown-toggle total-book-dropdown"
                                 data-toggle="dropdown" aria-haspopup="true"
-                                aria-expanded="false" style="width: 60px">
+                                aria-expanded="false" style="width: 55px">
                             <span class="search-category-option">월별</span>
                             <div style="display: inline-block"><span class="caret"></span><span
                                     class="sr-only"></span>
@@ -226,6 +246,25 @@
                             <li><a role="total-author-dropdown" onclick="getAuthorTotalGraphData('월별');return false;"
                                    period="2" tabindex="-1" href="#">월별</a></li>
                         </ul>
+                    </div>
+                    <div class="btn-group2" style="position:absolute;right:10px;bottom:4px;">
+                       <button type="button"
+                              class="btn btn-primary btn-sm dropdown-toggle author-dropdown"
+                              data-toggle="dropdown" aria-haspopup="true"
+                              aria-expanded="false" style="width:50px">
+                          <span class="search-category-option">그룹</span>
+                      </button>
+                      <div class="dropdown-menu panel panel-default checkbox"
+                           style="position:absolute;width: 200px;min-height: 50px;background: rgba(255, 255, 255, 0.95);z-index: 10;left: -150px;top: 25px;overflow-y:auto;text-align: left;">
+                          <c:forEach items="${userGroups}" var="userGroup">
+                              <label style="margin-left: 2px;width:85px;font-size: 12px;max-width:85px;">
+                                  <input style="width: 20px;" type="radio" name="groups2"
+                                  		 onclick="getAuthorTotalGraphData2();"
+                                         value="${userGroup.groupName.groupName}"
+                                         checked="checked"
+                                         style="">${userGroup.groupName.groupName}</label>
+                          </c:forEach>
+                      </div>
                     </div>
                 </div>
                 <div id="total-author-graph-container" class="panel panel-default graph-container"
@@ -462,6 +501,8 @@
     var authorTotalGraph;
     var graphCount = 0;
 
+    var loadingRing = $('<img class="loading-ring" src="/imgs/30.gif" style="position: absolute;right: 200px; top: 180px;">');
+
     function setRelTablePos() {
         if (relStartPos.top < relStartPos.maxTop) {
             relStartPos.left += 15;
@@ -483,11 +524,8 @@
         } else {
             graphModule = authorTotalGraph;
         }
-//        console.error(graphModule.getData());
-//
-//        var tmpData = JSON.parse(responseData);
+
         var result = graphModule.getData();
-//        var thArr = graphModule.getNameList();
         var relativeTitle = el.text();
         var tmpHtml = $('<div class="alert bg-white alert-dismissible fade in border-gray relative-table-wrapper" style="position: absolute; z-index: 10; width: 250px;' +
                 ' left:' + relStartPos.left + 'px;top:' + relStartPos.top + 'px;" role="alert">' +
@@ -521,25 +559,10 @@
 
         $('body').append(tmpHtml);
         tmpHtml.draggable({cancel: '.draggable-content-container'});
-//        })
 
         tmpHtml.find('.btn-export').click(function (event) {
             exportTableToCSVInStatistics.apply(this, [$(tmpHtml.find('table')), 'export.csv', graphModule.getTotalData()[graphModule.getTotalData().length - 1]['total'].format()]);
         });
-
-//        $(".btn-export").on('click', function (event) {
-//
-//            exportTableToCSV.apply(this, [$('#xx'), 'export.csv']);
-//            exportTableToCSV.apply(this, [$('#projectSpreadsheet'), 'export.csv']);
-//
-//             IF CSV, don't do event.preventDefault() or return false
-//             We actually need this to be a typical hyperlink
-//        });
-
-//        tmpHtml.find('.btn-export').click(function () {
-//            tmpHtml.find('table').tableToCSV();
-//
-//        });
     }
 
     $(document).ready(function () {
@@ -568,47 +591,22 @@
             }
         });
         $('#content').height($(window).height() - 197);
-//        a = GraphModule.graph();
-//        a.setGraphContainer('#total-graph-container');
-//        a.init();
 
         handleOperatorSelect();
-//        authorGraph = GraphModule.graph();
-//        authorGraph.setGraphContainer('#author-graph-container');
 
-        //$("input:radio[name='groups']").removeAttr('checked');
         $("input:radio[name='groups']").eq(0).prop("checked", true);
         $("input:radio[name='groups']:radio[value='전부']").prop("checked", true);
-
-//        $('#total-book-graph-container>svg').click(function () {
-//            if ($(this).find('svg').size() > 0) {
-//                totalGraph.openWithNewWindow();
-//            }
-//        });
-//        $('#total-author-graph-container>svg').click(function () {
-//            if ($(this).find('svg').size() > 0) {
-//                authorTotalGraph.openWithNewWindow();
-//            }
-//        });
-//        $('#author-graph-container>svg').click(function () {
-//            if ($(this).find('svg').size() > 0) {
-//                authorGraph.openWithNewWindow();
-//            }
-//        });
-
-        <%--/*--%>
-        <%--<div class="dropdown-menu panel panel-default checkbox" style="position:absolute;width: 300px;min-height: 50px;background: rgba(255, 255, 255, 0.95);z-index: 10;left: -250px;top: 25px;overflow-y:auto;text-align: left;">--%>
-        <%--<c:forEach items="${userGroupApis}" var="userGroup">--%>
-        <%--<label style="margin-left: 10px;width:85px;font-size: 12px;max-width:85px;">--%>
-        <%--<input type="radio" name="groups" value="${userGroup.groupName.groupName}"--%>
-        <%--checked="checked" style="">${userGroup.groupName.groupName}</label>--%>
-        <%--</c:forEach>--%>
-        <%--</div>--%>
-        <%--*/--%>
+        $("input:radio[name='groups1']").eq(0).prop("checked", true);
+        $("input:radio[name='groups1']:radio[value='전부']").prop("checked", true);
+        $("input:radio[name='groups2']").eq(0).prop("checked", true);
+        $("input:radio[name='groups2']:radio[value='전부']").prop("checked", true);
 
         $('#author-graph-add-btn').click(function (e) {		// 추가 버튼을 클릭할 때
             if (authorList.length == 0) $('#author-graph-new-btn').click();
-            else            addAuthorGraphData();
+            else            {
+               	$('#author-graph-container').append(loadingRing);
+            	addAuthorGraphData();
+            }
         });
 
         $('#author-graph-new-btn').click(function (e) {		// 신규 버튼을 클릭할 때
@@ -618,6 +616,7 @@
                 authorGraph.removeData();
                 authorGraph.removeSvg();
             }
+            $('#author-graph-container').append(loadingRing);
             getNewAuthorGraphData();
         });
 
@@ -630,8 +629,6 @@
 
         console.log(timeConverter(timestamp - 3600 * 24 * 50));
 
-        //var d = new Date();
-        //var ttt = d.getFullYear() + "/" + (d.getMonth()+1) + "/" + d.getDate();
         var ttt = timeConverter(timestamp - 3600 * 24 * 730);
 
         $('#datepicker1').datetimepicker({
@@ -646,22 +643,22 @@
 
         $('#total-book-graph-datepicker-1').datetimepicker({
             format: 'Y/m/d',
-            value: ttt
+            value: ''
         });
 
         $('#total-book-graph-datepicker-2').datetimepicker({
             format: 'Y/m/d',
-            value: new Date()
+            value: ''
         });
 
         $('#total-author-graph-datepicker-1').datetimepicker({
             format: 'Y/m/d',
-            value: ttt
+            value: ''
         });
 
         $('#total-author-graph-datepicker-2').datetimepicker({
             format: 'Y/m/d',
-            value: new Date()
+            value: ''
         });
 
         getSearchTotalData($('.search-category-option').eq(0).text());
@@ -679,7 +676,10 @@
         authorList = [];
         aList = "";
         var searchWord = searchInfo();
-        if (searchWord == "") return;
+        if (searchWord == "") {
+            $('.loading-ring').remove();
+        	return;
+        }
 
         var keyword = "";
 
@@ -694,16 +694,18 @@
 
         aList = "";
         var id = "stat3";
-        var sel = 0;
 
         authorList.push(keyword);
-        callAjax(id, sel, aList, keyword, searchWord);
+        callAjax(id, 0, aList, keyword, searchWord);
     });
 
     var addAuthorGraphData = (function () {
         //var author = [];
         var searchWord = searchInfo();
-        if (searchWord == "") return;
+        if (searchWord == "") {
+            $('.loading-ring').remove();
+        	return;
+        }
 
         var keyword = "";
 
@@ -723,10 +725,12 @@
         }
         if (beGood) {
             alert("중복 검색입니다!!!");
+            $('.loading-ring').remove();
             return;
         }
         if (authorList.length >= 10) {
             alert("그래프는 10개까지 추가 할 수 있습니다.");
+            $('.loading-ring').remove();
             return;
         }
 
@@ -759,6 +763,7 @@
                     }, 1000);
                 }
                 else if (tdata.contents == "NoData") {
+                    $('.loading-ring').remove();
                     alert("다시 한번 검색해 주세요. 동일한 결과가 반복될 경우에는 데이터베이스에 저장된 자료가 없을 수 있습니다!!!");
                 }
                 else {
@@ -786,7 +791,8 @@
                         });
                         authorGraph.setData(resultData);
                         authorGraph.init();
-                    }
+                        $('.loading-ring').remove();
+                   }
                     else if (sel == 3) {
                         var resultData = JSON.parse(tdata.resultList);
                         aList = tdata.resultList;
@@ -797,39 +803,51 @@
                         authorGraph.addNameList(tdata.keyword);
                         authorGraph.addData(tdata.keyword, resultData);
                         authorGraph.refresh();
+                        $('.loading-ring').remove();
                     }
                 }
             }
         })
     }
 
+    var getSearchTotalData2 = (function () {
+        //$("input:radio[name='groups2']").eq(0).prop("checked", true);
+        //$(element).prop("checked", true);
+        getSearchTotalData($('.search-category-option').eq(0).text());
+    });
+
     var getSearchTotalData = (function (category) {
         totalGraph.removeNameList();
         totalGraph.removeData();
         totalGraph.removeSvg();
-        console.log($('#total-book-graph-datepicker-1').val());
-        console.log($('#total-book-graph-datepicker-2').val());
+        //console.log($('#total-book-graph-datepicker-1').val());
+        //console.log($('#total-book-graph-datepicker-2').val());
 
         //var startTime = "2015/01/01 00:00:00";
-        var startTime = $('#total-book-graph-datepicker-1').val() + " 00:00:00" + "-" + $('#total-book-graph-datepicker-2').val() + " 23:59:59";
+        var startTime = $('#total-book-graph-datepicker-1').val() + " 00:00:00";
+        var endTime = $('#total-book-graph-datepicker-2').val() + " 23:59:59";
+        if($('#total-book-graph-datepicker-1').val() == "") startTime = "";
+        if($('#total-book-graph-datepicker-2').val() == "") endTime = "";
 
         if (category == '일별') category = 'MSG_' + 'daily';
         else                  category = 'MSG_' + 'monthly';
-        console.log(category);
+        console.log(startTime + '>' + category);
 
         $.ajax({
             url: "/main/statistics/search-total-data",
             type: "post",
             data: {
                 "id": "stat1",
-                "searchPeriod": startTime + '-' + category
+                "searchPeriod": startTime+"-"+endTime,
+                "groups": $('input[name=groups1]:checked').val(),
+                "category": category
             },
             success: function (responseData) {
                 var resultData = JSON.parse(responseData);
-//                console.error(resultData);
+                //console.error(resultData);
                 totalGraph = GraphModule.graph({graphOverall: false});
                 totalGraph.setGraphContainer('#total-book-graph-container');
-//                totalGraph.addData(responseData);
+//				totalGraph.addData(responseData);
 
                 totalGraph.addNameList('total');
                 totalGraph.setData(resultData);
@@ -838,31 +856,39 @@
         });
     });
 
+    var getAuthorTotalGraphData2 = (function () {
+		getAuthorTotalGraphData($('.search-category-option').eq(1).text());
+    });
 
     var getAuthorTotalGraphData = (function (category) {
         authorTotalGraph.removeNameList();
         authorTotalGraph.removeData();
         authorTotalGraph.removeSvg();
-        console.log($('#total-author-graph-datepicker-1').val());
-        console.log($('#total-author-graph-datepicker-2').val());
-        var startTime = $('#total-author-graph-datepicker-1').val() + " 00:00:00" + "-" + $('#total-author-graph-datepicker-2').val() + " 23:59:59";
+        //console.log($('#total-author-graph-datepicker-1').val());
+        //console.log($('#total-author-graph-datepicker-2').val());
+        var startTime = $('#total-author-graph-datepicker-1').val() + " 00:00:00";
+        var endTime = $('#total-author-graph-datepicker-2').val() + " 23:59:59";
+        if($('#total-author-graph-datepicker-1').val() == "") startTime = "";
+        if($('#total-author-graph-datepicker-2').val() == "") endTime = "";
 
         //var startTime = "2016/11/01 00:00:00";
         if (category == '일별') category = 'DB_' + 'daily';
         else                  category = 'DB_' + 'monthly';
 
-        console.log(category);
+        console.log(startTime + '>' + category);
         $.ajax({
             url: "/main/statistics/search-total-data",
             type: "post",
             data: {
                 "id": "stat2",
-                "searchPeriod": startTime + '-' + category
+                "searchPeriod": startTime+"-"+endTime,
+                "groups": $('input[name=groups2]:checked').val(),
+                "category": category
             },
             success: function (responseData) {
 
                 var resultData = JSON.parse(responseData);
-//                console.error(resultData);
+                //console.error(resultData);
                 authorTotalGraph = GraphModule.graph({graphOverall: false});
                 authorTotalGraph.setGraphContainer('#total-author-graph-container');
                 authorTotalGraph.addNameList('total');
@@ -932,7 +958,7 @@
         var input = wordCheck(inputEls.eq(0).val());
         if (input == "") isOK = false;
 
-        var category = categoryEls.eq(2).text();
+        var category = categoryEls.eq(4).text();
         if (category == "내용") SearchWord += "indexA^" + input;
         else if (category == "저자") SearchWord += "indexB^" + input;
         else if (category == "순위") {
@@ -951,7 +977,7 @@
             input = wordCheck(inputEls.eq(1).val());
             if (input == "") isOK = false;
 
-            var category = categoryEls.eq(3).text();
+            var category = categoryEls.eq(5).text();
             if (category == "내용") SearchWord += "indexA^" + input;
             else if (category == "저자") SearchWord += "indexB^" + input;
             else if (category == "순위") {
@@ -964,19 +990,26 @@
         }
 
         SearchWord += ">" + typeInfo;
-		var from = $('#datepicker1').val();
-		var to = $('#datepicker2').val();
-		if ($('#datepicker1').val() != '') from += " 00:00:00";
-		if ($('#datepicker2').val() != '') to += " 23:59:59";
+		var from = $('#datepicker1').val() + " 00:00:00";
+		var to = $('#datepicker2').val() + " 23:59:59";
+		if ($('#datepicker1').val() == '') {
+			isOK = false; //from = "";
+        	alert("시작 시간을 입력하세요.");
+		}
+		if ($('#datepicker2').val() == '') {
+			isOK = false; //to = "";
+        	alert("종료 시간을 입력하세요.");
+		}
         SearchWord += ">" + from + "-" + to;
 
-        if (categoryEls.eq(5).text() == "일별")
-            SearchWord += ">" + categoryEls.eq(4).text() + "_" + "daily";
+        if (categoryEls.eq(7).text() == "일별")
+            SearchWord += ">" + categoryEls.eq(6).text() + "_" + "daily";
         else
-            SearchWord += ">" + categoryEls.eq(4).text() + "_" + "monthly";
+            SearchWord += ">" + categoryEls.eq(6).text() + "_" + "monthly";
 
         SearchWord += ">" + $('input[name=groups]:checked').val();
 
+        console.log("ZZZ : " + SearchWord);
         if (!isOK) SearchWord = "";
 ///
         return SearchWord;

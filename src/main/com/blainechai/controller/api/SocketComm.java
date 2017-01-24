@@ -42,6 +42,8 @@ public class SocketComm
 	private String[] statTime = null;
 	private int[] stat = null;
 	private String group = "";
+	private String startTime = "";
+	private String endTime = "";
 
 	long time = System.currentTimeMillis();
 
@@ -86,13 +88,18 @@ public class SocketComm
 			dos = new DataOutputStream(socket.getOutputStream());
 			dis = new DataInputStream(socket.getInputStream());
 		}
-		catch (IOException e) { System.out.println("SocketComm.java : 서버 연결 실패"); }
+		catch (IOException e) {
+			System.out.println("SocketComm.java : 서버 연결 실패 : " + ip + " : " + port);
+			good = -99;
+		}
 	}
 
 	public int getKeyCount() { return keyCount; }
 	public int getProPercent() { return proPercent; }
 	public int getCount() { return viewCount; }
 	public String getGroup() { return group; }
+	public String getStartTime() { return startTime; }
+	public String getEndTime() { return endTime; }
 
 	public List<BookInfo> getR()
 	{
@@ -177,7 +184,7 @@ public class SocketComm
 		for(int i=from.size()-1; i >= 0; i--) {
 			if(from.get(i).equals("")) from.remove(i);
 		}
-		System.out.println(":AAAAAAAAAA: " + from.size());
+		//System.out.println(":AAAAAAAAAA: " + from.size());
 
 		String[] from1 = new String[from.size()];
 		for(int i=0; i < from.size(); i++) from1[i] = from.get(i);
@@ -207,7 +214,7 @@ public class SocketComm
 			dos.writeInt(k);
 
 			String[] sss = msg.split(">");
-			System.out.println(sss.length + " : ");
+			System.out.println("\t" + sss.length + " : " + k);
 
 			if(sss[3].equals("ALL")) {
 				sss[2] = getPeriod("-");
@@ -237,6 +244,7 @@ public class SocketComm
 			}
 		}
 		good = cnt;
+		System.out.println("\treqVIEW : " + good);
 	}
 
 	public void reqKEYS() throws IOException
@@ -291,7 +299,7 @@ public class SocketComm
 		}
 		else s[3] = getPeriod(s[3]);
 
-		msg = s[0] + ">" + s[1] + ">" + s[2] + ">" + s[3] + ">" + s[4] + ">" + s[5] + ">" + s[6];
+		msg = s[0] + ">" + s[1] + ">" + s[2] + ">" + s[3] + ">" + s[4] + ">" + s[5] + ">" + s[6] + ">" + s[7];
 		System.out.println("msg = " + msg);
 
 		dos.writeUTF(msg);
@@ -302,17 +310,31 @@ public class SocketComm
 	public void reqRead() throws IOException
 	{
 		System.out.println("msg = " + msg);
-		dos.writeUTF(msg);
+		String[] s = msg.split(">");
+		dos.writeUTF(s[0]);
+		dos.writeUTF(s[1]);
 		good = 0;
 	}
 
-	public void reqPri() throws IOException
+	public void reqPriCreate() throws IOException
 	{
 		System.out.println("msg = " + msg);
 		String[] s = msg.split(">");
 		dos.writeUTF(s[0]);
 		dos.writeInt(Integer.parseInt(s[1]));
-		dos.writeInt(Integer.parseInt(s[2]));
+		good = 0;
+	}
+
+	public void reqPriAll() throws IOException
+	{
+		System.out.println("msg = " + msg);
+		String[] s2 = msg.split("`");
+		dos.writeInt(s2.length);
+		for(int i=0; i < s2.length; i++){
+			String[] s = s2[i].split(">");
+			dos.writeUTF(s[0]);
+			dos.writeInt(Integer.parseInt(s[1]));
+		}
 		good = 0;
 	}
 
@@ -384,20 +406,21 @@ public class SocketComm
 		try
 		{
 			System.out.println("\treqStat1 : msg : " + msg);
-			int k = 2;
+			int k = 3;
 			//dos.writeInt(2);
-
 			String[] sss = msg.split(">");
 
+			if(sss[1].equals("ALL")) {
+				sss[1] = getPeriod("-");
+			}
+			else sss[1] = getPeriod(sss[1]);
+
 			for (int i=0; i < k; i++) {
-				System.out.println("\treqStat1 : msg : " + sss[i]);
-				dos.writeUTF(sss[1-i]);
+				System.out.println("\treqStat1 : msg : " + i + " : " +sss[i]);
+				dos.writeUTF(sss[i]);
 			}
 
-			//while(good < 0) {
-				good = dis.readInt();
-			//
-			//	}
+			good = dis.readInt();
 			System.out.println("\treqStat1 : good : " + good);
 
 			statTime = new String[good];
@@ -503,9 +526,35 @@ public class SocketComm
 		System.out.println("\treqGroup : good : " + good + " : " + group);
 	}
 
+	public void reqSearchExport() throws IOException
+	{
+		try
+		{
+			System.out.println("reqSearchExport : " + msg);
+			String[] s = userID.split("@");
+
+			dos.writeUTF(s[0]);
+			dos.writeUTF("CSV_"+System.currentTimeMillis()+".csv");
+			//dos.writeUTF(msg);
+
+			String[] ss = msg.split("\r\n");
+			dos.writeInt(ss.length);
+			for (int i=0; i < ss.length; i++) {
+				System.out.println(i + " : " + ss[i]);
+				dos.writeUTF(ss[i]);
+			}
+			good = 0;
+		}
+		catch (IOException e) { System.out.println(e); }
+		System.out.println("\treqSearchExport : good : " + good);
+	}
+
 
 	public void runStart()
 	{
+		System.out.println(ip + " :socketComm: " + good);
+		if(good == -99) return;
+
 		try
 		{
 			long time = System.currentTimeMillis();
@@ -526,7 +575,7 @@ public class SocketComm
 			else  if ((sel == 2)||(sel == 12)) { // VIEW
 				dos.writeBoolean(false);
 				dos.writeUTF("VIEW");
-				System.out.println("\tVIEW");
+				//System.out.println("\tVIEW");
 				reqVIEW();
 			}
 			else  if (sel == 3) {			// KEYS
@@ -546,7 +595,7 @@ public class SocketComm
 			else  if (sel == 6) {			// PRI
 				dos.writeBoolean(false);
 				dos.writeUTF("PRI");
-				reqPri();
+				reqPriCreate();
 			}
 			else  if (sel == 7) {			// CHECKR
 				dos.writeBoolean(false);
@@ -583,6 +632,16 @@ public class SocketComm
 				dos.writeUTF("GETFROM");
 				reqGetFrom();
 			}
+			else  if (sel == 18) {			// GETNOTICE
+				dos.writeBoolean(false);
+				dos.writeUTF("GETNOTICE");
+				reqGetNotice();
+			}
+			else  if (sel == 19) {			// NOTICE
+				dos.writeBoolean(false);
+				dos.writeUTF("NOTICE");
+				reqNotice();
+			}
 			else  if (sel == 21) {			// STAT2
 				dos.writeBoolean(false);
 				dos.writeUTF("STAT2");
@@ -598,15 +657,19 @@ public class SocketComm
 				dos.writeUTF("STAT1");
 				reqStat1();
 			}
-			else  if (sel == 18) {			// GETNOTICE
+			else  if (sel == 26) {			// PRIALL
 				dos.writeBoolean(false);
-				dos.writeUTF("GETNOTICE");
-				reqGetNotice();
+				dos.writeUTF("PRIALL");
+				reqPriAll();
 			}
-			else  if (sel == 19) {			// NOTICE
+			else  if (sel == 27) {			// SEARCHEXPORT
 				dos.writeBoolean(false);
-				dos.writeUTF("NOTICE");
-				reqNotice();
+				dos.writeUTF("EXPORT2");
+				reqSearchExport();
+			}
+			else  if (sel == 98) {			// STATUS
+				dos.writeBoolean(false);
+				dos.writeUTF("STATUS");
 			}
 			else  if (sel == 99) {			// GET GROUP
 				dos.writeBoolean(false);
@@ -623,13 +686,13 @@ public class SocketComm
 
 		}
 		catch (IOException e) {
-			System.out.println(ip + " :socketComm: " + port);
+			System.out.println(ip + " :socketComm: " + port + " : " + good);
 			System.out.println("\t\t\t\t\tEEEEEEEEEEEEEEEE");
 			e.printStackTrace();
 		}
 		finally {
 			try {
-				System.out.println(ip + " :socketComm222: " + port);
+				System.out.println(ip + " :socketComm222: " + port + " : " + good);
 				dos.close();
 				socket.close();
 			} catch (IOException e) {e.printStackTrace();}
@@ -670,6 +733,9 @@ public class SocketComm
 			else if(ss[1].length() == 10) toDate = formattedDate2(ss[1]) + "235959";
 			else toDate = formattedDate(unixtime+365*24*3600*10000L);
 		}
+
+		startTime = fromDate;
+		endTime = toDate;
 
 		return fromDate + "-" + toDate;
 	}

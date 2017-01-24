@@ -55,7 +55,7 @@
         <div class="col-sm-3">
 
             <ul class="nav nav-stacked">
-                <li class="nav-header"><a href="#"  data-target="#user-menu">메뉴 <i
+                <li class="nav-header"><a href="#" data-target="#user-menu">메뉴 <i
                         class="glyphicon glyphicon-chevron-down"></i></a>
                     <ul class="nav nav-stacked collapse in" id="user-menu">
                         <%--<li><a href="#" content="/admin/admin-account" onclick="setIframe(this);return false;"><i--%>
@@ -68,6 +68,9 @@
                         </li>
                         <li><a href="/admin/group-name" content="/admin/group-name"><i
                                 class="glyphicon glyphicon-user"></i> Group List</a>
+                        </li>
+                        <li><a href="/admin/test" content="/admin/test"><i
+                                class="glyphicon glyphicon-chevron-right"></i> Nickname Test</a>
                         </li>
                     </ul>
                 </li>

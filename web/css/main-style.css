@@ -390,3 +390,12 @@ body {
 .export-checkbox {
     margin-right: 5px!important;
 }
+
+.show-more-btn, .delete-node-btn{
+    cursor: pointer;
+    padding: 0 5px 0 5px;
+}
+
+.show-more-btn:hover, .delete-node-btn:hover{
+    background-color: #e4e4e4;
+}

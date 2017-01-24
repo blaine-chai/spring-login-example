@@ -188,8 +188,7 @@
                         <label class="btn btn-default btn-sm expand-btn btn-primary"
                                style="width: 29px; margin:0;">+</label>
                         <label class="btn btn-default btn-sm" style="width:calc(100% - 29px); margin:0;"
-                               onclick="$(this).parent().find('.expand-btn').click();return false;">Admin
-                            History</label>
+                               onclick="$(this).parent().find('.expand-btn').click();return false;">Admin History</label>
                         <div id="admin-history" class="panel history"
                              style="overflow: auto; max-height:300px; margin-left: 2px; margin-right: 2px; display: none;">
                             <table style="font-size:11px;max-height: 300px; overflow: auto;word-break: break-all;"
@@ -395,9 +394,12 @@
 
 
         $('.btn-export').click(function () {
-            exportTableToCSV.apply(this, [$('#book-table'), 'export.csv']);
-        });
+        	var csv = exportTableToCSV.apply(this, [$('#book-table'), 'export.csv']);
+            callAjaxLoop("BCSV_" + CSVcnt, 0, 0, 27, 0, csv, "");
+            CSVcnt++;
+       });
 
+        var CSVcnt = 0;
         getSearchHistory();
         getAdminHistory();
         //$("input:radio[name='groups']").removeAttr('checked');
@@ -623,7 +625,8 @@
                         + " & " + tableData[row].referencedAuthor + ">완전일치>"
                         + lastQuery.fromDate + "-" + lastQuery.toDate + ">" + lastQuery.dateOption;
 
-                msg += ">" + tableData[row].groupName;
+               //msg += ">" + $('input[name="groups"]:checked').val();
+               msg += ">" + tableData[row].groupName;
                 console.log(msg);
 
                 //if ($('#book-table tbody').find('tr').eq(row).find('td').eq(col).find('span').hasClass( "glyphicon-ok"))
@@ -658,7 +661,7 @@
         $('.content-td').popover({
             html: true,
             content: function () {
-                return $(this).text();
+                return $(this).html();
             },
             template: '<div class="popover popover-content-td"><div class="arrow"></div><div class="popover-inner"><h3 class="popover-title"></h3><button type="button" class="close" data-dismiss="popover" aria-label="Close"><span aria-hidden="true">×</span></button><div class="popover-content"><p></p></div></div></div>',
             container: '#book-table',
@@ -743,6 +746,9 @@
             else if (tdata.contents == "NoData") {
                 alert("다시 한번 검색해 주세요. 동일한 결과가 반복될 경우에는 데이터베이스에 저장된 자료가 없을 수 있습니다!!!");
             }
+            else if (tdata.contents == "NotConnect") {
+                alert("네크워크 연결실패!!! 동일한 결과가 반복될 경우에는 서버가 실행중인지 확인이 필요합니다.");
+            }
             else if (tdata.contents == "NotGroup") {
                 alert("허용된 사용자 그룹이 아닙니다.");
             }
@@ -814,9 +820,6 @@
                         setCheckR2(tdata.bookInfoList, tdata.job, tdata.contents, tdata.id, tdata.page);
                     } else {
                         setCheckR(tdata.bookInfoList, tdata.job, tdata.contents, tdata.id, tdata.page);
-                        var td = $('#book-table tbody').find('tr').eq(tdata.job).find('td').eq(7);
-                        td.empty();
-                        td.append('<span class="glyphicon glyphicon-ok"></span>');
 
                         if (tdata.jobOrder == "1") {
                             setTime = setTimeout(function () {
@@ -824,7 +827,11 @@
                             }, 1000);
                         }
                         setTime = setTimeout(function () {
-                            callAjaxLoop(tdata.id, tdata.job, 2, 13, tdata.page, tableData[tdata.job].eventNo, "");
+                            var td = $('#book-table tbody').find('tr').eq(tdata.job).find('td').eq(7);
+                            var timestamp = timeConverter(fetch_unix_timestamp());
+                            td.empty();
+                            td.append(timestamp);
+                            callAjaxLoop(tdata.id, tdata.job, 2, 13, tdata.page, tableData[tdata.job].eventNo + ">" + timestamp, "");
                         }, 1000);
                     }
                 }
@@ -851,7 +858,7 @@
                 else if (tdata.sel == "8") {
                     var td = $('#book-table tbody').find('tr').eq(tdata.jobOrder).find('td').eq(8);
                     td.empty();
-                    td.append('<span class="glyphicon glyphicon-ok"></span>');
+                    td.append(tdata.contents);
                 }
 
                 stop = false;
@@ -970,9 +977,9 @@
             if (obj.category == "내용") SearchWord += "indexA^" + tmp;
             else if (obj.category == "저자") SearchWord += "indexB^" + tmp;
             else if (obj.category == "순위") {
-                if ((tmp >= 1) && (tmp <= 8)) SearchWord += "priority^" + tmp;
+                if ((tmp >= 0) && (tmp <= 8)) SearchWord += "priority^" + tmp;
                 else {
-                    alert("우선순위의 범위는 1~8입니다.");
+                    alert("우선순위의 범위는 0~8입니다.");
                     isOK = false;
                 }
             }
@@ -1036,20 +1043,22 @@
             //html += '<td class="relation-td">' + tdata.referencedAuthor + '</td>';
             html += '<td class="relation-td relation' + i + '" title="' + tdata.referencedAuthor + '" href="#">' + tdata.referencedAuthor
                     + '<span>' + (tdata.refNickname != undefined ? '(' + tdata.refNickname + ')' : '') + '</span>' + '</td>';
-
+/*
+console.log("AAA : " + tdata.r);
             if (tdata.r == 't') {
                 tdata.r = '<span class="glyphicon glyphicon-ok"></span>';
             } else {
                 tdata.r = '';
             }
+console.log("AAA : " + tdata.e);
             if (tdata.e == 't') {
                 tdata.e = '<span class="glyphicon glyphicon-ok"></span>';
             } else {
                 tdata.e = '';
             }
+*/
             html += '<td class="check-r' + i + '" title="' +
-                    tdata.author + ' - 참조저자' +
-                    '" href="#">' + tdata.r + '</td>';
+                    tdata.author + ' - 참조저자' + '" href="#">' + tdata.r + '</td>';
             html += '<td class="check-e">' + tdata.e + '</td>';
             html += '<td class="content-td">' + tdata.contents + '</td>';
             html += '<td>' + tdata.note1 + '</td>';
@@ -1061,15 +1070,7 @@
             html = $(html);
             html.hide();
             $('#book-table').append(html);
-            /*
-             $.each(data, function (i, tdata) {
-             $('#book-table select').eq(i).val(tdata.priority);
-             $('#book-table select').eq(i).change(function () {
-             //                    console.error($(this).val());
-             setPriority($(this));
-             })
-             });
-             */
+
             html.show(0, function () {
 
                 $.each(data, function (i, tdata) {
@@ -1190,7 +1191,7 @@
 
         for (var i = 0; i < data.length; i++) {
             str += data[i].category + "^";
-            str += data[i].input;
+            str += '<span class="span_history">' + data[i].input + '</span>';
             if (i < data.length - 1) str += " " + data[i].operator + " ";
         }
         str += ">" + tdata.typeInfo;
@@ -1440,14 +1441,30 @@
         console.log(data);
 
         $.each(data, function (i, tdata) {
-            tmpEl.find('tbody').append('<tr>' +
-            '<td>' + tdata.publishedDate + '</td>' +
-            '<td class="author-td author' + i + '" title="' + tdata.author + '" href="#">' + (tdata.author == authorName ? '<span class="highlight-background">' + tdata.author + '</span>' : tdata.author) +
-            '<span>' + (tdata.authNickname != undefined ? '(' + tdata.authNickname + ')' : '') + '</span>' + '</td>' +
-            '<td class="relation-td relation' + i + '" title="' + tdata.referencedAuthor + '" href="#">' + (tdata.referencedAuthor == authorName ? '<span class="highlight-background">' + tdata.referencedAuthor + '</span>' : tdata.referencedAuthor)
-            + '<span>' + (tdata.refNickname != undefined ? '(' + tdata.refNickname + ')' : '') + '</span>' + '</td>' +
-            '<td style="word-break: break-all">' + tdata.contents + '</td>' +
-            '</tr>');
+        	var authorColor = "background: #d3f3d3;";
+        	var relAuthorColor = "background: #f3d3f3;";
+        	if(tdata.author != authorName) {
+            	authorColor = "background: #f3d3f3;";
+            	relAuthorColor = "background: #d3f3d3;";
+        	}
+        	var hml = '<tr>' + '<td>' + tdata.publishedDate + '</td>';
+        	hml += '<td style="' + authorColor + '" class="author-td author' + i + '" title="' + tdata.author + '" href="#">' + tdata.author
+					+ '<span>' + (tdata.authNickname != undefined ? '(' + tdata.authNickname + ')' : '') + '</span>' + '</td>';
+        	hml += '<td style="' + relAuthorColor + '" class="relation-td relation' + i + '" title="' + tdata.referencedAuthor + '" href="#">' + tdata.referencedAuthor
+					+ '<span>' + (tdata.refNickname != undefined ? '(' + tdata.refNickname + ')' : '') + '</span>' + '</td>';
+
+			var stt = tdata.contents;
+			for (j=0; j < lastQuery.data.length; j++) {
+			    if (lastQuery.data[j].category == '내용') {
+			        var strTmp = lastQuery.data[j].input.split(/[ ]*[&|][ ]*/);
+			        for (var k = 0; k < strTmp.length; k++)
+			            stt = stt.replace(strTmp[k], '<span class="highlight-background">' + strTmp[k] + '</span>');
+			    }
+			}
+			//console.log(stt);
+         	hml += '<td style="word-break: break-all">' + stt + '</td>' + '</tr>';
+			//console.log(hml);
+            tmpEl.find('tbody').append(hml);
         });
 
         $('body').append(tmpEl);
@@ -1471,7 +1488,7 @@
                 repeatCnt = 0;
                 stop = false;
                 $(this).addClass('active').siblings().removeClass('active');
-                callAjaxLoop(id, 2, 3, 12, textPage - 1, count, "");
+                callAjaxLoop(id, 2, 3, 12, textPage - 1, count + ">" + authorName, "");
                 console.log(col + " :111: " + textPage);
             }
             else {
@@ -1485,7 +1502,7 @@
                     $('.pagination-' + id).find('li').eq(1).addClass('active').siblings().removeClass('active');
                     repeatCnt = 0;
                     stop = false;
-                    callAjaxLoop(id, 2, 3, 12, textPage - 1, count, "");
+                    callAjaxLoop(id, 2, 3, 12, textPage - 1, count + ">" + authorName, "");
                 }
                 else {
                     textPage = textPage + 5;
@@ -1496,7 +1513,7 @@
                     $('.pagination-' + id).find('li').eq($(this).parent().children().length - 2).addClass('active').siblings().removeClass('active');
                     repeatCnt = 0;
                     stop = false;
-                    callAjaxLoop(id, 2, 3, 12, textPage - 1, count, "");
+                    callAjaxLoop(id, 2, 3, 12, textPage - 1, count + ">" + authorName, "");
                 }
                 console.log(col + " :222: " + textPage);
             }
@@ -1513,8 +1530,9 @@
              else
              callAjaxLoop("author"+authorNUM, 8, row, 8, 8, tableData[row].eventNo+">f", "");
              */
+             var timestamp = timeConverter(fetch_unix_timestamp());
             callAjaxLoop("Bauthor" + authorNUM, 8, row, 8, 8, tableData[row].eventNo + ">" + "indexB^" + tableData[row].author + " & "
-                    + "indexB^" + tableData[row].referencedAuthor + ">완전일치>" + lastQuery.fromDate + "-" + lastQuery.toDate + '>' + lastQuery.dateOption + ">" + tableData[row].groupName, "");
+                    + "indexB^" + tableData[row].referencedAuthor + ">완전일치>" + lastQuery.fromDate + "-" + lastQuery.toDate + '>' + lastQuery.dateOption + ">" + tableData[row].groupName + ">" + timestamp, "");
         });
     }
 
@@ -1522,34 +1540,36 @@
         var data = JSON.parse(responseData);
         authInfoJson = data;
 
+        var s = count.split(">");
+        count = s[0];
+        var authorName = s[1];
+        //console.log(authorName + " : " + row + " : " + tableData[row].author);
+
         $('.pagination-' + id).parent().parent().parent().find('tbody').children().remove();
         $.each(data, function (i, tdata) {
-            $('.pagination-' + id).parent().parent().parent().find('tbody').append('<tr>' +
-                    '<td>' + tdata.publishedDate + '</td>' +
-                    '<td class="author-td author' + i + '" title="' + tdata.author + '" href="#">' + tdata.author +
-                    '<span>' + (tdata.authNickname != undefined ? '(' + tdata.authNickname + ')' : '') + '</span>' + '</td>' +
-                    '<td class="relation-td relation' + i + '" title="' + tdata.referencedAuthor + '" href="#">' + tdata.referencedAuthor
-                    + '<span>' + (tdata.refNickname != undefined ? '(' + tdata.refNickname + ')' : '') + '</span>' + '</td>' +
-                    '<td style="word-break: break-all">' + tdata.contents + '</td>' +
-                    '</tr>');
-        });
-    }
+        	var authorColor = "background: #d3f3d3;";
+        	var relAuthorColor = "background: #f3d3f3;";
+        	if(tdata.author != authorName) {
+            	authorColor = "background: #f3d3f3;";
+            	relAuthorColor = "background: #d3f3d3;";
+        	}
+        	var hml = '<tr>' + '<td>' + tdata.publishedDate + '</td>';
+        	hml += '<td style="' + authorColor + '" class="author-td author' + i + '" title="' + tdata.author + '" href="#">' + tdata.author +
+            	'<span>' + (tdata.authNickname != undefined ? '(' + tdata.authNickname + ')' : '') + '</span>' + '</td>';
+        	hml += '<td style="' + relAuthorColor + '" class="relation-td relation' + i + '" title="' + tdata.referencedAuthor + '" href="#">' + tdata.referencedAuthor
+         	   + '<span>' + (tdata.refNickname != undefined ? '(' + tdata.refNickname + ')' : '') + '</span>' + '</td>';
 
-    function addCheckRBtnListener(i) {
-        $('.check-r' + i).click(function () {
-            $.ajax({
-                url: "/r-check",
-                type: "post",
-                data: {"bookId": tarEl.parent().find('td').eq(0).text()},
-                success: function (responseData) {
-//                    var data = JSON.parse(responseData);
-
-//                    console.error(tarEl);
-                    tarEl.find('span').remove();
-                    tarEl.append('<span class="glyphicon glyphicon-ok"></span>');
-//                    console.log(html);
-                }
-            });
+         	var stt = tdata.contents;
+			for (j=0; j < lastQuery.data.length; j++) {
+			    if (lastQuery.data[j].category == '내용') {
+			        var strTmp = lastQuery.data[j].input.split(/[ ]*[&|][ ]*/);
+			        for (var k = 0; k < strTmp.length; k++)
+			            stt = stt.replace(strTmp[k], '<span class="highlight-background">' + strTmp[k] + '</span>');
+			    }
+			}
+			//console.log(stt);
+         	hml += '<td style="word-break: break-all">' + stt + '</td>' + '</tr>';
+            $('.pagination-' + id).parent().parent().parent().find('tbody').append(hml);
         });
     }
 
@@ -1573,12 +1593,16 @@
                 '<label class="btn btn-default btn-sm btn-identity-check popover-input" style="width:70px;">중복 확인</label></span>' +
                 '</div>' +
                 '<div class="input-group input-group-sm" style="width:100%">' +
+                '<span class="input-group-addon" style="width: 70px;" disabled >생성시간</span>' +
+                '<input type="text" class="form-control popover-input-created-time" disabled>' +
+                '</div>' +
+                '<div class="input-group input-group-sm" style="width:100%">' +
                 '<span class="input-group-addon" style="width: 70px;" disabled >수정시간</span>' +
                 '<input type="text" class="form-control popover-input-modified-time" disabled>' +
                 '</div>' +
                 '<div class="input-group input-group-sm" style=" width:100%">' +
                 '<span class="input-group-addon" style="width: 70px" >우선순위</span>' +
-                '<span class="input-group-addon" style="width:calc(100% - 70px);" ><select class="popover-input popover-input-priority"><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option><option>6</option><option>7</option><option>8</option><option>9</option></select></span>' +
+                '<span class="input-group-addon" style="width:calc(100% - 70px);" ><select class="popover-input popover-input-priority"><option>0</option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option><option>6</option><option>7</option><option>8</option><option>9</option></select></span>' +
                 '</div>' +
                 '<div class="input-group input-group-sm" style="width:100%; height: 60px;">' +
                 '<span class="input-group-addon" style="width: 70px" >메모</span>' +
@@ -1691,7 +1715,16 @@
                     var result = JSON.parse(responseData);
 //                    console.error(responseData);
                     $('.popover-input-nickname').val(result.nickname);
-                    $('.popover-input-modified-time').val(result.lastModifiedDate);
+                    if (result.lastModifiedDate != undefined) {
+	                    var inputTime = result.lastModifiedDate.split('<br>');
+	                    if(inputTime.length < 2) {
+		                    $('.popover-input-created-time').val(result.lastModifiedDate);
+		                    $('.popover-input-modified-time').val(result.lastModifiedDate);
+	                    }else {
+		                    $('.popover-input-created-time').val(inputTime[1]);
+		                    $('.popover-input-modified-time').val(inputTime[0]);
+	                    }
+                    }
                     if (result.priority == undefined) {
                         $('.popover-input-priority').val('9');
                     } else {
@@ -1706,6 +1739,12 @@
                     alert('별명을 입력 후 다시 시도해주세요.');
                     return;
                 }
+                var tmp = $('.popover-input-nickname').val().split(" ");
+                if (tmp.length > 1) {
+                    alert('별명에서 space를 제거 후 다시 시도해주세요.');
+                    return;
+                }
+
                 $.ajax({
                     url: "/main/nickname/check",
                     type: "post",
@@ -1748,12 +1787,16 @@
                 '<label class="btn btn-default btn-sm btn-identity-check popover-input" style="width:70px;">중복 확인</label></span>' +
                 '</div>' +
                 '<div class="input-group input-group-sm" style="width:100%">' +
+                '<span class="input-group-addon" style="width: 70px;" disabled >생성시간</span>' +
+                '<input type="text" class="form-control popover-input-created-time" disabled>' +
+                '</div>' +
+                '<div class="input-group input-group-sm" style="width:100%">' +
                 '<span class="input-group-addon" style="width: 70px;" disabled >수정시간</span>' +
                 '<input type="text" class="form-control popover-input-modified-time" disabled>' +
                 '</div>' +
                 '<div class="input-group input-group-sm" style=" width:100%">' +
                 '<span class="input-group-addon" style="width: 70px" >우선순위</span>' +
-                '<span class="input-group-addon" style="width:calc(100% - 70px);" ><select class="popover-input popover-input-priority"><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option><option>6</option><option>7</option><option>8</option><option>9</option></select></span>' +
+                '<span class="input-group-addon" style="width:calc(100% - 70px);" ><select class="popover-input popover-input-priority"><option>0</option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option><option>6</option><option>7</option><option>8</option><option>9</option></select></span>' +
                 '</div>' +
                 '<div class="input-group input-group-sm" style="width:100%; height: 60px;">' +
                 '<span class="input-group-addon" style="width: 70px" >메모</span>' +
@@ -1863,7 +1906,16 @@
                     var result = JSON.parse(responseData);
 //                    console.error(responseData);
                     $('.popover-input-nickname').val(result.nickname);
-                    $('.popover-input-modified-time').val(result.lastModifiedDate);
+                    if (result.lastModifiedDate != undefined) {
+	                    var inputTime = result.lastModifiedDate.split('<br>');
+	                    if(inputTime.length < 2) {
+		                    $('.popover-input-created-time').val(result.lastModifiedDate);
+		                    $('.popover-input-modified-time').val(result.lastModifiedDate);
+	                    }else {
+		                    $('.popover-input-created-time').val(inputTime[1]);
+		                    $('.popover-input-modified-time').val(inputTime[0]);
+	                    }
+                    }
                     if (result.priority == undefined) {
                         $('.popover-input-priority').val('9');
                     } else {
@@ -1874,6 +1926,16 @@
             });
 
             $('.popover .btn-identity-check').click(function (e) {
+                if (!stringCheck($('.popover-input-nickname').val())) {
+                    alert('별명을 입력 후 다시 시도해주세요.');
+                    return;
+                }
+                var tmp = $('.popover-input-nickname').val().split(" ");
+                if (tmp.length > 1) {
+                    alert('별명에서 space를 제거 후 다시 시도해주세요.');
+                    return;
+                }
+
                 $.ajax({
                     url: "/main/nickname/check",
                     type: "post",
@@ -1882,10 +1944,6 @@
                         "author": $('.popover-input-author').val()
                     },
                     success: function (responseData) {
-                        if (!stringCheck($('.popover-input-nickname').val())) {
-                            alert('별명을 입력 후 다시 시도해주세요.');
-                            return;
-                        }
                         if (responseData == 'true') {
                             $('.popover .btn-identity-check').attr('disabled', '');
                             $('.popover .btn-identity-check').append('<span class="glyphicon glyphicon-ok" style="color:#3ce63d;"></span>');
@@ -2034,6 +2092,7 @@
     fetch_unix_timestamp = function () {
         return Math.floor(new Date().getTime() / 1000);
     };
+
     function timeConverter(UNIX_timestamp) {
         var a = new Date(UNIX_timestamp * 1000);
         //var months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];

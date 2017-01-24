@@ -23,11 +23,18 @@ import org.springframework.web.servlet.support.RequestContextUtils;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+import java.io.PrintWriter;
+import java.io.UnsupportedEncodingException;
 import java.util.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -750,7 +757,7 @@ public class AdminController {
 
     @RequestMapping(value = "/test")
     public ModelAndView nicknameTestPage(HttpServletRequest request) {
-        return new ModelAndView("test");
+        return new ModelAndView("admin_nickname_list");
     }
 
     @RequestMapping(value = "/canvas")
@@ -768,18 +775,19 @@ public class AdminController {
         try {
             authorCount = Integer.parseInt(request.getParameter("author-count"));
             stringCount = Integer.parseInt(request.getParameter("string-count"));
+
             if (Math.log(authorCount) / Math.log(10) >= stringCount) {
                 return new ModelAndView("api").addObject("json", "글자수가 더 커야합니다.");
             }
-            ArrayList<NicknameOption> nickList = new ArrayList<NicknameOption>();
-            for (int i = 0; i < authorCount; i++) {
 
+            ArrayList<NicknameOption> nickList = new ArrayList<NicknameOption>();
+            for (int i = 1120; i < 1120 + authorCount; i++) {
                 if (nicknameRepository.findByAuthor("" + i).size() <= 0) {
                     String nickname = null;
                     do {
                         nickname = getRandomString(stringCount);
                     } while (nicknameRepository.findByNickname(nickname).size() > 0);
-                    NicknameOption tmpNick = new NicknameOption("" + i, nickname, "9", "");
+                    NicknameOption tmpNick = new NicknameOption("" + i, nickname, "8", "");
                     nickList.add(tmpNick);
                 }
             }
@@ -790,15 +798,130 @@ public class AdminController {
         return new ModelAndView("api").addObject("json", gson.toJson(nicknameRepository.findAll()));
     }
 
-    @RequestMapping(value = "/test/nickname/get")
-    public ModelAndView getTestNickname(HttpServletRequest request) {
+    @RequestMapping(value = "/test/nickname/view")
+    public ModelAndView getTestNickname(HttpServletRequest request) throws IOException {
 
-        return new ModelAndView("api").addObject("json", new Gson().toJson(nicknameRepository.findAll()));
+        List<NicknameOption> nicknames = nicknameRepository.findAll();
+
+        return new ModelAndView("api").addObject("json", new Gson().toJson(nicknames));
+    }
+
+    @RequestMapping(value = "/test/nickname/import")
+    public ModelAndView importAllNickname(HttpServletRequest request) throws IOException {
+        Gson gson = new Gson();
+
+        String path = MainPageController.class.getResource("").getPath(); // 현재 클래스의 절대 경로를 가져온다.
+        BufferedReader in = new BufferedReader(new FileReader(new File(path).getParentFile().getParentFile().getParent() + File.separator + "IPandPort.txt"));
+
+        String ip = in.readLine();
+        int port = Integer.parseInt(in.readLine());
+        System.out.println(ip + " : " + port);
+
+        FileInputStream fis = new FileInputStream("saveToNicnameDB");
+        InputStreamReader isrB = new InputStreamReader(fis, "UTF-8");
+		in = new BufferedReader(isrB);
+
+		int cnt = 0;
+		int cnt2 = 0;
+		String bLine = "";
+        ArrayList<NicknameOption> nickList = new ArrayList<NicknameOption>();
+        int k = 0;
+        String priAll = "";
+		while((bLine = in.readLine()) != null) {
+			cnt++;
+			String[] s = bLine.split(" ", 4);
+			System.out.println(bLine + " : " + s.length + " : " + nicknameRepository.findByNickname(s[1]).size());
+			if (nicknameRepository.findByNickname(s[1]).size() <= 0) {
+				cnt2++;
+				NicknameOption tmpNick = null;
+	            if(s.length == 4) tmpNick = new NicknameOption(s[0], s[1], s[2], s[3]);
+	            else			  tmpNick = new NicknameOption(s[0], s[1], s[2], "");
+	            nickList.add(tmpNick);
+
+	            int p = Integer.parseInt(s[2]);
+	            if(p != 9) {
+	            	if(k==0) priAll = s[0]+">"+s[2];
+	            	else 	 priAll += "`"+s[0]+">"+s[2];
+	            	k++;
+	            	if(k >= 1000) {
+	                    SocketComm sc = new SocketComm("@PriAll_"+System.currentTimeMillis(), ip, port, 26, 0, priAll);
+	                    sc.runStart();
+	            		k = 0;
+	            		priAll = "";
+	            	}
+	            }
+				System.out.println(bLine + " : " + s.length + " : " + nicknameRepository.findByNickname(s[1]).size());
+			}
+		}
+    	if(k > 0) {
+            SocketComm sc = new SocketComm("@PriAll_"+System.currentTimeMillis(), ip, port, 26, 0, priAll);
+            sc.runStart();
+    	}
+
+        nicknameRepository.save(nickList);
+        in.close();
+
+        System.out.println("Count of Nicname :  total = " + cnt + " ; saved = " + cnt2);
+
+        return new ModelAndView("api").addObject("json", gson.toJson(nicknameRepository.findAll()));
+    }
+
+    @RequestMapping(value = "/test/nickname/export")
+    public ModelAndView exportAllNickname(HttpServletRequest request) throws IOException {
+        Gson gson = new Gson();
+
+        FileOutputStream fos = new FileOutputStream("saveToNicnameDB");
+        OutputStreamWriter osw = new OutputStreamWriter(fos, "UTF-8");
+        BufferedWriter bw = new BufferedWriter(osw);
+        PrintWriter pw = new PrintWriter(bw);
+
+        int cnt = 0;
+        List<NicknameOption> nicknames = nicknameRepository.findAll();
+        for (NicknameOption nicknameOption : nicknames) {
+            cnt++;
+            pw.println(nicknameOption.getAuthor() + " " + nicknameOption.getNickname() +
+                    " " + nicknameOption.getPriority() + " " + nicknameOption.getNote());
+            //System.out.println(nicknameOption.getAuthor() + " : " + nicknameOption.getNickname() + " : " + nicknameOption.getPriority() + " : " + nicknameOption.getNote());
+        }
+        pw.close();
+        System.out.println("Count of Stored Nicname : " + cnt);
+
+        return new ModelAndView("api").addObject("json", gson.toJson("Count of Stored Nicname : " + cnt));
     }
 
     @RequestMapping(value = "/test/nickname/delete")
-    public ModelAndView deleteAllNickname(HttpServletRequest request) {
+    public ModelAndView deleteAllNickname(HttpServletRequest request) throws IOException {
         Gson gson = new Gson();
+
+        String path = MainPageController.class.getResource("").getPath(); // 현재 클래스의 절대 경로를 가져온다.
+        BufferedReader in = new BufferedReader(new FileReader(new File(path).getParentFile().getParentFile().getParent() + File.separator + "IPandPort.txt"));
+
+        String ip = in.readLine();
+        int port = Integer.parseInt(in.readLine());
+        System.out.println(ip + " : " + port);
+
+        int k = 0;
+        String priAll = "";
+        List<NicknameOption> nicknames = nicknameRepository.findAll();
+		for (NicknameOption nicknameOption : nicknames) {
+            int p = Integer.parseInt(nicknameOption.getPriority());
+            if(p != 9) {
+            	if(k==0) priAll = nicknameOption.getAuthor()+">9";
+            	else 	 priAll += "`"+nicknameOption.getAuthor()+">9";
+            	k++;
+            	if(k >= 1000) {
+                    SocketComm sc = new SocketComm("@PriAll_"+System.currentTimeMillis(), ip, port, 26, 0, priAll);
+                    sc.runStart();
+            		k = 0;
+            		priAll = "";
+            	}
+            }
+			//System.out.println(nicknameOption.getAuthor() + " : " + nicknameOption.getNickname() + " : " + nicknameOption.getPriority() + " : " + nicknameOption.getNote());
+		}
+    	if(k > 0) {
+            SocketComm sc = new SocketComm("@PriAll_"+System.currentTimeMillis(), ip, port, 26, 0, priAll);
+            sc.runStart();
+    	}
 
         nicknameRepository.deleteAll();
 
@@ -867,6 +990,7 @@ public class AdminController {
         }
         return sb.toString();
     }
+
 
     private List<BookInfo> fillNicknamesOfBookList(List<BookInfo> bookInfoList) {
         List<NicknameOption> nicknames = nicknameRepository.findAll();
@@ -1010,5 +1134,4 @@ public class AdminController {
         }
         return groupMap;
     }
-
 }

@@ -76,21 +76,21 @@
                 style: [{
                     "selector": "core",
                     "style": {
-                        "selection-box-color": "#f00",
-                        "selection-box-border-color": "#f00",
+                        "selection-box-color": "#AAD8FF",
+                        "selection-box-border-color": "#8BB0D0",
                         "selection-box-opacity": "0.5"
                     }
-                },{
-                    "selector": ":active",
+                }, {
+                    "selector": "edge:active",
                     "style": {
-                        "overlay-color": "#f00",
+                        "overlay-color": "#0f0",
                         "overlay-padding": 10,
                         "overlay-opacity": 0.25
                     }
-                },{
+                }, {
                     "selector": ".hover",
                     "style": {
-                        "overlay-color": "#f00",
+                        "overlay-color": "#0f0",
                         "overlay-padding": 10,
                         "overlay-opacity": 0.25
                     }
@@ -292,6 +292,8 @@
 
             });
         });
+
+        cy.$('')
     </script>
 </head>
 <body>

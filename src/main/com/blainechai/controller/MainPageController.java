@@ -32,6 +32,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeSet;
 
 import static com.blainechai.util.LoggerUtil.*;
 
@@ -336,6 +337,13 @@ public class MainPageController {
         } else if (selInt == 16) {
             String[] s = msg.split(">");
             sc = new SocketComm(userId + "@" + id, ip, port, selInt, pageInt, "indexB^" + s[0] + ">" + groupToIdMap.get(s[1]));
+        } else if (selInt == 17) {
+        	SendInfo si17 = new SendInfo(id, author, period, sel, p, "OK", gson.toJson(nicknameAll()), 1);
+
+        	ModelAndView modelAndView = new ModelAndView("api");
+            modelAndView.addObject("json", gson.toJson(si17));
+
+            return modelAndView;
         } else if (selInt == 9) {
             String[] s = author.split(">");
             //System.out.println(s[3] + " :ZZZZZ: " + groupToIdMap.get(s[3]));
@@ -355,6 +363,7 @@ public class MainPageController {
 
         if (sc.beGetGood() == -2) send = "NoData";
         else if (sc.beGetGood() == -1) send = "NotOK";
+		else if (sc.beGetGood() == -99) send = "NotConnect";
         else {
             if (selInt == 1) send = "OK";
             else if ((selInt == 2) || (selInt == 12)) {
@@ -374,6 +383,7 @@ public class MainPageController {
             } else if (selInt == 15) {
                 from = findNicknameCheck(sc.getFrom(), author.split(">")[0]);
                 send = "OK";
+                //System.out.println("from.length = " + from.length);
             } else send = "OK";
         }
 
@@ -409,6 +419,26 @@ public class MainPageController {
 
         System.out.println(" :author: " + author);
         return author;
+    }
+
+    private String[] nicknameAll() {
+        System.out.println("\tnicknameAll");
+
+        List<NicknameOption> nicknames = nicknameRepository.findAll();
+        TreeSet<String> tSet = new TreeSet<String>();
+        for (NicknameOption nicknameOption : nicknames) {
+        	tSet.add(nicknameOption.getNickname() + ">" + nicknameOption.getAuthor());
+        }
+        String[] authorPlusNic = new String[nicknames.size()];
+        int i = 0;
+        Iterator<String> iter = tSet.iterator();
+        while (iter.hasNext()) {
+            String[] keyData = iter.next().split(">");
+        	authorPlusNic[i] = keyData[1] + ">" + keyData[0];
+        	i++;
+        }
+
+        return authorPlusNic;
     }
 
     private String[] findNicknameCheck(String[] authors, String key) {
@@ -555,6 +585,8 @@ public class MainPageController {
     public ModelAndView getStatisticsTotal(HttpServletRequest request) {
         String id = request.getParameter("id");
         String searchPeriod = request.getParameter("searchPeriod");
+        String groups = request.getParameter("groups");
+        String category = request.getParameter("category");
 
         ArrayList<String> authorList = new ArrayList<String>();
         authorList.add("total");
@@ -564,44 +596,12 @@ public class MainPageController {
         if (sessionRepository.findByJSessionId(sessionId).size() > 0) {
             userId = sessionRepository.findByJSessionId(sessionId).get(0).getUserId();
         }
-        System.out.println("ZZZZZZZZZZ: timeE = " + searchPeriod);
+        System.out.println("\tsearch-total-data : timeE = " + searchPeriod);
 
-        String[] dayMonth2 = searchPeriod.split("-");
-        String[] dayMonth = dayMonth2[2].split("_");
-
-        SimpleDateFormat formatter = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
-
-        System.out.println("ZZZZZZZZZZ: timeE = " + dayMonth2[0] + " :1: timeNow = " + dayMonth2[1]);
-
-        Calendar c = Calendar.getInstance();
-        try {
-            c.setTime(formatter.parse(dayMonth2[0]));
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
-        String startTime = c.get(c.YEAR) + (String.format("%02d", c.get(c.MONTH) + 1)) + (String.format("%02d", c.get(c.DATE))) + "000000";
-
-        c = Calendar.getInstance();
-        try {
-            c.setTime(formatter.parse(dayMonth2[1]));
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
-        //if (dayMonth[1].equals("monthly")) c.add(c.MONTH, 1);
-        //else c.add(c.DATE, 1);
-        //if (dayMonth[1].equals("monthly")) c.add(c.MONTH, -19);
-        //else c.add(c.DATE, -560);
-
-        String endTime = c.get(c.YEAR) + (String.format("%02d", c.get(c.MONTH) + 1)) + (String.format("%02d", c.get(c.DATE))) + "235959";
-        String msg = startTime + "-" + endTime + ">" + dayMonth2[2];
-
-        SocketComm sc = new SocketComm(userId + "@" + id, ip, port, 23, 0, msg);
+        SocketComm sc = new SocketComm(userId + "@" + id, ip, port, 23, 0, category+">"+searchPeriod+">"+groupInAll(sessionId, groups));
         sc.runStart();
 
-        //String send = "";
-
         while (true) {
-            //send = "OK";
             if (sc.beGetGood() >= 0) break;
             try {
                 Thread.sleep(100);
@@ -610,10 +610,62 @@ public class MainPageController {
         }
 
         LinkedHashMap<String, Integer> hMap = null;
-        if (dayMonth[1].equals("monthly"))
-            hMap = graphDataprocessingByMonthly("total", startTime, endTime, sc.getStatitcsTime(), sc.getStatitcs());
-        else
-            hMap = graphDataprocessingByDaily("total", startTime, endTime, sc.getStatitcsTime(), sc.getStatitcs());
+        String startTime = sc.getStartTime();
+        String endTime = sc.getEndTime();
+        String[] time = sc.getStatitcsTime();
+        int[] value = sc.getStatitcs();
+        String[] s = searchPeriod.split("-");
+
+        if (category.split("_")[1].equals("monthly")) {
+        	System.out.println("\t" + s.length + " : " + searchPeriod + " : " + time.length);
+        	if(s.length == 0) {
+        		if(time.length != 0) {
+        			startTime = time[0]+"01000000";
+	        		endTime = time[time.length-1]+"30235959";
+        		}
+        	}
+        	else if(s.length == 1) {
+        		if(time.length == 0)
+        			endTime = startTime;
+        		else
+        			endTime = time[time.length-1]+"30235959";
+        	}
+        	else {
+        		if(s[0].equals("")) {
+        			if(time.length == 0)
+        				startTime = endTime;
+        			else
+        				startTime = time[0]+"01000000";
+        		}
+        	}
+        	if(startTime.compareTo(endTime) > 0) startTime = endTime;
+        	System.out.println("\t" + startTime + " : " + endTime);
+            hMap = graphDataprocessingByMonthly("total", startTime, endTime, time, value);
+    	}
+        else {
+	    	if(s.length == 0) {
+        		if(time.length != 0) {
+		    		startTime = time[0]+"000000";
+		    		endTime = time[time.length-1]+"235959";
+        		}
+	    	}
+        	else if(s.length == 1) {
+        		if(time.length == 0)
+        			endTime = startTime;
+        		else
+        			endTime = time[time.length-1]+"235959";
+        	}
+	    	else {
+        		if(s[0].equals("")) {
+        			if(time.length == 0)
+        				startTime = endTime;
+        			else
+        				startTime = time[0]+"000000";
+        		}
+	    	}
+        	if(startTime.compareTo(endTime) > 0) startTime = endTime;
+	        hMap = graphDataprocessingByDaily("total", startTime, endTime, time, value);
+        }
 
         ArrayList<LinkedHashMap<String, String>> resultList = getGraphDataByAuthorsAndPeriod("total", hMap);
 
@@ -639,6 +691,8 @@ public class MainPageController {
         for (int i = 0; i < value.length; i++) {
             timeS = s.get(s.YEAR) + String.format("%02d", s.get(s.MONTH) + 1);
             timeNow = time[i].substring(0, 6);
+            //System.out.println(i + " : " + time[i] + " : " + value[i]);
+
             while (timeS.compareTo(timeNow) < 0) {
                 hMap.put(timeS, 0);
 
@@ -665,6 +719,8 @@ public class MainPageController {
             timeS = s.get(s.YEAR) + String.format("%02d", s.get(s.MONTH) + 1);
         }
 
+        if(hMap.size() == 1) hMap.put(timeS, 0);
+
         return hMap;
     }
 
@@ -683,6 +739,8 @@ public class MainPageController {
         for (int i = 0; i < value.length; i++) {
             timeS = s.get(s.YEAR) + (String.format("%02d", s.get(s.MONTH) + 1)) + (String.format("%02d", s.get(s.DATE)));
             timeNow = time[i].substring(0, 8);
+            //System.out.println(i + " : " + time[i] + " : " + value[i]);
+
             while (timeS.compareTo(timeNow) < 0) {
                 hMap.put(timeS, 0);
 //                System.out.println(timeS + " : ");
@@ -709,24 +767,10 @@ public class MainPageController {
             timeS = s.get(s.YEAR) + (String.format("%02d", s.get(s.MONTH) + 1)) + (String.format("%02d", s.get(s.DATE)));
         }
 
+        if(hMap.size() == 1) hMap.put(timeS, 0);
+
         return hMap;
     }
-
-
-//    @RequestMapping(value = {"/main/statistics/search-author-total-data"})
-//    public ModelAndView getStatisticsAuthorTotal(HttpServletRequest request) {
-//        String searchPeriod = request.getParameter("searchPeriod");
-//
-//        ArrayList<String> authorList = new ArrayList<String>();
-//        authorList.add("total");
-//
-//        ArrayList<LinkedHashMap<String, String>> resultList = getGraphDataByAuthorsAndPeriod(authorList, searchPeriod);
-//
-//        ModelAndView modelAndView = new ModelAndView("api");
-//        Gson gson = new Gson();
-//        modelAndView.addObject("json", gson.toJson(resultList));
-//        return modelAndView;
-//    }
 
     @RequestMapping(value = {"/main/statistics/search-author-data"})
     public ModelAndView getStatisticsAuthor(HttpServletRequest request) {
@@ -754,10 +798,13 @@ public class MainPageController {
 
         if (selInt <= 1) {
             String msg = request.getParameter("msg");
+            System.out.println("msg : " + msg);
             msg = wordParse(msg);
+            System.out.println("msg : " + msg);
 
             String[] s = msg.split(">");
             msg = s[0] + ">" + s[1] + ">" + s[2] + ">" + s[3] + ">" + groupInAll(sessionId, s[4]);
+            System.out.println("msg : " + msg);
 
             sc = new SocketComm(userId + "@" + id, ip, port, 21, 0, msg);
             sc.runStart();
@@ -803,6 +850,7 @@ public class MainPageController {
 
                 send = "OK";
 
+            	if(startTime.compareTo(endTime) > 0) startTime = endTime;
                 LinkedHashMap<String, Integer> hMap = null;
                 if (s2[1].equals("monthly"))
                     hMap = graphDataprocessingByMonthly(keyword, startTime, endTime, sc.getStatitcsTime(), sc.getStatitcs());
@@ -812,8 +860,11 @@ public class MainPageController {
                 ArrayList<LinkedHashMap<String, String>> authorJsonTmp
                         = (ArrayList<LinkedHashMap<String, String>>) gson.fromJson(authorJson, ArrayList.class);
                 resultList = getGraphDataByAuthorsAndPeriod(authorJsonTmp, keyword, hMap);
-            } else if (sc.beGetGood() == -1) send = "NotOK";
-            else send = "NoData";
+            } else if (sc.beGetGood() == -1)
+            	send = "NotOK";
+			else if (sc.beGetGood() == -99)
+				send = "NotConnect";
+			else send = "NoData";
         }
 
         SendInfo si = new SendInfo(id, sel, send, keyword, gson.toJson(resultList));
@@ -868,59 +919,6 @@ public class MainPageController {
 
         return resultList;
     }
-
-/*    private ArrayList<LinkedHashMap<String, String>> getGraphDataByAuthorsAndPeriod(ArrayList<String> authorList, String searchPeriod) {
-        ArrayList<LinkedHashMap<String, String>> resultList = new ArrayList<LinkedHashMap<String, String>>();
-
-        switch (Integer.parseInt(searchPeriod)) {
-            case SEARCH_PERIOD.daily:
-                for (int i = 0; i < 30; i++) {
-                    LinkedHashMap<String, String> tMap = (new LinkedHashMap<String, String>());
-                    tMap.put("index", String.valueOf(i));
-                    Random random = new Random();
-                    for (String author : authorList) {
-                        tMap.put(author, String.valueOf(random.nextInt(700)));
-                    }
-                    resultList.add(tMap);
-                }
-                break;
-            case SEARCH_PERIOD.weekly:
-                for (int i = 0; i < 7; i++) {
-                    LinkedHashMap<String, String> tMap = (new LinkedHashMap<String, String>());
-                    tMap.put("index", String.valueOf(i));
-                    Random random = new Random();
-                    for (String author : authorList) {
-                        tMap.put(author, String.valueOf(random.nextInt(1000)));
-                    }
-                    resultList.add(tMap);
-                }
-                break;
-            case SEARCH_PERIOD.monthly:
-                for (int i = 0; i < 12; i++) {
-                    LinkedHashMap<String, String> tMap = (new LinkedHashMap<String, String>());
-                    tMap.put("index", String.valueOf(i));
-                    Random random = new Random();
-                    for (String author : authorList) {
-                        tMap.put(author, String.valueOf(random.nextInt(2000)));
-                    }
-                    resultList.add(tMap);
-                }
-                break;
-            case SEARCH_PERIOD.yearly:
-                for (int i = 0; i < 10; i++) {
-                    LinkedHashMap<String, String> tMap = (new LinkedHashMap<String, String>());
-                    tMap.put("index", String.valueOf(i));
-                    Random random = new Random();
-                    for (String author : authorList) {
-                        tMap.put(author, String.valueOf(random.nextInt(3000)));
-                    }
-                    resultList.add(tMap);
-                }
-                break;
-        }
-
-        return resultList;
-    }*/
 
     @RequestMapping(value = {"/main/status"})
     public String statusPage() {
@@ -1003,28 +1001,31 @@ public class MainPageController {
         boolean isGroup = true;
         if (selInt < 100) {
             if (selInt <= 1) {
-                System.out.println("\tAAAA : msg = " + msg);
+                //System.out.println("\tAAAA : msg = " + msg);
                 msg = wordParse(msg);
-                System.out.println("\tAAAA : msg = " + msg);
+                //System.out.println("\tAAAA : msg = " + msg);
 
                 String[] s = msg.split(">");
                 String groupAfter = groupInAll(sessionId, s[4]);
                 if(groupAfter.equals("")) isGroup = false;
-                System.out.println("\tAAAA : msg = " + msg + " :" + groupAfter + ": " + isGroup);
+                //System.out.println("\tAAAA : msg = " + msg + " :" + groupAfter + ": " + isGroup);
                 if(isGroup) {
 	                msg = s[0] + ">" + s[1] + ">" + s[2] + ">" + s[3] + ">" + groupAfter;
 	                sc = new SocketComm(userId + "@" + id, ip, port, selInt, pageInt, msg);
                 }
             } else if (selInt == 8) {
-                System.out.println("\tBBBB : msg = " + msg);
+                //System.out.println("\tBBBB : msg = " + msg);
                 String[] s = msg.split(">");
-                msg = s[0] + ">" + s[1] + ">" + s[2] + ">" + s[3] + ">"  + s[4] + ">" + s[5] + ">" + groupInAll(sessionId, s[5]);
-                System.out.println("\tBBBB : msg = " + msg);
+                msg = s[0] + ">" + s[1] + ">" + s[2] + ">" + s[3] + ">"  + s[4] + ">" + s[5] + ">" + groupInAll(sessionId, s[5]) + ">" + s[6];
+                send = s[6];
+                //System.out.println("\tBBBB : msg = " + msg);
                 sc = new SocketComm(userId + "@" + id, ip, port, selInt, pageInt, msg);
             } else if (selInt == 13) {
                 //String[] s = msg.split(">");
                 //msg = s[0] + ">" + groupInAll(sessionId, s[1]);
                 //System.out.println("\tBBBB : msg = " + msg);
+                sc = new SocketComm(userId + "@" + id, ip, port, selInt, pageInt, msg);
+            } else if (selInt == 27) {
                 sc = new SocketComm(userId + "@" + id, ip, port, selInt, pageInt, msg);
             } else
                 sc = new SocketComm(userId + "@" + id, ip, port, selInt, pageInt);
@@ -1060,9 +1061,13 @@ public class MainPageController {
 	                        send = cntTmp + "!@#$" + progressPer;
 	                } else if (selInt == 6) {
 	                    send += "OK";
+	                } else if (selInt == 8) {
+	                    ;
 	                } else send += "EXPORT";        // R
 	            } else if (sc.beGetGood() == -2) {
 	                send = "NoData";
+	            } else if (sc.beGetGood() == -99) {
+	            	send = "NotConnect";
 	            } else {
 	                send = "NotOK";
 	            }
@@ -1262,14 +1267,15 @@ public class MainPageController {
                 if(!group.equals("")) {
 	                msg = s[0] + ">" + s[1] + ">" + groupInAll(sessionId, s[2]);
 
-	                SocketComm sc = new SocketComm(userId + "@" + "A_" + System.currentTimeMillis(), ip, port, 18, 0, msg);
+	                SocketComm sc = new SocketComm(userId + "@" + "C_" + id + System.currentTimeMillis(), ip, port, 18, 0, msg);
 	                sc.runStart();
 	                result = sc.beGetGood();
                 }
                 //System.out.println("ALRAM96!!common!!!! msg : " + result);
-                commonBookmark.setCount(result);
-                commonBookmarkRepository.save(commonBookmark);
-
+                if(result != -99) {
+	                commonBookmark.setCount(result);
+	                commonBookmarkRepository.save(commonBookmark);
+                }
             }
         }
         return new ModelAndView("api").addObject("json", "");
@@ -1300,17 +1306,19 @@ public class MainPageController {
                     if(!group.equals("")) {
                         msg = s[0] + ">" + s[1] + ">" + groupInAll(sessionId, s[2]);
 
-                        sc = new SocketComm(userId + "@" + "A_" + System.currentTimeMillis(), ip, port, 18, 0, msg);
+                        sc = new SocketComm(userId + "@" + "CC_"+ commonBookmarks.get(i).getId() + System.currentTimeMillis(), ip, port, 18, 0, msg);
                         sc.runStart();
                         result = sc.beGetGood();
                         System.out.println("common-bookmark/get :: AAAAA : " + i + " : " + msg + "  => " + result + "  => " + commonBookmarks.get(i).getCount());
                     }
+                    if(result == -99) continue;
 
                     if (result > commonBookmarks.get(i).getCount()) {
-                        historyApis.add(new HistoryApi(commonBookmarks.get(i), true)); //date가 update된 경우
+                        historyApis.add(new HistoryApi(commonBookmarks.get(i), true)); //data가 update된 경우
                     } else {
                         historyApis.add(new HistoryApi(commonBookmarks.get(i), false));
                     }
+                    //if(result >= 0) commonBookmarks.get(i).setCount(result);
                 }
             }
         }
@@ -1417,7 +1425,7 @@ public class MainPageController {
 //        System.out.println("!!!!!!@@@");
         if (sessionRepository.findByJSessionId(sessionId).size() > 0) {
             userId = sessionRepository.findByJSessionId(sessionId).get(0).getUserId();
-//            System.out.println(id + "@@@@@@@");
+            System.out.println(id + "@@@@@@@");
             List<UserBookmark> userBookmarks = userBookmarkRepository.findById(Long.parseLong(id));
 //            System.out.println("@@@@@");
             if (userBookmarks.size() > 0) {
@@ -1431,14 +1439,16 @@ public class MainPageController {
                 if(!group.equals("")) {
                     msg = s[0] + ">" + s[1] + ">" + groupInAll(sessionId, s[2]);
 
-                    SocketComm sc = new SocketComm(userId + "@" + "A_" + System.currentTimeMillis(), ip, port, 18, 0, msg);
+                    SocketComm sc = new SocketComm(userId + "@" + "A_" + id + System.currentTimeMillis(), ip, port, 18, 0, msg);
                     sc.runStart();
                     result = sc.beGetGood();
                     System.out.println("ALRAM97!!user!!!! msg : " + result);
                 }
 
-                userBookmark.setCount(result);
-                userBookmarkRepository.save(userBookmark);
+                if(result != -99) {
+	                userBookmark.setCount(result);
+	                userBookmarkRepository.save(userBookmark);
+                }
             }
         }
         return new ModelAndView("api").addObject("json", "");
@@ -1456,8 +1466,6 @@ public class MainPageController {
             userBookmarks = userBookmarkRepository.findByUserAccount_UserId(userId);
 
             if (userBookmarks != null) {
-                //bookmark들에 대해 새로운 데이터 개수를 받아오는 부분 필요
-                SocketComm sc = null;
                 for (int i = 0; i < userBookmarks.size(); i++) {
 //                    historyApis.add(new HistoryApi(userBookmarks.get(i), false));
 
@@ -1468,18 +1476,19 @@ public class MainPageController {
                     if(!group.equals("")) {
                         msg = s[0] + ">" + s[1] + ">" + groupInAll(sessionId, s[2]);
 
-                        sc = new SocketComm(userId + "@" + "A_" + System.currentTimeMillis(), ip, port, 18, 0, msg);
+                        SocketComm sc = new SocketComm(userId + "@" + "U_"+ userBookmarks.get(i).getId() + System.currentTimeMillis(), ip, port, 18, 0, msg);
                         sc.runStart();
                         result = sc.beGetGood();
-                        System.out.println("user-bookmark/get :: AAAAA : " + i + " : " + msg + " => " + result + "  => " + userBookmarks.get(i).getCount());
-
+                        System.out.println("user-bookmark/get :: " + i + " : " + msg + " " + result + "  => " + userBookmarks.get(i).getId() + " : " + userBookmarks.get(i).getCount());
                     }
+                    if(result == -99) continue;
 
-                    if (result > userBookmarks.get(i).getCount()) {
-                        historyApis.add(new HistoryApi(userBookmarks.get(i), true)); //데이터가 업데이트 된 경우
+                	if (result > userBookmarks.get(i).getCount()) {
+                    	historyApis.add(new HistoryApi(userBookmarks.get(i), true)); //데이터가 업데이트 된 경우
                     } else {
                         historyApis.add(new HistoryApi(userBookmarks.get(i), false));
                     }
+
                 }
                 if (userBookmarks.size() > 0) {
                     //sc = new SocketComm(userId + "@" + "A_" + System.currentTimeMillis(), ip, port, 5, 0);
@@ -1491,6 +1500,27 @@ public class MainPageController {
         ModelAndView modelAndView = new ModelAndView("api");
 //        modelAndView.addObject("json", gson.toJson(rtnArray));
         modelAndView.addObject("json", gson.toJson(historyApis));
+
+        return modelAndView;
+    }
+
+    @RequestMapping(value = "/main/user-bookmark/serverStatus")
+    public ModelAndView serverStatus(HttpServletRequest request) {
+        String sessionId = request.getSession().getId();
+        String msg = request.getParameter("msg");
+
+        Gson gson = new Gson();
+        List<String> serverStatus = new ArrayList<String>();
+        if (sessionRepository.findByJSessionId(sessionId).size() > 0) {
+        	String userId = sessionRepository.findByJSessionId(sessionId).get(0).getUserId();
+        	SocketComm sc = new SocketComm(userId + "@" + "UU_" + System.currentTimeMillis(), ip, port, 98, 0, msg);
+        	sc.runStart();
+            int result = sc.beGetGood();
+            System.out.println("serverStatus :: " + msg + " : " + result);
+            serverStatus.add(result + "");
+        }
+        ModelAndView modelAndView = new ModelAndView("api");
+        modelAndView.addObject("json", gson.toJson(serverStatus));
 
         return modelAndView;
     }
@@ -1526,28 +1556,29 @@ public class MainPageController {
 
         System.out.println("/nickname/update : " + nickname + " : " + author + " : " + priority + " : " + note);
         String changeNic = "";
+        String sessionId = request.getSession().getId();
+        String userId = sessionRepository.findByJSessionId(sessionId).get(0).getUserId();
 
         List<NicknameOption> nicknameOptions = nicknameRepository.findByAuthor(author);
         ModelAndView modelAndView = new ModelAndView("api");
         if (nicknameOptions.size() <= 0) {
-            NicknameOption nicknameOption = new NicknameOption(author, nickname, priority, note);
+            NicknameOption nicknameOption = new NicknameOption(author, nickname, priority, note, userId);
             nicknameRepository.save(nicknameOption);
-            if (!priority.equals("9")) changeNic = author + ">9>" + priority;
+            if (!priority.equals("9")) changeNic = author + ">" + priority;
         } else {
             NicknameOption nicknameOption = nicknameOptions.get(0);
             //System.out.println("/nickname/update 222: " + nickname + " : " + author + " : " + priority + " : " + nicknameOption.getPriority());
             if (!nicknameOption.getPriority().equals(priority))
-                changeNic = author + ">" + nicknameOption.getPriority() + ">" + priority;
+                changeNic = author + ">" + priority;
             nicknameOption.setNickname(nickname);
             nicknameOption.setPriority(priority);
             nicknameOption.setNote(note);
-            nicknameOption.setLastModifiedDate();
+            nicknameOption.setLastModifiedDatePlusUserID(userId);
+            //nicknameOption.setLastModifiedDate();
             nicknameRepository.save(nicknameOption);
         }
         if (!changeNic.equals("")) {
-            String sessionId = request.getSession().getId();
-            String userId = sessionRepository.findByJSessionId(sessionId).get(0).getUserId();
-            SocketComm sc = new SocketComm(userId + "@Priority", ip, port, 6, 0, changeNic);
+            SocketComm sc = new SocketComm(userId + "@Priority_"+System.currentTimeMillis(), ip, port, 6, 0, changeNic);
             sc.runStart();
             //System.out.println("/nickname/update priority Update: " + author + " : " + changeNic);
         }
@@ -1595,6 +1626,11 @@ public class MainPageController {
     @RequestMapping(value = "/main/nickname/delete")
     public ModelAndView deleteNickname(HttpServletRequest request) {
         String author = request.getParameter("author");
+
+        String sessionId = request.getSession().getId();
+        String userId = sessionRepository.findByJSessionId(sessionId).get(0).getUserId();
+        SocketComm sc = new SocketComm(userId + "@Priority_"+System.currentTimeMillis(), ip, port, 6, 0, author+">9");
+        sc.runStart();
 
         nicknameRepository.deleteByAuthor(author);
         ModelAndView modelAndView = new ModelAndView("api");
@@ -1683,7 +1719,7 @@ public class MainPageController {
             if (s1.length > 1) {
                 for (int j = 0; j < s1.length; j++) {
                     if (!str[0].equals("indexB")) word += str[0] + "^" + s1[j];
-                    else word += str[0] + "^" + getAuthorByNickname(s1[j], groups);
+                    else word += str[0] + "^" + getAuthorByNickname2(s1[j], groups);
 
                     //System.out.println("BBBBBBBBBB : word : " + str[0] + "^" + s1[j]);
                     if (j != s1.length - 1) word += secondAdd;
@@ -1692,7 +1728,7 @@ public class MainPageController {
                 //System.out.println("CCCCCCCCCCCCC : word : " + str[0] + " : " + s[i]);
                 if (!str[0].equals("indexB")) word += str[0] + "^" + s[i];
                 else {
-                    word += str[0] + "^" + getAuthorByNickname(s[i], groups);
+                    word += str[0] + "^" + getAuthorByNickname2(s[i], groups);
                 }
                 //System.out.println("CCCCCCCCCCCCC : word : " + str[0] + "^" + s[i]);
             }
@@ -1750,8 +1786,6 @@ public class MainPageController {
 
         String nickname = t[0];
 
-        //System.out.println("ZZZZ :" + name + " : " + nickname + " : " + t.length);
-
         List<NicknameOption> nicknameOptions = nicknameRepository.findByNickname(nickname);
         if (nicknameOptions.size() > 0) {
             author = nicknameOptions.get(0).getAuthor();
@@ -1759,12 +1793,49 @@ public class MainPageController {
 
         //if (author.equals("")) author = groups + "_" + name;
         if (author.equals("")) author = name;
-
-        if (t.length > 1) author = author + ">" + t[1];
+        else if (t.length > 1) author = author + ">" + t[1];
         //System.out.println("ZZZZ :" + author);
 
         return author;
     }
+
+    private String getAuthorByNickname2(String name, String groups) {
+    	System.out.println("getAuthorByNickname2");
+
+    	String author = "";
+
+        String[] t = name.split(">", 2);
+        String[] t1 = t[0].split("_", 2);
+        if (t1.length >= 2) return name;
+
+        String nickname = t[0];
+
+        ArrayList<String> authors = new ArrayList<String>();
+        List<NicknameOption> nicknames = nicknameRepository.findAll();
+        for (NicknameOption nicknameOption : nicknames) {
+        	String nic = nicknameOption.getNickname();
+            //System.out.println(nickname + " : " + nic.contains(nickname) + " : XXX : " + nicknameOption.getNickname());
+            if (nic.contains(nickname)) {
+            	authors.add(nicknameOption.getAuthor());
+                //System.out.println("YYY :" + nicknameOption.getAuthor());
+           }
+        }
+        //System.out.println("ZZZZ :" + authors.size());
+
+        if (authors.size() == 0) author = name;
+        else {
+        	author = authors.get(0);
+            for (int i = 1; i < authors.size(); i++) {
+            	author += " | " + "indexB^"+ authors.get(i);
+            }
+
+            if (t.length > 1)  author = author + ">" + t[1];
+        }
+        //System.out.println("ZZZZ :" + author);
+
+        return author;
+    }
+
 
     private String groupInAll(String sessionId, String group) {
         String userId = "";
@@ -1792,10 +1863,12 @@ public class MainPageController {
 
         Map<String, String> groupToIdMap = getGroupMap();
 
-       if (group.equals(Constant.GROUP_NAME_ALL)) {
+        System.out.println(group + " : " + Constant.GROUP_NAME_ALL);
+        if (group.equals(Constant.GROUP_NAME_ALL)) {
             return getAllGroup();
         } else {
-        	return groupToIdMap.get(group);
+        	if(groupToIdMap.get(group)==null) return "";
+        	return 		groupToIdMap.get(group);
         }
 
         /*

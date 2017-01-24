@@ -44,9 +44,11 @@
 </div>
 <div style="padding: 5px 0 0 20px;">
     <button class="btn btn-sm btn-default btn-add-nick" style="width: 80px;">닉네임 추가</button>
-    <button class="btn btn-sm btn-default btn-get-nick" style="padding-left: 10px;">닉네임 정보 보기</button>
-    <button class="btn btn-sm btn-default btn-delete-all-nick btn-danger" style="position: absolute;right: 15px;">닉네임 모두
-        삭제
+    <button class="btn btn-sm btn-default btn-view-all-nick" style="padding-left: 10px;">닉네임 정보 보기</button>
+    <button class="btn btn-sm btn-default btn-view-all-nick" style="position: absolute;right: 510px;">view
+    <button class="btn btn-sm btn-default btn-import-all-nick" style="position: absolute;right: 440px;">import
+    <button class="btn btn-sm btn-default btn-export-all-nick" style="position: absolute;right: 370px;">export
+    <button class="btn btn-sm btn-default btn-delete-all-nick" style="position: absolute;right: 300px;">delete
     </button>
 </div>
 <div style="padding: 20px 0 0 20px;">
@@ -83,14 +85,22 @@
         })
     });
 
-    $('.btn-delete-all-nick').click(function () {
+    $('.btn-import-all-nick').click(function () {
         $.ajax({
-            url: '/admin/test/nickname/delete',
+            url: '/admin/test/nickname/import',
             type: 'post',
-            data: {
-                "author-count": $('.count').val(),
-                "string-count": $('.string-count').val()
-            },
+            data: { },
+            contentType: "application/x-www-form-urlencoded; charset=UTF-8",
+            success: function (responseData) {
+                $('.result-data').text(responseData);
+            }
+        })
+    });
+    $('.btn-export-all-nick').click(function () {
+        $.ajax({
+            url: '/admin/test/nickname/export',
+            type: 'post',
+            data: { },
             contentType: "application/x-www-form-urlencoded; charset=UTF-8",
             success: function (responseData) {
                 $('.result-data').text(responseData);
@@ -98,9 +108,21 @@
         })
     });
 
-    $('.btn-get-nick').click(function () {
+    $('.btn-delete-all-nick').click(function () {
         $.ajax({
-            url: '/admin/test/nickname/get',
+            url: '/admin/test/nickname/delete',
+            type: 'post',
+            data: { },
+            contentType: "application/x-www-form-urlencoded; charset=UTF-8",
+            success: function (responseData) {
+                $('.result-data').text(responseData);
+            }
+        })
+    });
+
+    $('.btn-view-all-nick').click(function () {
+        $.ajax({
+            url: '/admin/test/nickname/view',
             type: 'post',
             data: {},
             contentType: "application/x-www-form-urlencoded; charset=UTF-8",

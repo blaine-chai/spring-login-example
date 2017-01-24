@@ -18,7 +18,7 @@ public class NicknameOption implements Serializable {
 
     private String author;
     private String nickname;
-    private String lastModifiedDate;
+    private String lastModifiedDate = "";
     private String priority;
     private String note;
 
@@ -30,6 +30,15 @@ public class NicknameOption implements Serializable {
         this.nickname = nickname;
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         this.lastModifiedDate = sdf.format(new java.util.Date());
+        this.priority = priority;
+        this.note = note;
+    }
+
+    public NicknameOption(String author, String nickname, String priority, String note, String userID) {
+        this.author = author;
+        this.nickname = nickname;
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        this.lastModifiedDate = sdf.format(new java.util.Date()) + "(" + userID + ")";;
         this.priority = priority;
         this.note = note;
     }
@@ -65,6 +74,20 @@ public class NicknameOption implements Serializable {
     public void setLastModifiedDate() {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         this.lastModifiedDate = sdf.format(new java.util.Date());
+    }
+
+    public void setLastModifiedDatePlusUserID(String userID) {
+        if(this.lastModifiedDate.equals("")) {
+    		this.lastModifiedDate += "(" + userID + ")";
+    		//startModifiedDate = this.lastModifiedDate;
+    	}
+    	else {
+            String[] s = this.lastModifiedDate.split("<br>");
+            String startModifiedDate = s[s.length-1];
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+    		this.lastModifiedDate = sdf.format(new java.util.Date()) + "(" + userID + ")<br>"
+    				+ startModifiedDate;
+    	}
     }
 
     public String getPriority() {
