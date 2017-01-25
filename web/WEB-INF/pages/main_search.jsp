@@ -188,7 +188,8 @@
                         <label class="btn btn-default btn-sm expand-btn btn-primary"
                                style="width: 29px; margin:0;">+</label>
                         <label class="btn btn-default btn-sm" style="width:calc(100% - 29px); margin:0;"
-                               onclick="$(this).parent().find('.expand-btn').click();return false;">Admin History</label>
+                               onclick="$(this).parent().find('.expand-btn').click();return false;">Admin
+                            History</label>
                         <div id="admin-history" class="panel history"
                              style="overflow: auto; max-height:300px; margin-left: 2px; margin-right: 2px; display: none;">
                             <table style="font-size:11px;max-height: 300px; overflow: auto;word-break: break-all;"
@@ -230,7 +231,28 @@
                         </div>
                     </div>
                     <div id="search-result-export-container" style="position: absolute;right: 30px;top: 12px;"><a
-                            class="btn btn-default btn-sm btn-export">내보내기</a></div>
+                            class="btn btn-default btn-sm btn-export" style="margin-right: 10px;">내보내기</a>
+                        <div class="btn-group" style="position:relative;float: right;">
+                            <button type="button" class="btn btn-default btn-sm dropdown-toggle count-select-dropdown"
+                                    data-toggle="dropdown" aria-haspopup="true"
+                                    aria-expanded="false" style="width: 95px">
+                                <span class="search-category-option">50개씩 보기</span>
+                                <div style="display: inline-block"><span class="caret"></span><span
+                                        class="sr-only"></span>
+                                </div>
+                            </button>
+                            <ul class="dropdown-menu count-selector" style="min-width: 0;width: 110px;">
+                                <li><a role="count-select-dropdown" onclick="return false;"
+                                       href="#">10개씩 보기</a></li>
+                                <li><a role="count-select-dropdown" onclick="return false;"
+                                       tabindex="-1" href="#">25개씩 보기</a></li>
+                                <li><a role="count-select-dropdown" onclick="return false;"
+                                       tabindex="-1" href="#">50개씩 보기</a></li>
+                                <li><a role="count-select-dropdown" onclick="return false;"
+                                       tabindex="-1" href="#">100개씩 보기</a></li>
+                            </ul>
+                        </div>
+                    </div>
                 </div>
                 <div id="result-table-wrapper" class="panel panel-default"
                      style="margin: 15px; overflow: auto; height: calc(100% - 200px); font-size: 11px">
@@ -394,10 +416,10 @@
 
 
         $('.btn-export').click(function () {
-        	var csv = exportTableToCSV.apply(this, [$('#book-table'), 'export.csv']);
+            var csv = exportTableToCSV.apply(this, [$('#book-table'), 'export.csv']);
             callAjaxLoop("BCSV_" + CSVcnt, 0, 0, 27, 0, csv, "");
             CSVcnt++;
-       });
+        });
 
         var CSVcnt = 0;
         getSearchHistory();
@@ -625,8 +647,8 @@
                         + " & " + tableData[row].referencedAuthor + ">완전일치>"
                         + lastQuery.fromDate + "-" + lastQuery.toDate + ">" + lastQuery.dateOption;
 
-               //msg += ">" + $('input[name="groups"]:checked').val();
-               msg += ">" + tableData[row].groupName;
+                //msg += ">" + $('input[name="groups"]:checked').val();
+                msg += ">" + tableData[row].groupName;
                 console.log(msg);
 
                 //if ($('#book-table tbody').find('tr').eq(row).find('td').eq(col).find('span').hasClass( "glyphicon-ok"))
@@ -1043,20 +1065,20 @@
             //html += '<td class="relation-td">' + tdata.referencedAuthor + '</td>';
             html += '<td class="relation-td relation' + i + '" title="' + tdata.referencedAuthor + '" href="#">' + tdata.referencedAuthor
                     + '<span>' + (tdata.refNickname != undefined ? '(' + tdata.refNickname + ')' : '') + '</span>' + '</td>';
-/*
-console.log("AAA : " + tdata.r);
-            if (tdata.r == 't') {
-                tdata.r = '<span class="glyphicon glyphicon-ok"></span>';
-            } else {
-                tdata.r = '';
-            }
-console.log("AAA : " + tdata.e);
-            if (tdata.e == 't') {
-                tdata.e = '<span class="glyphicon glyphicon-ok"></span>';
-            } else {
-                tdata.e = '';
-            }
-*/
+            /*
+             console.log("AAA : " + tdata.r);
+             if (tdata.r == 't') {
+             tdata.r = '<span class="glyphicon glyphicon-ok"></span>';
+             } else {
+             tdata.r = '';
+             }
+             console.log("AAA : " + tdata.e);
+             if (tdata.e == 't') {
+             tdata.e = '<span class="glyphicon glyphicon-ok"></span>';
+             } else {
+             tdata.e = '';
+             }
+             */
             html += '<td class="check-r' + i + '" title="' +
                     tdata.author + ' - 참조저자' + '" href="#">' + tdata.r + '</td>';
             html += '<td class="check-e">' + tdata.e + '</td>';
@@ -1441,29 +1463,29 @@ console.log("AAA : " + tdata.e);
         console.log(data);
 
         $.each(data, function (i, tdata) {
-        	var authorColor = "background: #d3f3d3;";
-        	var relAuthorColor = "background: #f3d3f3;";
-        	if(tdata.author != authorName) {
-            	authorColor = "background: #f3d3f3;";
-            	relAuthorColor = "background: #d3f3d3;";
-        	}
-        	var hml = '<tr>' + '<td>' + tdata.publishedDate + '</td>';
-        	hml += '<td style="' + authorColor + '" class="author-td author' + i + '" title="' + tdata.author + '" href="#">' + tdata.author
-					+ '<span>' + (tdata.authNickname != undefined ? '(' + tdata.authNickname + ')' : '') + '</span>' + '</td>';
-        	hml += '<td style="' + relAuthorColor + '" class="relation-td relation' + i + '" title="' + tdata.referencedAuthor + '" href="#">' + tdata.referencedAuthor
-					+ '<span>' + (tdata.refNickname != undefined ? '(' + tdata.refNickname + ')' : '') + '</span>' + '</td>';
+            var authorColor = "background: #d3f3d3;";
+            var relAuthorColor = "background: #f3d3f3;";
+            if (tdata.author != authorName) {
+                authorColor = "background: #f3d3f3;";
+                relAuthorColor = "background: #d3f3d3;";
+            }
+            var hml = '<tr>' + '<td>' + tdata.publishedDate + '</td>';
+            hml += '<td style="' + authorColor + '" class="author-td author' + i + '" title="' + tdata.author + '" href="#">' + tdata.author
+                    + '<span>' + (tdata.authNickname != undefined ? '(' + tdata.authNickname + ')' : '') + '</span>' + '</td>';
+            hml += '<td style="' + relAuthorColor + '" class="relation-td relation' + i + '" title="' + tdata.referencedAuthor + '" href="#">' + tdata.referencedAuthor
+                    + '<span>' + (tdata.refNickname != undefined ? '(' + tdata.refNickname + ')' : '') + '</span>' + '</td>';
 
-			var stt = tdata.contents;
-			for (j=0; j < lastQuery.data.length; j++) {
-			    if (lastQuery.data[j].category == '내용') {
-			        var strTmp = lastQuery.data[j].input.split(/[ ]*[&|][ ]*/);
-			        for (var k = 0; k < strTmp.length; k++)
-			            stt = stt.replace(strTmp[k], '<span class="highlight-background">' + strTmp[k] + '</span>');
-			    }
-			}
-			//console.log(stt);
-         	hml += '<td style="word-break: break-all">' + stt + '</td>' + '</tr>';
-			//console.log(hml);
+            var stt = tdata.contents;
+            for (j = 0; j < lastQuery.data.length; j++) {
+                if (lastQuery.data[j].category == '내용') {
+                    var strTmp = lastQuery.data[j].input.split(/[ ]*[&|][ ]*/);
+                    for (var k = 0; k < strTmp.length; k++)
+                        stt = stt.replace(strTmp[k], '<span class="highlight-background">' + strTmp[k] + '</span>');
+                }
+            }
+            //console.log(stt);
+            hml += '<td style="word-break: break-all">' + stt + '</td>' + '</tr>';
+            //console.log(hml);
             tmpEl.find('tbody').append(hml);
         });
 
@@ -1530,7 +1552,7 @@ console.log("AAA : " + tdata.e);
              else
              callAjaxLoop("author"+authorNUM, 8, row, 8, 8, tableData[row].eventNo+">f", "");
              */
-             var timestamp = timeConverter(fetch_unix_timestamp());
+            var timestamp = timeConverter(fetch_unix_timestamp());
             callAjaxLoop("Bauthor" + authorNUM, 8, row, 8, 8, tableData[row].eventNo + ">" + "indexB^" + tableData[row].author + " & "
                     + "indexB^" + tableData[row].referencedAuthor + ">완전일치>" + lastQuery.fromDate + "-" + lastQuery.toDate + '>' + lastQuery.dateOption + ">" + tableData[row].groupName + ">" + timestamp, "");
         });
@@ -1547,28 +1569,28 @@ console.log("AAA : " + tdata.e);
 
         $('.pagination-' + id).parent().parent().parent().find('tbody').children().remove();
         $.each(data, function (i, tdata) {
-        	var authorColor = "background: #d3f3d3;";
-        	var relAuthorColor = "background: #f3d3f3;";
-        	if(tdata.author != authorName) {
-            	authorColor = "background: #f3d3f3;";
-            	relAuthorColor = "background: #d3f3d3;";
-        	}
-        	var hml = '<tr>' + '<td>' + tdata.publishedDate + '</td>';
-        	hml += '<td style="' + authorColor + '" class="author-td author' + i + '" title="' + tdata.author + '" href="#">' + tdata.author +
-            	'<span>' + (tdata.authNickname != undefined ? '(' + tdata.authNickname + ')' : '') + '</span>' + '</td>';
-        	hml += '<td style="' + relAuthorColor + '" class="relation-td relation' + i + '" title="' + tdata.referencedAuthor + '" href="#">' + tdata.referencedAuthor
-         	   + '<span>' + (tdata.refNickname != undefined ? '(' + tdata.refNickname + ')' : '') + '</span>' + '</td>';
+            var authorColor = "background: #d3f3d3;";
+            var relAuthorColor = "background: #f3d3f3;";
+            if (tdata.author != authorName) {
+                authorColor = "background: #f3d3f3;";
+                relAuthorColor = "background: #d3f3d3;";
+            }
+            var hml = '<tr>' + '<td>' + tdata.publishedDate + '</td>';
+            hml += '<td style="' + authorColor + '" class="author-td author' + i + '" title="' + tdata.author + '" href="#">' + tdata.author +
+                    '<span>' + (tdata.authNickname != undefined ? '(' + tdata.authNickname + ')' : '') + '</span>' + '</td>';
+            hml += '<td style="' + relAuthorColor + '" class="relation-td relation' + i + '" title="' + tdata.referencedAuthor + '" href="#">' + tdata.referencedAuthor
+                    + '<span>' + (tdata.refNickname != undefined ? '(' + tdata.refNickname + ')' : '') + '</span>' + '</td>';
 
-         	var stt = tdata.contents;
-			for (j=0; j < lastQuery.data.length; j++) {
-			    if (lastQuery.data[j].category == '내용') {
-			        var strTmp = lastQuery.data[j].input.split(/[ ]*[&|][ ]*/);
-			        for (var k = 0; k < strTmp.length; k++)
-			            stt = stt.replace(strTmp[k], '<span class="highlight-background">' + strTmp[k] + '</span>');
-			    }
-			}
-			//console.log(stt);
-         	hml += '<td style="word-break: break-all">' + stt + '</td>' + '</tr>';
+            var stt = tdata.contents;
+            for (j = 0; j < lastQuery.data.length; j++) {
+                if (lastQuery.data[j].category == '내용') {
+                    var strTmp = lastQuery.data[j].input.split(/[ ]*[&|][ ]*/);
+                    for (var k = 0; k < strTmp.length; k++)
+                        stt = stt.replace(strTmp[k], '<span class="highlight-background">' + strTmp[k] + '</span>');
+                }
+            }
+            //console.log(stt);
+            hml += '<td style="word-break: break-all">' + stt + '</td>' + '</tr>';
             $('.pagination-' + id).parent().parent().parent().find('tbody').append(hml);
         });
     }
@@ -1716,14 +1738,14 @@ console.log("AAA : " + tdata.e);
 //                    console.error(responseData);
                     $('.popover-input-nickname').val(result.nickname);
                     if (result.lastModifiedDate != undefined) {
-	                    var inputTime = result.lastModifiedDate.split('<br>');
-	                    if(inputTime.length < 2) {
-		                    $('.popover-input-created-time').val(result.lastModifiedDate);
-		                    $('.popover-input-modified-time').val(result.lastModifiedDate);
-	                    }else {
-		                    $('.popover-input-created-time').val(inputTime[1]);
-		                    $('.popover-input-modified-time').val(inputTime[0]);
-	                    }
+                        var inputTime = result.lastModifiedDate.split('<br>');
+                        if (inputTime.length < 2) {
+                            $('.popover-input-created-time').val(result.lastModifiedDate);
+                            $('.popover-input-modified-time').val(result.lastModifiedDate);
+                        } else {
+                            $('.popover-input-created-time').val(inputTime[1]);
+                            $('.popover-input-modified-time').val(inputTime[0]);
+                        }
                     }
                     if (result.priority == undefined) {
                         $('.popover-input-priority').val('9');
@@ -1907,14 +1929,14 @@ console.log("AAA : " + tdata.e);
 //                    console.error(responseData);
                     $('.popover-input-nickname').val(result.nickname);
                     if (result.lastModifiedDate != undefined) {
-	                    var inputTime = result.lastModifiedDate.split('<br>');
-	                    if(inputTime.length < 2) {
-		                    $('.popover-input-created-time').val(result.lastModifiedDate);
-		                    $('.popover-input-modified-time').val(result.lastModifiedDate);
-	                    }else {
-		                    $('.popover-input-created-time').val(inputTime[1]);
-		                    $('.popover-input-modified-time').val(inputTime[0]);
-	                    }
+                        var inputTime = result.lastModifiedDate.split('<br>');
+                        if (inputTime.length < 2) {
+                            $('.popover-input-created-time').val(result.lastModifiedDate);
+                            $('.popover-input-modified-time').val(result.lastModifiedDate);
+                        } else {
+                            $('.popover-input-created-time').val(inputTime[1]);
+                            $('.popover-input-modified-time').val(inputTime[0]);
+                        }
                     }
                     if (result.priority == undefined) {
                         $('.popover-input-priority').val('9');

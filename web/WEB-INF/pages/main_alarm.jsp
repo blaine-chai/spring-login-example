@@ -106,7 +106,27 @@
                         </div>
                     </div>
                     <div id="search-result-export-container" style="position: absolute;right: 30px;top: 12px;">
-                        <a class="btn btn-default btn-sm btn-export">내보내기</a>
+                        <a
+                                class="btn btn-default btn-sm btn-export" style="margin-right: 10px;">내보내기</a><div class="btn-group" style="position:relative;float: right;">
+                        <button type="button" class="btn btn-default btn-sm dropdown-toggle count-select-dropdown"
+                                data-toggle="dropdown" aria-haspopup="true"
+                                aria-expanded="false" style="width: 95px">
+                            <span class="search-category-option">50개씩 보기</span>
+                            <div style="display: inline-block"><span class="caret"></span><span
+                                    class="sr-only"></span>
+                            </div>
+                        </button>
+                        <ul class="dropdown-menu count-selector" style="min-width: 0;width: 110px;">
+                            <li><a role="count-select-dropdown" onclick="return false;"
+                                   href="#">10개씩 보기</a></li>
+                            <li><a role="count-select-dropdown" onclick="return false;"
+                                   tabindex="-1" href="#">25개씩 보기</a></li>
+                            <li><a role="count-select-dropdown" onclick="return false;"
+                                   tabindex="-1" href="#">50개씩 보기</a></li>
+                            <li><a role="count-select-dropdown" onclick="return false;"
+                                   tabindex="-1" href="#">100개씩 보기</a></li>
+                        </ul>
+                    </div></a>
                     </div>
                 </div>
                 <div id="result-table-wrapper" class="panel panel-default"

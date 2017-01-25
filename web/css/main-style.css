@@ -113,7 +113,7 @@
 
 /*****jsp의 style을 옮김 */
 #search-progress {
-    width: calc(100% - 254px); /*@@@@@@@수정*/
+    width: calc(100% - 368px); /*@@@@@@@수정*/
     margin-bottom: 0;
 }
 
