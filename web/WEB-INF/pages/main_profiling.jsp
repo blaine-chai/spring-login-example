@@ -101,8 +101,12 @@
                 <%--autocomplete="off">별명</label>--%>
                 <%--</div>--%>
                 <div id="nickname-search-option-radio-wrapper">
-                    <div class="panel panel-default"
-                         style="height: 30px; text-align: center; line-height: 30px; margin-bottom: 10px;">PROFILING
+                    <div id="search-option-radio-wrapper" class="btn-group btn-group-justified" data-toggle="buttons">
+                        <label class="btn btn-default btn-sm active"><input type="radio" name="options" id="option1"
+                                                                            autocomplete="off" checked>일반 모드</label>
+                        <label class="btn btn-default btn-sm show-graph-btn"><input type="radio" name="options"
+                                                                                    id="option2"
+                                                                                    autocomplete="off">그래프 모드</label>
                     </div>
                 </div>
                 <div>
@@ -214,8 +218,8 @@
                     </div>
                 </div>
 
-                <label class="btn btn-default btn-sm show-graph-btn"
-                       style="width:70%; margin-left:15%;margin-top: 10px;">그래프 보기</label>
+                <%--<label class="btn btn-default btn-sm show-graph-btn"--%>
+                       <%--style="width:70%; margin-left:15%;margin-top: 10px;">그래프 보기</label>--%>
             </div>
         </div>
 
@@ -228,18 +232,19 @@
                      style="margin: 0px 15px 15px; height: 764px;font-size: 11px;overflow-x: auto;">
                     <div id="profile-result-container" style="height: auto;">
                     </div>
+                    <div class="profiling-graph-container" style="background: #fff;visibility: hidden;"></div>
                 </div>
             </div>
         </div>
     </div>
 </div>
-<div class="cover"
-     style="width: 100%;height: 100%;background:rgba(51,51,51,0.5); z-index: 10;position: absolute;top:0;padding: 20px;visibility: hidden;">
-    <div class="close-btn" style="position: absolute;cursor: pointer;font-size: 18px;right: 40px;z-index: 10;top:40px;">
-        x
-    </div>
-    <div class="profiling-graph-container" style="background: #fff;position: absolute;top: 20px;"></div>
-</div>
+<%--<div class="cover"--%>
+<%--style="width: 100%;height: 100%;background:rgba(51,51,51,0.5); z-index: 10;position: absolute;top:0;padding: 20px;visibility: hidden;">--%>
+<%--<div class="close-btn" style="position: absolute;cursor: pointer;font-size: 18px;right: 40px;z-index: 10;top:40px;">--%>
+<%--x--%>
+<%--</div>--%>
+<%--<div class="profiling-graph-container" style="background: #fff;position: absolute;top: 20px;"></div>--%>
+<%--</div>--%>
 <%--<script type="text/javascript" charset="UTF-8" src="/js/alarm-update.js"></script>--%>
 <script type="text/javascript" charset="UTF-8" src="/js/auto-logout.js"></script>
 <script type="text/javascript" charset="UTF-8" src="/js/common.js"></script>
@@ -294,17 +299,16 @@
                 }
             }
 
-            $('.profiling-graph').width($(window).width() - 45)
-                    .height($(window).height() - 45);
-
-            $('.profiling-graph>div').width($(window).width() - 45)
-                    .height($(window).height() - 45);
-            $('.profiling-graph-container').width($(window).width() - 45)
-                    .height($(window).height() - 45);
+//            $('.profiling-graph').width($(window).width() - 45);
+            $('.profiling-graph').height($(window).height() - 222);
+//            $('.profiling-graph>div').width($(window).width() - 45);
+            $('.profiling-graph>div').height($(window).height() - 222);
+//            $('.profiling-graph-container').width($(window).width() - 45);
+            $('.profiling-graph-container').height($(window).height() - 222);
         });
 
-        $('.profiling-graph-container').width($(window).width() - 45)
-                .height($(window).height() - 45);
+//        $('.profiling-graph-container').width($(window).width() - 45);
+        $('.profiling-graph-container').height($(window).height() - 222);
         $('#search-wrapper').height($(window).height() - 197);
         $('#menu-wrapper').height($(window).height() - 207);
         //        $('#book-table').height($(window).height() - 194 - 200)
@@ -495,13 +499,15 @@
                     console.log("AAAAAAAA");
                     if (data.page == 0) {
                         if (isGraphMode) {
+                            $('.profiling-graph-container').css("visibility", "hidden");
                             initGraph();
                             dataEx = data;
                             addNode(author[0], function () {
                             });
                             addGraphData(author[0], result);
-                            $('.cover').css("visibility", "visible");
+//                            $('.cover').css("visibility", "visible");
                         } else {
+                            $('.profiling-graph-container').css("visibility", "hidden");
                             ProfileResultModule.ExpandComponent().newExpandComponent({
                                 data: result,
                                 parentClassId: data.period,
@@ -522,7 +528,9 @@
                     }
                     else {
                         if (isGraphMode) {
+                            $('.profiling-graph-container').css("visibility", "hidden");
                             addGraphData(author[0], result);
+//                            $('.profiling-graph-container').css("visibility", "visible");
                         } else {
                             ProfileResultModule.ExpandComponent().newExpandComponent({
                                 data: result,
@@ -1550,10 +1558,12 @@
 
     var initGraph = function () {
         $('#profiling-graph').remove();
+        graphCount = 0;
 
         var cyEl = $('<div id="profiling-graph" class="profiling-graph" style=""></div>');
 //        var canvas = $('<canvas class="profiling-graph" width="1000px" height="500px" style="margin-top: 20px;"></canvas>');
         $('.profiling-graph-container').append(cyEl);
+        console.log($('.profiling-graph-container'));
 
         initCy();
 
@@ -1571,20 +1581,25 @@
 //            }, event);
 //        });
 
-//        layout = cy.makeLayout();
+//        layout = cy.makeLayout(layoutOption);
+//
+//        layout.on('layoutstop', function(){
+//            cy.resize();
+//            $('.profiling-graph-container').css("visibility", "visible");
+//        });
 
-        $('.profiling-graph').width($(window).width() - 50)
-                .height($(window).height() - 50);
+//        $('.profiling-graph').width($(window).width() - 50);
+        $('.profiling-graph').height($(window).height() - 222);
 
-        $('.profiling-graph>div').width($(window).width() - 50)
-                .height($(window).height() - 50);
+//        $('.profiling-graph>div').width($(window).width() - 50);
+        $('.profiling-graph>div').height($(window).height() - 222);
 //        canvas.springy({
 //            graph: graph,
 //            nodeSelected: function (node) {
 //                console.log('Node selected: ' + JSON.stringify(node.data));
 //            }
 //        });
-        cy.resize();
+//        cy.resize();
     };
     colorSet = [
         '#3333FF',
@@ -1757,7 +1772,7 @@
         $(this).toggleClass('active');
     });
 
-    var layout = {
+    var layoutOption = {
         name: 'cose',
         animate: true,
         nodeSpacing: 5,
@@ -1765,8 +1780,15 @@
         randomize: true,
         idealEdgeLength: 100,
         nodeOverlap: 20,
-        maxSimulationTime: 1000
+        maxSimulationTime: 3000,
+        stop: function () {
+            cy.resize();
+            $('.profiling-graph-container').css("visibility", "visible");
+        }
     };
+
+    var layout;
+
 
     function initCy() {
         $(function () {
@@ -1782,7 +1804,11 @@
                     randomize: true,
                     idealEdgeLength: 100,
                     nodeOverlap: 20,
-                    maxSimulationTime: 1500
+                    maxSimulationTime: 1500,
+                    stop: function () {
+                        cy.resize();
+                        $('.profiling-graph-container').css("visibility", "visible");
+                    }
                 },
 
                 style: [{
@@ -2010,17 +2036,18 @@
                 return false;
             });
 
-            console.error(author);
+//            console.error(author);
             tmpTrList.push(function () {
                 idCNT++;
 //                var author = author;
-                console.error(author);
+//                console.error(author);
                 var relAuthor = data.relAuthor;
 
                 var fromTime = $('#datepicker1').val();
                 if (fromTime != "") fromTime += " 00:00:00";
                 var toTime = $('#datepicker2').val();
                 if (toTime != "") toTime += " 23:59:59";
+
 
                 var period = fromTime + "-" + toTime + ">" + $('label[name=dateOption]').text() + ">" + $('input[name="groups"]:checked').val();
 
@@ -2029,14 +2056,16 @@
                 callAjax(id, author + '>' + period, relAuthor, 1, 0, "", "");
             });
         });
-
-        cy.layout(layout);
+//        cy.nodes().layout(layout);
+//        cy.layout(layout);
 
         $.each(data, function (i, data) {
             addEdge(author, data.relAuthor, data.from, tmpTrList[i]);
 //                    cy.layout(layout);
         });
-        cy.layout(layout);
+
+//        layout.run();
+        cy.layout(layoutOption);
         graphCount++;
     }
 
