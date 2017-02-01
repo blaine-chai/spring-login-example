@@ -236,20 +236,18 @@
                             <button type="button" class="btn btn-default btn-sm dropdown-toggle count-select-dropdown"
                                     data-toggle="dropdown" aria-haspopup="true"
                                     aria-expanded="false" style="width: 95px">
-                                <span class="search-category-option">50개씩 보기</span>
+                                <span class="search-category-option2">50개씩 보기</span>
                                 <div style="display: inline-block"><span class="caret"></span><span
                                         class="sr-only"></span>
                                 </div>
                             </button>
                             <ul class="dropdown-menu count-selector" style="min-width: 0;width: 110px;">
-                                <li><a role="count-select-dropdown" onclick="return false;"
-                                       href="#">10개씩 보기</a></li>
-                                <li><a role="count-select-dropdown" onclick="return false;"
-                                       tabindex="-1" href="#">25개씩 보기</a></li>
-                                <li><a role="count-select-dropdown" onclick="return false;"
-                                       tabindex="-1" href="#">50개씩 보기</a></li>
-                                <li><a role="count-select-dropdown" onclick="return false;"
+                                <li><a role="count-select-dropdown" onclick="changeLineCNT('50개씩 보기');return false;"
+                                       href="#">50개씩 보기</a></li>
+                                <li><a role="count-select-dropdown" onclick="changeLineCNT('100개씩 보기');return false;"
                                        tabindex="-1" href="#">100개씩 보기</a></li>
+                                <li><a role="count-select-dropdown" onclick="changeLineCNT('200개씩 보기');return false;"
+                                       tabindex="-1" href="#">200개씩 보기</a></li>
                             </ul>
                         </div>
                     </div>
@@ -342,6 +340,15 @@
     relStartPos.count = 0;
     var loadingRing = $('<img class="loading-ring" src="/imgs/ajax-loader.gif" style="">');
 
+    function changeLineCNT(lineCnt) {
+		var oldCategory = $('.search-category-option2').text();
+		$('.search-category-option2').text(lineCnt);
+		if(SearchWord != "") {
+    		 console.log(oldCategory + " : changeLineCNT : SearchWord : " + SearchWord);
+             if(oldCategory != lineCnt) callAjaxLoop(userID, 2, 0, 2,0, cntPerLine(), "");
+    	 }
+    }
+
     function handleOperatorSelect(element) {
         var list = $(element).parent().parent().parent().parent().parent();
         if ($('#search-input-wrapper>div').length - 1 == $('#search-input-wrapper>div').index(list) && $(element).text() != "SEL") {
@@ -414,14 +421,15 @@
             }
         });
 
-
         $('.btn-export').click(function () {
-            var csv = exportTableToCSV.apply(this, [$('#book-table'), 'export.csv']);
-            callAjaxLoop("BCSV_" + CSVcnt, 0, 0, 27, 0, csv, "");
-            CSVcnt++;
-        });
+            var timeUnix = fetch_unix_timestamp();
+            var timeDate = timeConverter2(timeUnix);
 
-        var CSVcnt = 0;
+        	var csv = exportTableToCSV.apply(this, [$('#book-table'), 'export_' + timeDate + '_B.csv']);
+        	//console.log(csv);
+            callAjaxLoop("CSV_" + timeDate + "_B", 0, 0, 27, 0, csv, "");
+       });
+
         getSearchHistory();
         getAdminHistory();
         //$("input:radio[name='groups']").removeAttr('checked');
@@ -479,7 +487,8 @@
 
     //function initPagination(current, from, to, lastPage)
     function initPagination(current, jump, lastPage) {
-        //current += 1;
+console.log(current + " : " + jump + " : " + lastPage);
+    	//current += 1;
         //currentPageMain = page;
         var from = current - current % 10 + 1 + jump;
 
@@ -536,7 +545,7 @@
             else {
                 var jumpPage = $('.pageInput').val();
                 if ((jumpPage > 0) && (jumpPage <= lastPageMain))
-                    callAjaxLoop(userID, 2, 0, 2, jumpPage - 1, "", "");
+                    callAjaxLoop(userID, 2, 0, 2, jumpPage - 1, cntPerLine(), "");
                 else
                     alert("숫자를 다시 입력해주세요.");
             }
@@ -547,8 +556,8 @@
 
     function searchBTNclick() {
         var data = jsonSearchInfo();
-        console.error(data);
-        console.error(SearchWord);
+        //console.error(data);
+        //console.error(SearchWord);
         //var SearchWord =
         if (SearchWord != "") {
             //$('#book-table').empty();
@@ -562,6 +571,7 @@
             jobRun = true;
             repeatCnt = 0;
             stop = false;
+
             callAjaxLoop(userID, 0, 1, 0, 0, SearchWord, data);
         }
     }
@@ -605,7 +615,7 @@
             repeatCnt = 0;
             stop = false;
             if ((col > 0) && (col < ($(this).parent().children().length) - 1))
-                callAjaxLoop(userID, 2, 0, 2, textPage - 1, "", "");
+                callAjaxLoop(userID, 2, 0, 2, textPage - 1, cntPerLine(), "");
             else {
 
                 var pageCNT = parseInt($('#page-counter-wrapper ul').find('li').eq(1).text());
@@ -615,14 +625,14 @@
                     if (pageCNT < 1) pageCNT = 1;
 
                     //initPagination(pageCNT-1, 0, 32);
-                    callAjaxLoop(userID, 2, 0, 2, pageCNT - 1, "", "");
+                    callAjaxLoop(userID, 2, 0, 2, pageCNT - 1, cntPerLine(), "");
                     //initPagination(1, 1, 5, 50);
                 } else {
                     pageCNT = pageCNT + 10;
                     if (pageCNT > lastPageMain) pageCNT = lastPageMain;
 
                     //initPagination(pageCNT-1, 0, 32);
-                    callAjaxLoop(userID, 2, 0, 2, pageCNT - 1, "", "");
+                    callAjaxLoop(userID, 2, 0, 2, pageCNT - 1, cntPerLine(), "");
                 }
                 console.log(col + " : " + pageCNT + " : " + textPage);
                 //addCheckBtnListener();
@@ -647,8 +657,8 @@
                         + " & " + tableData[row].referencedAuthor + ">완전일치>"
                         + lastQuery.fromDate + "-" + lastQuery.toDate + ">" + lastQuery.dateOption;
 
-                //msg += ">" + $('input[name="groups"]:checked').val();
-                msg += ">" + tableData[row].groupName;
+               //msg += ">" + $('input[name="groups"]:checked').val();
+               msg += ">" + tableData[row].groupName;
                 console.log(msg);
 
                 //if ($('#book-table tbody').find('tr').eq(row).find('td').eq(col).find('span').hasClass( "glyphicon-ok"))
@@ -742,7 +752,16 @@
         });
     }
 
+    function cntPerLine() {
+	    var lineText = $('.search-category-option2').text();
+	    var line = '50';
+	    if(lineText == '100개씩 보기') line = '100';
+	    else if(lineText == '200개씩 보기') line = '200';
+
+	    return line;
+    }
     var isMore = false;
+    var totalCNT = 0;
 
     function whenSuccess(responseData) {
         var data = JSON.parse(responseData);
@@ -779,6 +798,10 @@
                     setTime = setTimeout(function () {
                         callAjaxLoop(tdata.id, tdata.job, 1, 4, 0, 0, "");
                     }, 100);
+                    $("#search-progress").empty();
+                    var tmpSEL1 = 10;
+                    $("#search-progress").append("<div class='progress-bar progress-bar-striped active' role='progressbar' aria-valuenow='"
+                            + tmpSEL1 + "' aria-valuemin='0' aria-valuemax='100' style='width: " + tmpSEL1 + "%;'>" + tmpSEL1 + "%</div>");			// 검색 률
                 }
                 else if (tdata.sel == "1") {
                     setTime = setTimeout(function () {
@@ -792,40 +815,61 @@
                         setTime = setTimeout(function () {
                             callAjaxLoop(tdata.id, tdata.job, 2, 4, 0, "", "");
                         }, 1000);
+                    /*
+                    var lineCNT = cntPerLine();
+                    lastPageMain = ((totalCNT - 1) - (totalCNT - 1)%lineCNT) / lineCNT + 1;
+                    console.log("22222 : " + lastPageMain + " : " + lineCNT);
+            		$('.pageInput-container').remove();
+                    var tmpDiv = '<div class="pageInput-container" style="color:#4682B4;float:left;padding-left:15px;margin: 0 auto;">  To : <input class="pageInput" onkeypress="onkeypressPage(event);" style=" border:1px solid #90a0a0; width:65px; text-align: center;margin-top:2px;">' +
+                            ' <label> / ' + lastPageMain + ' pages</label></div>';
+                    $('#page-counter-wrapper').append(tmpDiv);
+                    */
                 }
                 else if (tdata.sel == "3") {
                     $('#relative-word>table>tbody').append(tdata.contents);
                 }
                 else if (tdata.sel == "4") {
-                    console.log(tdata.contents);
+                    //console.log(tdata.contents);
                     var sel2 = tdata.contents.split("!@#$");
+                    totalCNT = sel2[0];
                     var commaNum = numberWithCommas(sel2[0]);
-                    console.log("AAAAA : " + commaNum);
 
                     $("#search-result-number").html("검색결과 : " + commaNum);		// 검색 건수
 
-                    lastPageMain = ((sel2[0] - 1) - (sel2[0] - 1) % 50) / 50 + 1;
-                    $('.pagination-main label').text(' / ' + lastPageMain + ' pages');		// 검색 건수
+                    var lineCNT = cntPerLine();
+                    lastPageMain = ((totalCNT - 1) - (totalCNT - 1)%lineCNT) / lineCNT + 1;
+                    console.log("4444 : " + sel2[1] + " : " + commaNum + " : " + lastPageMain + " : " + lineCNT);
+                    //$('.pagination-main .pageinput-container label').text(' / ' + lastPageMain + ' pages');		// 검색 건수
 
                     $("#search-progress").empty();
-                    $("#search-progress").append("<div class='progress-bar progress-bar-striped active' role='progressbar' aria-valuenow='"
-                            + sel2[1] + "' aria-valuemin='0' aria-valuemax='100' style='width: " + sel2[1] + "%;'>" + sel2[1] + "%</div>");			// 검색 률
-
-                    if (sel2[1] == 100) {
-                        $('.progress-bar').removeClass('progress-bar-striped');
+                    var tmpSEL1 = parseInt(sel2[1]*0.9) + 10;
+                    if(sel2[1] == 100) {
+	                   	tmpSEL1 = 100;
+                    	//$('.progress-bar').removeClass('progress-bar-striped');
+                    	$("#search-progress").append("<div class='progress-bar active' role='progressbar' aria-valuenow='"
+                                + tmpSEL1 + "' aria-valuemin='0' aria-valuemax='100' style='width: " + tmpSEL1 + "%;'>" + tmpSEL1 + "%</div>");			// 검색 률
+                    } else {
+                    	if(tmpSEL1 >= 100) tmpSEL1 = 99;
+                    	$("#search-progress").append("<div class='progress-bar progress-bar-striped active' role='progressbar' aria-valuenow='"
+                            + tmpSEL1 + "' aria-valuemin='0' aria-valuemax='100' style='width: " + tmpSEL1 + "%;'>" + tmpSEL1 + "%</div>");			// 검색 률
                     }
-
-                    console.log(sel2[0] + " : " + sel2[1]);
+                    console.log(sel2[0] + " : " + sel2[1] + " : " + tmpSEL1);
                     if ((sel2[1] == 100) && (sel2[0] == 0)) alert("검색결과가 없습니다!!!");
+                    else {
+                		$('.pageInput-container').remove();
+                        var tmpDiv = '<div class="pageInput-container" style="color:#4682B4;float:left;padding-left:15px;margin: 0 auto;">  To : <input class="pageInput" onkeypress="onkeypressPage(event);" style=" border:1px solid #90a0a0; width:65px; text-align: center;margin-top:2px;">' +
+                                ' <label> / ' + lastPageMain + ' pages</label></div>';
+                        $('#page-counter-wrapper').append(tmpDiv);
+                    }
 
                     if (tdata.jobOrder == "1") {
                         if (sel2[1] < 100)
                             setTime = setTimeout(function () {
-                                callAjaxLoop(tdata.id, tdata.job, 1, 2, 0, "", "");
+                                callAjaxLoop(tdata.id, tdata.job, 1, 2, 0, lineCNT, "");
                             }, 100);
                         else
                             setTime = setTimeout(function () {
-                                callAjaxLoop(tdata.id, tdata.job, 0, 2, 0, "", "");
+                                callAjaxLoop(tdata.id, tdata.job, 0, 2, 0, lineCNT, "");
                             }, 100);
                     }
                     else if ((tdata.jobOrder == "2") && (sel2[1] < 100)) {
@@ -939,13 +983,13 @@
 
     function wordCheck(word1) {
         var word = word1.replace(/(^[&|\s]*)|([&|\s]*$)/g, "");
-        console.log(word);
+        //console.log(word);
 
         word = word.replace(/(&+)\s*(&+)/g, "&");
         word = word.replace(/(\|+)\s*(\|+)/g, "|");
         word = word.replace(/(\|+)\s*(&+)/g, "|&");
         word = word.replace(/(&+)\s*(\|+)/g, "&|");
-        console.log(word);
+        //console.log(word);
 
         tmp = word.split("&\|");
         if (tmp.length > 1) {
@@ -964,7 +1008,7 @@
         word = word.replace(/(\s+)/g, "<OR>");
         word = word.replace(/<OR>/g, " | ");
         word = word.replace(/<AND>/g, " & ");
-        console.log(word);
+        //console.log(word);
         if (word == "") {
             alert("검색어를 다시 입력해주세요.");
             //isOK = false;
@@ -990,7 +1034,7 @@
             obj.input = inputEls.eq(i).val();
             obj.operator = operatorEls.eq(i).text();
 ///
-            console.log(i + " : " + obj.category + " : " + obj.input + " : " + obj.operator);
+            //console.log(i + " : " + obj.category + " : " + obj.input + " : " + obj.operator);
 
             var tmp = wordCheck(obj.input);
             if (tmp == "") isOK = false;
@@ -1032,7 +1076,7 @@
         SearchWord += ">";
         SearchWord += data.fromDate + "-" + data.toDate;
         SearchWord += ">" + data.dateOption;
-        console.log(data.typeInfo + " : " + data.fromDate + " : " + data.toDate);
+        //console.log(data.typeInfo + " : " + data.fromDate + " : " + data.toDate);
         SearchWord += ">" + $('input[name="groups"]:checked').val();
 
         if (!isOK) SearchWord = "";
@@ -1065,20 +1109,6 @@
             //html += '<td class="relation-td">' + tdata.referencedAuthor + '</td>';
             html += '<td class="relation-td relation' + i + '" title="' + tdata.referencedAuthor + '" href="#">' + tdata.referencedAuthor
                     + '<span>' + (tdata.refNickname != undefined ? '(' + tdata.refNickname + ')' : '') + '</span>' + '</td>';
-            /*
-             console.log("AAA : " + tdata.r);
-             if (tdata.r == 't') {
-             tdata.r = '<span class="glyphicon glyphicon-ok"></span>';
-             } else {
-             tdata.r = '';
-             }
-             console.log("AAA : " + tdata.e);
-             if (tdata.e == 't') {
-             tdata.e = '<span class="glyphicon glyphicon-ok"></span>';
-             } else {
-             tdata.e = '';
-             }
-             */
             html += '<td class="check-r' + i + '" title="' +
                     tdata.author + ' - 참조저자' + '" href="#">' + tdata.r + '</td>';
             html += '<td class="check-e">' + tdata.e + '</td>';
@@ -1463,29 +1493,29 @@
         console.log(data);
 
         $.each(data, function (i, tdata) {
-            var authorColor = "background: #d3f3d3;";
-            var relAuthorColor = "background: #f3d3f3;";
-            if (tdata.author != authorName) {
-                authorColor = "background: #f3d3f3;";
-                relAuthorColor = "background: #d3f3d3;";
-            }
-            var hml = '<tr>' + '<td>' + tdata.publishedDate + '</td>';
-            hml += '<td style="' + authorColor + '" class="author-td author' + i + '" title="' + tdata.author + '" href="#">' + tdata.author
-                    + '<span>' + (tdata.authNickname != undefined ? '(' + tdata.authNickname + ')' : '') + '</span>' + '</td>';
-            hml += '<td style="' + relAuthorColor + '" class="relation-td relation' + i + '" title="' + tdata.referencedAuthor + '" href="#">' + tdata.referencedAuthor
-                    + '<span>' + (tdata.refNickname != undefined ? '(' + tdata.refNickname + ')' : '') + '</span>' + '</td>';
+        	var authorColor = "background: #d3f3d3;";
+        	var relAuthorColor = "background: #f3d3f3;";
+        	if(tdata.author != authorName) {
+            	authorColor = "background: #f3d3f3;";
+            	relAuthorColor = "background: #d3f3d3;";
+        	}
+        	var hml = '<tr>' + '<td>' + tdata.publishedDate + '</td>';
+        	hml += '<td style="' + authorColor + '" class="author-td author' + i + '" title="' + tdata.author + '" href="#">' + tdata.author
+					+ '<span>' + (tdata.authNickname != undefined ? '(' + tdata.authNickname + ')' : '') + '</span>' + '</td>';
+        	hml += '<td style="' + relAuthorColor + '" class="relation-td relation' + i + '" title="' + tdata.referencedAuthor + '" href="#">' + tdata.referencedAuthor
+					+ '<span>' + (tdata.refNickname != undefined ? '(' + tdata.refNickname + ')' : '') + '</span>' + '</td>';
 
-            var stt = tdata.contents;
-            for (j = 0; j < lastQuery.data.length; j++) {
-                if (lastQuery.data[j].category == '내용') {
-                    var strTmp = lastQuery.data[j].input.split(/[ ]*[&|][ ]*/);
-                    for (var k = 0; k < strTmp.length; k++)
-                        stt = stt.replace(strTmp[k], '<span class="highlight-background">' + strTmp[k] + '</span>');
-                }
-            }
-            //console.log(stt);
-            hml += '<td style="word-break: break-all">' + stt + '</td>' + '</tr>';
-            //console.log(hml);
+			var stt = tdata.contents;
+			for (j=0; j < lastQuery.data.length; j++) {
+			    if (lastQuery.data[j].category == '내용') {
+			        var strTmp = lastQuery.data[j].input.split(/[ ]*[&|][ ]*/);
+			        for (var k = 0; k < strTmp.length; k++)
+			            stt = stt.replace(strTmp[k], '<span class="highlight-background">' + strTmp[k] + '</span>');
+			    }
+			}
+			//console.log(stt);
+         	hml += '<td style="word-break: break-all">' + stt + '</td>' + '</tr>';
+			//console.log(hml);
             tmpEl.find('tbody').append(hml);
         });
 
@@ -1552,7 +1582,7 @@
              else
              callAjaxLoop("author"+authorNUM, 8, row, 8, 8, tableData[row].eventNo+">f", "");
              */
-            var timestamp = timeConverter(fetch_unix_timestamp());
+             var timestamp = timeConverter(fetch_unix_timestamp());
             callAjaxLoop("Bauthor" + authorNUM, 8, row, 8, 8, tableData[row].eventNo + ">" + "indexB^" + tableData[row].author + " & "
                     + "indexB^" + tableData[row].referencedAuthor + ">완전일치>" + lastQuery.fromDate + "-" + lastQuery.toDate + '>' + lastQuery.dateOption + ">" + tableData[row].groupName + ">" + timestamp, "");
         });
@@ -1569,28 +1599,28 @@
 
         $('.pagination-' + id).parent().parent().parent().find('tbody').children().remove();
         $.each(data, function (i, tdata) {
-            var authorColor = "background: #d3f3d3;";
-            var relAuthorColor = "background: #f3d3f3;";
-            if (tdata.author != authorName) {
-                authorColor = "background: #f3d3f3;";
-                relAuthorColor = "background: #d3f3d3;";
-            }
-            var hml = '<tr>' + '<td>' + tdata.publishedDate + '</td>';
-            hml += '<td style="' + authorColor + '" class="author-td author' + i + '" title="' + tdata.author + '" href="#">' + tdata.author +
-                    '<span>' + (tdata.authNickname != undefined ? '(' + tdata.authNickname + ')' : '') + '</span>' + '</td>';
-            hml += '<td style="' + relAuthorColor + '" class="relation-td relation' + i + '" title="' + tdata.referencedAuthor + '" href="#">' + tdata.referencedAuthor
-                    + '<span>' + (tdata.refNickname != undefined ? '(' + tdata.refNickname + ')' : '') + '</span>' + '</td>';
+        	var authorColor = "background: #d3f3d3;";
+        	var relAuthorColor = "background: #f3d3f3;";
+        	if(tdata.author != authorName) {
+            	authorColor = "background: #f3d3f3;";
+            	relAuthorColor = "background: #d3f3d3;";
+        	}
+        	var hml = '<tr>' + '<td>' + tdata.publishedDate + '</td>';
+        	hml += '<td style="' + authorColor + '" class="author-td author' + i + '" title="' + tdata.author + '" href="#">' + tdata.author +
+            	'<span>' + (tdata.authNickname != undefined ? '(' + tdata.authNickname + ')' : '') + '</span>' + '</td>';
+        	hml += '<td style="' + relAuthorColor + '" class="relation-td relation' + i + '" title="' + tdata.referencedAuthor + '" href="#">' + tdata.referencedAuthor
+         	   + '<span>' + (tdata.refNickname != undefined ? '(' + tdata.refNickname + ')' : '') + '</span>' + '</td>';
 
-            var stt = tdata.contents;
-            for (j = 0; j < lastQuery.data.length; j++) {
-                if (lastQuery.data[j].category == '내용') {
-                    var strTmp = lastQuery.data[j].input.split(/[ ]*[&|][ ]*/);
-                    for (var k = 0; k < strTmp.length; k++)
-                        stt = stt.replace(strTmp[k], '<span class="highlight-background">' + strTmp[k] + '</span>');
-                }
-            }
-            //console.log(stt);
-            hml += '<td style="word-break: break-all">' + stt + '</td>' + '</tr>';
+         	var stt = tdata.contents;
+			for (j=0; j < lastQuery.data.length; j++) {
+			    if (lastQuery.data[j].category == '내용') {
+			        var strTmp = lastQuery.data[j].input.split(/[ ]*[&|][ ]*/);
+			        for (var k = 0; k < strTmp.length; k++)
+			            stt = stt.replace(strTmp[k], '<span class="highlight-background">' + strTmp[k] + '</span>');
+			    }
+			}
+			//console.log(stt);
+         	hml += '<td style="word-break: break-all">' + stt + '</td>' + '</tr>';
             $('.pagination-' + id).parent().parent().parent().find('tbody').append(hml);
         });
     }
@@ -1738,14 +1768,14 @@
 //                    console.error(responseData);
                     $('.popover-input-nickname').val(result.nickname);
                     if (result.lastModifiedDate != undefined) {
-                        var inputTime = result.lastModifiedDate.split('<br>');
-                        if (inputTime.length < 2) {
-                            $('.popover-input-created-time').val(result.lastModifiedDate);
-                            $('.popover-input-modified-time').val(result.lastModifiedDate);
-                        } else {
-                            $('.popover-input-created-time').val(inputTime[1]);
-                            $('.popover-input-modified-time').val(inputTime[0]);
-                        }
+	                    var inputTime = result.lastModifiedDate.split('<br>');
+	                    if(inputTime.length < 2) {
+		                    $('.popover-input-created-time').val(result.lastModifiedDate);
+		                    $('.popover-input-modified-time').val(result.lastModifiedDate);
+	                    }else {
+		                    $('.popover-input-created-time').val(inputTime[1]);
+		                    $('.popover-input-modified-time').val(inputTime[0]);
+	                    }
                     }
                     if (result.priority == undefined) {
                         $('.popover-input-priority').val('9');
@@ -1929,14 +1959,14 @@
 //                    console.error(responseData);
                     $('.popover-input-nickname').val(result.nickname);
                     if (result.lastModifiedDate != undefined) {
-                        var inputTime = result.lastModifiedDate.split('<br>');
-                        if (inputTime.length < 2) {
-                            $('.popover-input-created-time').val(result.lastModifiedDate);
-                            $('.popover-input-modified-time').val(result.lastModifiedDate);
-                        } else {
-                            $('.popover-input-created-time').val(inputTime[1]);
-                            $('.popover-input-modified-time').val(inputTime[0]);
-                        }
+	                    var inputTime = result.lastModifiedDate.split('<br>');
+	                    if(inputTime.length < 2) {
+		                    $('.popover-input-created-time').val(result.lastModifiedDate);
+		                    $('.popover-input-modified-time').val(result.lastModifiedDate);
+	                    }else {
+		                    $('.popover-input-created-time').val(inputTime[1]);
+		                    $('.popover-input-modified-time').val(inputTime[0]);
+	                    }
                     }
                     if (result.priority == undefined) {
                         $('.popover-input-priority').val('9');
@@ -2133,6 +2163,28 @@
         if (sec < 10) sec = "0" + sec;
 
         var time = a.getFullYear() + '/' + month + '/' + date + ' ' + hour + ':' + min + ':' + sec;
+
+        return time;
+    }
+
+    function timeConverter2(UNIX_timestamp) {
+        var a = new Date(UNIX_timestamp * 1000);
+        //var months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+        //var month = months[a.getMonth()];
+        var year = a.getFullYear();
+        var month = a.getMonth() + 1;
+        var date = a.getDate();
+        var hour = a.getHours();
+        var min = a.getMinutes();
+        var sec = a.getSeconds();
+
+        if (month < 10) month = "0" + month;
+        if (date < 10) date = "0" + date;
+        if (hour < 10) hour = "0" + hour;
+        if (min < 10) min = "0" + min;
+        if (sec < 10) sec = "0" + sec;
+
+        var time = a.getFullYear() + month + date + hour + min + sec;
 
         return time;
     }

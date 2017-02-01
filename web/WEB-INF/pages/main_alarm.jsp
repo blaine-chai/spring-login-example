@@ -217,6 +217,23 @@
     var userBookmarkModule = BookmarkTableModule.getModule();
     var adminBookmarkModule = BookmarkTableModule.getModule();
 
+    function changeLineCNT(lineCnt) {
+		var oldCategory = $('.search-category-option2').text();
+		$('.search-category-option2').text(lineCnt);
+		if(SearchWord != "") {
+    		 console.log(oldCategory + " : changeLineCNT : SearchWord : " + SearchWord);
+             if(oldCategory != lineCnt) callAjaxLoop(userID, 2, 0, 2,0, cntPerLine(), "");
+		}
+	}
+    function cntPerLine() {
+	    var lineText = $('.search-category-option2').text();
+	    var line = '50';
+	    if(lineText == '100개씩 보기') line = '100';
+	    else if(lineText == '200개씩 보기') line = '200';
+
+	    return line;
+    }
+
     var tbodyHandlerGenerator = function (type, bookmarkModule) {
         return (function () {
             $.ajax({
@@ -394,10 +411,12 @@
         });
 
         $('.btn-export').click(function () {
-            var csv = exportTableToCSV.apply(this, [$('#book-table'), 'export.csv']);
-            callAjaxLoop("ACSV_" + CSVcnt, 0, 0, 27, 0, csv, "");
-            CSVcnt++;
-            //console.log(csv +"AAAAA");
+            var timeUnix = fetch_unix_timestamp();
+            var timeDate = timeConverter2(timeUnix);
+
+        	var csv = exportTableToCSV.apply(this, [$('#book-table'), 'export_' + timeDate + '_A.csv']);
+        	//console.log(csv);
+            callAjaxLoop("CSV_" + timeDate + "_A", 0, 0, 27, 0, csv, "");
         });
     });
 
@@ -525,7 +544,7 @@
             else {
                 var jumpPage = $('.pageInput').val();
                 if ((jumpPage > 0) && (jumpPage <= lastPageMain))
-                    callAjaxLoop(userID, 2, 0, 2, jumpPage - 1, "", "");
+                    callAjaxLoop(userID, 2, 0, 2, jumpPage - 1, cntPerLine(), "");
                 else
                     alert("숫자 입력 ERROR : " + jumpPage);
             }
@@ -827,18 +846,7 @@
             //html += '<td class="relation-td">' + tdata.referencedAuthor + '</td>';
             html += '<td class="relation-td relation' + i + '" title="' + tdata.referencedAuthor + '" href="#">' + tdata.referencedAuthor
                     + '<span>' + (tdata.refNickname != undefined ? '(' + tdata.refNickname + ')' : '') + '</span>' + '</td>';
-/*
-            if (tdata.r == 't') {
-                tdata.r = '<span class="glyphicon glyphicon-ok"></span>';
-            } else {
-                tdata.r = '';
-            }
-            if (tdata.e == 't') {
-                tdata.e = '<span class="glyphicon glyphicon-ok"></span>';
-            } else {
-                tdata.e = '';
-            }
-*/
+
             html += '<td class="check-r' + i + '" title="' +
                     tdata.author + ' - 참조저자' +
                     '" href="#">' + tdata.r + '</td>';
@@ -1032,6 +1040,7 @@
     }
 
     var isMore = false;
+    var totalCNT = 0;
 
     function whenSuccess(responseData) {
         var data = JSON.parse(responseData);
@@ -1065,10 +1074,17 @@
             }
             else {
                 if (tdata.sel == "0") {
-	                    setTime = setTimeout(function () {
-	                        callAjaxLoop(tdata.id, tdata.job, 1, 4, 0, 0, "");
-	                    }, 100);
-                }
+                    //$("#search-progress").empty();
+                    //$("#search-progress").append("<div class='progress-bar progress-bar-striped active' role='progressbar' aria-valuenow='10' aria-valuemin='0' aria-valuemax='100' style='width:10%;'>10%</div>");			// 검색 률
+
+					setTime = setTimeout(function () {
+                        callAjaxLoop(tdata.id, tdata.job, 1, 4, 0, 0, "");
+                    }, 100);
+                    $("#search-progress").empty();
+                    var tmpSEL1 = 10;
+                    $("#search-progress").append("<div class='progress-bar progress-bar-striped active' role='progressbar' aria-valuenow='"
+                            + tmpSEL1 + "' aria-valuemin='0' aria-valuemax='100' style='width: " + tmpSEL1 + "%;'>" + tmpSEL1 + "%</div>");			// 검색 률
+               }
                 else if (tdata.sel == "1") {
                     setTime = setTimeout(function () {
                         callAjaxLoop(tdata.id, tdata.job, 1, 14, 0, tdata.page, "");
@@ -1077,51 +1093,74 @@
                 else if (tdata.sel == "2") {
                     setQuery(tdata.bookInfoList, tdata.page);
                     jobRun = false;
-                    if (tdata.jobOrder == "1")
+                    if (tdata.jobOrder == "1") {
                         setTime = setTimeout(function () {
                             callAjaxLoop(tdata.id, tdata.job, 2, 4, 0, "", "");
                         }, 1000);
+                    }
+                    /*
+                    var lineCNT = cntPerLine();
+                    lastPageMain = ((totalCNT - 1) - (totalCNT - 1)%lineCNT) / lineCNT + 1;
+                    console.log("22222 : " + lastPageMain + " : " + lineCNT);
+            		$('.pageInput-container').remove();
+                    var tmpDiv = '<div class="pageInput-container" style="color:#4682B4;float:left;padding-left:15px;margin: 0 auto;">  To : <input class="pageInput" onkeypress="onkeypressPage(event);" style=" border:1px solid #90a0a0; width:65px; text-align: center;margin-top:2px;">' +
+                            ' <label> / ' + lastPageMain + ' pages</label></div>';
+                    $('#page-counter-wrapper').append(tmpDiv);
+                    */
                 }
                 else if (tdata.sel == "3") {
                     $('#relative-word>table>tbody').append(tdata.contents);
                 }
                 else if (tdata.sel == "4") {
-                    console.log(tdata.contents);
+                    //console.log(tdata.contents);
                     var sel2 = tdata.contents.split("!@#$");
+                    totalCNT = sel2[0];
                     var commaNum = numberWithCommas(sel2[0]);
-                    console.log("AAAAA : " + commaNum);
+                   	//console.log("AAAAA : " + commaNum);
 
                     $("#search-result-number").html("검색결과 : " + commaNum);		// 검색 건수
 
-                    lastPageMain = ((sel2[0] - 1) - (sel2[0] - 1) % 50) / 50 + 1;
-                    $('.pagination-main label').text(' / ' + lastPageMain + ' pages');		// 검색 건수
+                    var lineCNT = cntPerLine();
+                    lastPageMain = ((totalCNT - 1) - (totalCNT - 1)%lineCNT) / lineCNT + 1;
+                    console.log("4444 : " + sel2[1] + " : " + commaNum + " : " + lastPageMain + " : " + lineCNT);
+                    //$('.pagination-main .pageinput-container label').text(' / ' + lastPageMain + ' pages');		// 검색 건수
 
                     $("#search-progress").empty();
-                    $("#search-progress").append("<div class='progress-bar progress-bar-striped active' role='progressbar' aria-valuenow='"
-                            + sel2[1] + "' aria-valuemin='0' aria-valuemax='100' style='width: " + sel2[1] + "%;'>" + sel2[1] + "%</div>");			// 검색 률
-
-                    if (sel2[1] == 100) {
-                        $('.progress-bar').removeClass('progress-bar-striped');
+                    var tmpSEL1 = parseInt(sel2[1]*0.9) + 10;
+                    if(sel2[1] == 100) {
+	                   	tmpSEL1 = 100;
+                    	//$('.progress-bar').removeClass('progress-bar-striped');
+                    	$("#search-progress").append("<div class='progress-bar active' role='progressbar' aria-valuenow='"
+                                + tmpSEL1 + "' aria-valuemin='0' aria-valuemax='100' style='width: " + tmpSEL1 + "%;'>" + tmpSEL1 + "%</div>");			// 검색 률
+                    } else {
+                    	if(tmpSEL1 >= 100) tmpSEL1 = 99;
+                    	$("#search-progress").append("<div class='progress-bar progress-bar-striped active' role='progressbar' aria-valuenow='"
+                            + tmpSEL1 + "' aria-valuemin='0' aria-valuemax='100' style='width: " + tmpSEL1 + "%;'>" + tmpSEL1 + "%</div>");			// 검색 률
                     }
 
-                    console.log(sel2[0] + " : " + sel2[1]);
                     if ((sel2[1] == 100) && (sel2[0] == 0)) alert("검색결과가 없습니다!!!");
+                    else {
+                		$('.pageInput-container').remove();
+                        var tmpDiv = '<div class="pageInput-container" style="color:#4682B4;float:left;padding-left:15px;margin: 0 auto;">  To : <input class="pageInput" onkeypress="onkeypressPage(event);" style=" border:1px solid #90a0a0; width:65px; text-align: center;margin-top:2px;">' +
+                                ' <label> / ' + lastPageMain + ' pages</label></div>';
+                        $('#page-counter-wrapper').append(tmpDiv);
+                    }
 
                     if (tdata.jobOrder == "1") {
                         if (sel2[1] < 100)
                             setTime = setTimeout(function () {
-                                callAjaxLoop(tdata.id, tdata.job, 1, 2, 0, "", "");
+                                callAjaxLoop(tdata.id, tdata.job, 1, 2, 0, cntPerLine(), "");
                             }, 100);
                         else
                             setTime = setTimeout(function () {
-                                callAjaxLoop(tdata.id, tdata.job, 0, 2, 0, "", "");
+                                callAjaxLoop(tdata.id, tdata.job, 0, 2, 0, cntPerLine(), "");
                             }, 100);
                     }
                     else if ((tdata.jobOrder == "2") && (sel2[1] < 100)) {
                         setTime = setTimeout(function () {
                             callAjaxLoop(tdata.id, tdata.job, 2, 4, 0, "", "");
                         }, 1000);
-                    }
+                   }
                 }
                 else if (tdata.sel == "6") {
                     ;
@@ -1249,7 +1288,7 @@
             repeatCnt = 0;
             stop = false;
             if ((col > 0) && (col < ($(this).parent().children().length) - 1))
-                callAjaxLoop(userID, 2, 0, 2, textPage - 1, "", "");
+                callAjaxLoop(userID, 2, 0, 2, textPage - 1, cntPerLine(), "");
             else {
 
                 var pageCNT = parseInt($('#page-counter-wrapper ul').find('li').eq(1).text());
@@ -1259,14 +1298,14 @@
                     if (pageCNT < 1) pageCNT = 1;
 
                     //initPagination(pageCNT-1, 0, 32);
-                    callAjaxLoop(userID, 2, 0, 2, pageCNT - 1, "", "");
+                    callAjaxLoop(userID, 2, 0, 2, pageCNT - 1, cntPerLine(), "");
                     //initPagination(1, 1, 5, 50);
                 } else {
                     pageCNT = pageCNT + 10;
                     if (pageCNT > lastPageMain) pageCNT = lastPageMain;
 
                     //initPagination(pageCNT-1, 0, 32);
-                    callAjaxLoop(userID, 2, 0, 2, pageCNT - 1, "", "");
+                    callAjaxLoop(userID, 2, 0, 2, pageCNT - 1, cntPerLine(), "");
                 }
                 console.log(col + " : " + pageCNT + " : " + textPage);
                 //addCheckBtnListener();
@@ -1773,6 +1812,28 @@
         var time = a.getFullYear() + '/' + month + '/' + date + ' ' + hour + ':' + min + ':' + sec ;
         //var time = a.getFullYear() + "/" + (a.getMonth() + 1) + "/" + a.getDate() + " " + hour + ':' + min + ':' + sec;
         //var time = a.getFullYear() + "/" + (a.getMonth() + 1) + "/" + a.getDate() + " "  + hour + ':' + min + ':' + sec ;
+        return time;
+    }
+
+    function timeConverter2(UNIX_timestamp) {
+        var a = new Date(UNIX_timestamp * 1000);
+        //var months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+        //var month = months[a.getMonth()];
+        var year = a.getFullYear();
+        var month = a.getMonth() + 1;
+        var date = a.getDate();
+        var hour = a.getHours();
+        var min = a.getMinutes();
+        var sec = a.getSeconds();
+
+        if (month < 10) month = "0" + month;
+        if (date < 10) date = "0" + date;
+        if (hour < 10) hour = "0" + hour;
+        if (min < 10) min = "0" + min;
+        if (sec < 10) sec = "0" + sec;
+
+        var time = a.getFullYear() + month + date + hour + min + sec;
+
         return time;
     }
 

@@ -219,6 +219,7 @@ var GraphModule = (function () {
 
         var setYDomain = (function () {
             var yArr = [];
+            yArr.push(0);
             y = d3.scale.linear().domain([d3.min(option.data, function (d) {
                 $.each(option.nameList, function (i, name) {
                     yArr.push(parseInt(d[name]));
@@ -542,7 +543,7 @@ var GraphModule = (function () {
                 .domain(newDomain).rangePoints([0, x(domain[last])]);
 
             var yArr = [];
-
+            yArr.push(0);
             var y = d3.scale.linear().domain([d3.min(option.data, function (d) {
                 $.each(option.nameList, function (i, name) {
                     yArr.push(parseInt(d[name]));

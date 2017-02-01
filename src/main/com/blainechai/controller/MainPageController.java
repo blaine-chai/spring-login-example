@@ -333,7 +333,8 @@ public class MainPageController {
         if (selInt < 5) {
             String[] s = author.split(">");
             String strQuery = "indexB^" + s[0] + " & indexB^" + period + ">완전일치>" + s[1] + ">" + s[2] + ">" + groupToIdMap.get(s[3]);
-            sc = new SocketComm(userId + "@" + id, ip, port, selInt, pageInt, strQuery);
+            if(selInt == 2) sc = new SocketComm(userId + "@" + id, ip, port, 2, pageInt, "50");
+            else sc = new SocketComm(userId + "@" + id, ip, port, selInt, pageInt, strQuery);
         } else if (selInt == 16) {
             String[] s = msg.split(">");
             sc = new SocketComm(userId + "@" + id, ip, port, selInt, pageInt, "indexB^" + s[0] + ">" + groupToIdMap.get(s[1]));
@@ -352,7 +353,7 @@ public class MainPageController {
         } else if (selInt == 8) {
             String[] s = author.split(">");
             //System.out.println(s.length + " :ZZZZZ: " + author);
-            String strQuery = s[0] + ">" + s[1] + ">" + s[2] + ">" + s[3] + ">" + s[4] + ">" + s[5] + ">" + groupToIdMap.get(s[5]);
+            String strQuery = s[0] + ">" + s[1] + ">" + s[2] + ">" + s[3] + ">" + s[4] + ">" + s[5] + ">" + groupToIdMap.get(s[5]) + ">" + s[6];
             sc = new SocketComm(userId + "@" + id, ip, port, selInt, pageInt, strQuery);
         } else {
             sc = new SocketComm(userId + "@" + id, ip, port, selInt, pageInt, author);
@@ -1013,6 +1014,8 @@ public class MainPageController {
 	                msg = s[0] + ">" + s[1] + ">" + s[2] + ">" + s[3] + ">" + groupAfter;
 	                sc = new SocketComm(userId + "@" + id, ip, port, selInt, pageInt, msg);
                 }
+            } else if (selInt == 2) {
+                sc = new SocketComm(userId + "@" + id, ip, port, selInt, pageInt, msg);
             } else if (selInt == 8) {
                 //System.out.println("\tBBBB : msg = " + msg);
                 String[] s = msg.split(">");

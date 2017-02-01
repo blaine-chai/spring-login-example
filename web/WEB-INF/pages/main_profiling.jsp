@@ -22,7 +22,6 @@
 
     <link href="/css/main-style.css" rel="stylesheet" type="text/css">
     <link href="/css/jquery.datetimepicker.css" rel="stylesheet" type="text/css">
-    <%--<link href="/css/jquery-qtip.css" rel="stylesheet" type="text/css">--%>
 
 
     <!-- Latest compiled and minified JavaScript -->
@@ -217,9 +216,6 @@
                                style="width:70px;position: absolute;right: 0; ">취소</label>
                     </div>
                 </div>
-
-                <%--<label class="btn btn-default btn-sm show-graph-btn"--%>
-                       <%--style="width:70%; margin-left:15%;margin-top: 10px;">그래프 보기</label>--%>
             </div>
         </div>
 
@@ -370,7 +366,8 @@
                     isProfileSearch = true;
                 }
                 else {
-                    if ($('#nickname-search-input').val() != "*") {
+                	nicknameClose();
+                	if($('#nickname-search-input').val() != "*") {
                         $(this).append(loadingRing3);
                         callAjax("CprofileSearch", keyword, "", 16, 0, keyword, "");
                     } else
@@ -643,8 +640,11 @@
                 $('.btn-default-right').attr('index', next);
 
             }
-            else
+            else {
                 $('#nickname-result-table').parent().parent().find('.component-pager-page').text('1-' + resultAuthor.length + '(' + resultAuthor.length + ')');
+                $('.btn-default-left').attr('index', -1);
+                $('.btn-default-right').attr('index', 1);
+           }
             setAuthorResultClickHandler();
         }
     }
@@ -795,6 +795,10 @@
                     '<span class="input-group-btn">' +
                     '<label class="btn btn-default btn-sm btn-identity-check nickname-form-input" style="width:70px;">중복 확인</label></span></div>' +
                     '<div class="input-group input-group-sm" style="width:100%">' +
+                    '<span class="input-group-addon" style="width: 70px;" disabled >생성시간</span>' +
+                    '<input type="text" class="form-control nickname-form-input-created-time" disabled>' +
+                    '</div>' +
+                    '<div class="input-group input-group-sm" style="width:100%">' +
                     '<span class="input-group-addon" style="width: 70px;" disabled>수정시간</span>' +
                     '<input type="text" class="form-control nickname-form-input-modified-time" disabled></div>' +
                     '<div class="input-group input-group-sm" style=" width:100%">' +
@@ -825,6 +829,20 @@
                         },
                         success: function (responseData) {
                             if (responseData == 'true') {
+                            	var tmpHml = $('#nickname-result-table>tbody');
+                            	console.log(tmpHml.find('td').length);
+
+                                for (var k = 1; k < tmpHml.find('td').length-1; k++) {
+                                    var nicTmp = tmpHml.find('td').eq(k).text();
+                                	console.log(k + " : " + nicTmp);
+                                	if(nicTmp == nicNameOff($('.nickname-form-input-author').val()))
+                                	tmpHml.find('td').eq(k+1).text('(' + $('.nickname-form-input-nickname').val() + ')');
+                                	k++;
+                                	k++;
+
+                                    //console.log("BBBBBB : " + $('#book-table tbody').find('tr').eq(k).find('td').eq(5).text());
+                                }
+
                                 nicknameForm.children().remove();
                                 nicknameForm.hide();
                                 alert('저장이 완료되었습니다.');
@@ -870,7 +888,17 @@
 //                    console.error(responseData);
                     $('.nickname-form-input-author').val($('input[name=nickname-radio]:checked').parent().parent().find('td').eq(1).text());
                     $('.nickname-form-input-nickname').val(result.nickname);
-                    $('.nickname-form-input-modified-time').val(result.lastModifiedDate);
+                    if (result.lastModifiedDate != undefined) {
+	                    var inputTime = result.lastModifiedDate.split('<br>');
+	                    if(inputTime.length < 2) {
+		                    $('.nickname-form-input-created-time').val(result.lastModifiedDate);
+		                    $('.nickname-form-input-modified-time').val(result.lastModifiedDate);
+	                    }else {
+		                    $('.nickname-form-input-created-time').val(inputTime[1]);
+		                    $('.nickname-form-input-modified-time').val(inputTime[0]);
+	                    }
+                    }
+                    //$('.nickname-form-input-modified-time').val(result.lastModifiedDate);
                     if (result.priority == undefined) {
                         $('.nickname-form-input-priority').val('9');
                     } else {
@@ -1016,18 +1044,22 @@
             });
 
             $('.btn-nickname-form-close').click(function (e) {
-                $('#nickname-form').hide();
-                $('.nickname-form-input-nickname').val('').removeAttr('disabled');
-                $('.nickname-form-input-author').val('').removeAttr('disabled');
-                $('.nickname-form-input-modified-time').val('').removeAttr('disabled');
-                $('.nickname-form-input-priority').val('5').removeAttr('disabled');
-                $('.nickname-form-input-note').val('').removeAttr('disabled');
-                $('#nickname-form .nickname-form-input-nickname').on('input', function () {
-                    $('#nickname-form .btn-identity-check span').remove();
-                    $('#nickname-form .btn-identity-check').removeAttr('disabled');
-                });
+            	nicknameClose();
             });
             nicknameForm.show(300);
+        });
+    }
+
+    function nicknameClose() {
+        $('#nickname-form').hide();
+        $('.nickname-form-input-nickname').val('').removeAttr('disabled');
+        $('.nickname-form-input-author').val('').removeAttr('disabled');
+        $('.nickname-form-input-modified-time').val('').removeAttr('disabled');
+        $('.nickname-form-input-priority').val('5').removeAttr('disabled');
+        $('.nickname-form-input-note').val('').removeAttr('disabled');
+        $('#nickname-form .nickname-form-input-nickname').on('input', function () {
+            $('#nickname-form .btn-identity-check span').remove();
+            $('#nickname-form .btn-identity-check').removeAttr('disabled');
         });
     }
 
@@ -1180,8 +1212,8 @@
             if ($('#datepicker1').val() != '') from += " 00:00:00";
             if ($('#datepicker2').val() != '') to += " 23:59:59";
 
-            var period = from + "-" + to + ">" + $('label[name=dateOption]').text();
-            callAjax(id, "}}}}}}}>indexB^" + author + " & " + "indexB^" + relAuthor + ">완전일치>" + period + ">" + groupName, "", 8, 0, "", "");
+			var period = from + "-" + to + ">" + $('label[name=dateOption]').text();
+            callAjax(id, "}}}}}}}>indexB^" + author + " & " + "indexB^" + relAuthor + ">완전일치>" + period + ">" + groupName + ">N", "", 8, 0, "", "");
         });
 
     }
@@ -1288,8 +1320,8 @@
 
                 var data = opt.data;
                 var from = 0;
-                var to = 5;
-                var count = 5;
+                var to = 50;
+                var count = 50;
 
                 console.log(pContainer);
                 var addExpandComponent = function () {
@@ -1368,8 +1400,6 @@
                     //console.log("AAAAA : " + to);
                 }
                 tmpEl.find('.component-pager-page').text((from + 1) + "-" + to + "(" + data.length + ")");
-
-                console.log(pContainer);
 
                 var setContent = function (data, from, to) {
                     console.log(from + " : " + to);
@@ -1729,6 +1759,11 @@
                 }
             });
 
+            curNode.on('mouseover', function () {
+                this.addClass('hover');
+            }).on('mouseout', function () {
+                this.removeClass('hover');
+            }).addClass('latest');
         }
     };
     var addEdge = function (author, relAuthor, from, click) {
@@ -1760,7 +1795,14 @@
                     color: colorSet[graphCount % 23]
                 }
             });
-            cy.edges().last().on('click', click);
+            cy.edges().last()
+                    .on('click', click)
+                    .on('mouseover', function () {
+                        this.addClass('hover');
+                    })
+                    .on('mouseout', function () {
+                        this.removeClass('hover');
+                    }).addClass('latest');
         }
     };
 
@@ -1821,184 +1863,101 @@
                 }, {
                     "selector": ":active",
                     "style": {
-                        "overlay-color": "#f00",
+                        "overlay-color": "#f30",
                         "overlay-padding": 10,
                         "overlay-opacity": 0.25
                     }
                 }, {
                     "selector": ".hover",
                     "style": {
-                        "overlay-color": "#f00",
+                        "overlay-color": "#f30",
                         "overlay-padding": 10,
                         "overlay-opacity": 0.25
                     }
                 }, {
-                    "selector": "node",
+                    "selector": ".latest.before",
                     "style": {
-                        "width": "mapData(score, 0, 0.006769776522008331, 20, 60)",
-                        "height": "mapData(score, 0, 0.006769776522008331, 20, 60)",
-                        "content": "data(name)",
-                        "font-size": "12px",
-                        "text-valign": "center",
-                        "text-halign": "center",
-                        "background-color": "#555",
-                        "text-outline-color": "#555",
-                        "text-outline-width": "2px",
-                        "color": "#fff",
-                        "overlay-padding": "6px",
-                        "z-index": "10",
-                        "cursor": "pointer"
+                        "overlay-color": "#FF6F35",
+                        "overlay-padding": 10,
+                        "overlay-opacity": 0.25
                     }
                 }, {
-                    "selector": "node[?attr]",
+                    "selector": ".latest.before",
                     "style": {
-                        "shape": "rectangle",
-                        "background-color": "#aaa",
-                        "text-outline-color": "#aaa",
-                        "width": "16px",
-                        "height": "16px",
-                        "font-size": "6px",
-                        "z-index": "1"
+                        "overlay-color": "#FF6F35",
+                        "overlay-padding": 10,
+                        "overlay-opacity": 0.25
                     }
-                }, {
-                    "selector": "node[?query]",
-                    "style": {"background-clip": "none", "background-fit": "contain"}
-                }, {
-                    "selector": "node:selected",
-                    "style": {
-                        "border-width": "6px",
-                        "border-color": "#AAD8FF",
-                        "border-opacity": "0.5",
-                        "background-color": "#77828C",
-                        "text-outline-color": "#77828C"
-                    }
-                }, {
-                    "selector": "edge",
-                    "style": {
-                        "curve-style": "haystack",
-                        "haystack-radius": "0.5",
-                        "opacity": "0.4",
-                        "line-color": "data(color)",
-                        "width": "mapData(weight, 0, 100, 0, 50)",
-                        "overlay-padding": "3px",
-                        "label": "data(label)"
-                    }
-                }, {"selector": "node.unhighlighted", "style": {"opacity": "0.2"}}, {
-                    "selector": "edge.unhighlighted",
-                    "style": {"opacity": "0.05"}
-                }, {"selector": ".highlighted", "style": {"z-index": "999999"}}, {
-                    "selector": "node.highlighted",
-                    "style": {
-                        "border-width": "6px",
-                        "border-color": "#AAD8FF",
-                        "border-opacity": "0.5",
-                        "background-color": "#394855",
-                        "text-outline-color": "#394855",
-                        "shadow-blur": "12px",
-                        "shadow-color": "#000",
-                        "shadow-opacity": "0.8",
-                        "shadow-offset-x": "0px",
-                        "shadow-offset-y": "4px"
-                    }
-                }, {"selector": "edge.filtered", "style": {"opacity": "0"}}],
-
-                /*elements: [{
-                 "data": {
-                 "id": "1",
-                 //                        "idInt": 1,
-                 "name": "승목",
-                 //                        "score": 0.006769776522008331,
-                 "query": true,
-                 "gene": true,
-                 },
-                 //                    "position": {"x": 481, "y": 384},
-                 "group": "nodes",
-                 "removed": false,
-                 "selected": false,
-                 "selectable": true,
-                 "locked": false,
-                 "grabbed": false,
-                 "grabbable": true,
-                 "classes": "hi"
-                 }, {
-                 "data": {
-                 "id": "2",
-                 //                        "idInt": 611408,
-                 "name": "채승목",
-                 //                        "score": 0.006769776522008331,
-                 "query": false,
-                 "gene": true
-                 },
-                 //                    "position": {"x": 531.9740635094307, "y": 464.8210898234145},
-                 "group": "nodes",
-                 "removed": false,
-                 "selected": false,
-                 "selectable": true,
-                 "locked": false,
-                 "grabbed": false,
-                 "grabbable": true,
-                 "classes": ""
-                 }, {
-                 "data": {
-                 "id": "3",
-                 //                        "idInt": 611408,
-                 "name": "3",
-                 //                        "score": 0.006769776522008331,
-                 "query": false,
-                 "gene": true
-                 },
-                 //                    "position": {"x": 531.9740635094307, "y": 464.8210898234145},
-                 "group": "nodes",
-                 "removed": false,
-                 "selected": false,
-                 "selectable": true,
-                 "locked": false,
-                 "grabbed": false,
-                 "grabbable": true,
-                 "classes": ""
-                 }, {
-                 "data": {
-                 "id": "4",
-                 //                        "idInt": 611408,
-                 "name": "4",
-                 //                        "score": 0.006769776522008331,
-                 "query": false,
-                 "gene": true
-                 },
-                 //                    "position": {"x": 531.9740635094307, "y": 464.8210898234145},
-                 "group": "nodes",
-                 "removed": false,
-                 "selected": false,
-                 "selectable": true,
-                 "locked": false,
-                 "grabbed": false,
-                 "grabbable": true,
-                 "classes": ""
-                 }, {
-                 "data": {
-                 "id": "5",
-                 //                        "idInt": 611408,
-                 "name": "5",
-                 //                        "score": 0.006769776522008331,
-                 "query": false,
-                 "gene": true
-                 },
-                 //                    "position": {"x": 531.9740635094307, "y": 464.8210898234145},
-                 "group": "nodes",
-                 "removed": false,
-                 "selected": false,
-                 "selectable": true,
-                 "locked": false,
-                 "grabbed": false,
-                 "grabbable": true,
-                 "classes": ""
-                 }, {
-                 group: "edges",
-                 data: {source: "1", target: "2", label:"23"},
-                 }, {
-                 group: "edges",
-                 data: {source: "1", target: "3"}
-                 }]*/
+                },
+                    {
+                        "selector": "node",
+                        "style": {
+                            "width": "mapData(score, 0, 0.006769776522008331, 20, 60)",
+                            "height": "mapData(score, 0, 0.006769776522008331, 20, 60)",
+                            "content": "data(name)",
+                            "font-size": "12px",
+                            "text-valign": "center",
+                            "text-halign": "center",
+                            "background-color": "#555",
+                            "text-outline-color": "#555",
+                            "text-outline-width": "2px",
+                            "color": "#fff",
+                            "overlay-padding": "6px",
+                            "z-index": "10",
+                            "cursor": "pointer"
+                        }
+                    }, {
+                        "selector": "node[?attr]",
+                        "style": {
+                            "shape": "rectangle",
+                            "background-color": "#aaa",
+                            "text-outline-color": "#aaa",
+                            "width": "16px",
+                            "height": "16px",
+                            "font-size": "6px",
+                            "z-index": "1"
+                        }
+                    }, {
+                        "selector": "node[?query]",
+                        "style": {"background-clip": "none", "background-fit": "contain"}
+                    }, {
+                        "selector": "node:selected",
+                        "style": {
+                            "border-width": "6px",
+                            "border-color": "#AAD8FF",
+                            "border-opacity": "0.5",
+                            "background-color": "#f00",
+                            "text-outline-color": "#77828C"
+                        }
+                    }, {
+                        "selector": "edge",
+                        "style": {
+                            "curve-style": "haystack",
+                            "haystack-radius": "0.5",
+                            "opacity": "0.4",
+                            "line-color": "data(color)",
+                            "width": "mapData(weight, 0, 100, 0, 50)",
+                            "overlay-padding": "3px",
+                            "label": "data(label)"
+                        }
+                    }, {"selector": "node.unhighlighted", "style": {"opacity": "0.2"}}, {
+                        "selector": "edge.unhighlighted",
+                        "style": {"opacity": "0.05"}
+                    }, {"selector": ".highlighted", "style": {"z-index": "999999"}}, {
+                        "selector": "node.highlighted",
+                        "style": {
+                            "border-width": "6px",
+                            "border-color": "#AAD8FF",
+                            "border-opacity": "0.5",
+                            "background-color": "#394855",
+                            "text-outline-color": "#394855",
+                            "shadow-blur": "12px",
+                            "shadow-color": "#000",
+                            "shadow-opacity": "0.8",
+                            "shadow-offset-x": "0px",
+                            "shadow-offset-y": "4px"
+                        }
+                    }, {"selector": "edge.filtered", "style": {"opacity": "0"}}]
             });
         });
     }
@@ -2006,6 +1965,7 @@
     function addGraphData(author, data) {
         var CLASS_NAME_PREFIX = 'expand-table-';
         var tmpTrList = [];
+        cy.$('.latest').removeClass('latest');
         $.each(data, function (i, data) {
             addNode(data.relAuthor, function () {
                 var tmpAuthor = data.relAuthor;

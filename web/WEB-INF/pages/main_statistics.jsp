@@ -475,7 +475,7 @@
                 </div>
 
                 <div id="author-graph-container" class="panel panel-default graph-container"
-                     style="margin-top: 5px;height: calc(100% - 192px);float: left;width: calc(100% - 40px);background: #fff;margin-left: 20px;margin-right: 20px; position:relative;">
+                     style="margin-top: 5px;height: calc(100% - 192px);float: left;width: calc(100% - 40px);background: #fff;margin-left: 20px;margin-right: 20px; position:relative;text-align:center;">
 
                     <%--<div id="author-graph-container" class="col-md-6" style="margin-top: 15px; height: 100%;">--%>
                 </div>
@@ -501,7 +501,7 @@
     var authorTotalGraph;
     var graphCount = 0;
 
-    var loadingRing = $('<img class="loading-ring" src="/imgs/30.gif" style="position: absolute;right: 200px; top: 180px;">');
+    var loadingRing = $('<img class="loading-ring" src="/imgs/30.gif" style="position: relative;top:calc(50% - 20px);">');
 
     function setRelTablePos() {
         if (relStartPos.top < relStartPos.maxTop) {

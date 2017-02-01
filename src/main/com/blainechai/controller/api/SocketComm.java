@@ -233,7 +233,10 @@ public class SocketComm
 
 	public void reqVIEW() throws IOException
 	{
+		System.out.println("reqVIEW : msg = " + msg);
 		dos.writeInt(page);
+		if(sel == 2) dos.writeInt(Integer.parseInt(msg));
+		else 		 dos.writeInt(50);
 		// count 수신
 		int cnt = dis.readInt();
 
@@ -540,7 +543,7 @@ public class SocketComm
 			String[] ss = msg.split("\r\n");
 			dos.writeInt(ss.length);
 			for (int i=0; i < ss.length; i++) {
-				System.out.println(i + " : " + ss[i]);
+				//System.out.println(i + " : " + ss[i]);
 				dos.writeUTF(ss[i]);
 			}
 			good = 0;

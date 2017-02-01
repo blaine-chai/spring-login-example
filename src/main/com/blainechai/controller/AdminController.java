@@ -830,8 +830,9 @@ public class AdminController {
 		while((bLine = in.readLine()) != null) {
 			cnt++;
 			String[] s = bLine.split(" ", 4);
-			System.out.println(bLine + " : " + s.length + " : " + nicknameRepository.findByNickname(s[1]).size());
-			if (nicknameRepository.findByNickname(s[1]).size() <= 0) {
+			int kkk = nicknameRepository.findByNickname(s[1]).size();
+			System.out.println(bLine + " : " + s.length + " : " + kkk);
+			if (kkk <= 0) {
 				cnt2++;
 				NicknameOption tmpNick = null;
 	            if(s.length == 4) tmpNick = new NicknameOption(s[0], s[1], s[2], s[3]);
@@ -850,7 +851,7 @@ public class AdminController {
 	            		priAll = "";
 	            	}
 	            }
-				System.out.println(bLine + " : " + s.length + " : " + nicknameRepository.findByNickname(s[1]).size());
+				System.out.println(bLine + " : " + s.length + " : " + kkk);
 			}
 		}
     	if(k > 0) {
