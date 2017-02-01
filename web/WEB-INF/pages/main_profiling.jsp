@@ -263,6 +263,8 @@
     var loadingRing = $('<img class="loading-ring" src="/imgs/ajax-loader.gif" style="position: absolute;right: 50px;">');
     var loadingRing2 = $('<img class="loading-ring" src="/imgs/ajax-loader.gif" style="position: absolute;left: 8px;">');
     var loadingRing3 = $('<img class="loading-ring" src="/imgs/ajax-loader.gif" style="position: absolute;right: 150px;">');
+    var loadingContainer = $('<div class="profiling-loading-container" style="position: absolute;top: 0;left: 0;"><svg style="top: calc(50% - 24px);left: calc(50% - 24px);position: absolute;" width="48px" height="48px" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" preserveAspectRatio="xMidYMid" class="uil-default"><rect x="0" y="0" width="100" height="100" fill="none" class="bk"></rect><rect x="46.5" y="40" width="7" height="20" rx="5" ry="5" fill="#eceded" transform="rotate(0 50 50) translate(0 -30)">  <animate attributeName="opacity" from="1" to="0" dur="1s" begin="0s" repeatCount="indefinite"></animate></rect><rect x="46.5" y="40" width="7" height="20" rx="5" ry="5" fill="#eceded" transform="rotate(30 50 50) translate(0 -30)">  <animate attributeName="opacity" from="1" to="0" dur="1s" begin="0.08333333333333333s" repeatCount="indefinite"></animate></rect><rect x="46.5" y="40" width="7" height="20" rx="5" ry="5" fill="#eceded" transform="rotate(60 50 50) translate(0 -30)">  <animate attributeName="opacity" from="1" to="0" dur="1s" begin="0.16666666666666666s" repeatCount="indefinite"></animate></rect><rect x="46.5" y="40" width="7" height="20" rx="5" ry="5" fill="#eceded" transform="rotate(90 50 50) translate(0 -30)">  <animate attributeName="opacity" from="1" to="0" dur="1s" begin="0.25s" repeatCount="indefinite"></animate></rect><rect x="46.5" y="40" width="7" height="20" rx="5" ry="5" fill="#eceded" transform="rotate(120 50 50) translate(0 -30)">  <animate attributeName="opacity" from="1" to="0" dur="1s" begin="0.3333333333333333s" repeatCount="indefinite"></animate></rect><rect x="46.5" y="40" width="7" height="20" rx="5" ry="5" fill="#eceded" transform="rotate(150 50 50) translate(0 -30)">  <animate attributeName="opacity" from="1" to="0" dur="1s" begin="0.4166666666666667s" repeatCount="indefinite"></animate></rect><rect x="46.5" y="40" width="7" height="20" rx="5" ry="5" fill="#eceded" transform="rotate(180 50 50) translate(0 -30)">  <animate attributeName="opacity" from="1" to="0" dur="1s" begin="0.5s" repeatCount="indefinite"></animate></rect><rect x="46.5" y="40" width="7" height="20" rx="5" ry="5" fill="#eceded" transform="rotate(210 50 50) translate(0 -30)">  <animate attributeName="opacity" from="1" to="0" dur="1s" begin="0.5833333333333334s" repeatCount="indefinite"></animate></rect><rect x="46.5" y="40" width="7" height="20" rx="5" ry="5" fill="#eceded" transform="rotate(240 50 50) translate(0 -30)">  <animate attributeName="opacity" from="1" to="0" dur="1s" begin="0.6666666666666666s" repeatCount="indefinite"></animate></rect><rect x="46.5" y="40" width="7" height="20" rx="5" ry="5" fill="#eceded" transform="rotate(270 50 50) translate(0 -30)">  <animate attributeName="opacity" from="1" to="0" dur="1s" begin="0.75s" repeatCount="indefinite"></animate></rect><rect x="46.5" y="40" width="7" height="20" rx="5" ry="5" fill="#eceded" transform="rotate(300 50 50) translate(0 -30)">  <animate attributeName="opacity" from="1" to="0" dur="1s" begin="0.8333333333333334s" repeatCount="indefinite"></animate></rect><rect x="46.5" y="40" width="7" height="20" rx="5" ry="5" fill="#eceded" transform="rotate(330 50 50) translate(0 -30)">  <animate attributeName="opacity" from="1" to="0" dur="1s" begin="0.9166666666666666s" repeatCount="indefinite"></animate></rect></svg></div>').hide();
+    $('#result-table-wrapper').append(loadingContainer);
 
     var searchResultPager = $('#nickname-result-container .component-pager');
 
@@ -366,8 +368,8 @@
                     isProfileSearch = true;
                 }
                 else {
-                	nicknameClose();
-                	if($('#nickname-search-input').val() != "*") {
+                    nicknameClose();
+                    if ($('#nickname-search-input').val() != "*") {
                         $(this).append(loadingRing3);
                         callAjax("CprofileSearch", keyword, "", 16, 0, keyword, "");
                     } else
@@ -467,6 +469,7 @@
             }
             else if (data.sel == 2) {
                 $('.loading-ring').remove();
+                loadingContainer.fadeOut(100);
                 setRelBadgeShow(responseData);
                 //setTime = setTimeout(function() {callAjaxLoop(tdata.id, data.author, data.period, 4, 0, "", ""); }, 1000);
             }
@@ -496,14 +499,16 @@
                     console.log("AAAAAAAA");
                     if (data.page == 0) {
                         if (isGraphMode) {
+//                            $('.profiling-graph-container').fadeOut(100, function(){$('.profiling-graph-container').css("visibility", "hidden")});
                             $('.profiling-graph-container').css("visibility", "hidden");
                             initGraph();
                             dataEx = data;
                             addNode(author[0], function () {
                             });
                             addGraphData(author[0], result);
-//                            $('.cover').css("visibility", "visible");
+                            $('.profiling-graph-container').css("visibility", "visible");
                         } else {
+//                            $('.profiling-graph-container').fadeOut(100, function(){$('.profiling-graph-container').css("visibility", "hidden")});
                             $('.profiling-graph-container').css("visibility", "hidden");
                             ProfileResultModule.ExpandComponent().newExpandComponent({
                                 data: result,
@@ -527,7 +532,7 @@
                         if (isGraphMode) {
                             $('.profiling-graph-container').css("visibility", "hidden");
                             addGraphData(author[0], result);
-//                            $('.profiling-graph-container').css("visibility", "visible");
+                            $('.profiling-graph-container').css("visibility", "visible");
                         } else {
                             ProfileResultModule.ExpandComponent().newExpandComponent({
                                 data: result,
@@ -644,7 +649,7 @@
                 $('#nickname-result-table').parent().parent().find('.component-pager-page').text('1-' + resultAuthor.length + '(' + resultAuthor.length + ')');
                 $('.btn-default-left').attr('index', -1);
                 $('.btn-default-right').attr('index', 1);
-           }
+            }
             setAuthorResultClickHandler();
         }
     }
@@ -829,16 +834,16 @@
                         },
                         success: function (responseData) {
                             if (responseData == 'true') {
-                            	var tmpHml = $('#nickname-result-table>tbody');
-                            	console.log(tmpHml.find('td').length);
+                                var tmpHml = $('#nickname-result-table>tbody');
+                                console.log(tmpHml.find('td').length);
 
-                                for (var k = 1; k < tmpHml.find('td').length-1; k++) {
+                                for (var k = 1; k < tmpHml.find('td').length - 1; k++) {
                                     var nicTmp = tmpHml.find('td').eq(k).text();
-                                	console.log(k + " : " + nicTmp);
-                                	if(nicTmp == nicNameOff($('.nickname-form-input-author').val()))
-                                	tmpHml.find('td').eq(k+1).text('(' + $('.nickname-form-input-nickname').val() + ')');
-                                	k++;
-                                	k++;
+                                    console.log(k + " : " + nicTmp);
+                                    if (nicTmp == nicNameOff($('.nickname-form-input-author').val()))
+                                        tmpHml.find('td').eq(k + 1).text('(' + $('.nickname-form-input-nickname').val() + ')');
+                                    k++;
+                                    k++;
 
                                     //console.log("BBBBBB : " + $('#book-table tbody').find('tr').eq(k).find('td').eq(5).text());
                                 }
@@ -889,14 +894,14 @@
                     $('.nickname-form-input-author').val($('input[name=nickname-radio]:checked').parent().parent().find('td').eq(1).text());
                     $('.nickname-form-input-nickname').val(result.nickname);
                     if (result.lastModifiedDate != undefined) {
-	                    var inputTime = result.lastModifiedDate.split('<br>');
-	                    if(inputTime.length < 2) {
-		                    $('.nickname-form-input-created-time').val(result.lastModifiedDate);
-		                    $('.nickname-form-input-modified-time').val(result.lastModifiedDate);
-	                    }else {
-		                    $('.nickname-form-input-created-time').val(inputTime[1]);
-		                    $('.nickname-form-input-modified-time').val(inputTime[0]);
-	                    }
+                        var inputTime = result.lastModifiedDate.split('<br>');
+                        if (inputTime.length < 2) {
+                            $('.nickname-form-input-created-time').val(result.lastModifiedDate);
+                            $('.nickname-form-input-modified-time').val(result.lastModifiedDate);
+                        } else {
+                            $('.nickname-form-input-created-time').val(inputTime[1]);
+                            $('.nickname-form-input-modified-time').val(inputTime[0]);
+                        }
                     }
                     //$('.nickname-form-input-modified-time').val(result.lastModifiedDate);
                     if (result.priority == undefined) {
@@ -1044,7 +1049,7 @@
             });
 
             $('.btn-nickname-form-close').click(function (e) {
-            	nicknameClose();
+                nicknameClose();
             });
             nicknameForm.show(300);
         });
@@ -1212,7 +1217,7 @@
             if ($('#datepicker1').val() != '') from += " 00:00:00";
             if ($('#datepicker2').val() != '') to += " 23:59:59";
 
-			var period = from + "-" + to + ">" + $('label[name=dateOption]').text();
+            var period = from + "-" + to + ">" + $('label[name=dateOption]').text();
             callAjax(id, "}}}}}}}>indexB^" + author + " & " + "indexB^" + relAuthor + ">완전일치>" + period + ">" + groupName + ">N", "", 8, 0, "", "");
         });
 
@@ -1741,6 +1746,7 @@
 //                        console.error("hi");
                         $('#show-more-btn-' + count).click(click).click(function () {
                             $qtip.qtip('hide');
+                            loadingContainer.fadeIn(100);
                         });
                         $('#delete-node-btn-' + count).click(function () {
                             cy.remove(curNode);
@@ -1802,13 +1808,18 @@
                     })
                     .on('mouseout', function () {
                         this.removeClass('hover');
-                    }).addClass('latest');
+                    })
+//                    .on('click', function () {
+//                        $('#result-table-wrapper').append(loadingContainer);
+//                    })
+                    .addClass('latest');
         }
     };
 
     $('.close-btn').click(function () {
         $(this).parent().css("visibility", "hidden");
     });
+
     $('.show-graph-btn').click(function () {
 //        $('.cover').css("visibility", "visible");
         $(this).toggleClass('active');
@@ -1825,7 +1836,8 @@
         maxSimulationTime: 3000,
         stop: function () {
             cy.resize();
-            $('.profiling-graph-container').css("visibility", "visible");
+//            $('.profiling-graph-container').css("visibility", "visible");
+//            $('.profiling-graph-container').fadeIn(100);
         }
     };
 
@@ -1849,7 +1861,8 @@
                     maxSimulationTime: 1500,
                     stop: function () {
                         cy.resize();
-                        $('.profiling-graph-container').css("visibility", "visible");
+//                        $('.profiling-graph-container').fadeIn(100);
+//                        $('.profiling-graph-container').css("visibility", "visible");
                     }
                 },
 
@@ -2013,6 +2026,8 @@
 
                 var id = "profile" + idCNT;
 //console.log(">"+ $('input[name="groups"]:checked').val());
+
+                loadingContainer.fadeIn(100);
                 callAjax(id, author + '>' + period, relAuthor, 1, 0, "", "");
             });
         });
@@ -2027,6 +2042,7 @@
 //        layout.run();
         cy.layout(layoutOption);
         graphCount++;
+        loadingContainer.fadeOut(100);
     }
 
 </script>
